@@ -232,7 +232,7 @@ public final class Player extends Ent {
                         dropT = 0.25f; y += 2; jumpBuf = 0; onGround = false; onOneWay = false;
                     } else if (coyote > 0) {
                         doJump(lv, false);
-                    } else if (jumpsLeft > 0) {
+                    } else if (jumpsLeft > 0 && !(vy > 0 && lv.groundBelow(x, y + 1) - y < 26)) {   // cerca del suelo: guarda el salto y se ejecuta al aterrizar (jump buffering)
                         jumpsLeft--;
                         doJump(lv, true);
                     }

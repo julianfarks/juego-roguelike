@@ -4,7 +4,9 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
-        android:label="SwordmanRogue"
+        android:label="SwordmanMagic"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:allowBackup="true"
         android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
         <activity

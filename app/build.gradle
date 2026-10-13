@@ -10,11 +10,19 @@ android {
         applicationId 'com.julianfarks.roguelike'
         minSdk 24
         targetSdk 34
-        versionCode 1
-        versionName '0.1'
+        versionCode 3
+        versionName '2.0'
+    }
+    signingConfigs {
+        fijo {
+            storeFile file('keystore/swordman.jks')
+            storePassword 'swordman123'
+            keyAlias 'swordman'
+            keyPassword 'swordman123'
+        }
     }
     buildTypes {
-        debug { debuggable false }
+        debug { debuggable false; signingConfig signingConfigs.fijo }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17

@@ -155,7 +155,7 @@ final class RunScreen extends Screen implements Level.Listener {
         int next = rs.roomNo + 1;
         int[] types;
         if (rm.type == Room.BOSS) return;
-        if (next <= 2) types = rs.pickDoorTypes(2);
+        if (next <= 2) types = rs.pickDoorTypes(1);
         else if (next == 3) types = new int[]{Room.REST};
         else types = new int[]{Room.BOSS};
         int n = types.length;

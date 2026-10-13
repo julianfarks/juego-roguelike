@@ -60,8 +60,7 @@ public final class RunState {
     /** Tipos de sala para las puertas: combate normal o mini-jefe (élite). */
     public int[] pickDoorTypes(int count) {
         int[] out = new int[count];
-        out[0] = Room.COMBAT;
-        for (int i = 1; i < count; i++) out[i] = rng.chance(0.55f) ? Room.ELITE : Room.COMBAT;
+        java.util.Arrays.fill(out, Room.COMBAT);
         return out;
     }
 

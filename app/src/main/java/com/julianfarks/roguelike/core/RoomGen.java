@@ -302,7 +302,14 @@ public final class RoomGen {
         int W = rm.w;
         int count = 3 + stage + (roomNo >= 2 ? 1 : 0) + r.i(2);
         if (elite) count = 2 + stage;
-        String[] pool = rm.biome.enemies;
+        String[] full = rm.biome.enemies;
+        String[] pool = full;
+        if (!elite && full.length >= 3) {   // cada sala usa otra combinacion de mobs
+            int skip = roomNo % 3 == 0 ? 2 : (roomNo % 3 == 1 ? 0 : 1);
+            pool = new String[full.length - 1];
+            int k = 0;
+            for (int i = 0; i < full.length; i++) if (i != skip) pool[k++] = full[i];
+        }
         List<Integer> cand = new ArrayList<>();
         for (int x = 14; x < W - 14; x++) if (ground[x] >= 0 && !blocked[x] && ground[x] == (x > 0 ? ground[x - 1] : -2) && (x + 1 < W && ground[x + 1] == ground[x])) cand.add(x);
         int heavies = 0;

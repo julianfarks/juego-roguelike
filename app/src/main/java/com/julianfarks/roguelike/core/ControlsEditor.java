@@ -8,7 +8,7 @@ final class ControlsEditor extends Screen {
     private int dragId = -1, dragB = -1;
     private float offX, offY;
     private Hit minus, plus, reset, done;
-    private static final String[] ICONS = {"", "", "", "jump", "attack", "roll", "", "", "", "", "key", "pause", "potion", "attack", "burn"};
+    private static final String[] ICONS = {"", "", "", "jump", "attack", "roll", "", "", "", "", "key", "pause", "potion", "attack", "burn", "shield"};
 
     ControlsEditor(Game g, boolean fromRun) { super(g); this.fromRun = fromRun; this.in = g.input; }
 
@@ -81,6 +81,7 @@ final class ControlsEditor extends Screen {
             String ic = ICONS[i];
             if (i >= Input.B_S1 && i <= Input.B_ULT) ic = i == Input.B_ULT ? "star" : "burn";
             if (i == Input.B_SEC) ic = "attack";
+            if (ic == null) ic = "";
             if (i <= Input.B_DOWN) {
                 if (UI.arrow != null) {
                     float ang = i == Input.B_LEFT ? 3.1416f : (i == Input.B_RIGHT ? 0 : 1.5708f);

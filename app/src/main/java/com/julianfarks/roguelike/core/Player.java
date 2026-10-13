@@ -165,7 +165,7 @@ public final class Player extends Ent {
 
         // ---- entradas
         if (ctl && !frozenNow) {
-            if (in.pressed(Input.B_JUMP)) jumpBuf = 0.13f;
+            if (in.pressed(Input.B_JUMP)) jumpBuf = 0.17f;
             if (in.pressed(Input.B_ATTACK)) atkBuf = 0.22f;
             if (in.pressed(Input.B_POTION)) drinkPotion(lv);
             if (state != HURT && state != ULT && state != ROLL) {
@@ -222,7 +222,7 @@ public final class Player extends Ent {
             if (free && mx != 0) right = mx > 0;
             if (free || state == ROLL) {
                 // salto
-                if (onGround) { coyote = 0.1f; jumpsLeft = s.extraJumps; } else coyote -= dt;
+                if (onGround) { coyote = 0.17f; jumpsLeft = s.extraJumps; } else coyote -= dt;
                 if (ctl && !frozenNow && state != ROLL && onOneWay && onGround && in.pressed(Input.B_DOWN)) {
                     dropT = 0.25f; y += 2; jumpBuf = 0; onGround = false; onOneWay = false;
                     lv.fx("fx_dust", "land", x, y - 2, 0.6f, 0, 0);
@@ -238,7 +238,7 @@ public final class Player extends Ent {
                     }
                 }
             } else {
-                if (onGround) coyote = 0.1f;
+                if (onGround) coyote = 0.17f;
             }
             if (jumping && vy < -120 && !in.held(Input.B_JUMP) && !in.pressed(Input.B_JUMP)) { vy *= 0.5f; jumping = false; }
             if (vy >= 0) jumping = false;

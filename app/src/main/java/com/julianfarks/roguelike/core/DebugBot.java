@@ -21,6 +21,7 @@ public final class DebugBot {
     public void tick(Game g, int frame) {
         Screen s = g.cur;
         if (s == null || g.fadeDir == 1) return;
+        if (s instanceof Screens.Title && System.getenv("BOT_EDITOR") != null) { g.go(new ControlsEditor(g, false)); return; }
         if (s instanceof Screens.Title) {
             if (frame % 20 == 0) { Screen.Hit h = ((Screens.Title) s).hits.get(0); s.touch(0, 0, h.x + 5, h.y + 5); s.touch(0, 2, h.x + 5, h.y + 5); }
             return;

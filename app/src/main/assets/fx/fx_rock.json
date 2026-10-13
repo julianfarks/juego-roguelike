@@ -1,0 +1,28 @@
+{
+ "cell": [
+  32,
+  64
+ ],
+ "pivot": [
+  16,
+  61
+ ],
+ "body": [
+  16,
+  56
+ ],
+ "anims": {
+  "pillar": {
+   "row": 0,
+   "n": 8,
+   "fps": 16,
+   "loop": false
+  },
+  "debris": {
+   "row": 1,
+   "n": 6,
+   "fps": 18,
+   "loop": false
+  }
+ }
+}

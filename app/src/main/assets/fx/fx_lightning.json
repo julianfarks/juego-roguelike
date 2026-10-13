@@ -1,0 +1,28 @@
+{
+ "cell": [
+  32,
+  128
+ ],
+ "pivot": [
+  16,
+  127
+ ],
+ "body": [
+  8,
+  120
+ ],
+ "anims": {
+  "bolt": {
+   "row": 0,
+   "n": 5,
+   "fps": 28,
+   "loop": false
+  },
+  "ground": {
+   "row": 1,
+   "n": 5,
+   "fps": 28,
+   "loop": false
+  }
+ }
+}

@@ -1,0 +1,129 @@
+{
+ "cell": [
+  192,
+  160
+ ],
+ "pivot": [
+  96,
+  156
+ ],
+ "body": [
+  30,
+  100
+ ],
+ "anims": {
+  "idle": {
+   "row": 0,
+   "n": 6,
+   "fps": 8,
+   "loop": true
+  },
+  "walk": {
+   "row": 1,
+   "n": 8,
+   "fps": 10,
+   "loop": true
+  },
+  "windup1": {
+   "row": 2,
+   "n": 5,
+   "fps": 12,
+   "loop": false
+  },
+  "attack1": {
+   "row": 3,
+   "n": 8,
+   "fps": 16,
+   "loop": false,
+   "hit": [
+    2,
+    4
+   ],
+   "box": [
+    4,
+    -78,
+    52,
+    70
+   ]
+  },
+  "windup2": {
+   "row": 4,
+   "n": 5,
+   "fps": 12,
+   "loop": false
+  },
+  "attack2": {
+   "row": 5,
+   "n": 8,
+   "fps": 16,
+   "loop": false,
+   "hit": [
+    1,
+    5
+   ],
+   "box": [
+    6,
+    -66,
+    118,
+    60
+   ]
+  },
+  "windup3": {
+   "row": 6,
+   "n": 6,
+   "fps": 12,
+   "loop": false
+  },
+  "attack3": {
+   "row": 7,
+   "n": 9,
+   "fps": 14,
+   "loop": false,
+   "hit": [
+    4,
+    6
+   ],
+   "box": [
+    -62,
+    -48,
+    130,
+    50
+   ]
+  },
+  "cast": {
+   "row": 8,
+   "n": 8,
+   "fps": 12,
+   "loop": false,
+   "rel": 4,
+   "muzzle": [
+    46,
+    -81
+   ]
+  },
+  "hurt": {
+   "row": 9,
+   "n": 2,
+   "fps": 10,
+   "loop": false
+  },
+  "phase": {
+   "row": 10,
+   "n": 10,
+   "fps": 10,
+   "loop": false
+  },
+  "intro": {
+   "row": 11,
+   "n": 14,
+   "fps": 10,
+   "loop": false
+  },
+  "death": {
+   "row": 12,
+   "n": 14,
+   "fps": 9,
+   "loop": false
+  }
+ }
+}

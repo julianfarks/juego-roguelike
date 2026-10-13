@@ -1,0 +1,34 @@
+{
+ "cell": [
+  48,
+  64
+ ],
+ "pivot": [
+  24,
+  60
+ ],
+ "body": [
+  24,
+  44
+ ],
+ "anims": {
+  "spike": {
+   "row": 0,
+   "n": 7,
+   "fps": 16,
+   "loop": false
+  },
+  "burst": {
+   "row": 1,
+   "n": 8,
+   "fps": 20,
+   "loop": false
+  },
+  "frozen": {
+   "row": 2,
+   "n": 1,
+   "fps": 1,
+   "loop": false
+  }
+ }
+}

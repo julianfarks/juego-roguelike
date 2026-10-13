@@ -1,0 +1,28 @@
+{
+ "cell": [
+  48,
+  48
+ ],
+ "pivot": [
+  24,
+  24
+ ],
+ "body": [
+  24,
+  24
+ ],
+ "anims": {
+  "burst": {
+   "row": 0,
+   "n": 7,
+   "fps": 20,
+   "loop": false
+  },
+  "twinkle": {
+   "row": 1,
+   "n": 4,
+   "fps": 10,
+   "loop": true
+  }
+ }
+}

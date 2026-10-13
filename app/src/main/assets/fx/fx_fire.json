@@ -1,0 +1,28 @@
+{
+ "cell": [
+  32,
+  48
+ ],
+ "pivot": [
+  16,
+  46
+ ],
+ "body": [
+  14,
+  30
+ ],
+ "anims": {
+  "burn": {
+   "row": 0,
+   "n": 6,
+   "fps": 14,
+   "loop": true
+  },
+  "pillar": {
+   "row": 1,
+   "n": 8,
+   "fps": 16,
+   "loop": false
+  }
+ }
+}

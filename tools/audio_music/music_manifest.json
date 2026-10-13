@@ -1,0 +1,87 @@
+{
+ "music": {
+  "mus_bosque": {
+   "dur": 60.0,
+   "loop": true
+  },
+  "mus_boss_a": {
+   "dur": 64.0,
+   "loop": true
+  },
+  "mus_boss_b": {
+   "dur": 66.0,
+   "loop": true
+  },
+  "mus_catacumbas": {
+   "dur": 64.0,
+   "loop": true
+  },
+  "mus_credits": {
+   "dur": 60.0,
+   "loop": true
+  },
+  "mus_eclipse": {
+   "dur": 60.0,
+   "loop": true
+  },
+  "mus_final_1": {
+   "dur": 62.222,
+   "loop": true
+  },
+  "mus_final_2": {
+   "dur": 65.455,
+   "loop": true
+  },
+  "mus_final_3": {
+   "dur": 64.0,
+   "loop": true
+  },
+  "mus_forja": {
+   "dur": 55.385,
+   "loop": true
+  },
+  "mus_gameover": {
+   "dur": 10.435,
+   "loop": false
+  },
+  "mus_helado": {
+   "dur": 60.0,
+   "loop": true
+  },
+  "mus_sanctuary": {
+   "dur": 68.571,
+   "loop": true
+  },
+  "mus_sangre": {
+   "dur": 57.6,
+   "loop": true
+  },
+  "mus_title": {
+   "dur": 58.182,
+   "loop": true
+  },
+  "mus_tormenta": {
+   "dur": 55.652,
+   "loop": true
+  },
+  "mus_vacio": {
+   "dur": 57.6,
+   "loop": true
+  },
+  "mus_victory": {
+   "dur": 17.5,
+   "loop": false
+  }
+ },
+ "sfx": {
+  "amb_bosque": 10.0,
+  "amb_catacumbas": 10.0,
+  "amb_cazador": 10.0,
+  "amb_eclipse": 10.0,
+  "amb_forja": 10.0,
+  "amb_helado": 10.0,
+  "amb_sangre": 10.0,
+  "amb_tormenta": 10.0,
+  "amb_vacio": 10.0
+ }
+}

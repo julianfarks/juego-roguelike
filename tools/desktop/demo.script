@@ -1,0 +1,11 @@
+# guion de ejemplo para StubGame
+0 shot inicio
+10 hold RIGHT 30
+20 tap 300 200
+25 key SPACE down
+26 key SPACE up
+30 touch 1 down 100 100
+35 touch 1 move 140 120
+40 touch 1 up 140 120
+50 shot tras_mover
+60 key Q down

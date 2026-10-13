@@ -1,0 +1,52 @@
+{
+ "cell": [
+  32,
+  32
+ ],
+ "pivot": [
+  16,
+  16
+ ],
+ "body": [
+  16,
+  16
+ ],
+ "anims": {
+  "spark": {
+   "row": 0,
+   "n": 5,
+   "fps": 30,
+   "loop": false
+  },
+  "big": {
+   "row": 1,
+   "n": 6,
+   "fps": 28,
+   "loop": false
+  },
+  "crit": {
+   "row": 2,
+   "n": 6,
+   "fps": 28,
+   "loop": false
+  },
+  "magic": {
+   "row": 3,
+   "n": 5,
+   "fps": 28,
+   "loop": false
+  },
+  "shock": {
+   "row": 4,
+   "n": 5,
+   "fps": 28,
+   "loop": false
+  },
+  "ice": {
+   "row": 5,
+   "n": 5,
+   "fps": 28,
+   "loop": false
+  }
+ }
+}

@@ -1,0 +1,28 @@
+{
+ "cell": [
+  32,
+  48
+ ],
+ "pivot": [
+  16,
+  47
+ ],
+ "body": [
+  20,
+  44
+ ],
+ "anims": {
+  "idle": {
+   "row": 0,
+   "n": 6,
+   "fps": 8,
+   "loop": true
+  },
+  "used": {
+   "row": 1,
+   "n": 1,
+   "fps": 1,
+   "loop": false
+  }
+ }
+}

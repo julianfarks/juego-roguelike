@@ -1,0 +1,28 @@
+{
+ "cell": [
+  48,
+  48
+ ],
+ "pivot": [
+  24,
+  24
+ ],
+ "body": [
+  24,
+  24
+ ],
+ "anims": {
+  "splat": {
+   "row": 0,
+   "n": 6,
+   "fps": 24,
+   "loop": false
+  },
+  "mist": {
+   "row": 1,
+   "n": 6,
+   "fps": 20,
+   "loop": false
+  }
+ }
+}

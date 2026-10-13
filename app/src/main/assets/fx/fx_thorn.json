@@ -1,0 +1,28 @@
+{
+ "cell": [
+  32,
+  48
+ ],
+ "pivot": [
+  16,
+  46
+ ],
+ "body": [
+  16,
+  40
+ ],
+ "anims": {
+  "vine": {
+   "row": 0,
+   "n": 7,
+   "fps": 16,
+   "loop": false
+  },
+  "bloom": {
+   "row": 1,
+   "n": 8,
+   "fps": 12,
+   "loop": false
+  }
+ }
+}

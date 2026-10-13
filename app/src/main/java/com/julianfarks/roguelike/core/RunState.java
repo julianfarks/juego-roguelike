@@ -5,7 +5,7 @@ import java.util.List;
 
 /** Estado persistente durante una run. */
 public final class RunState {
-    public static final int ROOMS_PER_BIOME = 6;   // 0 combate, 1-3 elegibles, 4 antesala, 5 jefe
+    public static final int ROOMS_PER_BIOME = 5;   // 0,1,2 monstruos (la 1 y 2 con puerta de combate/mini-jefe), 3 tienda general, 4 jefe
 
     public final ClassDef cls;
     public final Rng rng;
@@ -57,42 +57,24 @@ public final class RunState {
     public float enemyHpMul() { return (1f + 0.16f * power() + 0.10f * asc) * diffHp(); }
     public float enemyDmgMul() { return (1f + 0.06f * power() + 0.06f * asc) * diffDmg(); }
 
-    /** Pesos de tipos de sala para las puertas. */
+    /** Tipos de sala para las puertas: combate normal o mini-jefe (élite). */
     public int[] pickDoorTypes(int count) {
         int[] out = new int[count];
-        boolean needBless = !blessingTaken && roomNo >= 2;
-        for (int i = 0; i < count; i++) {
-            int t;
-            int tries = 0;
-            do {
-                int r = rng.i(100);
-                if (r < 38) t = Room.COMBAT;
-                else if (r < 52) t = Room.BLESSING;
-                else if (r < 62) t = Room.TREASURE;
-                else if (r < 72) t = Room.SHOP;
-                else if (r < 80) t = Room.FORGE;
-                else if (r < 88) t = Room.FOUNTAIN;
-                else t = Room.ELITE;
-                tries++;
-            } while (i > 0 && t == out[0] && tries < 6);
-            out[i] = t;
-        }
-        if (needBless) out[0] = Room.BLESSING;
-        // evitar dos salas "de descanso" seguidas dos veces; la primera opcion siempre es de combate o elite si la segunda tampoco es combate
-        if (count == 2 && out[0] != Room.COMBAT && out[0] != Room.ELITE && out[1] != Room.COMBAT && out[1] != Room.ELITE && !needBless) out[1] = Room.COMBAT;
+        out[0] = Room.COMBAT;
+        for (int i = 1; i < count; i++) out[i] = rng.chance(0.55f) ? Room.ELITE : Room.COMBAT;
         return out;
     }
 
     public static String roomName(int t) {
         switch (t) {
             case Room.COMBAT: return "Combate";
-            case Room.ELITE: return "Élite";
+            case Room.ELITE: return "Mini-jefe";
             case Room.BLESSING: return "Altar de bendición";
             case Room.FORGE: return "Forja";
             case Room.SHOP: return "Mercader";
             case Room.FOUNTAIN: return "Fuente de vida";
             case Room.TREASURE: return "Tesoro";
-            case Room.REST: return "Antesala";
+            case Room.REST: return "Tienda general";
             case Room.BOSS: return "Jefe";
             default: return "Sala";
         }

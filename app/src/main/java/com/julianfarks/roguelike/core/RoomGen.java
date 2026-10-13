@@ -77,7 +77,7 @@ public final class RoomGen {
                 if (ok) for (int i = 0; i < n; i++) rm.set(x + i, mf - 1, Room.SPIKE);
             }
             // cofre oculto en una plataforma alta del piso superior
-            for (int[] pf : platforms) if (pf[2] == mf - 4 && r.chance(0.45f)) { secrets.add(new int[]{(pf[0] + pf[1]) / 2 * Room.TS + 8, pf[2] * Room.TS}); break; }
+            for (int[] pf : platforms) if (pf[2] == mf - 4 && r.chance(0.45f) && (pf[1] < rm.vaultA - 2 || pf[0] > rm.vaultA + 10)) { secrets.add(new int[]{(pf[0] + pf[1]) / 2 * Room.TS + 8, pf[2] * Room.TS}); break; }
             // candidatos para enemigos del piso superior
             for (int x = 14; x < W - 14; x++) {
                 boolean ok = true;
@@ -215,6 +215,7 @@ public final class RoomGen {
             int bx = left ? a : a + 8;
             rm.set(bx, mf - 3, Room.SOLID);
             for (int y = mf - 2; y <= mf - 1; y++) rm.set(bx, y, Room.DOOR);
+            rm.vaultA = a;
             rm.secretSpots.add(new int[]{(a + 4) * Room.TS + 8, mf * Room.TS});
             for (int x = a; x <= a + 8; x++) for (int y = mf - 5; y <= mf - 1; y++) rm.vista[y * W + x] = false;
             break;
@@ -329,7 +330,7 @@ public final class RoomGen {
                 }
                 used.add(x);
                 sx = x * Room.TS + 8; sy = ground[x] * Room.TS;
-                if (!upCand.isEmpty() && r.chance(0.38f)) { int[] u = upCand.get(r.i(upCand.size())); sx = u[0] * Room.TS + 8; sy = mf * Room.TS; }
+                if (!upCand.isEmpty() && System.getenv("BOT_NOUP") == null && r.chance(0.3f)) { int[] u = upCand.get(r.i(upCand.size())); sx = u[0] * Room.TS + 8; sy = mf * Room.TS; }
                 // los de rango a veces en plataformas
                 if ((d.role == EnemyDef.RANGED || d.role == EnemyDef.CASTER) && !plat.isEmpty() && r.chance(0.5f)) {
                     int[] p = plat.get(r.i(plat.size()));
@@ -351,10 +352,11 @@ public final class RoomGen {
                 rm.props.add(new Room.PropSpec("chest", cx - 40, gy, 0));
                 rm.props.add(new Room.PropSpec("chest", cx + 40, gy, 1));
             }
-            case Room.REST -> {
-                rm.props.add(new Room.PropSpec("fountain", cx - 70, gy, 0));
-                rm.props.add(new Room.PropSpec("forge", cx + 70, gy, 0));
-                rm.props.add(new Room.PropSpec("altar", cx, gy, 1));
+            case Room.REST -> {   // tienda general: fuente, altar, mercader y forja
+                rm.props.add(new Room.PropSpec("fountain", cx - 110, gy, 0));
+                rm.props.add(new Room.PropSpec("altar", cx - 38, gy, 1));
+                rm.props.add(new Room.PropSpec("merchant", cx + 38, gy, 0));
+                rm.props.add(new Room.PropSpec("forge", cx + 110, gy, 0));
             }
             default -> { }
         }

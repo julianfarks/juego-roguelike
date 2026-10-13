@@ -49,7 +49,7 @@ public final class DebugBot {
             String[] w = warp.split(":");
             int b = w.length > 1 ? Integer.parseInt(w[1]) : 0;
             rs.rs.biome = Biome.ALL[b]; rs.rs.stage = Biome.ALL[b].tier;
-            rs.rs.roomNo = w[0].equals("boss") ? 5 : 1;
+            rs.rs.roomNo = w[0].equals("boss") ? 4 : 1;
             int type = w[0].equals("boss") ? Room.BOSS : w[0].equals("shop") ? Room.SHOP : w[0].equals("forge") ? Room.FORGE : w[0].equals("bless") ? Room.BLESSING
                     : w[0].equals("rest") ? Room.REST : w[0].equals("elite") ? Room.ELITE : w[0].equals("hub") ? Room.HUB : w[0].equals("treasure") ? Room.TREASURE : Room.COMBAT;
             rs.rs.gold = 400;
@@ -108,7 +108,7 @@ public final class DebugBot {
             for (Prop pr : lv.props) {
                 if (pr.dead) continue;
                 if (done.contains(pr)) continue;
-                boolean want = pr.kind.equals("door") || pr.kind.equals("merchant") || pr.kind.equals("forge") || pr.kind.equals("fountain") || pr.kind.equals("portal") || (pr.kind.equals("altar") && !pr.used) || (pr.kind.equals("chest") && !pr.used);
+                boolean want = pr.kind.equals("door") || pr.kind.equals("merchant") || pr.kind.equals("forge") || pr.kind.equals("fountain") || pr.kind.equals("portal") || (pr.kind.equals("altar") && !pr.used) || (pr.kind.equals("chest") && !pr.used && pr.arg != 3);
                 if (!want) continue;
                 float d = Math.abs(pr.x - p.x) + (pr.kind.equals("door") ? -50 : 0);
                 if (d < pd) { pd = d; best = pr; }

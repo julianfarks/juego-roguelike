@@ -104,7 +104,7 @@ final class RunScreen extends Screen implements Level.Listener {
             bannerTitle = ""; bannerSub = "";
         } else {
             bannerTitle = rs.biome.name;
-            bannerSub = rs.roomNo == 0 ? rs.biome.tagline : (type == Room.REST ? "Antesala del jefe" : RunState.roomName(type));
+            bannerSub = rs.roomNo == 0 ? rs.biome.tagline : (type == Room.REST ? "Tienda · forja · altar · fuente" : RunState.roomName(type));
         }
         bannerT = type == Room.BOSS ? 0 : 3f;
         // tutorial
@@ -155,8 +155,8 @@ final class RunScreen extends Screen implements Level.Listener {
         int next = rs.roomNo + 1;
         int[] types;
         if (rm.type == Room.BOSS) return;
-        if (next <= 3) types = rs.pickDoorTypes(2);
-        else if (next == 4) types = new int[]{Room.REST};
+        if (next <= 2) types = rs.pickDoorTypes(2);
+        else if (next == 3) types = new int[]{Room.REST};
         else types = new int[]{Room.BOSS};
         int n = types.length;
         for (int i = 0; i < n; i++) {
@@ -283,7 +283,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 int id = p.nextBiome;
                 rs.biome = Biome.ALL[id];
                 rs.visited.add(id);
-                rs.roomNo = id == 8 ? 5 : 0;
+                rs.roomNo = id == 8 ? 4 : 0;
                 rs.blessingTaken = false;
                 if (id == 8) rs.finalRun = true;
                 lv.flash(0xFFFFFF, 0.4f);
@@ -656,7 +656,7 @@ final class RunScreen extends Screen implements Level.Listener {
         }
         // sala
         if (rs.biome != null && lv.room.type != Room.HUB) {
-            String t = rs.biome.name + " · " + Math.min(6, rs.roomNo + 1) + "/6";
+            String t = rs.biome.name + " · " + Math.min(5, rs.roomNo + 1) + "/5";
             if (lv.boss == null) UI.small.center(g, t, w / 2f, 6, 0xFFB8B0B8, 0.9f);
         }
         // jefe
@@ -877,7 +877,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 // info
                 float ix = px + 184;
                 UI.small.draw(g, cls.name, ix, 54, cls.color1, 1f);
-                UI.small.draw(g, rs.biome == null ? "Santuario" : rs.biome.name + " · Sala " + Math.min(6, rs.roomNo + 1), ix, 66, UI.GREY, 1f);
+                UI.small.draw(g, rs.biome == null ? "Santuario" : rs.biome.name + " · Sala " + Math.min(5, rs.roomNo + 1), ix, 66, UI.GREY, 1f);
                 Stats s = rs.stats;
                 UI.small.draw(g, "Daño x" + fmt(s.dmgMul) + "   Crítico " + Math.round(s.critChance * 100) + "%", ix, 82, UI.WHITE, 1f);
                 UI.small.draw(g, "Velocidad x" + fmt(s.speedMul) + "   Defensa " + Math.round((1 - s.dmgTaken) * 100) + "%", ix, 94, UI.WHITE, 1f);
@@ -906,7 +906,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 float px = w / 2f - 150;
                 UI.panel(g, win ? 1 : 2, px, 30, 300, 210, fadeIn);
                 UI.big.center(g, win ? "¡VICTORIA!" : "HAS CAÍDO", w / 2f, 40, win ? UI.GOLD : UI.RED, fadeIn);
-                UI.small.center(g, win ? (rs.finalRun ? "El Cazador ha sido derrotado" : "Has superado las tres mazmorras") : (rs.biome == null ? "En el Santuario" : "Caíste en " + rs.biome.name + " · sala " + Math.min(6, rs.roomNo + 1)), w / 2f, 62, UI.GREY, fadeIn);
+                UI.small.center(g, win ? (rs.finalRun ? "El Cazador ha sido derrotado" : "Has superado las tres mazmorras") : (rs.biome == null ? "En el Santuario" : "Caíste en " + rs.biome.name + " · sala " + Math.min(5, rs.roomNo + 1)), w / 2f, 62, UI.GREY, fadeIn);
                 float y = 84;
                 String[][] rows = {{"Salas superadas", String.valueOf(rs.roomsDone)}, {"Enemigos derrotados", String.valueOf(rs.kills)}, {"Jefes derrotados", String.valueOf(rs.bossKills)},
                         {"Tiempo", time(rs.time)}, {"Dificultad", (rs.diff == 0 ? "Fácil" : rs.diff == 2 ? "Difícil" : "Normal") + (rs.asc == 0 ? "" : " Asc " + rs.asc)}};

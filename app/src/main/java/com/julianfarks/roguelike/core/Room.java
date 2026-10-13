@@ -33,6 +33,7 @@ public final class Room {
     public Platform.Img baked, breakImg, doorImg;
     public int pixW, pixH;
     public List<int[]> secretSpots;
+    public int vaultA = -99;
     public int[] ground;               // fila de superficie por columna (-1 = foso)
 
     public Room(int w, int h, int type, Biome b) {

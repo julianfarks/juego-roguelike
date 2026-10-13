@@ -54,6 +54,7 @@ public final class DebugBot {
             rs.loadRoom(type);
             return;
         }
+        if (System.getenv("BOT_FAST") != null && lv.boss != null && lv.boss.alive && !lv.boss.invuln() && lv.boss.hp > 40 && rs.rs.time > 12f) lv.boss.hp = 40;
         if (godMode) { rs.rs.hp = rs.rs.stats.maxHp; }
         switch (rs.ov) {
             case RunScreen.OV_BLESS:

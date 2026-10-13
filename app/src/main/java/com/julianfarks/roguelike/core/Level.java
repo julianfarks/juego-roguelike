@@ -217,6 +217,7 @@ public final class Level {
         if (s == Sheet.EMPTY) return null;
         FxObj f = new FxObj();
         f.sheet = s; f.anim = s.anim(animName); f.x = x; f.y = y; f.scale = scale; f.tint = tint; f.flags = flags;
+        if (f.anim.loop) { f.loop = true; f.life = 0.8f; }   // seguro: un efecto en bucle sin duracion nunca desaparecia
         fxs.add(f);
         return f;
     }

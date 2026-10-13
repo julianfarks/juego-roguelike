@@ -26,7 +26,7 @@ public final class Blessing {
             new Blessing(ESPINAS, "b_espinas", "Veneno de Espinas", "Tus golpes envenenan: 25% de probabilidad por nivel.", 3, 7),
             new Blessing(PIEDRA, "b_piedra", "Piel de Piedra", "-8% de daño recibido por nivel.", 3, 8),
             new Blessing(FANTASMA, "b_fantasma", "Esquive Fantasma", "Rodar dura más invulnerable y deja una estela que daña.", 2, 5),
-            new Blessing(DOBLE_SALTO, "b_doble_salto", "Doble Salto", "Puedes saltar una vez más en el aire.", 1, 9),
+            new Blessing(DOBLE_SALTO, "b_doble_salto", "Triple Salto", "Ganas un salto extra en el aire (triple salto).", 1, 9),
             new Blessing(CRITICO, "b_critico", "Maestría Crítica", "+8% de prob. crítica y +20% de daño crítico por nivel.", 3, 7),
             new Blessing(ALMA, "b_alma", "Alma Voraz", "+30% de almas por nivel.", 3, 6),
             new Blessing(FORTUNA, "b_fortuna", "Fortuna", "+30% de oro por nivel.", 3, 6),

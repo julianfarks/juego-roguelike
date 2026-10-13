@@ -143,7 +143,7 @@ final class Screens {
             g.rect(w / 2f - 90, 106, 180, 118, 0x55000000, false);
             drawButtons(g);
             if (UI.small != null) {
-                UI.small.center(g, "Creado por JulianFarKs y TKD team", w / 2f, 252, 0xFF9A8890, 1f);
+                UI.small.center(g, "Julian Mateo · Idea de Brayan Steven", w / 2f, 252, 0xFF9A8890, 1f);
                 UI.iconC(g, "soul", w - 54, 14, 1f, 1f);
                 UI.small.right(g, String.valueOf(Save.S.souls), w - 8, 9, UI.SOUL, 1f);
                 UI.iconC(g, "relic", 14, 14, 1f, 1f);
@@ -163,19 +163,20 @@ final class Screens {
         @Override void layout() {
             hits.clear();
             int w = W();
-            float bw = 190, bh = 24, x = w / 2f - bw / 2f, y = 84;
+            float bw = 190, bh = 24, x = w / 2f - bw / 2f, y = 64;
             Save s = Save.S;
             add(x, y, bw, bh, "Música: " + (s.musicOn ? "SÍ" : "NO"), () -> { s.musicOn = !s.musicOn; Snd.applyVolumes(); s.write(); layout(); });
             add(x, y + 30, bw, bh, "Sonidos: " + (s.sfxOn ? "SÍ" : "NO"), () -> { s.sfxOn = !s.sfxOn; Snd.applyVolumes(); s.write(); layout(); });
             add(x, y + 60, bw, bh, "Vibración: " + (s.vibOn ? "SÍ" : "NO"), () -> { s.vibOn = !s.vibOn; s.write(); layout(); });
             if (!fromRun) {
-                add(x, y + 90, bw, bh, confirmT > 0 ? "¿Seguro? Toca otra vez" : "Borrar progreso", () -> {
+                add(x, y + 90, bw, bh, "Organizar controles", () -> game.go(new ControlsEditor(game, false)));
+                add(x, y + 120, bw, bh, confirmT > 0 ? "¿Seguro? Toca otra vez" : "Borrar progreso", () -> {
                     if (confirmT > 0) { Save.S.reset(); Snd.applyVolumes(); confirmT = 0; Snd.sfx("ui_back", 1f); }
                     else confirmT = 3f;
                     layout();
                 });
             }
-            add(x, y + (fromRun ? 90 : 124), bw, bh, "Volver", () -> back());
+            add(x, y + (fromRun ? 90 : 150), bw, bh, "Volver", () -> back());
         }
 
         @Override boolean back() { if (fromRun) return false; game.go(new Title(game)); return true; }
@@ -188,10 +189,10 @@ final class Screens {
         @Override void render(Platform.Gfx g) {
             int w = W();
             bg.render(g, w, 0.45f);
-            UI.panel(g, 0, w / 2f - 120, 30, 240, 214, 0.95f);
-            UI.big.center(g, "OPCIONES", w / 2f, 42, UI.GOLD, 1f);
+            UI.panel(g, 0, w / 2f - 120, 26, 240, 224, 0.95f);
+            UI.big.center(g, "OPCIONES", w / 2f, 34, UI.GOLD, 1f);
             drawButtons(g);
-            UI.small.center(g, "SwordmanMagic: Abismo Eterno v1.0", w / 2f, 232, UI.GREY, 1f);
+            UI.small.center(g, "SwordmanMagic: Abismo Eterno v2.0", w / 2f, 243, UI.GREY, 1f);
         }
     }
 
@@ -202,8 +203,8 @@ final class Screens {
         private float scroll;
         private static final String[] LINES = {
                 "#SWORDMANMAGIC", "#ABISMO ETERNO", "",
-                "Un roguelike de acción en 2D", "inspirado en el mod de Minecraft", "SwordmanMagic", "",
-                "-CREADO POR", "JulianFarKs", "y TKD team", "",
+                "Un roguelike de acción en 2D", "inspirado en SwordmanMagic,", "mod de Minecraft de Julian Mateo", "",
+                "-CREADO POR", "Julian Mateo", "", "-IDEA ORIGINAL", "Brayan Steven", "", "-INSPIRADO EN", "SwordmanMagic,", "un mod de Minecraft", "creado por Julian Mateo", "",
                 "-ARTE", "Pixel art generado a mano,", "personajes, jefes, enemigos y mundos", "",
                 "-MÚSICA Y SONIDO", "Música original sintetizada,", "efectos para cada arma, jefe y habilidad", "",
                 "-CLASES", "Paladín del Alba · Asesino de las Sombras", "Señor de las Llamas · Tempestad", "Guardián Glacial · Guardián Esmeralda",

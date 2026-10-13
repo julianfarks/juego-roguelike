@@ -23,6 +23,10 @@ public final class Save {
     public boolean musicOn = true, sfxOn = true, vibOn = true;
     public boolean tutorialDone = false;
     public int lastClass = 0;
+    public int diffSel = 1;                          // 0 facil, 1 normal, 2 dificil
+    public boolean[] unlocked = new boolean[Unlocks.COUNT];   // desbloqueos por enemigos derrotados
+    public int[] eqSec = {0};                        // (reservado)
+    public float[] ctl = new float[Input.B_COUNT * 3]; // dx, dy, escala por boton (0 = por defecto)
 
     public Save() {
         classUnlocked[0] = true; // paladin
@@ -56,6 +60,11 @@ public final class Save {
                 s.musicOn = Json.bool(d, "music", true); s.sfxOn = Json.bool(d, "sfx", true); s.vibOn = Json.bool(d, "vib", true);
                 s.tutorialDone = Json.bool(d, "tut", false);
                 s.lastClass = Json.i(d, "last", 0);
+                s.diffSel = Math.max(0, Math.min(2, Json.i(d, "diff", 1)));
+                int[] un = Json.ints(d, "unl");
+                if (un != null) for (int i = 0; i < Math.min(Unlocks.COUNT, un.length); i++) s.unlocked[i] = un[i] != 0;
+                int[] cl = Json.ints(d, "ctl");
+                if (cl != null) for (int i = 0; i < Math.min(s.ctl.length, cl.length); i++) s.ctl[i] = cl[i] / 10f;
             }
         } catch (RuntimeException e) {
             p.log("save load error " + e);
@@ -76,7 +85,11 @@ public final class Save {
             d.put("runs", runs); d.put("wins", wins); d.put("kills", kills); d.put("bestRooms", bestRooms); d.put("bossKills", bossKills);
             d.put("cw", classWins);
             d.put("asc", ascension); d.put("ascSel", ascensionSel);
-            d.put("music", musicOn); d.put("sfx", sfxOn); d.put("vib", vibOn); d.put("tut", tutorialDone); d.put("last", lastClass);
+            d.put("music", musicOn); d.put("sfx", sfxOn); d.put("vib", vibOn); d.put("tut", tutorialDone); d.put("last", lastClass); d.put("diff", diffSel);
+            int[] un = new int[Unlocks.COUNT]; for (int i = 0; i < un.length; i++) un[i] = unlocked[i] ? 1 : 0;
+            d.put("unl", un);
+            int[] cl = new int[ctl.length]; for (int i = 0; i < cl.length; i++) cl[i] = Math.round(ctl[i] * 10f);
+            d.put("ctl", cl);
             P.store().put("save", Json.write(d));
             P.store().commit();
         } catch (RuntimeException e) {
@@ -86,7 +99,7 @@ public final class Save {
 
     public void reset() {
         Save n = new Save();
-        n.musicOn = musicOn; n.sfxOn = sfxOn; n.vibOn = vibOn;
+        n.musicOn = musicOn; n.sfxOn = sfxOn; n.vibOn = vibOn; n.ctl = ctl;
         S = n;
         n.write();
     }

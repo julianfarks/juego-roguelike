@@ -5,7 +5,8 @@ final class ClassScreen extends Screen {
     private final Screens.TitleBg bg;
     private int selC, selS;
     private int asc;
-    private Hit playBtn, ascBtn;
+    private Hit playBtn, ascBtn, diffBtn;
+    private int diff;
     private float shake;
 
     ClassScreen(Game g) {
@@ -13,6 +14,7 @@ final class ClassScreen extends Screen {
         bg = new Screens.TitleBg();
         selC = Save.S.classUnlocked[Math.min(9, Save.S.lastClass)] ? Save.S.lastClass : 0;
         asc = Math.min(Save.S.ascensionSel, Save.S.ascension);
+        diff = Save.S.diffSel;
     }
 
     @Override void enter() { Snd.music("mus_sanctuary", true); layout(); }
@@ -33,7 +35,9 @@ final class ClassScreen extends Screen {
             h.plain = true;
         }
         add(6, 240, 70, 24, "Volver", () -> back());
-        ascBtn = add(w / 2f - 62, 240, 124, 24, ascLabel(), () -> { asc = (asc + 1) % (Save.S.ascension + 1); Save.S.ascensionSel = asc; ascBtn.label = ascLabel(); });
+        diffBtn = add(82, 240, 112, 24, diffLabel(), () -> { diff = (diff + 1) % 3; Save.S.diffSel = diff; diffBtn.label = diffLabel(); Save.S.write(); });
+        if (Save.S.ascension > 0) ascBtn = add(198, 240, 92, 24, ascLabel(), () -> { asc = (asc + 1) % (Save.S.ascension + 1); Save.S.ascensionSel = asc; ascBtn.label = ascLabel(); });
+        else ascBtn = null;
         ClassDef c = ClassDef.ALL[selC];
         boolean unlocked = Save.S.classUnlocked[c.id];
         String lab = unlocked ? "¡Jugar!" : "Desbloquear " + Meta.CLASS_COST[c.id];
@@ -41,7 +45,8 @@ final class ClassScreen extends Screen {
         playBtn.disabled = !unlocked && Save.S.souls < Meta.CLASS_COST[c.id];
     }
 
-    private String ascLabel() { return asc == 0 ? "Dificultad: Normal" : "Dificultad: Asc " + asc; }
+    private String ascLabel() { return asc == 0 ? "Ascensión 0" : "Ascensión " + asc; }
+    private String diffLabel() { return diff == 0 ? "Fácil" : (diff == 2 ? "Difícil" : "Normal"); }
 
     private void play() {
         ClassDef c = ClassDef.ALL[selC];
@@ -145,6 +150,11 @@ final class ClassScreen extends Screen {
         UI.small.drawWrapped(g, sk.desc, px + 8, 207, (int) pw - 16, 0xE8E0E0, 1f);
 
         drawButtons(g);
+        UI.small.draw(g, "Dificultad", 84, 231, UI.GREY, 1f);
+        if (diffBtn != null) {
+            int dc = diff == 0 ? 0x6AE08A : (diff == 2 ? 0xFF5A5A : 0xFFD25A);
+            g.rect(diffBtn.x + 4, diffBtn.y + diffBtn.h - 3, diffBtn.w - 8, 2, 0xFF000000 | dc, false);
+        }
         if (!unlocked) UI.small.center(g, "Clase bloqueada", w / 2f, 226, UI.RED, 1f);
     }
 

@@ -53,6 +53,8 @@ public final class Level {
     final List<Runnable> delayed = new ArrayList<>();
     final List<Float> delayT = new ArrayList<>();
     public float bossBarShow;
+    public String unlockTitle, unlockSub;
+    private float moteT;
 
     public Level(Platform p, RunState rs, Room room, Input in) {
         this.P = p; this.rs = rs; this.room = room; this.in = in; this.rng = new Rng(rs.rng.next());
@@ -108,7 +110,7 @@ public final class Level {
 
     // ------------------------------------------------------------------ utilidades de mundo
     public boolean solidAtPx(float px, float py) {
-        return room.tile((int) Math.floor(px / Room.TS), (int) Math.floor(py / Room.TS)) == Room.SOLID;
+        return Room.isSolid(room.tile((int) Math.floor(px / Room.TS), (int) Math.floor(py / Room.TS)));
     }
 
     /** y del suelo (superficie solida) bajo (px,py), buscando hacia abajo. */
@@ -116,7 +118,7 @@ public final class Level {
         int tx = (int) Math.floor(px / Room.TS);
         for (int ty = Math.max(0, (int) Math.floor(py / Room.TS)); ty < room.h; ty++) {
             int t = room.tile(tx, ty);
-            if (t == Room.SOLID || t == Room.ONEWAY) return ty * Room.TS;
+            if (Room.isSolid(t) || t == Room.ONEWAY) return ty * Room.TS;
         }
         return room.pixH;
     }
@@ -133,7 +135,7 @@ public final class Level {
             float edge = e.vx > 0 ? nx + hw : nx - hw;
             int tx = (int) Math.floor(edge / Room.TS);
             boolean hit = false;
-            for (int ty = ty0; ty <= ty1; ty++) if (room.tile(tx, ty) == Room.SOLID) { hit = true; break; }
+            for (int ty = ty0; ty <= ty1; ty++) if (Room.isSolid(room.tile(tx, ty))) { hit = true; break; }
             if (hit) {
                 nx = e.vx > 0 ? tx * Room.TS - hw - 0.01f : (tx + 1) * Room.TS + hw + 0.01f;
                 e.vx = 0;
@@ -154,7 +156,7 @@ public final class Level {
             boolean oneway = false;
             for (int tx = tx0; tx <= tx1; tx++) {
                 int t = room.tile(tx, ty);
-                if (t == Room.SOLID && bottom >= ty * Room.TS) { landY = ty * Room.TS; oneway = false; break; }
+                if (Room.isSolid(t) && bottom >= ty * Room.TS) { landY = ty * Room.TS; oneway = false; break; }
                 if (t == Room.ONEWAY && !e.flying && e.dropT <= 0 && prevBottom <= ty * Room.TS + 1.5f && bottom >= ty * Room.TS) { landY = ty * Room.TS; oneway = true; }
             }
             if (!Float.isNaN(landY) && !e.flying) {
@@ -167,7 +169,7 @@ public final class Level {
             int ty = (int) Math.floor(topY / Room.TS);
             int tx0 = (int) Math.floor((e.x - hw + 1) / Room.TS), tx1 = (int) Math.floor((e.x + hw - 1) / Room.TS);
             for (int tx = tx0; tx <= tx1; tx++) {
-                if (room.tile(tx, ty) == Room.SOLID) { ny = (ty + 1) * Room.TS + e.bh + 0.01f; e.vy = 0; break; }
+                if (Room.isSolid(room.tile(tx, ty))) { ny = (ty + 1) * Room.TS + e.bh + 0.01f; e.vy = 0; break; }
             }
         }
         e.y = ny;
@@ -328,6 +330,7 @@ public final class Level {
     public int explosion(float x, float y, float r, float dmg, float knock, int status, float sDur, float sPow, boolean fromPlayer) {
         int n = 0;
         if (fromPlayer) {
+            breakCircle(x, y, r * 0.8f, 3);
             for (Ent e : enemiesIn(x, y, r)) {
                 float dir = Mth.sign(e.x - x);
                 if (dir == 0) dir = 1;
@@ -350,6 +353,13 @@ public final class Level {
         if (p == null || !p.alive || cinematic) return false;
         if (p.invuln > 0 || p.rolling()) return false;
         Stats s = rs.stats;
+        boolean blocked = false;
+        if (p.guarding && (srcX - p.x) * p.dir() > -6) {
+            if (p.parryT > 0) { parryFx(p, srcX, false); return false; }
+            blocked = true;
+            dmg *= Items.SH_BLK[rs.shield];
+            status = -1;
+        }
         dmg *= s.dmgTaken * (rs.asc > 0 ? 1 + 0.05f * rs.asc : 1f);
         if (p.skinT > 0) dmg *= 0.4f;
         if (p.shield > 0) {
@@ -362,13 +372,21 @@ public final class Level {
         }
         rs.hp -= dmg;
         rs.damageTaken += Math.round(dmg);
-        p.invuln = 0.9f;
+        p.invuln = blocked ? 0.4f : 0.9f;
         p.hitFlash = 0.12f;
         float dir = p.x >= srcX ? 1 : -1;
-        p.vx = dir * 150; p.vy = -170;
-        p.onGround = false;
-        p.hurtT = 0.28f;
-        p.cancelAction();
+        if (blocked) {
+            p.vx = dir * 90;
+            Snd.sfx("hit_metal_1", 0.9f);
+            fx("fx_hit", "spark", p.x + p.dir() * 10, p.y - 16, 1f, 0, 0);
+            ps.burst(rng, p.x + p.dir() * 10, p.y - 16, 0xB8C8E0, 8, 100, 0.3f, 2, 120, true);
+            if (rs.shield == 3) explosion(p.x, p.y - 14, 40, p.baseDmg(this) * 1.2f, 160, Ent.BLEED, 3f, 4f, true);
+        } else {
+            p.vx = dir * 150; p.vy = -170;
+            p.onGround = false;
+            p.hurtT = 0.28f;
+            p.cancelAction();
+        }
         if (status >= 0) p.applyStatus(status, sDur, status == Ent.BURN || status == Ent.POISON || status == Ent.BLEED ? 4f : 0f);
         text(p.x, p.y - p.bh - 8, String.valueOf(Math.round(dmg)), 0xFF5A5A, true);
         Snd.sfx(rng.chance(0.5f) ? "hurt_1" : "hurt_2", 1f);
@@ -432,6 +450,11 @@ public final class Level {
         }
         float dt = rawDt * timeScale;
         time += dt;
+        moteT -= dt;
+        if (moteT <= 0) {
+            moteT = 0.09f;
+            ps.spawn(camX + rng.f(0, viewW), camY + rng.f(0, Platform.VIEW_H), rng.f(-6, 6), -rng.f(4, 18), rng.f(2.2f, 4f), 1, 0, biome.color, true);
+        }
         if (pl.alive || timeScale < 1f) pl.update(this, dt);
         if (!pl.alive && timeScale < 1f) timeScale = Math.min(1f, timeScale + rawDt * 0.0f);
         if (freezeEnemies > 0) freezeEnemies -= dt;
@@ -520,6 +543,7 @@ public final class Level {
                 if (solidAtPx(p.x + Mth.sign(p.vx) * 6, p.y - 4)) { projDie(p, true); continue; }
             } else if (!p.passWalls && solidAtPx(p.x, p.y)) {
                 if (p.special == 2) { p.vy = -Math.abs(p.vy) * 0.6f; p.y -= 3; p.vx *= 0.7f; continue; }
+                if (p.friendly) breakCircle(p.x, p.y, 6, 2);
                 projDie(p, true);
                 continue;
             }
@@ -540,6 +564,12 @@ public final class Level {
                 // romper vasijas
                 for (Prop pr : props) if (pr.kind.equals("pot") && !pr.open && Math.abs(pr.x - p.x) < 12 && Math.abs(pr.y - 8 - p.y) < 14) breakPot(pr);
             } else if (pl.alive && pl.overlaps(p.x - p.radius, p.y - p.radius, p.radius * 2, p.radius * 2)) {
+                if (pl.guarding && pl.parryT > 0 && p.explode <= 0 && (p.x - pl.x) * pl.dir() > -6) {
+                    parryFx(pl, p.x, true);
+                    p.friendly = true; p.vx = -p.vx * 1.5f; p.vy = -p.vy * 0.3f; p.dmg = pl.baseDmg(this) * (2.5f + 0.5f * rs.shield);
+                    p.hit = null; p.life = 2f; p.pierce = Math.max(p.pierce, 1); p.color = 0xFFE070; p.status = -1;
+                    continue;
+                }
                 if (p.explode > 0) { projDie(p, false); }
                 else {
                     if (hurtPlayer(p.dmg, p.x - Mth.sign(p.vx), p.status, p.statusDur)) { }
@@ -639,6 +669,79 @@ public final class Level {
 
     public Runnable relicListener;
 
+    // ------------------------------------------------------------------ muros y suelos rompibles
+    private byte[] breakHp;
+    private float breakCd;
+    public int brokenCount;
+
+    /** Golpea las baldosas rompibles dentro de un rectangulo. Devuelve cuantas se rompieron. */
+    public int breakRect(float rx, float ry, float rw, float rh, int dmg) {
+        int n = 0;
+        if (dmg <= 1) { if (time - breakCd < 0.16f) return 0; breakCd = time; }
+        int tx0 = (int) Math.floor(rx / Room.TS), tx1 = (int) Math.floor((rx + rw) / Room.TS);
+        int ty0 = (int) Math.floor(ry / Room.TS), ty1 = (int) Math.floor((ry + rh) / Room.TS);
+        for (int ty = ty0; ty <= ty1; ty++) for (int tx = tx0; tx <= tx1; tx++) {
+            if (tx < 0 || ty < 0 || tx >= room.w || ty >= room.h) continue;
+            if (room.t[ty * room.w + tx] != Room.BREAK && room.t[ty * room.w + tx] != Room.DOOR) continue;
+            if (breakHp == null) breakHp = new byte[room.w * room.h];
+            int i = ty * room.w + tx;
+            if (breakHp[i] == 0) breakHp[i] = 3;
+            breakHp[i] -= dmg;
+            float cx = tx * Room.TS + 8, cy = ty * Room.TS + 8;
+            if (breakHp[i] <= 0) {
+                room.t[i] = Room.AIR; n++; brokenCount++;
+                ps.burst(rng, cx, cy, 0xB09A70, 14, 110, 0.6f, 3, 420, false);
+                ps.burst(rng, cx, cy, 0x6A5A48, 8, 70, 0.7f, 2, 380, false);
+                fx("fx_dust", "land", cx, cy + 6, 1f, 0, 0);
+            } else {
+                ps.burst(rng, cx, cy, 0xB09A70, 4, 60, 0.3f, 2, 300, false);
+                Snd.sfxv("hit_stone", 0.6f);
+            }
+        }
+        if (n > 0) {
+            Snd.sfxv("break_pot", 0.9f); Snd.sfxv("explosion_small", 0.5f);
+            shake(3f, 0.2f);
+            text(rx + rw / 2, ry - 6, "¡Roto!", 0xFFD25A, false);
+        }
+        return n;
+    }
+
+    public int breakCircle(float cx, float cy, float r, int dmg) { return breakRect(cx - r, cy - r, r * 2, r * 2, dmg); }
+
+    private void drawBreakTiles(Platform.Gfx g) {
+        if (room.breakImg == null) return;
+        int tx0 = Math.max(0, (int) camX / Room.TS), tx1 = Math.min(room.w - 1, (int) (camX + viewW) / Room.TS + 1);
+        int ty0 = Math.max(0, (int) camY / Room.TS), ty1 = Math.min(room.h - 1, (int) (camY + Platform.VIEW_H) / Room.TS + 1);
+        for (int ty = ty0; ty <= ty1; ty++) for (int tx = tx0; tx <= tx1; tx++) {
+            int i = ty * room.w + tx;
+            if (room.t[i] != Room.BREAK && room.t[i] != Room.DOOR) continue;
+            float off = (breakHp != null && breakHp[i] > 0 && breakHp[i] < 3) ? (float) Math.sin(time * 60f) * 0.6f : 0f;
+            g.image(room.t[i] == Room.DOOR ? room.doorImg : room.breakImg, 0, 0, 16, 16, tx * 16 + off, ty * 16, 16, 16, 0, 0, 1f);
+            if (breakHp != null && breakHp[i] > 0 && breakHp[i] < 3) g.rect(tx * 16 + 3, ty * 16 + 3, 10, 1, 0xFF000000, false);
+        }
+    }
+
+    /** Efectos de un parry exitoso. */
+    public void parryFx(Player p, float srcX, boolean proj) {
+        int t = rs.shield;
+        p.parryT = 0; p.invuln = Math.max(p.invuln, 0.5f);
+        float fx = p.x + p.dir() * 12;
+        text(p.x, p.y - p.bh - 14, "¡PARRY!", 0xFFE070, true);
+        Snd.sfx("hit_metal_2", 1f); Snd.sfxv("block", 0.9f);
+        fx("fx_ring", "pulse", fx, p.y - 16, 0.9f, 0xFFE070, Platform.ADD | Platform.TINT);
+        fx("fx_hit", "big", fx, p.y - 16, 1f, 0, 0);
+        ps.burst(rng, fx, p.y - 16, 0xFFE070, 22, 170, 0.5f, 2, 0, true);
+        hitstop(0.16f); shake(3.5f, 0.2f); flash(0xFFE8A0, 0.14f);
+        rs.ult = Math.min(100f, rs.ult + 8f);
+        healPlayer(rs.stats.maxHp * 0.015f);
+        if (Save.S.vibOn) P.vibrate(25);
+        if (!proj) for (Ent e : enemiesIn(p.x + p.dir() * 24, p.y - 14, 56)) {
+            if (e instanceof Enemy) e.applyStatus(Ent.STUN, 1.5f, 0);
+            damageEnemy(e, p.baseDmg(this) * (1.6f + 0.4f * t), false, p.dir() * 220, -60);
+        }
+        if (t == 2) explosion(p.x, p.y - 14, 64, p.baseDmg(this) * 2f, 220, Ent.STUN, 0.8f, 0, true);
+    }
+
     public void breakPot(Prop pr) {
         if (pr.open) return;
         pr.open = true; pr.animT = 0; pr.anim = "break";
@@ -690,6 +793,7 @@ public final class Level {
             int vw = (int) Math.min(room.pixW - vx0, w / z + 3), vh = (int) Math.min(room.pixH - vy0, h / z + 3);
             if (vw > 0 && vh > 0) g.image(room.baked, vx0, vy0, vw, vh, vx0, vy0, vw, vh, 0, 0, 1f);
         }
+        drawBreakTiles(g);
         drawAnimatedDeco(g);
         for (Prop p : props) drawProp(g, p);
         for (FxObj f : fxs) if (f.behind) drawFx(g, f);
@@ -775,6 +879,7 @@ public final class Level {
     }
 
     private void drawProp(Platform.Gfx g, Prop p) {
+        if (p.kind.equals("chest") && p.arg == 3 && !p.used) { UI.light(g, p.x, p.y - 8, 30 + 4 * (float) Math.sin(time * 4), 0xB070FF, 0.40f); if (rng.chance(0.06f)) ps.spawn(p.x + rng.f(-8, 8), p.y - 4, rng.f(-6, 6), -rng.f(15, 35), 0.8f, 2, 0, 0xD8B0FF, true); }
         if (p.sheet == null) return;
         Anim a = p.sheet.anim(p.anim);
         int frame = a.frameAt(p.animT);

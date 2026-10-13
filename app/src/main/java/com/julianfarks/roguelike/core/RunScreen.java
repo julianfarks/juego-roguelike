@@ -237,7 +237,7 @@ final class RunScreen extends Screen implements Level.Listener {
         if (ended) return;
         ended = true;
         Save s = Save.S;
-        int gain = rs.souls;
+        int gain = Math.round(rs.souls * rs.diffSouls());
         if (win) gain += rs.souls / 2 + 60 * rs.bossKills + (rs.finalRun ? 300 : 0);
         sumSouls = gain;
         sumWin = win;
@@ -324,7 +324,11 @@ final class RunScreen extends Screen implements Level.Listener {
         p.used = true; p.anim = "open"; p.animT = 0;
         Snd.sfx("chest_open", 1f);
         lv.ps.burst(lv.rng, p.x, p.y - 10, 0xFFD25A, 16, 110, 0.7f, 2, 100, true);
-        if (p.arg == 0) {
+        if (p.arg == 3) {
+            rs.secretsFound++;
+            Items.openSecretChest(lv, rs, p.x, p.y);
+            p.label = null;
+        } else if (p.arg == 0) {
             lv.dropGold(p.x, p.y - 14, Math.round((45 + 12 * rs.stage + lv.rng.i(30)) * rs.stats.goldMul));
             if (lv.rng.chance(0.5f)) lv.drop(Pickup.POTION, p.x, p.y - 14, 1);
             if (lv.rng.chance(0.4f)) lv.drop(Pickup.HEART, p.x, p.y - 14, 1);
@@ -531,6 +535,7 @@ final class RunScreen extends Screen implements Level.Listener {
         if (lv == null) return;
         ovT += dt;
         if (bannerT > 0) bannerT -= dt;
+        if (lv.unlockTitle != null) { bannerTitle = lv.unlockTitle; bannerSub = lv.unlockSub; bannerT = 3f; lv.unlockTitle = null; }
         if (relicBannerT > 0) relicBannerT -= dt;
         if (hintT > 0) hintT -= dt;
         if (comboFlash > 0) comboFlash -= dt;
@@ -697,7 +702,7 @@ final class RunScreen extends Screen implements Level.Listener {
             case "forge": return "Forjar";
             case "merchant": return "Comerciar";
             case "fountain": return "Beber";
-            case "chest": return "Abrir";
+            case "chest": return p.arg == 3 ? "¡Cofre secreto!" : "Abrir";
             default: return "Usar";
         }
     }
@@ -715,6 +720,8 @@ final class RunScreen extends Screen implements Level.Listener {
 
     private void renderControls(Platform.Gfx g, int w) {
         in.btn[Input.B_INTERACT].visible = in.btn[Input.B_INTERACT].visible && !lv.cinematic;
+        in.btn[Input.B_SEC].visible = rs.sec != 0 && !lv.cinematic;
+        in.btn[Input.B_GREN].visible = rs.gren != 0 && !lv.cinematic;
         // iconos de habilidades
         for (int i = 0; i < 3; i++) in.btn[Input.B_S1 + i].icon = cls.skills[i].icon;
         in.btn[Input.B_ULT].icon = cls.skills[3].icon;
@@ -757,6 +764,25 @@ final class RunScreen extends Screen implements Level.Listener {
                         UI.small.center(g, String.valueOf((int) Math.ceil(cd)), b.cx, b.cy - 4, UI.WHITE, 1f);
                     }
                 }
+                continue;
+            }
+            if (i == Input.B_GUARD) {
+                boolean on = lv.pl.guarding;
+                g.circle(b.cx, b.cy, b.r - 1, Mth.withAlpha(Items.SH_COL[rs.shield], on ? 150 : 60), false);
+                UI.iconC(g, "shield", b.cx, b.cy, 1f, 1f);
+                if (lv.pl.parryT > 0) g.circle(b.cx, b.cy, b.r + 2, 0xFFFFE070, true);
+                else if (lv.pl.parryCd > 0.1f && on) { g.clipBegin(b.cx - b.r, b.cy - b.r, 2 * b.r, 2 * b.r * Mth.clamp(lv.pl.parryCd / 0.7f, 0, 1) + 1); g.circle(b.cx, b.cy, b.r - 1, 0x88000000, false); g.clipEnd(); }
+                continue;
+            }
+            if (i == Input.B_SEC || i == Input.B_GREN) {
+                boolean sec = i == Input.B_SEC;
+                int ty = sec ? rs.sec : rs.gren, n = sec ? rs.secAmmo : rs.grenCount;
+                int col = sec ? Items.SEC_COL[ty] : Items.GR_COL[ty];
+                g.circle(b.cx, b.cy, b.r - 1, Mth.withAlpha(col, 70), false);
+                UI.iconC(g, sec ? Items.SEC_ICON[ty] : Items.GR_ICON[ty], b.cx, b.cy - 1, 1f, n > 0 ? 1f : 0.35f);
+                UI.small.center(g, String.valueOf(n), b.cx, b.cy + b.r - 9, n > 0 ? UI.WHITE : UI.RED, 1f);
+                float cdv = sec ? lv.pl.secCd : lv.pl.grenCd;
+                if (cdv > 0) { g.clipBegin(b.cx - b.r, b.cy - b.r, 2 * b.r, 2 * b.r * Mth.clamp(cdv / 0.5f, 0, 1) + 1); g.circle(b.cx, b.cy, b.r - 1, 0xAA000000, false); g.clipEnd(); }
                 continue;
             }
             if (i == Input.B_POTION) {
@@ -857,18 +883,21 @@ final class RunScreen extends Screen implements Level.Listener {
                 UI.small.draw(g, "Velocidad x" + fmt(s.speedMul) + "   Defensa " + Math.round((1 - s.dmgTaken) * 100) + "%", ix, 94, UI.WHITE, 1f);
                 UI.small.draw(g, "Arma nivel " + rs.weaponLvl + "   Frascos " + rs.potions + "/" + s.potionsMax, ix, 106, UI.WHITE, 1f);
                 UI.small.draw(g, "Enemigos " + rs.kills + "   Tiempo " + time(rs.time), ix, 118, UI.GREY, 1f);
-                UI.small.draw(g, "Bendiciones", ix, 134, UI.GOLD, 1f);
+                UI.small.draw(g, "Especial: " + (rs.special == 0 ? "-" : Items.SP_NAME[rs.special]), ix, 130, rs.special == 0 ? UI.GREY : Items.SP_COL[rs.special], 1f);
+                UI.small.draw(g, "2ª: " + (rs.sec == 0 ? "-" : Items.SEC_NAME[rs.sec] + " x" + rs.secAmmo) + (rs.gren == 0 ? "" : "  Gran: x" + rs.grenCount), ix, 141, UI.WHITE, 1f);
+                UI.small.draw(g, Items.SH_NAME[rs.shield] + " (parry " + Math.round(Items.SH_WIN[rs.shield] * 1000) + "ms)", ix, 152, Items.SH_COL[rs.shield] | 0x404040, 1f);
+                UI.small.draw(g, "Bendiciones", ix, 167, UI.GOLD, 1f);
                 int n = 0;
                 for (Blessing b : Blessing.ALL) {
                     int lv2 = rs.bless[b.id];
                     if (lv2 <= 0) continue;
-                    float bx = ix + (n % 8) * 26, by = 148 + (n / 8) * 24;
+                    float bx = ix + (n % 8) * 26, by = 180 + (n / 8) * 24;
                     UI.panel(g, 0, bx, by, 22, 22, 1f);
                     UI.iconC(g, b.icon, bx + 11, by + 11, 1f, 1f);
                     UI.small.draw(g, String.valueOf(lv2), bx + 15, by + 13, UI.GOLD, 1f);
                     n++;
                 }
-                if (n == 0) UI.small.draw(g, "Aún no tienes ninguna.", ix, 150, UI.GREY, 1f);
+                if (n == 0) UI.small.draw(g, "Aún no tienes ninguna.", ix, 182, UI.GREY, 1f);
                 break;
             }
             case OV_DEAD: case OV_WIN: {
@@ -880,7 +909,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 UI.small.center(g, win ? (rs.finalRun ? "El Cazador ha sido derrotado" : "Has superado las tres mazmorras") : (rs.biome == null ? "En el Santuario" : "Caíste en " + rs.biome.name + " · sala " + Math.min(6, rs.roomNo + 1)), w / 2f, 62, UI.GREY, fadeIn);
                 float y = 84;
                 String[][] rows = {{"Salas superadas", String.valueOf(rs.roomsDone)}, {"Enemigos derrotados", String.valueOf(rs.kills)}, {"Jefes derrotados", String.valueOf(rs.bossKills)},
-                        {"Tiempo", time(rs.time)}, {"Dificultad", rs.asc == 0 ? "Normal" : "Asc " + rs.asc}};
+                        {"Tiempo", time(rs.time)}, {"Dificultad", (rs.diff == 0 ? "Fácil" : rs.diff == 2 ? "Difícil" : "Normal") + (rs.asc == 0 ? "" : " Asc " + rs.asc)}};
                 for (String[] r : rows) {
                     UI.small.draw(g, r[0], px + 24, y, UI.WHITE, fadeIn);
                     UI.small.right(g, r[1], px + 276, y, UI.GOLD, fadeIn);

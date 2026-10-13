@@ -70,6 +70,10 @@ public final class Enemy extends Ent {
         Snd.sfxAt(def.dieSfx, x, lv.camX + lv.viewW / 2, 0.9f);
         lv.toKill--;
         rs.kills++;
+        Unlocks.check(lv);
+        lv.fx("fx_ring", "pulse", x, y - bh / 2f, elite ? 0.8f : 0.45f, def.color, Platform.ADD | Platform.TINT);
+        lv.ps.burst(lv.rng, x, y - bh / 2f, 0xFFFFFF, 8, 140, 0.3f, 2, 0, true);
+        for (int k = 0; k < 4; k++) lv.ps.spawn(x + lv.rng.f(-6, 6), y - bh / 2f, lv.rng.f(-14, 14), -lv.rng.f(40, 95), 1.1f, 2, -25, def.color, true);
         float m = elite ? 3f : 1f;
         lv.dropGold(x, y - 10, Math.round((3 + lv.rng.i(5)) * m * s.goldMul));
         lv.dropSouls(x, y - 10, Math.max(1, Math.round(def.souls * m * s.soulMul * 0.5f)) * 2);
@@ -147,7 +151,7 @@ public final class Enemy extends Ent {
     private boolean groundAhead(Level lv, float dir) {
         float fx = x + dir * (bw / 2 + 5);
         int t = lv.room.tile((int) Math.floor(fx / Room.TS), (int) Math.floor((y + 4) / Room.TS));
-        return t == Room.SOLID || t == Room.ONEWAY;
+        return Room.isSolid(t) || t == Room.ONEWAY;
     }
 
     private void face(float dx) { if (Math.abs(dx) > 3) right = dx > 0; }
@@ -469,6 +473,7 @@ public final class Enemy extends Ent {
     }
 
     // ------------------------------------------------------------------ dibujo
+    private float hpShow = -1;
     public void render(Platform.Gfx g, Level lv) {
         if (spawnT < 0) return;
         Anim a = sheet.anim(animName);
@@ -487,11 +492,15 @@ public final class Enemy extends Ent {
         sheet.draw(g, a, frame, x, y + dy, right, scale, flags, tint, alpha);
         if (alive) {
             if (state == WINDUP && UI.big != null) UI.big.center(g, "!", x, y - bh - 16, 0xFF4040, 1f);
-            if (hp < maxHp && UI.hpFill != null || elite) {
-                float w = Math.max(16, bw * 1.3f);
-                float bx = Math.round(x - w / 2), by = Math.round(y - bh - 7);
-                g.rect(bx - 1, by - 1, w + 2, 4, 0xCC000000, false);
-                g.rect(bx, by, w * Mth.clamp(hp / maxHp, 0, 1), 2, elite ? 0xFFFFC040 : 0xFFE04848, false);
+            {
+                if (hpShow < 0) hpShow = maxHp;
+                hpShow += (hp - hpShow) * 0.1f;
+                float w = Math.max(18, bw * 1.5f);
+                float bx = Math.round(x - w / 2), by = Math.round(y - bh - 8);
+                g.rect(bx - 1, by - 1, w + 2, 5, 0xDD000000, false);
+                g.rect(bx, by, w * Mth.clamp(hpShow / maxHp, 0, 1), 3, 0xFFF0E8E0, false);
+                g.rect(bx, by, w * Mth.clamp(hp / maxHp, 0, 1), 3, elite ? 0xFFFFC040 : (hp / maxHp < 0.3f ? 0xFFFF4040 : 0xFFE04848), false);
+                g.rect(bx, by, w * Mth.clamp(hp / maxHp, 0, 1), 1, 0x55FFFFFF, false);
             }
         }
     }

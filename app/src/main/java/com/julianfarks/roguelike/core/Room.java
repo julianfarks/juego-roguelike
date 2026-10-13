@@ -6,7 +6,8 @@ import java.util.List;
 /** Mapa de baldosas de una sala + datos de aparicion + imagen precalculada. */
 public final class Room {
     public static final int TS = 16;
-    public static final int AIR = 0, SOLID = 1, ONEWAY = 2, SPIKE = 3, SPIKE_DOWN = 4;
+    public static final int AIR = 0, SOLID = 1, ONEWAY = 2, SPIKE = 3, SPIKE_DOWN = 4, BREAK = 5, DOOR = 6;
+    public static boolean isSolid(int t) { return t == SOLID || t == BREAK || t == DOOR; }
     // tipos de sala
     public static final int START = 0, COMBAT = 1, ELITE = 2, BLESSING = 3, FORGE = 4, SHOP = 5, FOUNTAIN = 6, TREASURE = 7, BOSS = 8, REST = 9, HUB = 10;
 
@@ -29,8 +30,9 @@ public final class Room {
     public final List<Spawn> spawns = new ArrayList<>();
     public final List<PropSpec> props = new ArrayList<>();
     public final List<float[]> doorXs = new ArrayList<>(); // {x} de puertas de salida (centro)
-    public Platform.Img baked;
+    public Platform.Img baked, breakImg, doorImg;
     public int pixW, pixH;
+    public List<int[]> secretSpots;
     public int[] ground;               // fila de superficie por columna (-1 = foso)
 
     public Room(int w, int h, int type, Biome b) {
@@ -49,7 +51,7 @@ public final class Room {
 
     public void set(int x, int y, int v) { if (x >= 0 && y >= 0 && x < w && y < h) t[y * w + x] = (byte) v; }
 
-    public boolean solid(int x, int y) { return tile(x, y) == SOLID; }
+    public boolean solid(int x, int y) { return isSolid(tile(x, y)); }
 
     public boolean hazardAt(float px, float py) {
         int tx = (int) Math.floor(px / TS), ty = (int) Math.floor(py / TS);
@@ -134,6 +136,22 @@ public final class Room {
                 if ((d >> 8) == 4) blit(out, ts, (d & 15) * TS, 5 * TS, x * TS, y * TS);
             }
         baked = p.createImage(pixW, pixH, out);
+        // baldosa rompible: piedra con grietas
+        int[] bt = new int[TS * TS];
+        for (int j = 0; j < TS; j++) for (int i = 0; i < TS; i++) bt[j * TS + i] = ts[(1 * TS + j) * 256 + 15 * TS + i];
+        int[] crack = {0x37, 0x47, 0x57, 0x66, 0x76, 0x86, 0x95, 0xA5, 0xB5, 0xC4, 0x5A, 0x6B, 0x7B, 0x8C, 0x9C, 0x3C, 0x2D, 0xCD, 0xDE};
+        for (int c : crack) { int cx = c >> 4, cy = c & 15; bt[cy * TS + cx] = 0xFF0A0810; if (cx + 1 < TS) bt[cy * TS + cx + 1] = 0xFF1C1624; }
+        for (int i = 0; i < TS; i++) { bt[i] = 0xFFC8A25A; bt[(TS - 1) * TS + i] = 0xFF6A5230; bt[i * TS] = 0xFFB08A48; bt[i * TS + TS - 1] = 0xFF6A5230; }
+        breakImg = p.createImage(TS, TS, bt);
+        int[] dt = new int[TS * TS];
+        for (int j = 0; j < TS; j++) for (int i = 0; i < TS; i++) {
+            int base = (i % 5 == 4) ? 0xFF2A180C : (((i / 5) + (j / 8)) % 2 == 0 ? 0xFF6A4224 : 0xFF7A4E2C);
+            if (j < 2 || j >= TS - 2) base = 0xFF3A2410;
+            dt[j * TS + i] = base;
+        }
+        for (int j = 3; j < TS; j += 8) for (int i = 0; i < TS; i++) dt[j * TS + i] = 0xFF9A9AA8;   // flejes de hierro
+        dt[5 * TS + 8] = 0xFFFFD25A; dt[5 * TS + 9] = 0xFFFFD25A;
+        doorImg = p.createImage(TS, TS, dt);
     }
 
     private boolean solidN(int x, int y) {

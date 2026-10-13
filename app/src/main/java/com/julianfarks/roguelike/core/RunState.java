@@ -23,6 +23,9 @@ public final class RunState {
     public boolean reviveUsed;
     public float time;
     public int asc;
+    public int diff = 1;                // 0 facil, 1 normal, 2 dificil
+    public int sec, secAmmo, gren, grenCount, special, shield;   // objetos de cofres
+    public int secretsFound;
     public boolean blessingTaken;
     public int damageTaken;
     public final boolean[] relicsThisRun = new boolean[8];
@@ -32,6 +35,9 @@ public final class RunState {
         this.cls = cls;
         this.rng = new Rng(seed);
         this.asc = asc;
+        this.diff = Save.S.diffSel;
+        stats.recalc(this);
+        Unlocks.applyStart(this);
         stats.recalc(this);
         hp = stats.maxHp;
         potions = stats.potionsMax;
@@ -45,8 +51,11 @@ public final class RunState {
     }
 
     public int power() { return stage * 6 + roomNo + asc * 3; }
-    public float enemyHpMul() { return 1f + 0.16f * power() + 0.10f * asc; }
-    public float enemyDmgMul() { return 1f + 0.06f * power() + 0.06f * asc; }
+    public float diffHp() { return diff == 0 ? 0.72f : (diff == 2 ? 1.35f : 1f); }
+    public float diffDmg() { return diff == 0 ? 0.6f : (diff == 2 ? 1.4f : 1f); }
+    public float diffSouls() { return diff == 0 ? 0.7f : (diff == 2 ? 1.4f : 1f); }
+    public float enemyHpMul() { return (1f + 0.16f * power() + 0.10f * asc) * diffHp(); }
+    public float enemyDmgMul() { return (1f + 0.06f * power() + 0.06f * asc) * diffDmg(); }
 
     /** Pesos de tipos de sala para las puertas. */
     public int[] pickDoorTypes(int count) {

@@ -5,7 +5,8 @@ public final class DebugBot {
     private final boolean[] held = new boolean[256];
     private int lastClassFrame = -999, lastAct;
     private int stuck, jumpUntil;
-    private boolean warped;
+    private boolean warped, pitDone, tpDone;
+    private int warpFrame;
     private final java.util.HashSet<Object> done = new java.util.HashSet<>();
     private float lastX;
     public static int classId = System.getenv("BOT_CLASS") != null ? Integer.parseInt(System.getenv("BOT_CLASS")) : 0;
@@ -43,7 +44,7 @@ public final class DebugBot {
         Player p = lv.pl;
         String warp = System.getenv("BOT_WARP");
         if (warp != null && !warped && rs.fadeA < 0.05f && frame > 150) {
-            warped = true;
+            warped = true; warpFrame = frame;
             String[] w = warp.split(":");
             int b = w.length > 1 ? Integer.parseInt(w[1]) : 0;
             rs.rs.biome = Biome.ALL[b]; rs.rs.stage = Biome.ALL[b].tier;
@@ -54,6 +55,30 @@ public final class DebugBot {
             rs.loadRoom(type);
             return;
         }
+        if (System.getenv("BOT_PIT") != null && !pitDone && frame > 200) {
+            outer:
+            for (int ty = 0; ty < lv.room.h; ty++) for (int tx = 0; tx < lv.room.w; tx++)
+                if (lv.room.tile(tx, ty) == Room.SPIKE && lv.room.tile(tx, ty + 1) == Room.SOLID) {
+                    pitDone = true; p.x = tx * 16 + 8; p.y = (ty + 1) * 16; p.vx = p.vy = 0;
+                    System.out.println("PIT placed at " + tx + "," + ty);
+                    break outer;
+                }
+            if (!pitDone && frame > 400) pitDone = true;
+        }
+        if (System.getenv("BOT_TP") != null && !tpDone && frame > 200 && (warp == null || (warped && frame > warpFrame + 90))) {
+            tpDone = true;
+            String[] q = System.getenv("BOT_TP").split(",");
+            if (q[0].equals("secret")) { int[] sp = lv.room.secretSpots.get(Integer.parseInt(q[1])); p.x = sp[0] + (q.length > 2 ? Integer.parseInt(q[2]) : 0); p.y = sp[1]; }
+            else { p.x = Float.parseFloat(q[0]) * 16 + 8; p.y = Float.parseFloat(q[1]) * 16; }
+            p.vx = p.vy = 0; p.safeX = p.x; p.safeY = p.y;
+            lv.snapCamera();
+        }
+        if (System.getenv("BOT_ITEMS") != null) {
+            if (frame % 500 == 210) { int k = (frame / 500) % 4; rs.rs.sec = 1 + k; rs.rs.secAmmo = 9; rs.rs.gren = 1 + k; rs.rs.grenCount = 9; rs.rs.shield = k; rs.rs.special = 1 + k; rs.rs.recalc(); }
+            if (frame % 45 == 0) tap(g, 'L');
+            if (frame % 70 == 0) tap(g, 'G');
+        }
+        if (System.getenv("BOT_FREEZE") != null) { if (godMode) rs.rs.hp = rs.rs.stats.maxHp; return; }
         if (System.getenv("BOT_FAST") != null && lv.boss != null && lv.boss.alive && !lv.boss.invuln() && lv.boss.hp > 40 && rs.rs.time > 12f) lv.boss.hp = 40;
         if (godMode) { rs.rs.hp = rs.rs.stats.maxHp; }
         switch (rs.ov) {

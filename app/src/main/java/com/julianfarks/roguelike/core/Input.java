@@ -6,7 +6,7 @@ import java.util.Map;
 /** Controles tactiles y de teclado -> acciones logicas. */
 public final class Input {
     public static final int B_LEFT = 0, B_RIGHT = 1, B_DOWN = 2, B_JUMP = 3, B_ATTACK = 4, B_ROLL = 5, B_S1 = 6, B_S2 = 7, B_S3 = 8, B_ULT = 9,
-            B_INTERACT = 10, B_PAUSE = 11, B_POTION = 12, B_COUNT = 13;
+            B_INTERACT = 10, B_PAUSE = 11, B_POTION = 12, B_SEC = 13, B_GREN = 14, B_GUARD = 15, B_COUNT = 16;
 
     public static final class Btn {
         public float cx, cy, r;
@@ -43,9 +43,46 @@ public final class Input {
         set(B_INTERACT, W - 168, 218, 18, "key", false);
         set(B_PAUSE, W - 18, 16, 12, "pause", false);
         set(B_POTION, 30, 62, 12, "potion", false);
+        set(B_SEC, W - 196, 186, 15, "", false);
+        set(B_GREN, W - 178, 148, 15, "", false);
+        set(B_GUARD, W - 150, 250, 16, "shield", true);
         btn[B_INTERACT].visible = false;
         btn[B_LEFT].visible = btn[B_RIGHT].visible = btn[B_DOWN].visible = true;
+        applyCustom();
     }
+
+    /** Nombres para el editor de controles. */
+    public static final String[] NAMES = {"Izquierda", "Derecha", "Abajo", "Saltar", "Atacar", "Rodar", "Habilidad 1", "Habilidad 2", "Habilidad 3", "Definitiva", "Interactuar", "Pausa", "Poción", "Arma 2ª", "Granada", "Escudo / Parry"};
+
+    private final float[] baseCx = new float[B_COUNT], baseCy = new float[B_COUNT], baseR = new float[B_COUNT];
+
+    private void applyCustom() {
+        float[] c = Save.S.ctl;
+        for (int i = 0; i < B_COUNT; i++) {
+            Btn b = btn[i];
+            baseCx[i] = b.cx; baseCy[i] = b.cy; baseR[i] = b.r;
+            float sc = c[i * 3 + 2] == 0 ? 1f : c[i * 3 + 2];
+            b.cx = Mth.clamp(b.cx + c[i * 3], 8, viewW - 8);
+            b.cy = Mth.clamp(b.cy + c[i * 3 + 1], 8, 262);
+            b.r = baseR[i] * sc;
+        }
+    }
+
+    /** Mueve un boton a una posicion absoluta (editor). */
+    public void moveTo(int i, float x, float y) {
+        float[] c = Save.S.ctl;
+        x = Mth.clamp(x, 8, viewW - 8); y = Mth.clamp(y, 8, 262);
+        c[i * 3] = x - baseCx[i]; c[i * 3 + 1] = y - baseCy[i];
+        btn[i].cx = x; btn[i].cy = y;
+    }
+
+    public void scaleBtn(int i, float sc) {
+        sc = Mth.clamp(sc, 0.6f, 1.8f);
+        Save.S.ctl[i * 3 + 2] = Math.abs(sc - 1f) < 0.04f ? 0f : sc;
+        btn[i].r = baseR[i] * sc;
+    }
+
+    public void resetCustom() { java.util.Arrays.fill(Save.S.ctl, 0f); layout(viewW); }
 
     private void set(int i, float cx, float cy, float r, String icon, boolean hold) {
         Btn b = btn[i];
@@ -117,6 +154,9 @@ public final class Input {
             case 'P': case '4': b = B_ULT; break;
             case 'E': case 10: b = B_INTERACT; break;
             case 'Q': b = B_POTION; break;
+            case 'L': b = B_SEC; break;
+            case 'G': b = B_GREN; break;
+            case 'C': case 'V': b = B_GUARD; break;
             case 27: b = B_PAUSE; break;
             default: break;
         }

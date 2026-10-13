@@ -57,6 +57,18 @@ public final class Sheet {
                 right ? flags : (flags | Platform.FLIP_X), tint, alpha);
     }
 
+    /** Dibuja con escala no uniforme anclada a los pies (squash & stretch). */
+    public void drawSq(Platform.Gfx g, Anim a, int frame, float x, float y, boolean right, float sx, float sy, int flags, int tint, float alpha) {
+        if (img == null) return;
+        int row = a == Anim.NONE ? 0 : a.row;
+        int f = Math.max(0, Math.min(frame, a.n - 1));
+        float dw = cw * sx, dh = ch * sy;
+        float dx = right ? x - px * sx : x - (cw - px) * sx;
+        float dy = y - py * sy;
+        g.image(img, f * cw, row * ch, cw, ch, Math.round(dx), Math.round(dy), Math.round(dw), Math.round(dh),
+                right ? flags : (flags | Platform.FLIP_X), tint, alpha);
+    }
+
     /** Dibuja animacion en el tiempo t. */
     public void drawAt(Platform.Gfx g, String anim, float t, float x, float y, boolean right, float scale, int flags, int tint, float alpha) {
         Anim a = anim(anim);

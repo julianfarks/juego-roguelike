@@ -27,7 +27,7 @@ public final class Stats {
         freeze = 0.20f * b[Blessing.GLACIAL] + (c.id == 4 ? 0.35f : 0);
         shock = 0.15f * b[Blessing.CHISPA] + (c.id == 3 ? 0.15f : 0);
         poison = 0.25f * b[Blessing.ESPINAS] + (c.id == 5 ? 0.35f : 0);
-        extraJumps = b[Blessing.DOBLE_SALTO] > 0 ? 1 : 0;
+        extraJumps = 1 + (b[Blessing.DOBLE_SALTO] > 0 ? 1 : 0);
         exec = 0.4f * b[Blessing.EJECUTOR];
         vengeance = b[Blessing.VENGANZA];
         wave = b[Blessing.ONDA];
@@ -45,5 +45,7 @@ public final class Stats {
         if (b[Blessing.SEGUNDA] > 0) { revive = 1; revivePct = 0.35f; }
         else if (s.meta[7] > 0) { revive = 1; revivePct = s.meta[7] == 1 ? 0.25f : 0.5f; }
         atkSpd = 1f;
+        Items.applySpecial(rs, this);
+        Unlocks.applyStats(rs, this);
     }
 }

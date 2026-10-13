@@ -12,10 +12,17 @@ public final class RoomGen {
         boolean calm = type == Room.START || type == Room.BLESSING || type == Room.FORGE || type == Room.SHOP || type == Room.FOUNTAIN
                 || type == Room.TREASURE || type == Room.REST || type == Room.HUB;
         boolean boss = type == Room.BOSS;
-        int W = boss ? 48 : (calm ? r.range(38, 44) : r.range(64, 96));
-        int H = boss ? 22 : 20;
+        boolean big = !calm && !boss;
+        int W = boss ? 48 : (calm ? r.range(38, 44) : r.range(72, 104));
+        int H = boss ? 22 : (big ? 30 : 20);
         Room rm = new Room(W, H, type, b);
-        int fy = H - 4;
+        int fy = big ? 22 : H - 4;
+        int pitRow = big ? fy + 3 : H - 1;
+        int mf = fy - 10;                       // fila de la losa del piso superior
+        boolean[] slab = new boolean[W];
+        List<int[]> upCand = new ArrayList<>();
+        List<int[]> secrets = new ArrayList<>();
+        rm.secretSpots = secrets;
         int[] ground = new int[W];
         int[] ceil = new int[W];
         boolean[] blocked = new boolean[W];
@@ -34,6 +41,8 @@ public final class RoomGen {
             platforms.add(new int[]{W - px - 6, W - px - 1, fy - 4});
         }
 
+        if (big) buildUpper(rm, W, fy, mf, ground, ceil, blocked, slab, platforms, r);
+
         // ----- rellenar baldosas -----
         for (int x = 0; x < W; x++) {
             for (int y = 0; y < H; y++) {
@@ -41,9 +50,10 @@ public final class RoomGen {
                 if (x < 2 || x >= W - 2) solid = true;
                 else if (y < ceil[x]) solid = true;
                 else if (ground[x] >= 0) solid = y >= ground[x];
-                else solid = y == H - 1;
+                else solid = y >= pitRow;
+                if (big && slab[x] && (y == mf || y == mf + 1)) solid = true;
                 if (solid) rm.set(x, y, Room.SOLID);
-                else if (ground[x] < 0 && y == H - 2) rm.set(x, y, Room.SPIKE);
+                else if (ground[x] < 0 && y == pitRow - 1) rm.set(x, y, Room.SPIKE);
             }
         }
         for (int[] p : platforms) for (int x = p[0]; x <= p[1]; x++) if (rm.tile(x, p[2]) == Room.AIR) rm.set(x, p[2], Room.ONEWAY);
@@ -57,6 +67,24 @@ public final class RoomGen {
             if (ceil[x] > 2 && r.chance(0.12f)) rm.set(x, ceil[x], Room.SPIKE_DOWN);
         }
         rm.ground = ground;
+        if (big) {
+            buildSecrets(rm, W, fy, mf, ground, blocked, slab, r, stage);
+            // pinchos en el piso superior
+            for (int k = 0; k < r.range(1, 3); k++) {
+                int x = r.range(16, W - 20), n = r.range(2, 3);
+                boolean ok = true;
+                for (int i = -3; i < n + 3; i++) if (x + i < 0 || x + i >= W || !slab[x + i] || rm.tile(x + i, mf - 1) != Room.AIR || rm.tile(x + i, mf - 5) == Room.SOLID) ok = false;
+                if (ok) for (int i = 0; i < n; i++) rm.set(x + i, mf - 1, Room.SPIKE);
+            }
+            // cofre oculto en una plataforma alta del piso superior
+            for (int[] pf : platforms) if (pf[2] == mf - 4 && r.chance(0.45f)) { secrets.add(new int[]{(pf[0] + pf[1]) / 2 * Room.TS + 8, pf[2] * Room.TS}); break; }
+            // candidatos para enemigos del piso superior
+            for (int x = 14; x < W - 14; x++) {
+                boolean ok = true;
+                for (int i = -1; i <= 1; i++) if (!slab[x + i] || rm.tile(x + i, mf - 1) != Room.AIR || rm.tile(x + i, mf - 2) != Room.AIR || rm.tile(x + i, mf - 3) != Room.AIR) ok = false;
+                if (ok) upCand.add(new int[]{x});
+            }
+        }
 
         // ----- decoracion -----
         // vistas al parallax
@@ -106,13 +134,91 @@ public final class RoomGen {
         // la zona de entrada y de salida no tienen decoracion de suelo estorbosa
         for (int x = 2; x < 9; x++) rm.deco[(fy - 1) * W + x] = 0;
 
-        if (type == Room.COMBAT || type == Room.ELITE) spawnEnemies(rm, ground, blocked, platforms, r, stage, roomNo, type == Room.ELITE);
+        if (type == Room.COMBAT || type == Room.ELITE) spawnEnemies(rm, ground, blocked, platforms, r, stage, roomNo, type == Room.ELITE, upCand, mf);
         if (boss) {
             rm.spawnX = 5 * Room.TS;
             rm.exitX = (W - 5) * Room.TS;
         }
         placeProps(rm, type, fy, r);
+        if (big) for (int[] sc : secrets) rm.props.add(new Room.PropSpec("chest", sc[0], sc[1], 3));
         return rm;
+    }
+
+    /** Piso superior: losa con huecos-escalera (pozos con plataformas) y plataformas altas. */
+    private static void buildUpper(Room rm, int W, int fy, int mf, int[] ground, int[] ceil, boolean[] blocked, boolean[] slab, List<int[]> plat, Rng r) {
+        for (int x = 10; x < W - 10; x++) slab[x] = true;
+        List<Integer> shafts = new ArrayList<>();
+        int want = W >= 90 ? 3 : 2;
+        int[] starts = {r.range(12, 16), (W / 2) + r.range(-8, 8), W - r.range(18, 22)};
+        for (int k = 0; k < want; k++) {
+            int sx = starts[k == 0 ? 0 : (k == 1 && want == 3 ? 1 : 2)];
+            int found = -1;
+            for (int d = 0; d < 14 && found < 0; d++) for (int sg = -1; sg <= 1 && found < 0; sg += 2) {
+                int x = sx + d * sg;
+                if (x < 11 || x + 3 >= W - 11) continue;
+                boolean ok = true;
+                for (int i = -2; i <= 5; i++) { int xx = x + i; if (xx < 2 || xx >= W - 2 || ground[xx] < 0 || blocked[xx] || ceil[xx] > 2) ok = false; }
+                for (int sh : shafts) if (Math.abs(sh - x) < 12) ok = false;
+                if (ok) found = x;
+            }
+            if (found >= 0) shafts.add(found);
+        }
+        if (shafts.isEmpty()) {   // ultimo recurso: pozo en la zona de entrada
+            shafts.add(11);
+        }
+        for (int sx : shafts) {
+            int gmin = 99;
+            for (int i = 0; i < 4; i++) gmin = Math.min(gmin, ground[sx + i] >= 0 ? ground[sx + i] : fy);
+            for (int i = 0; i < 4; i++) slab[sx + i] = false;
+            int k = 0;
+            for (int row = gmin - 3; row > mf; row -= 3, k++) {
+                int px = sx + (k % 2 == 0 ? 0 : 1);
+                plat.add(new int[]{px, px + 2, row});
+            }
+        }
+        // plataformas elevadas del piso superior
+        int np = r.range(2, 4);
+        for (int k = 0; k < np; k++) {
+            int x = r.range(18, W - 24), len = r.range(4, 6);
+            boolean ok = true;
+            for (int i = -2; i < len + 2; i++) if (!slab[x + i]) ok = false;
+            if (ok) plat.add(new int[]{x, x + len - 1, mf - 4});
+        }
+    }
+
+    /** Camara oculta bajo el suelo (suelo agrietado) y camara tras un muro agrietado en el piso superior. */
+    private static void buildSecrets(Room rm, int W, int fy, int mf, int[] ground, boolean[] blocked, boolean[] slab, Rng r, int stage) {
+        // ---- A) camara bajo el suelo
+        for (int tries = 0; tries < 40; tries++) {
+            int x0 = r.range(16, W - 22);
+            boolean ok = true;
+            for (int i = -6; i <= 7 && ok; i++) { int xx = x0 + i; if (ground[xx] != fy || blocked[xx] || rm.tile(xx, fy - 1) != Room.AIR) ok = false; }
+            if (!ok) continue;
+            for (int x = x0 - 3; x <= x0 + 4; x++) for (int y = fy + 2; y <= fy + 5; y++) rm.set(x, y, Room.AIR);
+            for (int x = x0 - 4; x <= x0 + 5; x++) rm.set(x, fy + 6, Room.SOLID);
+            rm.set(x0, fy, Room.BREAK); rm.set(x0 + 1, fy, Room.BREAK);
+            rm.set(x0, fy + 1, Room.BREAK); rm.set(x0 + 1, fy + 1, Room.BREAK);
+            for (int x = x0 + 2; x <= x0 + 4; x++) rm.set(x, fy + 4, Room.ONEWAY);
+            rm.secretSpots.add(new int[]{(x0 - 1) * Room.TS + 8, (fy + 6) * Room.TS});
+            for (int x = x0 - 3; x <= x0 + 4; x++) for (int y = fy + 2; y <= fy + 5; y++) rm.vista[y * W + x] = false;
+            break;
+        }
+        // ---- B) camara de piedra con muro agrietado sobre el piso superior
+        for (int tries = 0; tries < 40; tries++) {
+            int a = r.range(16, W - 28);
+            boolean ok = true;
+            for (int i = -3; i <= 11 && ok; i++) { int xx = a + i; if (xx < 0 || xx >= W || !slab[xx] || rm.tile(xx, mf - 1) != Room.AIR) ok = false; }
+            if (!ok) continue;
+            boolean left = r.chance(0.5f);
+            for (int x = a; x <= a + 8; x++) for (int y = mf - 5; y <= mf - 1; y++) rm.set(x, y, Room.SOLID);
+            for (int x = a + 1; x <= a + 7; x++) for (int y = mf - 3; y <= mf - 1; y++) rm.set(x, y, Room.AIR);
+            int bx = left ? a : a + 8;
+            rm.set(bx, mf - 3, Room.SOLID);
+            for (int y = mf - 2; y <= mf - 1; y++) rm.set(bx, y, Room.DOOR);
+            rm.secretSpots.add(new int[]{(a + 4) * Room.TS + 8, mf * Room.TS});
+            for (int x = a; x <= a + 8; x++) for (int y = mf - 5; y <= mf - 1; y++) rm.vista[y * W + x] = false;
+            break;
+        }
     }
 
     private static void layout(int W, int fy, int[] ground, int[] ceil, boolean[] blocked, List<int[]> plat, Rng r, Room rm) {
@@ -161,7 +267,7 @@ public final class RoomGen {
             } else if (pick < 79) { // techo bajo
                 len = Math.min(r.range(8, 11), W - 14 - x);
                 set(ground, x, len, cur);
-                for (int k = 0; k < len; k++) ceil[x + k] = Math.max(2, cur - 5);
+                if (rm.h < 24) for (int k = 0; k < len; k++) ceil[x + k] = Math.max(2, cur - 5);
             } else if (pick < 90) { // meseta elevada
                 len = Math.min(r.range(10, 14), W - 14 - x);
                 int up = Mth.clamp(cur - 2, fy - 4, fy);
@@ -191,7 +297,7 @@ public final class RoomGen {
         for (int k = 0; k < len && x + k < g.length; k++) g[x + k] = v;
     }
 
-    private static void spawnEnemies(Room rm, int[] ground, boolean[] blocked, List<int[]> plat, Rng r, int stage, int roomNo, boolean elite) {
+    private static void spawnEnemies(Room rm, int[] ground, boolean[] blocked, List<int[]> plat, Rng r, int stage, int roomNo, boolean elite, List<int[]> upCand, int mf) {
         int W = rm.w;
         int count = 3 + stage + (roomNo >= 2 ? 1 : 0) + r.i(2);
         if (elite) count = 2 + stage;
@@ -210,7 +316,7 @@ public final class RoomGen {
             boolean flyer = d.role == EnemyDef.FLY_SHOOT || d.role == EnemyDef.FLY_DIVE;
             if (flyer) {
                 int x = r.range(16, W - 16);
-                int gy = ground[x] >= 0 ? ground[x] : rm.h - 4;
+                int gy = ground[x] >= 0 ? ground[x] : (rm.h > 24 ? 22 : rm.h - 4);
                 sx = x * Room.TS; sy = (gy - r.range(4, 7)) * Room.TS;
             } else {
                 if (cand.isEmpty()) continue;
@@ -223,6 +329,7 @@ public final class RoomGen {
                 }
                 used.add(x);
                 sx = x * Room.TS + 8; sy = ground[x] * Room.TS;
+                if (!upCand.isEmpty() && r.chance(0.38f)) { int[] u = upCand.get(r.i(upCand.size())); sx = u[0] * Room.TS + 8; sy = mf * Room.TS; }
                 // los de rango a veces en plataformas
                 if ((d.role == EnemyDef.RANGED || d.role == EnemyDef.CASTER) && !plat.isEmpty() && r.chance(0.5f)) {
                     int[] p = plat.get(r.i(plat.size()));

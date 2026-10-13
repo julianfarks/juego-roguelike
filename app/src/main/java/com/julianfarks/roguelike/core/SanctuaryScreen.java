@@ -17,7 +17,8 @@ final class SanctuaryScreen extends Screen {
         add(6, 4, 54, 18, "Atrás", () -> back());
         Hit a = add(6, 26, 80, 20, "Mejoras", () -> { tab = 0; layout(); });
         Hit b = add(90, 26, 80, 20, "Clases", () -> { tab = 1; layout(); });
-        a.tag = tab == 0 ? 1 : 0; b.tag = tab == 1 ? 1 : 0;
+        Hit c3 = add(174, 26, 96, 20, "Desbloqueos", () -> { tab = 2; layout(); });
+        a.tag = tab == 0 ? 1 : 0; b.tag = tab == 1 ? 1 : 0; c3.tag = tab == 2 ? 1 : 0;
         float cw = (w - 20) / 2f;
         if (tab == 0) {
             for (int i = 0; i < Meta.COUNT; i++) {
@@ -26,7 +27,7 @@ final class SanctuaryScreen extends Screen {
                 h.plain = true;
                 h.tag = i;
             }
-        } else {
+        } else if (tab == 1) {
             for (int i = 0; i < 10; i++) {
                 final int id = i;
                 Hit h = add(8 + (i % 2) * (cw + 4), 52 + (i / 2) * 38, cw, 35, null, () -> unlock(id));
@@ -85,7 +86,7 @@ final class SanctuaryScreen extends Screen {
         float cw = (w - 20) / 2f;
         drawButtons(g);
         // pestañas resaltadas
-        for (Hit h : hits) if (h.label != null && (h.label.equals("Mejoras") || h.label.equals("Clases")) && h.tag == 1) {
+        for (Hit h : hits) if (h.label != null && (h.label.equals("Mejoras") || h.label.equals("Clases") || h.label.equals("Desbloqueos")) && h.tag == 1) {
             g.rect(h.x, h.y + h.h - 2, h.w, 2, 0xFFFFD25A, false);
         }
         if (tab == 0) {
@@ -110,6 +111,26 @@ final class SanctuaryScreen extends Screen {
                     UI.small.right(g, "Nv " + lv + "/" + Meta.MAX[i], x + cw - 8, y + 30, UI.GREY, 1f);
                 }
             }
+        } else if (tab == 2) {
+            int total = Save.S.kills;
+            UI.small.draw(g, "Enemigos derrotados: " + total, 8, 50, UI.WHITE, 1f);
+            int next = -1;
+            for (int i = 0; i < Unlocks.COUNT; i++) if (!Save.S.unlocked[i]) { next = i; break; }
+            if (next >= 0) {
+                float f = Mth.clamp(total / (float) Unlocks.need(next), 0, 1);
+                g.rect(160, 53, w - 170, 6, 0xFF1A1620, false);
+                g.rect(160, 53, (w - 170) * f, 6, 0xFFFFD25A, false);
+                UI.small.right(g, total + "/" + Unlocks.need(next), w - 8, 44, UI.GOLD, 1f);
+            }
+            for (int i = 0; i < Unlocks.COUNT; i++) {
+                float x = 8 + (i % 2) * (cw + 4), y = 58 + (i / 2) * 38;
+                boolean ul = Save.S.unlocked[i];
+                UI.panel(g, ul ? 1 : 0, x, y, cw, 36, 0.95f);
+                UI.small.draw(g, ul ? Unlocks.NAME[i] : "???", x + 6, y + 4, ul ? UI.GOLD : UI.GREY, 1f);
+                UI.small.right(g, Unlocks.KIND[i] + " · " + Unlocks.need(i), x + cw - 6, y + 4, ul ? UI.GREEN : UI.GREY, 1f);
+                if (ul) UI.small.drawWrapped(g, Unlocks.DESC[i], x + 6, y + 15, (int) cw - 12, 0xB8B0B0, 1f);
+                else UI.small.draw(g, "Derrota " + Unlocks.need(i) + " enemigos en total", x + 6, y + 15, 0x707078, 1f);
+            }
         } else {
             for (int i = 0; i < 10; i++) {
                 ClassDef c = ClassDef.ALL[i];
@@ -127,6 +148,6 @@ final class SanctuaryScreen extends Screen {
                 } else UI.small.right(g, "★", x + cw - 8, y + 8, UI.GREEN, 1f);
             }
         }
-        UI.small.center(g, tab == 0 ? "Toca una mejora para comprarla con almas." : "Las almas se obtienen al derrotar enemigos y jefes.", w / 2f, 255, UI.GREY, 1f);
+        UI.small.center(g, tab == 0 ? "Toca una mejora para comprarla con almas." : tab == 1 ? "Las almas se obtienen al derrotar enemigos y jefes." : "Cada 50 enemigos derrotados desbloqueas armas y habilidades.", w / 2f, 255, UI.GREY, 1f);
     }
 }

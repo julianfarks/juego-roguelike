@@ -9,7 +9,7 @@ public final class Player extends Ent {
 
     public final ClassDef cls;
     public int state = IDLE;
-    public float safeX, safeY, invuln, shield, skinT, hurtT, furia;
+    public float secCd, grenCd, safeX, safeY, invuln, shield, skinT, hurtT, furia;
     public float extVx;                       // empuje externo (atraccion de jefes)
     public float guardT;                      // guardia de acero
     public float eclipseT;
@@ -110,6 +110,9 @@ public final class Player extends Ent {
         if (atkBuf > 0) atkBuf -= dt;
         if (jumpBuf > 0) jumpBuf -= dt;
         if (dropT > 0) dropT -= dt;
+        sq += (0f - sq) * Math.min(1f, dt * 11f);
+        if (secCd > 0) secCd -= dt;
+        if (grenCd > 0) grenCd -= dt;
         for (int i = 0; i < 4; i++) if (i < 3 && rs.cd[i] > 0) rs.cd[i] = Math.max(0, rs.cd[i] - dt);
         if (s.eclipseCd > 0 && eclipseT > 0) eclipseT -= dt;
         rs.time += dt;
@@ -152,12 +155,23 @@ public final class Player extends Ent {
         if (ctl && mx == 0 && !in.held(Input.B_LEFT) && !in.held(Input.B_RIGHT)) mx = 0;
         float spd = 135f * s.speedMul * speedMul();
         boolean frozenNow = frozen();
+        guarding = ctl && !frozenNow && alive && in.held(Input.B_GUARD) && (state == IDLE || state == RUN || state == AIR) && dashT <= 0;
+        if (parryCd > 0) parryCd -= dt;
+        if (guarding) {
+            if (in.pressed(Input.B_GUARD) && parryCd <= 0) { parryT = Items.SH_WIN[rs.shield]; parryCd = 0.7f; Snd.sfxv("swing_air", 0.5f); lv.fx("fx_ring", "pulse", x + dir() * 10, y - 16, 0.35f, 0xFFFFFF, Platform.ADD | Platform.TINT); }
+            if (parryT > 0) parryT -= dt;
+            spd *= 0.5f;
+        } else parryT = 0;
 
         // ---- entradas
         if (ctl && !frozenNow) {
             if (in.pressed(Input.B_JUMP)) jumpBuf = 0.13f;
             if (in.pressed(Input.B_ATTACK)) atkBuf = 0.22f;
             if (in.pressed(Input.B_POTION)) drinkPotion(lv);
+            if (state != HURT && state != ULT && state != ROLL) {
+                if (in.pressed(Input.B_SEC)) Items.useSecondary(lv, this);
+                if (in.pressed(Input.B_GREN)) Items.throwGrenade(lv, this);
+            }
             if (in.pressed(Input.B_ROLL)) tryRoll(lv, mx);
             for (int i = 0; i < 3; i++) if (in.pressed(Input.B_S1 + i)) trySkill(lv, i);
             if (in.pressed(Input.B_ULT)) tryUlt(lv);
@@ -178,7 +192,7 @@ public final class Player extends Ent {
         if (state == IDLE || state == RUN || state == AIR) {
             canAct = true;
             if (ctl && !frozenNow) {
-                if (atkBuf > 0) { startAttack(lv); canAct = false; }
+                if (atkBuf > 0 && !guarding) { startAttack(lv); canAct = false; }
             }
         }
 
@@ -209,6 +223,10 @@ public final class Player extends Ent {
             if (free || state == ROLL) {
                 // salto
                 if (onGround) { coyote = 0.1f; jumpsLeft = s.extraJumps; } else coyote -= dt;
+                if (ctl && !frozenNow && state != ROLL && onOneWay && onGround && in.pressed(Input.B_DOWN)) {
+                    dropT = 0.25f; y += 2; jumpBuf = 0; onGround = false; onOneWay = false;
+                    lv.fx("fx_dust", "land", x, y - 2, 0.6f, 0, 0);
+                }
                 if (jumpBuf > 0 && ctl && !frozenNow && state != ROLL) {
                     if (in.held(Input.B_DOWN) && onOneWay) {
                         dropT = 0.25f; y += 2; jumpBuf = 0; onGround = false; onOneWay = false;
@@ -231,6 +249,7 @@ public final class Player extends Ent {
         boolean wasGround = onGround;
         lv.move(this, dt);
         if (onGround && !wasGround && pvy > 180) {
+            sq = Mth.clamp(pvy / 420f, 0.14f, 0.32f);
             Snd.sfxv("land", Mth.clamp(pvy / 400f, 0.3f, 0.9f));
             lv.fx("fx_dust", "land", x, y - 2, 1f, 0, 0);
             if (state == AIR) state = IDLE;
@@ -261,6 +280,7 @@ public final class Player extends Ent {
         if (state == ATK) { state = AIR; }
         onGround = false; jumping = true; jumpBuf = 0; coyote = 0;
         animT = 0;
+        sq = air ? -0.16f : -0.24f;
         if (air) {
             Snd.sfx("double_jump", 0.8f);
             lv.fx("fx_ring", "pulse", x, y - 4, 0.35f, 0xFFFFFF, Platform.ADD | Platform.TINT);
@@ -289,6 +309,7 @@ public final class Player extends Ent {
         animT += dt;
         vx = dir() * 215f * Math.max(0.9f, s.speedMul) * (animT < 0.25f ? 1f : 0.6f);
         if (!onGround) vx *= 0.9f;
+        lv.breakRect(x + dir() * 8 - 8, y - bh, 16, bh, 1);
         trailT -= dt;
         if (trailT <= 0) {
             trailT = 0.05f;
@@ -404,6 +425,7 @@ public final class Player extends Ent {
 
     private void hitBox(Level lv, Anim a) {
         RunState rs = lv.rs; Stats s = rs.stats;
+        lv.breakRect(box[0], box[1], box[2], box[3], 1);
         List<Ent> list = lv.enemiesInBox(box[0], box[1], box[2], box[3]);
         for (Ent e : list) {
             if (swingHit.contains(e)) continue;
@@ -455,6 +477,7 @@ public final class Player extends Ent {
     // ------------------------------------------------------------------ dash
     private void updateDash(Level lv) {
         float r = 12;
+        lv.breakRect(x + dashDir * 8 - 8, y - bh, 16, bh, 2);
         for (Ent e : lv.enemiesInBox(x - bw / 2 - r, y - bh, bw + r * 2, bh)) {
             if (dashHit.contains(e)) continue;
             dashHit.add(e);
@@ -540,26 +563,60 @@ public final class Player extends Ent {
         }
     }
 
+    private int hazardN;
+    public boolean guarding;
+    public float parryT, parryCd;
+    private float sq;                       // squash (+) / stretch (-)
+    private static final class Ghost { Anim a; int f; float x, y, t; boolean r; }
+    private final java.util.ArrayList<Ghost> ghosts = new java.util.ArrayList<>();
+    private float lastGhost;
+
+    /** Punto firme: suelo bajo ambos pies, sin pinchos cerca ni bordes de foso, con espacio libre encima. */
+    private boolean isSafeSpot(Room rm, float px, float py) {
+        if (py <= 0 || py >= rm.pixH - 2) return false;
+        int tx0 = (int) Math.floor((px - 7) / Room.TS), tx1 = (int) Math.floor((px + 7) / Room.TS);
+        int ty = (int) Math.floor((py + 1) / Room.TS);
+        int t0 = rm.tile(tx0, ty), t1 = rm.tile(tx1, ty);
+        if (!((t0 == Room.SOLID || t0 == Room.ONEWAY) && (t1 == Room.SOLID || t1 == Room.ONEWAY))) return false;
+        for (int dx = -2; dx <= 2; dx++) {
+            int a = rm.tile(tx0 + dx, ty), b = rm.tile(tx0 + dx, ty - 1), c = rm.tile(tx0 + dx, ty - 2);
+            if (a == Room.AIR || a == Room.SPIKE || a == Room.SPIKE_DOWN) return false;
+            if (b == Room.SPIKE || b == Room.SPIKE_DOWN || c == Room.SPIKE_DOWN) return false;
+        }
+        for (int dx = -2; dx <= 2; dx++) {
+            int a = rm.tile(tx1 + dx, ty);
+            if (a == Room.AIR || a == Room.SPIKE || a == Room.SPIKE_DOWN) return false;
+        }
+        // espacio libre para el cuerpo
+        for (int k = 1; k <= 2; k++) {
+            if (rm.tile(tx0, ty - k) == Room.SOLID || rm.tile(tx1, ty - k) == Room.SOLID) return false;
+        }
+        return true;
+    }
+
     private void checkHazards(Level lv, float dt) {
         Room rm = lv.room;
         if (onGround && y < rm.pixH - 2) {
             safeT -= dt;
             if (safeT <= 0) {
                 safeT = 0.2f;
-                int tx0 = (int) Math.floor((x - 7) / Room.TS), tx1 = (int) Math.floor((x + 7) / Room.TS);
-                int ty = (int) Math.floor((y + 1) / Room.TS);
-                int t0 = rm.tile(tx0, ty), t1 = rm.tile(tx1, ty);
-                boolean ok = (t0 == Room.SOLID || t0 == Room.ONEWAY) && (t1 == Room.SOLID || t1 == Room.ONEWAY);
-                // no marcar el borde del foso como seguro
-                int l = rm.tile(tx0 - 1, ty), r = rm.tile(tx1 + 1, ty);
-                if (ok && l != Room.AIR && l != Room.SPIKE && r != Room.AIR && r != Room.SPIKE) { safeX = x; safeY = y; }
+                if (isSafeSpot(rm, x, y)) { safeX = x; safeY = y; }
             }
         }
         boolean hazard = rm.hazardAt(x, y - 4) || rm.hazardAt(x, y - bh + 3) || y >= rm.pixH - 1;
+        if (!hazard) hazardN = 0;
         if (hazard && state != ROLL || hazard && y >= rm.pixH - 1) {
             float dmg = 8 + lv.rs.stats.maxHp * 0.08f;
             if (invuln <= 0) lv.hurtPlayer(dmg, x, -1, 0);
+            if (!alive) return;
             Snd.sfx("spikes", 0.8f);
+            hazardN++;
+            // el punto seguro puede ser invalido (p.ej. dentro del foso): usar la entrada de la sala
+            if (hazardN > 1 || !isSafeSpot(rm, safeX, safeY)) {
+                safeX = rm.spawnX; safeY = rm.spawnY;
+                if (hazardN > 1 && !isSafeSpot(rm, safeX, safeY)) { /* ultimo recurso: spawn igualmente */ }
+            }
+            hurtT = 0; if (state == HURT) state = IDLE;
             x = safeX; y = safeY; vx = 0; vy = 0;
             lv.ps.burst(lv.rng, x, y - 12, 0xFFFFFF, 12, 80, 0.4f, 2, 0, true);
             invuln = Math.max(invuln, 1.1f);
@@ -596,7 +653,30 @@ public final class Player extends Ent {
             sheet.draw(g, a, frame, x - dashDir * 14, y, right, 1f, Platform.ADD | Platform.TINT, cls.color1, 0.4f);
             sheet.draw(g, a, frame, x - dashDir * 7, y, right, 1f, Platform.ADD | Platform.TINT, cls.color1, 0.55f);
         }
-        sheet.draw(g, a, frame, x, y, right, 1f, flags, tint, alpha);
+        // imagenes residuales al rodar / esprintar / saltar en el aire
+        if (alive && (state == ROLL || dashT > 0) && lv.time - lastGhost > 0.04f) {
+            lastGhost = lv.time;
+            Ghost gh = new Ghost(); gh.a = a; gh.f = frame; gh.x = x; gh.y = y; gh.t = lv.time; gh.r = right;
+            ghosts.add(gh);
+        }
+        for (int i = ghosts.size() - 1; i >= 0; i--) {
+            Ghost gh = ghosts.get(i);
+            float age = lv.time - gh.t;
+            if (age > 0.28f || age < 0) { ghosts.remove(i); continue; }
+            sheet.draw(g, gh.a, gh.f, gh.x, gh.y, gh.r, 1f, Platform.ADD | Platform.TINT, cls.color1, 0.45f * (1f - age / 0.28f));
+        }
+        float runB = (state == RUN && onGround) ? 0.035f * (float) Math.abs(Math.sin(animT * 13f)) : 0f;
+        float ssx = 1f + sq * 0.9f + runB, ssy = 1f - sq * 0.9f - runB;
+        if (!alive) { ssx = 1f; ssy = 1f; }
+        sheet.drawSq(g, a, frame, x, y, right, ssx, ssy, flags, tint, alpha);
+        if (guarding) {
+            int sc = Items.SH_COL[lv.rs.shield];
+            float sx0 = x + dir() * 11, ph = parryT > 0 ? 1f : 0f;
+            g.rect(Math.round(sx0 - 2), Math.round(y - 27), 4, 22, Mth.withAlpha(sc, 230), false);
+            g.rect(Math.round(sx0 - 1), Math.round(y - 26), 2, 20, 0xFFE8E0D0, false);
+            if (ph > 0) UI.light(g, sx0, y - 16, 26, 0xFFE070, 0.6f);
+            else UI.light(g, sx0, y - 16, 16, sc, 0.25f);
+        }
         if (guardT > 0) drawGuard(g, lv, true);
         if (shield > 0) {
             Sheet sh = Assets.fx("fx_shield");

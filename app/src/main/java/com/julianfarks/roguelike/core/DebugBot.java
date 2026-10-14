@@ -5,7 +5,7 @@ public final class DebugBot {
     private final boolean[] held = new boolean[256];
     private int lastClassFrame = -999, lastAct;
     private int stuck, jumpUntil;
-    private boolean warped, pitDone, tpDone;
+    private boolean seenRun, warped, pitDone, tpDone;
     private int warpFrame;
     private final java.util.HashSet<Object> done = new java.util.HashSet<>();
     private float lastX;
@@ -23,6 +23,7 @@ public final class DebugBot {
         if (s == null || g.fadeDir == 1) return;
         if (s instanceof Screens.Title && System.getenv("BOT_EDITOR") != null) { g.go(new ControlsEditor(g, false)); return; }
         if (s instanceof Screens.Title) {
+            if (seenRun && System.getenv("BOT_STAYTITLE") != null) return;
             if (frame % 20 == 0) { Screen.Hit h = ((Screens.Title) s).hits.get(0); s.touch(0, 0, h.x + 5, h.y + 5); s.touch(0, 2, h.x + 5, h.y + 5); }
             return;
         }
@@ -40,6 +41,7 @@ public final class DebugBot {
         }
         if (!(s instanceof RunScreen)) return;
         RunScreen rs = (RunScreen) s;
+        seenRun = true;
         if (rs.lv == null) return;
         Level lv = rs.lv;
         Player p = lv.pl;

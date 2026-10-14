@@ -43,6 +43,10 @@ final class RunScreen extends Screen implements Level.Listener {
     String relicBanner = "";
     int relicBannerIdx;
     float hintT;
+    int resumeType = -1;          // al cargar partida: tipo de sala donde reanudar
+    boolean saveMenu;
+    float autoT, toastT;
+    String toast = "";
 
     RunScreen(Game g, ClassDef c, int asc) {
         super(g);
@@ -53,7 +57,11 @@ final class RunScreen extends Screen implements Level.Listener {
 
     @Override void enter() {
         in.reset();
-        if (lv == null) {
+        if (lv == null && resumeType >= 0) {
+            int t = resumeType; resumeType = -1;
+            loadRoom(t);
+            fadeA = 1f; fadeMode = -1;
+        } else if (lv == null) {
             rs.biome = null;
             loadRoom(Room.HUB);
             fadeA = 1f; fadeMode = -1;
@@ -343,7 +351,7 @@ final class RunScreen extends Screen implements Level.Listener {
 
     // =============================================================== overlays
     private void openOv(int o) {
-        ov = o; ovT = 0;
+        ov = o; ovT = 0; saveMenu = false;
         in.reset();
         if (o != OV_DEAD && o != OV_WIN) Snd.sfx("ui_open", 0.7f);
         if (o == OV_PAUSE) Snd.sfx("ui_pause", 0.7f);
@@ -351,7 +359,7 @@ final class RunScreen extends Screen implements Level.Listener {
     }
 
     private void closeOv() {
-        ov = OV_NONE; ovT = 0; hits.clear();
+        ov = OV_NONE; ovT = 0; hits.clear(); saveMenu = false;
         in.reset();
         Snd.sfx("ui_back", 0.7f);
     }
@@ -487,11 +495,20 @@ final class RunScreen extends Screen implements Level.Listener {
                 float px = w / 2f - 220;
                 float bw = 150, bx = px + 12, by = 52;
                 Save s = Save.S;
+                if (saveMenu) {
+                    for (int i = 0; i < RunSave.SLOTS; i++) {
+                        final int slot = i;
+                        add(bx, by + i * 28, bw, 22, "Guardar en ranura " + (i + 1), () -> { RunSave.write(game.P, this, slot); toast = "Partida guardada en la ranura " + (slot + 1); toastT = 2.5f; Snd.sfx("ui_confirm", 0.9f); layoutOverlay(); });
+                    }
+                    add(bx, by + 3 * 28 + 6, bw, 22, "Volver", () -> { saveMenu = false; layoutOverlay(); });
+                    break;
+                }
                 add(bx, by, bw, 22, "Continuar", this::closeOv);
                 add(bx, by + 28, bw, 22, "Música: " + (s.musicOn ? "SÍ" : "NO"), () -> { s.musicOn = !s.musicOn; Snd.applyVolumes(); s.write(); layoutOverlay(); });
                 add(bx, by + 56, bw, 22, "Sonidos: " + (s.sfxOn ? "SÍ" : "NO"), () -> { s.sfxOn = !s.sfxOn; Snd.applyVolumes(); s.write(); layoutOverlay(); });
                 add(bx, by + 84, bw, 22, "Vibración: " + (s.vibOn ? "SÍ" : "NO"), () -> { s.vibOn = !s.vibOn; s.write(); layoutOverlay(); });
-                add(bx, by + 118, bw, 22, quitConfirm ? "¿Seguro? Toca otra vez" : "Abandonar partida", () -> {
+                add(bx, by + 112, bw, 22, "Guardar partida", () -> { saveMenu = true; layoutOverlay(); });
+                add(bx, by + 140, bw, 22, quitConfirm ? "¿Seguro? Toca otra vez" : "Abandonar partida", () -> {
                     if (quitConfirm) { endRun(false); game.go(new Screens.Title(game)); }
                     else { quitConfirm = true; layoutOverlay(); }
                 });
@@ -516,11 +533,15 @@ final class RunScreen extends Screen implements Level.Listener {
     @Override boolean back() {
         if (lv == null) return false;
         if (ov == OV_NONE) { openOv(OV_PAUSE); return true; }
+        if (ov == OV_PAUSE && saveMenu) { saveMenu = false; layoutOverlay(); return true; }
         if (ov == OV_PAUSE || ov == OV_SHOP || ov == OV_FORGE) { closeOv(); return true; }
         return true;
     }
 
-    @Override void pause() { if (ov == OV_NONE && lv != null && deadT < 0 && winT < 0) openOv(OV_PAUSE); }
+    @Override void pause() {
+        if (lv != null && deadT < 0 && winT < 0 && fadeMode != 1 && lv.pl.alive && ov != OV_DEAD && ov != OV_WIN) RunSave.write(game.P, this, RunSave.AUTO);
+        if (ov == OV_NONE && lv != null && deadT < 0 && winT < 0) openOv(OV_PAUSE);
+    }
 
     // =============================================================== actualizacion
     @Override void update(float dt) {
@@ -538,6 +559,11 @@ final class RunScreen extends Screen implements Level.Listener {
         if (lv.unlockTitle != null) { bannerTitle = lv.unlockTitle; bannerSub = lv.unlockSub; bannerT = 3f; lv.unlockTitle = null; }
         if (relicBannerT > 0) relicBannerT -= dt;
         if (hintT > 0) hintT -= dt;
+        if (toastT > 0) toastT -= dt;
+        if (ov == OV_NONE && deadT < 0 && winT < 0 && lv.pl.alive) {
+            autoT += dt;
+            if (autoT >= 300f) { autoT = 0; RunSave.write(game.P, this, RunSave.AUTO); toast = "Autoguardado"; toastT = 2f; }
+        }
         if (comboFlash > 0) comboFlash -= dt;
         if (bossCardT >= 0) bossCardT += dt;
         if (ov == OV_NONE) {
@@ -637,6 +663,7 @@ final class RunScreen extends Screen implements Level.Listener {
     private void renderHud(Platform.Gfx g, int w) {
         Player pl = lv.pl;
         Stats s = rs.stats;
+        if (toastT > 0 && ov == OV_NONE) UI.small.center(g, toast, w / 2f, 8, UI.GOLD, Math.min(1f, toastT));
         float ratio = s.maxHp > 0 ? rs.hp / s.maxHp : 0;
         UI.hpBar(g, 8, 8, ratio);
         UI.small.draw(g, Math.max(0, Math.round(rs.hp)) + "/" + Math.round(s.maxHp), 114, 11, ratio < 0.3f ? UI.RED : UI.WHITE, 1f);
@@ -876,6 +903,20 @@ final class RunScreen extends Screen implements Level.Listener {
                 drawButtons(g);
                 // info
                 float ix = px + 184;
+                if (saveMenu) {
+                    for (int i = 0; i < RunSave.SLOTS; i++) {
+                        String inf = RunSave.info(game.P, i);
+                        if (inf == null) UI.small.draw(g, "Vacía", ix, 57 + i * 28, UI.GREY, 1f);
+                        else {
+                            String[] pt = inf.split(" · ", 3);
+                            UI.small.draw(g, pt[0], ix, 52 + i * 28, UI.WHITE, 1f);
+                            UI.small.draw(g, pt.length > 1 ? pt[1] : "", ix, 63 + i * 28, UI.GREY, 1f);
+                            UI.small.draw(g, pt.length > 2 ? pt[2].replace(" · ", "  ") : "", ix + 150, 63 + i * 28, UI.GREY, 1f);
+                        }
+                    }
+                    if (toastT > 0) UI.small.draw(g, toast, ix, 57 + 3 * 28 + 10, UI.GOLD, 1f);
+                    break;
+                }
                 UI.small.draw(g, cls.name, ix, 54, cls.color1, 1f);
                 UI.small.draw(g, rs.biome == null ? "Santuario" : rs.biome.name + " · Sala " + Math.min(5, rs.roomNo + 1), ix, 66, UI.GREY, 1f);
                 Stats s = rs.stats;

@@ -115,11 +115,13 @@ final class Screens {
         @Override void layout() {
             hits.clear();
             int w = W();
-            float bw = 150, bh = 24, x = w / 2f - bw / 2f, y = 116;
+            float bw = 150, bh = 23, x = w / 2f - bw / 2f, y = 106;
             add(x, y, bw, bh, "Nueva partida", () -> game.go(new ClassScreen(game)));
-            add(x, y + 28, bw, bh, "Santuario", () -> game.go(new SanctuaryScreen(game)));
-            add(x, y + 56, bw, bh, "Opciones", () -> game.go(new Options(game, false)));
-            add(x, y + 84, bw, bh, "Créditos", () -> game.go(new Credits(game, false)));
+            Hit ld = add(x, y + 26, bw, bh, "Cargar partida", () -> game.go(new LoadScreen(game)));
+            ld.disabled = !RunSave.any(game.P);
+            add(x, y + 52, bw, bh, "Santuario", () -> game.go(new SanctuaryScreen(game)));
+            add(x, y + 78, bw, bh, "Opciones", () -> game.go(new Options(game, false)));
+            add(x, y + 104, bw, bh, "Créditos", () -> game.go(new Credits(game, false)));
         }
 
         @Override void update(float dt) {
@@ -143,7 +145,7 @@ final class Screens {
             g.rect(w / 2f - 90, 106, 180, 118, 0x55000000, false);
             drawButtons(g);
             if (UI.small != null) {
-                UI.small.center(g, "Julian Mateo · Idea de Brayan Steven", w / 2f, 252, 0xFF9A8890, 1f);
+                UI.small.center(g, "Creador: JulianFarKs", w / 2f, 252, 0xFF9A8890, 1f);
                 UI.iconC(g, "soul", w - 54, 14, 1f, 1f);
                 UI.small.right(g, String.valueOf(Save.S.souls), w - 8, 9, UI.SOUL, 1f);
                 UI.iconC(g, "relic", 14, 14, 1f, 1f);
@@ -203,8 +205,8 @@ final class Screens {
         private float scroll;
         private static final String[] LINES = {
                 "#SWORDMANMAGIC", "#ABISMO ETERNO", "",
-                "Un roguelike de acción en 2D", "inspirado en SwordmanMagic,", "mod de Minecraft de Julian Mateo", "",
-                "-CREADO POR", "Julian Mateo", "", "-IDEA ORIGINAL", "Brayan Steven", "", "-INSPIRADO EN", "SwordmanMagic,", "un mod de Minecraft", "creado por Julian Mateo", "",
+                "Un roguelike de acción en 2D", "inspirado en SwordmanMagic,", "mod de Minecraft de JulianFarKs", "",
+                "-CREADOR", "JulianFarKs", "", "-IDEAS", "Team TKD y Chernobyl", "", "-BASADO EN", "un mod propio de Minecraft:", "SwordmanMagic", "", "-PRÓXIMAMENTE", "Mejoras en los niveles y diseños", "y en el menú de elegir el tipo de mundo", "",
                 "-ARTE", "Pixel art generado a mano,", "personajes, jefes, enemigos y mundos", "",
                 "-MÚSICA Y SONIDO", "Música original sintetizada,", "efectos para cada arma, jefe y habilidad", "",
                 "-CLASES", "Paladín del Alba · Asesino de las Sombras", "Señor de las Llamas · Tempestad", "Guardián Glacial · Guardián Esmeralda",

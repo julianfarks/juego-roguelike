@@ -24,6 +24,7 @@ final class RunSave {
 
     static void write(Platform p, RunScreen r, int slot) {
         RunState rs = r.rs;
+        r.mySlots.add(slot);
         try {
             Map<String, Object> d = new LinkedHashMap<>();
             d.put("cls", r.cls.id);
@@ -79,11 +80,21 @@ final class RunSave {
             rs.stats.recalc(rs);
             rs.hp = Math.max(1, Math.min(rs.stats.maxHp, Json.i(d, "hp", (int) rs.stats.maxHp)));
             scr.resumeType = Json.i(d, "room", Room.HUB);
+            scr.mySlots.add(slot);
             return scr;
         } catch (RuntimeException e) {
             g.P.log("run load error " + e);
             return null;
         }
+    }
+
+    /** Al morir: borra las partidas guardadas de esta run (ranuras usadas/cargadas y el autoguardado). */
+    static void clearRun(Platform p, RunScreen r) {
+        try {
+            r.mySlots.add(AUTO);
+            for (int sl : r.mySlots) p.store().put(key(sl), "");
+            p.store().commit();
+        } catch (RuntimeException e) { p.log("run clear error " + e); }
     }
 
     static String info(Platform p, int slot) {

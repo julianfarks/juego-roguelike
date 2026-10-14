@@ -45,6 +45,7 @@ final class RunScreen extends Screen implements Level.Listener {
     float hintT;
     int resumeType = -1;          // al cargar partida: tipo de sala donde reanudar
     boolean saveMenu;
+    final java.util.HashSet<Integer> mySlots = new java.util.HashSet<>();
     float autoT, toastT;
     String toast = "";
 
@@ -595,7 +596,7 @@ final class RunScreen extends Screen implements Level.Listener {
         // muerte -> resumen
         if (deadT >= 0) {
             deadT += dt;
-            if (deadT > 1.6f && ov != OV_DEAD) { Snd.music("mus_gameover", false); openOv(OV_DEAD); }
+            if (deadT > 1.6f && ov != OV_DEAD) { Snd.music("mus_gameover", false); RunSave.clearRun(game.P, this); openOv(OV_DEAD); }
         }
         if (winPending && lv != null) {
             winT += dt;

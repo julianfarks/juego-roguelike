@@ -1,7 +1,7 @@
 # SwordmanMagic: Abismo Eterno
 
 Roguelike 2D de acción para Android (pixel art), basado en el mod SwordmanMagic.
-Creado por Julian Mateo. Idea de Brayan Steven. Inspirado en SwordmanMagic, un mod de Minecraft creado por Julian Mateo.
+Creador: JulianFarKs. Ideas de Team TKD y Chernobyl. Basado en SwordmanMagic, un mod propio de Minecraft.
 
 **APK:** [Releases → latest → SwordmanRogue.apk](https://github.com/julianfarks/juego-roguelike/releases/tag/latest) (también en `apk/SwordmanRogue.apk`).
 

@@ -671,21 +671,25 @@ final class RunScreen extends Screen implements Level.Listener {
         UI.ultBar(g, 8, 25, rs.ult / 100f, rs.ult >= 100f, lv.time);
         if (rs.ult >= 100f) UI.small.draw(g, "LISTA", 96, 26, UI.ORANGE, 0.6f + 0.4f * (float) Math.sin(lv.time * 8));
         if (pl.shield > 0) { UI.icon(g, "shield", 114, 21, 1f); UI.small.draw(g, String.valueOf(Math.round(pl.shield)), 132, 26, UI.CYAN, 1f); }
-        // recursos
-        UI.icon(g, "coin", 6, 38, 1f);
-        UI.small.draw(g, String.valueOf(rs.gold), 24, 42, UI.GOLD, 1f);
-        UI.icon(g, "soul", 62, 38, 1f);
-        UI.small.draw(g, String.valueOf(rs.souls), 80, 42, UI.SOUL, 1f);
-        // estados
-        int sx = 160;
+        // recursos: arriba a la derecha, junto a pausa (no estorban al personaje ni a la vida)
+        float rx = w - 36;
+        UI.small.right(g, String.valueOf(rs.gold), rx, 7, UI.GOLD, 1f);
+        UI.icon(g, "coin", rx - UI.small.width(String.valueOf(rs.gold)) - 18, 3, 1f);
+        UI.small.right(g, String.valueOf(rs.souls), rx, 21, UI.SOUL, 1f);
+        UI.icon(g, "soul", rx - UI.small.width(String.valueOf(rs.souls)) - 18, 17, 1f);
+        // estados alterados: fila bajo las barras
+        int sx = 8;
         String[] ic = {"burn", "freeze", "shield", "poison", "shock", "bleed", "lock", "star"};
         for (int i = 0; i < Ent.ST_COUNT; i++) {
-            if (pl.st[i] > 0 && i != Ent.ROOT && i != Ent.STUN) { UI.icon(g, ic[i], sx, 5, 1f, Platform.TINT, Ent.ST_COLOR[i], 1f); sx += 18; }
+            if (pl.st[i] > 0 && i != Ent.ROOT && i != Ent.STUN) { UI.icon(g, ic[i], sx, 38, 1f, Platform.TINT, Ent.ST_COLOR[i], 1f); sx += 18; }
         }
-        // sala
-        if (rs.biome != null && lv.room.type != Room.HUB) {
-            String t = rs.biome.name + " · " + Math.min(5, rs.roomNo + 1) + "/5";
-            if (lv.boss == null) UI.small.center(g, t, w / 2f, 6, 0xFFB8B0B8, 0.9f);
+        // sala: nombre del bioma + progreso en puntos
+        if (rs.biome != null && lv.room.type != Room.HUB && lv.boss == null) {
+            String t = rs.biome.name;
+            UI.small.center(g, t, w / 2f, 5, 0xFFB8B0B8, 0.9f);
+            int cur = Math.min(4, rs.roomNo);
+            float px0 = w / 2f - 5 * 7 / 2f;
+            for (int i = 0; i < 5; i++) g.rect(px0 + i * 7, 17, 5, 3, i < cur ? 0xFFB8B0B8 : (i == cur ? 0xFFFFD25A : 0x66808088), false);
         }
         // jefe
         if (lv.boss != null && lv.bossBarShow > 0.01f) {
@@ -708,8 +712,8 @@ final class RunScreen extends Screen implements Level.Listener {
         Prop near = ov == OV_NONE ? lv.nearestInteractable() : null;
         if (near != null && lv.pl.alive && !lv.cinematic) {
             String lab = hintFor(near);
-            float bx = w - 168, by = 218;
-            UI.small.center(g, lab, bx, by - 34, UI.GOLD, 1f);
+            Input.Btn ib = in.btn[Input.B_INTERACT];
+            UI.small.center(g, lab, ib.cx, ib.cy - ib.r - 12, UI.GOLD, 1f);
             if (near.kind.equals("portal")) {
                 Biome b = Biome.ALL[near.nextBiome];
                 BossDef bd = BossDef.byBiome(b.id);
@@ -753,19 +757,13 @@ final class RunScreen extends Screen implements Level.Listener {
         // iconos de habilidades
         for (int i = 0; i < 3; i++) in.btn[Input.B_S1 + i].icon = cls.skills[i].icon;
         in.btn[Input.B_ULT].icon = cls.skills[3].icon;
+        drawStick(g);
         for (int i = 0; i < Input.B_COUNT; i++) {
             Input.Btn b = in.btn[i];
             if (!b.visible) continue;
             if (i == Input.B_PAUSE) { UI.roundButton(g, b.cx, b.cy, b.r, b.pointer >= 0 ? 1 : 0, 0.7f); UI.iconC(g, "pause", b.cx, b.cy, 1f, 0.9f); continue; }
-            if (i == Input.B_LEFT || i == Input.B_RIGHT || i == Input.B_DOWN) {
-                UI.roundButton(g, b.cx, b.cy, b.r, b.pointer >= 0 ? 1 : 0, 0.55f);
-                if (UI.arrow != null) {
-                    float ang = i == Input.B_LEFT ? 3.1416f : (i == Input.B_RIGHT ? 0 : 1.5708f);
-                    g.imageRot(UI.arrow, 0, 0, 8, 8, b.cx - 8, b.cy - 8, 16, 16, ang, 0, 0, 0.9f);
-                }
-                continue;
-            }
-            float alpha = 0.78f;
+            if (i == Input.B_LEFT || i == Input.B_RIGHT || i == Input.B_DOWN) continue;   // dibujados por el joystick
+            float alpha = 0.7f;
             UI.roundButton(g, b.cx, b.cy, b.r, b.pointer >= 0 ? 1 : 0, alpha);
             if (i >= Input.B_S1 && i <= Input.B_ULT) {
                 boolean ult = i == Input.B_ULT;
@@ -827,6 +825,24 @@ final class RunScreen extends Screen implements Level.Listener {
             g.rect(0, 0, w, 3, Mth.withAlpha(0xC00020, a), false);
             g.rect(0, Platform.VIEW_H - 3, w, 3, Mth.withAlpha(0xC00020, a), false);
         }
+    }
+
+    /** Joystick de movimiento: base con flechas, el pulgar sigue el dedo y la base lo persigue si se aleja. */
+    private void drawStick(Platform.Gfx g) {
+        boolean on = in.stickActive();
+        float R = in.stickR(), cx = in.anchorX(), cy = in.anchorY();
+        UI.roundButton(g, cx, cy, R, 0, on ? 0.5f : 0.34f);
+        if (UI.arrow != null) {
+            float[][] p = {{-1, 0, 3.1416f}, {1, 0, 0}, {0, 1, 1.5708f}};
+            boolean[] act = {in.stickL(), in.stickR_(), in.stickD()};
+            for (int k = 0; k < 3; k++) {
+                float ax = cx + p[k][0] * (R - 11), ay = cy + p[k][1] * (R - 11);
+                g.imageRot(UI.arrow, 0, 0, 8, 8, ax - 6, ay - 6, 12, 12, p[k][2], 0, 0, act[k] ? 1f : (on ? 0.6f : 0.45f));
+            }
+        }
+        float kx = in.thumbX() - cx, ky = in.thumbY() - cy, kd = (float) Math.sqrt(kx * kx + ky * ky), kr = R * 0.78f;
+        if (kd > kr) { kx *= kr / kd; ky *= kr / kd; }
+        UI.roundButton(g, cx + kx, cy + ky, R * 0.46f, on ? 1 : 0, on ? 0.95f : 0.6f);
     }
 
     private void dim(Platform.Gfx g, int w, float a) { g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0x000008, (int) (a * 255)), false); }

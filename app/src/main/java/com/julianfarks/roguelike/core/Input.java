@@ -25,27 +25,83 @@ public final class Input {
     private final boolean[] keyHeld = new boolean[B_COUNT];
     public float viewW = 480;
 
+    // ---- joystick flotante de movimiento
+    private static final float DEAD = 9f, DEAD_OFF = 5f, FOLLOW_X = 40f, FOLLOW_UP = 30f, FOLLOW_DN = 40f, DOWN_ON = 24f, DOWN_OFF = 14f;
+    private int stickId = -1;
+    private float ax, ay, tx, ty;
+    private boolean stkL, stkR, stkD;
+    private final boolean[] stickHeld = new boolean[B_COUNT];
+
+    public boolean stickActive() { return stickId >= 0; }
+    public float stickCx() { return (btn[B_LEFT].cx + btn[B_RIGHT].cx) / 2f; }
+    public float stickCy() { return btn[B_LEFT].cy; }
+    public float stickR() { return 34f * btn[B_LEFT].r / 24f; }
+    /** Centro actual de la base (se desplaza si el pulgar se aleja mucho) y posicion del pulgar. */
+    public float anchorX() { return stickId >= 0 ? ax : stickCx(); }
+    public float anchorY() { return stickId >= 0 ? ay : stickCy(); }
+    public float thumbX() { return stickId >= 0 ? tx : stickCx(); }
+    public float thumbY() { return stickId >= 0 ? ty : stickCy(); }
+    public boolean stickL() { return stkL; }
+    public boolean stickR_() { return stkR; }
+    public boolean stickD() { return stkD; }
+
+    private void recompute(int b) { held[b] = keyHeld[b] || stickHeld[b] || btn[b].pointer >= 0; }
+
+    private boolean inStickZone(float x, float y) {
+        float cx = stickCx(), r = stickR();
+        float xmax = Math.max(viewW * 0.44f, cx + r + 40f);
+        return x < xmax && y > 76f;
+    }
+
+    private void setStick(boolean l, boolean r, boolean d) {
+        boolean[] nv = new boolean[B_COUNT];
+        nv[B_LEFT] = l; nv[B_RIGHT] = r; nv[B_DOWN] = d;
+        for (int b = B_LEFT; b <= B_DOWN; b++) {
+            if (nv[b] && !stickHeld[b] && !held[b]) pressed[b] = true;
+            stickHeld[b] = nv[b];
+            recompute(b);
+        }
+        stkL = l; stkR = r; stkD = d;
+    }
+
+    private void updateStick(float x, float y) {
+        float dx = x - ax;
+        if (dx > FOLLOW_X) ax = x - FOLLOW_X; else if (dx < -FOLLOW_X) ax = x + FOLLOW_X;
+        float dy = y - ay;
+        if (dy > FOLLOW_DN) ay = y - FOLLOW_DN; else if (dy < -FOLLOW_UP) ay = y + FOLLOW_UP;
+        dx = x - ax; dy = y - ay;
+        tx = x; ty = y;
+        boolean down = dy > (stkD ? DOWN_OFF : DOWN_ON) && dy > Math.abs(dx);
+        float dead = (stkL || stkR) ? DEAD_OFF : DEAD;
+        boolean l = !down && dx < -dead, r = !down && dx > dead;
+        setStick(l, r, down);
+    }
+
+    private void endStick() { stickId = -1; setStick(false, false, false); }
+
     public Input() { for (int i = 0; i < B_COUNT; i++) btn[i] = new Btn(); layout(480); }
 
     public void layout(float w) {
         viewW = w;
         float W = w;
-        set(B_LEFT, 38, 232, 24, "", true);
-        set(B_RIGHT, 98, 232, 24, "", true);
-        set(B_DOWN, 68, 190, 17, "", true);
-        set(B_ATTACK, W - 46, 220, 27, "attack", false);
-        set(B_JUMP, W - 112, 238, 22, "jump", false);
-        set(B_ROLL, W - 112, 190, 19, "roll", false);
-        set(B_S1, W - 30, 168, 16, "", false);
-        set(B_S2, W - 62, 150, 16, "", false);
-        set(B_S3, W - 99, 143, 16, "", false);
-        set(B_ULT, W - 138, 150, 17, "", false);
-        set(B_INTERACT, W - 168, 218, 18, "key", false);
+        // joystick de movimiento (izquierda): LEFT/RIGHT/DOWN definen su centro y tamaño
+        set(B_LEFT, 40, 214, 24, "", true);
+        set(B_RIGHT, 100, 214, 24, "", true);
+        set(B_DOWN, 70, 252, 17, "", true);
+        // grupo de accion (derecha), en arco alrededor del pulgar: ataque grande, salto y esquiva a su lado
+        set(B_ATTACK, W - 46, 216, 31, "attack", false);
+        set(B_JUMP, W - 112, 232, 26, "jump", false);
+        set(B_ROLL, W - 100, 176, 22, "roll", false);
+        set(B_S1, W - 28, 160, 16, "", false);
+        set(B_S2, W - 62, 139, 16, "", false);
+        set(B_S3, W - 100, 128, 16, "", false);
+        set(B_ULT, W - 138, 140, 18, "", false);
+        set(B_INTERACT, W - 166, 208, 18, "key", false);
         set(B_PAUSE, W - 18, 16, 12, "pause", false);
-        set(B_POTION, 30, 62, 12, "potion", false);
-        set(B_SEC, W - 196, 186, 15, "", false);
-        set(B_GREN, W - 178, 148, 15, "", false);
-        set(B_GUARD, W - 150, 250, 16, "shield", true);
+        set(B_POTION, 26, 62, 13, "potion", false);
+        set(B_SEC, W - 198, 178, 15, "", false);
+        set(B_GREN, W - 184, 140, 15, "", false);
+        set(B_GUARD, W - 168, 252, 16, "shield", true);
         btn[B_INTERACT].visible = false;
         btn[B_LEFT].visible = btn[B_RIGHT].visible = btn[B_DOWN].visible = true;
         applyCustom();
@@ -91,7 +147,8 @@ public final class Input {
 
     public void reset() {
         ptrBtn.clear();
-        for (int i = 0; i < B_COUNT; i++) { held[i] = false; pressed[i] = false; keyHeld[i] = false; btn[i].pointer = -1; }
+        stickId = -1; stkL = stkR = stkD = false;
+        for (int i = 0; i < B_COUNT; i++) { held[i] = false; pressed[i] = false; keyHeld[i] = false; stickHeld[i] = false; btn[i].pointer = -1; }
     }
 
     private int hit(float x, float y, boolean holdOnly) {
@@ -100,8 +157,9 @@ public final class Input {
         for (int i = 0; i < B_COUNT; i++) {
             Btn b = btn[i];
             if (!b.visible) continue;
+            if (i == B_LEFT || i == B_RIGHT || i == B_DOWN) continue;   // los maneja el joystick
             if (holdOnly && !b.hold) continue;
-            float pad = b.hold ? 10 : 6;
+            float pad = b.hold ? 10 : 9;
             float d = Mth.dist(x, y, b.cx, b.cy);
             if (d <= b.r + pad && d < bd) { bd = d; best = i; }
         }
@@ -110,9 +168,18 @@ public final class Input {
 
     public void touch(int id, int action, float x, float y) {
         if (action == Platform.ACTION_DOWN) {
+            // los ids de puntero se reutilizan: limpia cualquier resto anterior de este id
+            if (id == stickId) endStick();
+            release(id);
             int b = hit(x, y, false);
             if (b >= 0) press(id, b);
+            else if (stickId < 0 && inStickZone(x, y)) {
+                stickId = id;
+                ax = stickCx(); ay = stickCy();
+                updateStick(x, y);
+            }
         } else if (action == Platform.ACTION_MOVE) {
+            if (id == stickId) { updateStick(x, y); return; }
             Integer cur = ptrBtn.get(id);
             if (cur != null && btn[cur].hold) {
                 int nb = hit(x, y, true);
@@ -121,7 +188,10 @@ public final class Input {
                     if (nb >= 0) press(id, nb);
                 }
             }
-        } else release(id);
+        } else {
+            if (id == stickId) endStick();
+            else release(id);
+        }
     }
 
     private void press(int id, int b) {
@@ -135,8 +205,8 @@ public final class Input {
         Integer b = ptrBtn.remove(id);
         if (b == null) return;
         btn[b].pointer = -1;
-        held[b] = keyHeld[b];
-        for (Integer other : ptrBtn.values()) if (other.equals(b)) held[b] = true;
+        for (Map.Entry<Integer, Integer> en : ptrBtn.entrySet()) if (en.getValue().equals(b)) btn[b].pointer = en.getKey();
+        recompute(b);
     }
 
     public void key(int code, boolean down) {
@@ -163,7 +233,7 @@ public final class Input {
         if (b < 0) return;
         if (down && !keyHeld[b]) pressed[b] = true;
         keyHeld[b] = down;
-        held[b] = down || anyPointer(b);
+        recompute(b);
     }
 
     private boolean anyPointer(int b) { return btn[b].pointer >= 0; }

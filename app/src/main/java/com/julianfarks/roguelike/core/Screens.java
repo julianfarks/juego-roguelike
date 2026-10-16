@@ -165,20 +165,23 @@ final class Screens {
         @Override void layout() {
             hits.clear();
             int w = W();
-            float bw = 190, bh = 24, x = w / 2f - bw / 2f, y = 64;
+            float bw = 200, bh = 20, x = w / 2f - bw / 2f, y = 52, st = 24;
             Save s = Save.S;
-            add(x, y, bw, bh, "Música: " + (s.musicOn ? "SÍ" : "NO"), () -> { s.musicOn = !s.musicOn; Snd.applyVolumes(); s.write(); layout(); });
-            add(x, y + 30, bw, bh, "Sonidos: " + (s.sfxOn ? "SÍ" : "NO"), () -> { s.sfxOn = !s.sfxOn; Snd.applyVolumes(); s.write(); layout(); });
-            add(x, y + 60, bw, bh, "Vibración: " + (s.vibOn ? "SÍ" : "NO"), () -> { s.vibOn = !s.vibOn; s.write(); layout(); });
+            int i = 0;
+            add(x, y + st * i++, bw, bh, "Música: " + (s.musicOn ? "SÍ" : "NO"), () -> { s.musicOn = !s.musicOn; Snd.applyVolumes(); s.write(); layout(); });
+            add(x, y + st * i++, bw, bh, "Sonidos: " + (s.sfxOn ? "SÍ" : "NO"), () -> { s.sfxOn = !s.sfxOn; Snd.applyVolumes(); s.write(); layout(); });
+            add(x, y + st * i++, bw, bh, "Vibración: " + (s.vibOn ? "SÍ" : "NO"), () -> { s.vibOn = !s.vibOn; s.write(); layout(); });
+            add(x, y + st * i++, bw, bh, "Entrada: " + new String[]{"Automática", "Táctil", "Mando"}[s.inputMode], () -> { s.inputMode = (s.inputMode + 1) % 3; s.write(); layout(); });
             if (!fromRun) {
-                add(x, y + 90, bw, bh, "Organizar controles", () -> game.go(new ControlsEditor(game, false)));
-                add(x, y + 120, bw, bh, confirmT > 0 ? "¿Seguro? Toca otra vez" : "Borrar progreso", () -> {
+                add(x, y + st * i++, bw, bh, "Controles (teclado y mando)", () -> game.go(new ControlsScreen(game)));
+                add(x, y + st * i++, bw, bh, "Organizar controles táctiles", () -> game.go(new ControlsEditor(game, false)));
+                add(x, y + st * i++, bw, bh, confirmT > 0 ? "¿Seguro? Toca otra vez" : "Borrar progreso", () -> {
                     if (confirmT > 0) { Save.S.reset(); Snd.applyVolumes(); confirmT = 0; Snd.sfx("ui_back", 1f); }
                     else confirmT = 3f;
                     layout();
                 });
             }
-            add(x, y + (fromRun ? 90 : 150), bw, bh, "Volver", () -> back());
+            add(x, y + st * i, bw, bh, "Volver", () -> back());
         }
 
         @Override boolean back() { if (fromRun) return false; game.go(new Title(game)); return true; }

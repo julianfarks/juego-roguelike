@@ -14,7 +14,10 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
+import android.hardware.input.InputManager;
 import android.view.Choreographer;
+import android.view.InputDevice;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -22,6 +25,7 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 
 import com.julianfarks.roguelike.core.Game;
+import com.julianfarks.roguelike.core.Pad;
 import com.julianfarks.roguelike.core.Platform;
 
 import java.util.ArrayList;
@@ -63,6 +67,8 @@ public final class GameView extends SurfaceView implements SurfaceHolder.Callbac
     }
 
     /** Evento de toque en coordenadas virtuales (pasa del hilo UI al hilo de juego). */
+    private static final int ACT_KEY = 100;   // evento de tecla/boton: id = codigo, x = 1 pulsado / 0 suelto
+
     private static final class Ev {
         int id, action;
         float x, y;
@@ -238,6 +244,108 @@ public final class GameView extends SurfaceView implements SurfaceHolder.Callbac
         if (!posted) activity.finish();
     }
 
+    // ================================================================== teclado y mandos (hilo UI)
+
+    private final Pad.Axes padAxes = new Pad.Axes();
+    private final Pad.Sink padSink = new Pad.Sink() {
+        @Override public void key(int code, boolean down) { enqueueKey(code, down); }
+    };
+    private boolean padPresent;
+    private int padTypeSent = -1;
+    private InputManager.InputDeviceListener padListener;
+
+    private void enqueueKey(int code, boolean down) {
+        synchronized (touchLock) {
+            Ev ev = evPool.isEmpty() ? new Ev() : evPool.remove(evPool.size() - 1);
+            ev.id = code;
+            ev.action = ACT_KEY;
+            ev.x = down ? 1f : 0f;
+            ev.y = 0f;
+            pendingEv.add(ev);
+        }
+    }
+
+    private static boolean isPadSource(int src) {
+        return (src & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD || (src & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK;
+    }
+
+    /** Teclas del teclado y botones de mando (Xbox, PlayStation, genericos). Devuelve true si la tecla se uso. */
+    public boolean handleKeyEvent(KeyEvent e) {
+        int k = e.getKeyCode();
+        if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_VOLUME_UP || k == KeyEvent.KEYCODE_VOLUME_DOWN || k == KeyEvent.KEYCODE_VOLUME_MUTE) return false;
+        boolean down = e.getAction() == KeyEvent.ACTION_DOWN;
+        if (e.getAction() != KeyEvent.ACTION_DOWN && e.getAction() != KeyEvent.ACTION_UP) return false;
+        int src = e.getSource();
+        boolean dpadKey = k >= KeyEvent.KEYCODE_DPAD_UP && k <= KeyEvent.KEYCODE_DPAD_RIGHT;
+        boolean pad = isPadSource(src) || (k >= KeyEvent.KEYCODE_BUTTON_A && k <= KeyEvent.KEYCODE_BUTTON_MODE)
+                || (dpadKey && (src & InputDevice.SOURCE_DPAD) == InputDevice.SOURCE_DPAD && (src & InputDevice.SOURCE_KEYBOARD) != InputDevice.SOURCE_KEYBOARD);
+        int v = pad ? Pad.fromAndroidKey(k) : Pad.fromAndroidKeyboard(k);
+        if (v < 0) return false;
+        if (down && e.getRepeatCount() > 0) return true;   // sin repeticion automatica
+        enqueueKey(v, down);
+        return true;
+    }
+
+    /** Sticks, gatillos y cruceta analogicos de los mandos. */
+    public boolean handleMotionEvent(MotionEvent e) {
+        if ((e.getSource() & InputDevice.SOURCE_JOYSTICK) != InputDevice.SOURCE_JOYSTICK || e.getActionMasked() != MotionEvent.ACTION_MOVE) return false;
+        float lx = e.getAxisValue(MotionEvent.AXIS_X), ly = e.getAxisValue(MotionEvent.AXIS_Y);
+        float rx = e.getAxisValue(MotionEvent.AXIS_Z), ry = e.getAxisValue(MotionEvent.AXIS_RZ);
+        if (rx == 0f && ry == 0f) { rx = e.getAxisValue(MotionEvent.AXIS_RX); ry = e.getAxisValue(MotionEvent.AXIS_RY); }
+        float lt = Math.max(e.getAxisValue(MotionEvent.AXIS_LTRIGGER), e.getAxisValue(MotionEvent.AXIS_BRAKE));
+        float rt = Math.max(e.getAxisValue(MotionEvent.AXIS_RTRIGGER), e.getAxisValue(MotionEvent.AXIS_GAS));
+        float hx = e.getAxisValue(MotionEvent.AXIS_HAT_X), hy = e.getAxisValue(MotionEvent.AXIS_HAT_Y);
+        padAxes.update(lx, ly, rx, ry, lt, rt, hx, hy, padSink);
+        return true;
+    }
+
+    /** Detecta si hay un mando conectado y de que tipo; avisa al juego (los controles tactiles se ocultan o vuelven). */
+    private void refreshPads(boolean force) {
+        boolean any = false;
+        int type = Pad.TYPE_GENERIC;
+        try {
+            for (int id : InputDevice.getDeviceIds()) {
+                InputDevice d = InputDevice.getDevice(id);
+                if (d == null || d.isVirtual()) continue;
+                if (isPadSource(d.getSources())) { any = true; type = Pad.typeOf(d.getVendorId(), d.getName()); break; }
+            }
+        } catch (Throwable ignored) { }
+        if (!force && any == padPresent && (!any || type == padTypeSent)) return;
+        padPresent = any;
+        padTypeSent = type;
+        if (any) enqueueKey(Pad.EV_TYPE_BASE + type, true);
+        else padAxes.releaseAll(padSink);
+        enqueueKey(Pad.EV_CONNECTED, any);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        requestFocus();
+        try {
+            InputManager im = (InputManager) getContext().getSystemService(Context.INPUT_SERVICE);
+            if (im != null) {
+                padListener = new InputManager.InputDeviceListener() {
+                    @Override public void onInputDeviceAdded(int id) { refreshPads(false); }
+                    @Override public void onInputDeviceRemoved(int id) { refreshPads(false); }
+                    @Override public void onInputDeviceChanged(int id) { refreshPads(false); }
+                };
+                im.registerInputDeviceListener(padListener, null);
+            }
+        } catch (Throwable ignored) { }
+        refreshPads(true);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        try {
+            InputManager im = (InputManager) getContext().getSystemService(Context.INPUT_SERVICE);
+            if (im != null && padListener != null) im.unregisterInputDeviceListener(padListener);
+        } catch (Throwable ignored) { }
+        padListener = null;
+        super.onDetachedFromWindow();
+    }
+
     // ================================================================== toques (hilo UI)
 
     @SuppressLint("ClickableViewAccessibility")
@@ -359,6 +467,7 @@ public final class GameView extends SurfaceView implements SurfaceHolder.Callbac
                 }
                 if (errorText == null && !inited) {
                     startGame();
+                    post(new Runnable() { @Override public void run() { refreshPads(true); } });
                 } else if (inited && pausedByUs && errorText == null) {
                     pausedByUs = false;
                     phase = "resume";
@@ -474,6 +583,7 @@ public final class GameView extends SurfaceView implements SurfaceHolder.Callbac
                         continue;
                     }
                     if (!inited || game == null) continue;
+                    if (ev.action == ACT_KEY) { game.key(ev.id, ev.x > 0.5f); continue; }
                     int id = ev.id;
                     if (id >= 0 && id < MAX_POINTERS) {
                         ptrDown[id] = ev.action != Platform.ACTION_UP;

@@ -71,6 +71,7 @@ final class RunScreen extends Screen implements Level.Listener {
         }
     }
 
+    @Override boolean gameplayInput() { return ov == OV_NONE && lv != null; }
     @Override boolean keepInput() { return ov == OV_NONE && lv != null && lv.hitstop > 0; }
 
     // =============================================================== salas
@@ -643,6 +644,7 @@ final class RunScreen extends Screen implements Level.Listener {
     @Override void touch(int id, int action, float x, float y) {
         if (ov != OV_NONE) { super.touch(id, action, x, y); return; }
         if (fadeMode == 1) return;
+        if (!game.touchUiVisible()) return;   // con mando activo los toques no tocan el juego
         in.touch(id, action, x, y);
     }
 
@@ -672,7 +674,7 @@ final class RunScreen extends Screen implements Level.Listener {
         lv.render(g);
         renderCinema(g, w);
         renderHud(g, w);
-        if (ov == OV_NONE) renderControls(g, w);
+        if (ov == OV_NONE) { if (game.touchUiVisible()) renderControls(g, w); else renderPadHud(g, w); }
         renderBanner(g, w);
         renderOverlay(g, w);
         // pantalla roja al morir
@@ -755,8 +757,13 @@ final class RunScreen extends Screen implements Level.Listener {
         Prop near = ov == OV_NONE ? lv.nearestInteractable() : null;
         if (near != null && lv.pl.alive && !lv.cinematic) {
             String lab = hintFor(near);
-            Input.Btn ib = in.btn[Input.B_INTERACT];
-            UI.small.center(g, lab, ib.cx, ib.cy - ib.r - 12, UI.GOLD, 1f);
+            if (game.touchUiVisible()) {
+                Input.Btn ib = in.btn[Input.B_INTERACT];
+                UI.small.center(g, lab, ib.cx, ib.cy - ib.r - 12, UI.GOLD, 1f);
+            } else {
+                drawGlyph(g, w / 2f - UI.small.width(lab) / 2f - 4, 196, Input.B_INTERACT);
+                UI.small.draw(g, lab, w / 2f - UI.small.width(lab) / 2f + glyphW(Input.B_INTERACT) - 2, 197, UI.GOLD, 1f);
+            }
             if (near.kind.equals("portal")) {
                 Biome b = Biome.ALL[near.nextBiome];
                 BossDef bd = BossDef.byBiome(b.id);
@@ -793,6 +800,118 @@ final class RunScreen extends Screen implements Level.Listener {
         UI.small.center(g, bannerSub, w / 2f, y + 28, UI.GREY, a);
     }
 
+    // ---- indicaciones de boton segun el dispositivo (mando Xbox / PlayStation / teclado)
+    private String glyphText(int action) {
+        if (game.lastDevice == 1) return Pad.keyName(Save.S.kb[action]);
+        int c = Save.S.pb[action];
+        return c <= 0 ? "-" : Pad.name(game.padType, c);
+    }
+
+    private int glyphColor(int action) {
+        if (game.lastDevice == 1) return 0xFFE8E0D0;
+        int fc = Pad.faceColor(game.padType, Save.S.pb[action]);
+        return fc != 0 ? (0xFF000000 | fc) : 0xFFE8E0D0;
+    }
+
+    private float glyphW(int action) { return UI.small.width(glyphText(action)) + 10; }
+
+    /** Pequeña etiqueta con el nombre del boton asignado a una accion; (x, y) = esquina izquierda. */
+    private void drawGlyph(Platform.Gfx g, float x, float y, int action) {
+        String t = glyphText(action);
+        float tw = UI.small.width(t);
+        g.rect(x, y, tw + 6, 11, 0xB0000010, false);
+        g.rect(x, y, tw + 6, 1, 0x40FFFFFF, false);
+        UI.small.draw(g, t, x + 3, y + 2, glyphColor(action), 1f);
+    }
+
+    /** Con mando: sin botones en pantalla, pero se siguen viendo habilidades, recargas y municion con su boton asignado. */
+    private void renderPadHud(Platform.Gfx g, int w) {
+        int[] acts = {Input.B_S1, Input.B_S2, Input.B_S3, Input.B_ULT, Input.B_GUARD, Input.B_SEC, Input.B_GREN};
+        float x = w - 20, y = 237;
+        Input.Btn tmp = new Input.Btn();
+        for (int k = 0; k < acts.length; k++) {
+            int a = acts[k];
+            if (a == Input.B_SEC && rs.sec == 0) continue;
+            if (a == Input.B_GREN && rs.gren == 0) continue;
+            tmp.cx = x; tmp.cy = y; tmp.r = 12;
+            tmp.icon = a >= Input.B_S1 && a <= Input.B_S3 ? cls.skills[a - Input.B_S1].icon : (a == Input.B_ULT ? cls.skills[3].icon : "");
+            tmp.pointer = -1;
+            drawBtn(g, a, tmp, 0.78f);
+            drawGlyph(g, x - (UI.small.width(glyphText(a)) + 6) / 2f, y + 14, a);
+            x -= 36;
+        }
+        // frasco de vida
+        tmp.cx = 24; tmp.cy = 237; tmp.r = 12; tmp.icon = "potion"; tmp.pointer = -1;
+        UI.roundButton(g, tmp.cx, tmp.cy, tmp.r, 0, 0.78f);
+        UI.iconC(g, "potion", tmp.cx, tmp.cy, 1f, rs.potions > 0 ? 1f : 0.35f);
+        UI.small.draw(g, "x" + rs.potions, tmp.cx + 15, tmp.cy - 4, rs.potions > 0 ? UI.WHITE : UI.GREY, 1f);
+        drawGlyph(g, 6, tmp.cy + 14, Input.B_POTION);
+        // peligro de vida baja
+        float hr = rs.hp / rs.stats.maxHp;
+        if (hr < 0.3f && lv.pl.alive) {
+            int al = (int) (40 + 30 * Math.sin(lv.time * 6));
+            g.rect(0, 0, w, 3, Mth.withAlpha(0xC00020, al), false);
+            g.rect(0, Platform.VIEW_H - 3, w, 3, Mth.withAlpha(0xC00020, al), false);
+        }
+    }
+
+    /** Dibuja un boton de accion (habilidad, arma 2ª, granada, escudo, pocion...) en la posicion del boton b. */
+    private void drawBtn(Platform.Gfx g, int i, Input.Btn b, float alpha) {
+        UI.roundButton(g, b.cx, b.cy, b.r, b.pointer >= 0 ? 1 : 0, alpha);
+        if (i >= Input.B_S1 && i <= Input.B_ULT) {
+            boolean ult = i == Input.B_ULT;
+            if (b.icon != null) UI.iconC(g, b.icon, b.cx, b.cy, 1f, 1f);
+            if (ult) {
+                float r = rs.ult / 100f;
+                if (r > 0 && r < 1) {
+                    g.clipBegin(b.cx - b.r, b.cy + b.r - 2 * b.r * r, 2 * b.r, 2 * b.r * r + 1);
+                    g.circle(b.cx, b.cy, b.r - 1, 0x66FFB030, true);
+                    g.clipEnd();
+                } else if (r >= 1) {
+                    UI.light(g, b.cx, b.cy, b.r + 8, 0xFFB030, 0.45f + 0.25f * (float) Math.sin(lv.time * 9));
+                }
+                if (r < 1) g.circle(b.cx, b.cy, b.r - 1, 0x66000000, false);
+            } else {
+                int k = i - Input.B_S1;
+                float cdMax = Math.max(0.5f, cls.skills[k].cd * rs.stats.cdMul);
+                float cd = rs.cd[k];
+                if (cd > 0) {
+                    float f = Mth.clamp(cd / cdMax, 0, 1);
+                    g.clipBegin(b.cx - b.r, b.cy - b.r, 2 * b.r, 2 * b.r * f + 1);
+                    g.circle(b.cx, b.cy, b.r - 1, 0xAA000000, false);
+                    g.clipEnd();
+                    UI.small.center(g, String.valueOf((int) Math.ceil(cd)), b.cx, b.cy - 4, UI.WHITE, 1f);
+                }
+            }
+            return;
+        }
+        if (i == Input.B_GUARD) {
+            boolean on = lv.pl.guarding;
+            g.circle(b.cx, b.cy, b.r - 1, Mth.withAlpha(Items.SH_COL[rs.shield], on ? 150 : 60), false);
+            UI.iconC(g, "shield", b.cx, b.cy, 1f, 1f);
+            if (lv.pl.parryT > 0) g.circle(b.cx, b.cy, b.r + 2, 0xFFFFE070, true);
+            else if (lv.pl.parryCd > 0.1f && on) { g.clipBegin(b.cx - b.r, b.cy - b.r, 2 * b.r, 2 * b.r * Mth.clamp(lv.pl.parryCd / 0.7f, 0, 1) + 1); g.circle(b.cx, b.cy, b.r - 1, 0x88000000, false); g.clipEnd(); }
+            return;
+        }
+        if (i == Input.B_SEC || i == Input.B_GREN) {
+            boolean sec = i == Input.B_SEC;
+            int ty = sec ? rs.sec : rs.gren, n = sec ? rs.secAmmo : rs.grenCount;
+            int col = sec ? Items.SEC_COL[ty] : Items.GR_COL[ty];
+            g.circle(b.cx, b.cy, b.r - 1, Mth.withAlpha(col, 70), false);
+            UI.iconC(g, sec ? Items.SEC_ICON[ty] : Items.GR_ICON[ty], b.cx, b.cy - 1, 1f, n > 0 ? 1f : 0.35f);
+            UI.small.center(g, String.valueOf(n), b.cx, b.cy + b.r - 9, n > 0 ? UI.WHITE : UI.RED, 1f);
+            float cdv = sec ? lv.pl.secCd : lv.pl.grenCd;
+            if (cdv > 0) { g.clipBegin(b.cx - b.r, b.cy - b.r, 2 * b.r, 2 * b.r * Mth.clamp(cdv / 0.5f, 0, 1) + 1); g.circle(b.cx, b.cy, b.r - 1, 0xAA000000, false); g.clipEnd(); }
+            return;
+        }
+        if (i == Input.B_POTION) {
+            UI.iconC(g, "potion", b.cx, b.cy, 1f, rs.potions > 0 ? 1f : 0.35f);
+            UI.small.draw(g, "x" + rs.potions, b.cx + 14, b.cy - 4, rs.potions > 0 ? UI.WHITE : UI.GREY, 1f);
+            return;
+        }
+        if (b.icon != null && !b.icon.isEmpty()) UI.iconC(g, b.icon, b.cx, b.cy, i == Input.B_ATTACK ? 1.5f : 1f, 1f);
+    }
+
     private void renderControls(Platform.Gfx g, int w) {
         in.btn[Input.B_INTERACT].visible = in.btn[Input.B_INTERACT].visible && !lv.cinematic;
         in.btn[Input.B_SEC].visible = rs.sec != 0 && !lv.cinematic;
@@ -806,60 +925,7 @@ final class RunScreen extends Screen implements Level.Listener {
             if (!b.visible) continue;
             if (i == Input.B_PAUSE) { UI.roundButton(g, b.cx, b.cy, b.r, b.pointer >= 0 ? 1 : 0, 0.7f); UI.iconC(g, "pause", b.cx, b.cy, 1f, 0.9f); continue; }
             if (i == Input.B_LEFT || i == Input.B_RIGHT || i == Input.B_DOWN) continue;   // dibujados por el joystick
-            float alpha = 0.7f;
-            UI.roundButton(g, b.cx, b.cy, b.r, b.pointer >= 0 ? 1 : 0, alpha);
-            if (i >= Input.B_S1 && i <= Input.B_ULT) {
-                boolean ult = i == Input.B_ULT;
-                if (b.icon != null) UI.iconC(g, b.icon, b.cx, b.cy, 1f, 1f);
-                if (ult) {
-                    float r = rs.ult / 100f;
-                    if (r > 0 && r < 1) {
-                        g.clipBegin(b.cx - b.r, b.cy + b.r - 2 * b.r * r, 2 * b.r, 2 * b.r * r + 1);
-                        g.circle(b.cx, b.cy, b.r - 1, 0x66FFB030, true);
-                        g.clipEnd();
-                    } else if (r >= 1) {
-                        UI.light(g, b.cx, b.cy, b.r + 8, 0xFFB030, 0.45f + 0.25f * (float) Math.sin(lv.time * 9));
-                    }
-                    if (r < 1) g.circle(b.cx, b.cy, b.r - 1, 0x66000000, false);
-                } else {
-                    int k = i - Input.B_S1;
-                    float cdMax = Math.max(0.5f, cls.skills[k].cd * rs.stats.cdMul);
-                    float cd = rs.cd[k];
-                    if (cd > 0) {
-                        float f = Mth.clamp(cd / cdMax, 0, 1);
-                        g.clipBegin(b.cx - b.r, b.cy - b.r, 2 * b.r, 2 * b.r * f + 1);
-                        g.circle(b.cx, b.cy, b.r - 1, 0xAA000000, false);
-                        g.clipEnd();
-                        UI.small.center(g, String.valueOf((int) Math.ceil(cd)), b.cx, b.cy - 4, UI.WHITE, 1f);
-                    }
-                }
-                continue;
-            }
-            if (i == Input.B_GUARD) {
-                boolean on = lv.pl.guarding;
-                g.circle(b.cx, b.cy, b.r - 1, Mth.withAlpha(Items.SH_COL[rs.shield], on ? 150 : 60), false);
-                UI.iconC(g, "shield", b.cx, b.cy, 1f, 1f);
-                if (lv.pl.parryT > 0) g.circle(b.cx, b.cy, b.r + 2, 0xFFFFE070, true);
-                else if (lv.pl.parryCd > 0.1f && on) { g.clipBegin(b.cx - b.r, b.cy - b.r, 2 * b.r, 2 * b.r * Mth.clamp(lv.pl.parryCd / 0.7f, 0, 1) + 1); g.circle(b.cx, b.cy, b.r - 1, 0x88000000, false); g.clipEnd(); }
-                continue;
-            }
-            if (i == Input.B_SEC || i == Input.B_GREN) {
-                boolean sec = i == Input.B_SEC;
-                int ty = sec ? rs.sec : rs.gren, n = sec ? rs.secAmmo : rs.grenCount;
-                int col = sec ? Items.SEC_COL[ty] : Items.GR_COL[ty];
-                g.circle(b.cx, b.cy, b.r - 1, Mth.withAlpha(col, 70), false);
-                UI.iconC(g, sec ? Items.SEC_ICON[ty] : Items.GR_ICON[ty], b.cx, b.cy - 1, 1f, n > 0 ? 1f : 0.35f);
-                UI.small.center(g, String.valueOf(n), b.cx, b.cy + b.r - 9, n > 0 ? UI.WHITE : UI.RED, 1f);
-                float cdv = sec ? lv.pl.secCd : lv.pl.grenCd;
-                if (cdv > 0) { g.clipBegin(b.cx - b.r, b.cy - b.r, 2 * b.r, 2 * b.r * Mth.clamp(cdv / 0.5f, 0, 1) + 1); g.circle(b.cx, b.cy, b.r - 1, 0xAA000000, false); g.clipEnd(); }
-                continue;
-            }
-            if (i == Input.B_POTION) {
-                UI.iconC(g, "potion", b.cx, b.cy, 1f, rs.potions > 0 ? 1f : 0.35f);
-                UI.small.draw(g, "x" + rs.potions, b.cx + 14, b.cy - 4, rs.potions > 0 ? UI.WHITE : UI.GREY, 1f);
-                continue;
-            }
-            if (b.icon != null && !b.icon.isEmpty()) UI.iconC(g, b.icon, b.cx, b.cy, i == Input.B_ATTACK ? 1.5f : 1f, 1f);
+            drawBtn(g, i, b, 0.7f);
         }
         // peligro de vida baja
         float hr = rs.hp / rs.stats.maxHp;
@@ -907,7 +973,7 @@ final class RunScreen extends Screen implements Level.Listener {
                     UI.iconC(g, b.icon, h.x + h.w / 2f, h.y + 28 + yoff, 2f, fadeIn);
                     UI.small.center(g, b.name, h.x + h.w / 2f, h.y + 54 + yoff, UI.GOLD, fadeIn);
                     int cur = rs.bless[b.id];
-                    UI.small.center(g, cur == 0 ? "NUEVA" : "Nv " + cur + " → " + (cur + 1), h.x + h.w / 2f, h.y + 67 + yoff, cur == 0 ? UI.GREEN : UI.CYAN, fadeIn);
+                    UI.small.center(g, cur == 0 ? "NUEVA" : "Nv " + cur + " > " + (cur + 1), h.x + h.w / 2f, h.y + 67 + yoff, cur == 0 ? UI.GREEN : UI.CYAN, fadeIn);
                     UI.small.drawWrapped(g, b.desc, h.x + 8, h.y + 84 + yoff, (int) h.w - 16, 0xE8E0E0, fadeIn);
                 }
                 break;
@@ -976,7 +1042,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 for (int i = 0; i < 5; i++) UI.icon(g, "star", w / 2f - 45 + i * 18, 86, 1f, i < lvl ? 0 : Platform.TINT, i < lvl ? 0 : 0x303038, 1f);
                 if (lvl >= 5) UI.small.center(g, "¡Arma al nivel máximo!", w / 2f, 112, UI.GOLD, 1f);
                 else {
-                    UI.small.center(g, "Nivel " + lvl + " → " + (lvl + 1), w / 2f, 110, UI.CYAN, 1f);
+                    UI.small.center(g, "Nivel " + lvl + " > " + (lvl + 1), w / 2f, 110, UI.CYAN, 1f);
                     UI.small.center(g, "+10% de daño de arma y habilidades", w / 2f, 124, UI.GREEN, 1f);
                     int cost = rs.forgeCost();
                     UI.icon(g, "coin", w / 2f - 30, 140, 1f);

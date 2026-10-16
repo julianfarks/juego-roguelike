@@ -26,6 +26,9 @@ public final class Save {
     public int diffSel = 1;                          // 0 facil, 1 normal, 2 dificil
     public boolean[] unlocked = new boolean[Unlocks.COUNT];   // desbloqueos por enemigos derrotados
     public int[] eqSec = {0};                        // (reservado)
+    public int inputMode = 0;                        // 0 automatico, 1 tactil, 2 mando
+    public int[] kb = Input.defaultKeys();           // tecla de teclado por accion (0 = sin asignar)
+    public int[] pb = Input.defaultPad();            // boton de mando por accion (codigo virtual de Pad, 0 = sin asignar)
     public float[] ctl = new float[Input.B_COUNT * 3]; // dx, dy, escala por boton (0 = por defecto)
 
     public Save() {
@@ -63,6 +66,11 @@ public final class Save {
                 s.diffSel = Math.max(0, Math.min(2, Json.i(d, "diff", 1)));
                 int[] un = Json.ints(d, "unl");
                 if (un != null) for (int i = 0; i < Math.min(Unlocks.COUNT, un.length); i++) s.unlocked[i] = un[i] != 0;
+                s.inputMode = Math.max(0, Math.min(2, Json.i(d, "imode", 0)));
+                int[] kk = Json.ints(d, "kb");
+                if (kk != null) for (int i = 0; i < Math.min(s.kb.length, kk.length); i++) s.kb[i] = kk[i];
+                int[] pp = Json.ints(d, "pb");
+                if (pp != null) for (int i = 0; i < Math.min(s.pb.length, pp.length); i++) s.pb[i] = pp[i];
                 int[] cl = Json.ints(d, "ctl");
                 if (cl != null) for (int i = 0; i < Math.min(s.ctl.length, cl.length); i++) s.ctl[i] = cl[i] / 10f;
             }
@@ -90,6 +98,7 @@ public final class Save {
             d.put("unl", un);
             int[] cl = new int[ctl.length]; for (int i = 0; i < cl.length; i++) cl[i] = Math.round(ctl[i] * 10f);
             d.put("ctl", cl);
+            d.put("imode", inputMode); d.put("kb", kb); d.put("pb", pb);
             P.store().put("save", Json.write(d));
             P.store().commit();
         } catch (RuntimeException e) {
@@ -99,7 +108,7 @@ public final class Save {
 
     public void reset() {
         Save n = new Save();
-        n.musicOn = musicOn; n.sfxOn = sfxOn; n.vibOn = vibOn; n.ctl = ctl;
+        n.musicOn = musicOn; n.sfxOn = sfxOn; n.vibOn = vibOn; n.ctl = ctl; n.kb = kb; n.pb = pb; n.inputMode = inputMode;
         S = n;
         n.write();
     }

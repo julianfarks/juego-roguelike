@@ -292,7 +292,7 @@ final class ChestLoot {
         Reward x = new Reward();
         x.kind = K_GREN_UP; x.id = rs.gren; x.val = rs.grenLvl + 1; x.rar = rs.grenLvl == 0 ? 1 : (rs.grenLvl == 1 ? 2 : 3);
         x.name = "Granadas mejoradas"; x.icon = Items.GR_ICON[rs.gren]; x.col = Items.GR_COL[rs.gren] | 0xFF000000;
-        x.amount = "Nivel " + rs.grenLvl + " → " + x.val; x.desc = "Tus granadas hacen +25% de daño y explotan en un radio +15% mayor.";
+        x.amount = "Nivel " + rs.grenLvl + " > " + x.val; x.desc = "Tus granadas hacen +25% de daño y explotan en un radio +15% mayor.";
         return x;
     }
 
@@ -309,7 +309,7 @@ final class ChestLoot {
         Reward x = new Reward();
         x.kind = K_SEC_UP; x.id = rs.sec; x.val = rs.secLvl + 1; x.rar = rs.secLvl == 0 ? 1 : (rs.secLvl == 1 ? 2 : 3);
         x.name = "Arma 2ª mejorada"; x.icon = Items.SEC_ICON[rs.sec]; x.col = Items.SEC_COL[rs.sec] | 0xFF000000;
-        x.amount = "Nivel " + rs.secLvl + " → " + x.val; x.desc = "Tu arma secundaria hace +25% de daño y se dispara más rápido.";
+        x.amount = "Nivel " + rs.secLvl + " > " + x.val; x.desc = "Tu arma secundaria hace +25% de daño y se dispara más rápido.";
         return x;
     }
 

@@ -18,6 +18,14 @@ public final class Input {
         public boolean ready;
     }
 
+    // ---- asignaciones: tecla por accion (Save.S.kb) y boton de mando por accion (Save.S.pb)
+    public static int[] defaultKeys() { return new int[]{'A', 'D', 'S', 'W', 'J', 'K', 'U', 'I', 'O', 'P', 'E', 27, 'Q', 'L', 'G', 'C'}; }
+    public static int[] defaultPad() { return new int[]{Pad.LS_L, Pad.LS_R, Pad.LS_D, Pad.A, Pad.X, Pad.B, Pad.RT, Pad.RB, Pad.LB, Pad.R3, Pad.Y, Pad.MENU, Pad.DUP, Pad.VIEW, Pad.L3, Pad.LT}; }
+    /** Alternativas fijas: siguen funcionando mientras no las asignes tu a otra accion. */
+    private static final int[] ALIAS_CODES = {37, 39, 40, 38, 32, 'Z', 'X', 16, '1', '2', '3', '4', 10, 'V', Pad.DLEFT, Pad.DRIGHT, Pad.DDOWN};
+    private static final int[] ALIAS_ACT = {B_LEFT, B_RIGHT, B_DOWN, B_JUMP, B_JUMP, B_ATTACK, B_ROLL, B_ROLL, B_S1, B_S2, B_S3, B_ULT, B_INTERACT, B_GUARD, B_LEFT, B_RIGHT, B_DOWN};
+    private final boolean[] codeDown = new boolean[2100];
+
     public final Btn[] btn = new Btn[B_COUNT];
     private final Map<Integer, Integer> ptrBtn = new HashMap<>();   // pointerId -> boton
     private final boolean[] held = new boolean[B_COUNT];
@@ -148,7 +156,11 @@ public final class Input {
     public void reset() {
         ptrBtn.clear();
         stickId = -1; stkL = stkR = stkD = false;
-        for (int i = 0; i < B_COUNT; i++) { held[i] = false; pressed[i] = false; keyHeld[i] = false; stickHeld[i] = false; btn[i].pointer = -1; }
+        for (int i = 0; i < B_COUNT; i++) {
+            pressed[i] = false; stickHeld[i] = false; btn[i].pointer = -1;
+            keyHeld[i] = actionDown(i);          // teclas/botones fisicos que siguen pulsados se conservan
+            held[i] = keyHeld[i];
+        }
     }
 
     private int hit(float x, float y, boolean holdOnly) {
@@ -209,31 +221,50 @@ public final class Input {
         recompute(b);
     }
 
-    public void key(int code, boolean down) {
-        int b = -1;
-        switch (code) {
-            case 'A': case 37: b = B_LEFT; break;
-            case 'D': case 39: b = B_RIGHT; break;
-            case 'S': case 40: b = B_DOWN; break;
-            case 'W': case 38: case 32: b = B_JUMP; break;
-            case 'J': case 'Z': b = B_ATTACK; break;
-            case 'K': case 'X': case 16: b = B_ROLL; break;
-            case 'U': case '1': b = B_S1; break;
-            case 'I': case '2': b = B_S2; break;
-            case 'O': case '3': b = B_S3; break;
-            case 'P': case '4': b = B_ULT; break;
-            case 'E': case 10: b = B_INTERACT; break;
-            case 'Q': b = B_POTION; break;
-            case 'L': b = B_SEC; break;
-            case 'G': b = B_GREN; break;
-            case 'C': case 'V': b = B_GUARD; break;
-            case 27: b = B_PAUSE; break;
-            default: break;
+    private boolean isDown(int code) { return code > 0 && code < codeDown.length && codeDown[code]; }
+
+    /** Accion a la que apunta una tecla/boton: la asignada explicitamente (puede ser mas de una) o, si nadie la usa, su alternativa fija. */
+    public boolean explicitlyBound(int code) {
+        Save s = Save.S;
+        for (int i = 0; i < B_COUNT; i++) if (s.kb[i] == code || s.pb[i] == code) return true;
+        return false;
+    }
+
+    private boolean actionDown(int b) {
+        Save s = Save.S;
+        if (isDown(s.kb[b]) || isDown(s.pb[b])) return true;
+        for (int k = 0; k < ALIAS_CODES.length; k++) if (ALIAS_ACT[k] == b && isDown(ALIAS_CODES[k]) && !explicitlyBound(ALIAS_CODES[k])) return true;
+        return false;
+    }
+
+    private void refreshKeys() {
+        for (int b = 0; b < B_COUNT; b++) {
+            boolean nv = actionDown(b);
+            if (nv && !keyHeld[b]) pressed[b] = true;
+            keyHeld[b] = nv;
+            recompute(b);
         }
-        if (b < 0) return;
-        if (down && !keyHeld[b]) pressed[b] = true;
-        keyHeld[b] = down;
-        recompute(b);
+    }
+
+    /** Tecla de teclado (&lt; 1000) o boton de mando (codigo de Pad). */
+    public void key(int code, boolean down) {
+        if (code <= 0 || code >= codeDown.length) return;
+        codeDown[code] = down;
+        refreshKeys();
+    }
+
+    /** Suelta todos los botones de mando (mando desconectado). */
+    public void releasePad() {
+        for (int c = Pad.A; c < Pad.END; c++) codeDown[c] = false;
+        refreshKeys();
+    }
+
+    /** Suelta los controles tactiles (se ocultan al usar mando). */
+    public void releaseTouch() {
+        ptrBtn.clear();
+        for (int i = 0; i < B_COUNT; i++) btn[i].pointer = -1;
+        if (stickId >= 0) endStick();
+        for (int i = 0; i < B_COUNT; i++) recompute(i);
     }
 
     private boolean anyPointer(int b) { return btn[b].pointer >= 0; }

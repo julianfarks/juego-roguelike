@@ -85,6 +85,18 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    public boolean dispatchKeyEvent(android.view.KeyEvent event) {
+        if (gameView != null && gameView.handleKeyEvent(event)) return true;
+        return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    public boolean dispatchGenericMotionEvent(android.view.MotionEvent event) {
+        if (gameView != null && gameView.handleMotionEvent(event)) return true;
+        return super.dispatchGenericMotionEvent(event);
+    }
+
+    @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) hideSystemUi();

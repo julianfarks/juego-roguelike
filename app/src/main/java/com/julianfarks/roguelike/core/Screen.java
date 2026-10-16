@@ -31,6 +31,11 @@ abstract class Screen {
     abstract void render(Platform.Gfx g);
     boolean back() { return false; }
     boolean keepInput() { return false; }
+    /** Pantallas que capturan teclas/botones en bruto (reasignar controles). */
+    boolean wantsRawKeys() { return false; }
+    void rawKey(int code, boolean down) { }
+    /** true mientras se juega (los botones del mando son acciones, no navegacion de menu). */
+    boolean gameplayInput() { return false; }
     void pause() { }
     void resume() { }
 

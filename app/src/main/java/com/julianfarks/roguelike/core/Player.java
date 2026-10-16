@@ -16,6 +16,7 @@ public final class Player extends Ent {
     public float regenT, regenRate;
     public int combo, hitCount;
 
+    private float rollBuf, skillBuf, ultBuf; private int skillBufIdx;
     private float rollCd, atkBuf, jumpBuf, coyote, comboWin, stepT, safeT, dustT, trailT, actionT;
     private int jumpsLeft, skillIdx, lastFrame = -1;
     private boolean jumping, skillFired, swingFx, deathSent;
@@ -57,7 +58,7 @@ public final class Player extends Ent {
 
     public void cancelAction() {
         if (!alive) return;
-        dashT = 0;
+        dashT = 0; rollBuf = skillBuf = ultBuf = 0;
         if (state != DEAD) { state = HURT; animName = "hurt"; animT = 0; }
         swingHit.clear();
     }
@@ -109,6 +110,9 @@ public final class Player extends Ent {
         if (comboWin > 0) comboWin -= dt;
         if (atkBuf > 0) atkBuf -= dt;
         if (jumpBuf > 0) jumpBuf -= dt;
+        if (rollBuf > 0) rollBuf -= dt;
+        if (skillBuf > 0) skillBuf -= dt;
+        if (ultBuf > 0) ultBuf -= dt;
         if (dropT > 0) dropT -= dt;
         sq += (0f - sq) * Math.min(1f, dt * 11f);
         if (secCd > 0) secCd -= dt;
@@ -172,9 +176,13 @@ public final class Player extends Ent {
                 if (in.pressed(Input.B_SEC)) Items.useSecondary(lv, this);
                 if (in.pressed(Input.B_GREN)) Items.throwGrenade(lv, this);
             }
-            if (in.pressed(Input.B_ROLL)) tryRoll(lv, mx);
-            for (int i = 0; i < 3; i++) if (in.pressed(Input.B_S1 + i)) trySkill(lv, i);
-            if (in.pressed(Input.B_ULT)) tryUlt(lv);
+            // esquiva y habilidades: si el estado actual las bloquea (recuperacion, otra habilidad) se guardan 0.16 s y salen al quedar libre
+            if (in.pressed(Input.B_ROLL)) rollBuf = 0.16f;
+            if (rollBuf > 0 && tryRoll(lv, mx)) rollBuf = 0;
+            for (int i = 0; i < 3; i++) if (in.pressed(Input.B_S1 + i)) { skillBuf = 0.16f; skillBufIdx = i; }
+            if (skillBuf > 0) { int r = trySkill(lv, skillBufIdx); if (r != 1) skillBuf = 0; }
+            if (in.pressed(Input.B_ULT)) ultBuf = 0.16f;
+            if (ultBuf > 0) { int r = tryUlt(lv); if (r != 1) ultBuf = 0; }
         }
 
         // ---- maquina de estados
@@ -291,9 +299,9 @@ public final class Player extends Ent {
         }
     }
 
-    private void tryRoll(Level lv, float mx) {
-        if (rollCd > 0 || state == ROLL || state == SKILL || state == ULT || state == HURT) return;
-        if (frozen()) return;
+    private boolean tryRoll(Level lv, float mx) {
+        if (state == ROLL || state == ULT || frozen()) return false;
+        if (rollCd > 0 || state == SKILL || state == HURT) return false;
         if (mx != 0) right = mx > 0;
         state = ROLL; animName = "roll"; animT = 0;
         vx = dir() * 215f * Math.max(0.9f, lv.rs.stats.speedMul);
@@ -302,6 +310,7 @@ public final class Player extends Ent {
         Snd.sfxv("roll", 0.8f);
         lv.fx("fx_dust", "roll", x, y - 2, 1f, 0, 0).right = right;
         atkBuf = 0;
+        return true;
     }
 
     private void updateRoll(Level lv, float dt) {
@@ -495,24 +504,28 @@ public final class Player extends Ent {
     }
 
     // ------------------------------------------------------------------ habilidades
-    private void trySkill(Level lv, int i) {
+    /** 0 = lanzada, 1 = bloqueada por el estado actual (se guarda en el buffer), 2 = descartada (enfriamiento / congelado). */
+    private int trySkill(Level lv, int i) {
         RunState rs = lv.rs;
-        if (state == ROLL || state == SKILL || state == ULT || state == HURT) return;
-        if (rs.cd[i] > 0) { Snd.sfx("skill_fail", 0.5f); return; }
-        if (frozen()) return;
+        if (state == ULT) return 2;
+        if (state == ROLL || state == SKILL || state == HURT) return 1;
+        if (rs.cd[i] > 0) { Snd.sfx("skill_fail", 0.5f); return 2; }
+        if (frozen()) return 2;
         ClassDef.Skill sk = cls.skills[i];
         rs.cd[i] = sk.cd * rs.stats.cdMul;
         state = SKILL; animName = "skill"; animT = 0; skillIdx = i; skillFired = false;
         atkBuf = 0;
         if (onGround) vx *= 0.3f;
         Snd.sfx(sk.sfx, 0.9f);
+        return 0;
     }
 
-    private void tryUlt(Level lv) {
+    private int tryUlt(Level lv) {
         RunState rs = lv.rs;
-        if (state == ROLL || state == SKILL || state == ULT || state == HURT) return;
-        if (rs.ult < 100f) { Snd.sfx("skill_fail", 0.5f); return; }
-        if (frozen()) return;
+        if (state == ULT) return 2;
+        if (state == ROLL || state == SKILL || state == HURT) return 1;
+        if (rs.ult < 100f) { Snd.sfx("skill_fail", 0.5f); return 2; }
+        if (frozen()) return 2;
         rs.ult = 0;
         state = ULT; animName = "ult"; animT = 0; skillIdx = 3; skillFired = false;
         lv.cinematic = true;
@@ -524,6 +537,7 @@ public final class Player extends Ent {
         lv.shake(3f, 0.4f);
         lv.camTargetX = x; lv.camTargetY = y - 40; lv.camTargetZoom = 1.18f;
         lv.fxAdd("fx_ring", "pulse", x, y - 22, 1.2f, cls.color1);
+        return 0;
     }
 
     private void updateCast(Level lv, float dt) {

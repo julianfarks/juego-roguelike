@@ -215,6 +215,7 @@ public final class Level {
     public FxObj fx(String sheetName, String animName, float x, float y, float scale, int tint, int flags) {
         Sheet s = Assets.fx(sheetName);
         if (s == Sheet.EMPTY) return null;
+        if (fxs.size() > 220) fxs.remove(0);   // tope: evita acumulacion en peleas enormes
         FxObj f = new FxObj();
         f.sheet = s; f.anim = s.anim(animName); f.x = x; f.y = y; f.scale = scale; f.tint = tint; f.flags = flags;
         if (f.anim.loop) { f.loop = true; f.life = 0.8f; }   // seguro: un efecto en bucle sin duracion nunca desaparecia
@@ -465,6 +466,7 @@ public final class Level {
         } else {
             for (Enemy e : enemies) e.animFrozen(dt);
         }
+        separateEnemies(dt);
         for (int i = enemies.size() - 1; i >= 0; i--) if (enemies.get(i).remove) enemies.remove(i);
         updateProjs(dt);
         updatePickups(dt);
@@ -493,6 +495,33 @@ public final class Level {
         updateCamera(rawDt);
         ps.update(dt);
         for (Iterator<float[]> it = lines.iterator(); it.hasNext(); ) { float[] l = it.next(); l[4] -= dt; if (l[4] <= 0) it.remove(); }
+    }
+
+    /** Empuje suave entre enemigos terrestres solapados: evita que se apilen en un punto y se queden atascados. */
+    private void separateEnemies(float dt) {
+        int n = enemies.size();
+        for (int i = 0; i < n; i++) {
+            Enemy a = enemies.get(i);
+            if (!a.alive || a.flying) continue;
+            for (int j = i + 1; j < n; j++) {
+                Enemy b = enemies.get(j);
+                if (!b.alive || b.flying || Math.abs(a.y - b.y) > 10) continue;
+                float min = (a.bw + b.bw) * 0.38f, d = b.x - a.x;
+                if (Math.abs(d) >= min) continue;
+                float push = (min - Math.abs(d)) * Math.min(1f, dt * 8f) * 0.5f;
+                float dir = d == 0 ? (i % 2 == 0 ? 1 : -1) : Math.signum(d);
+                shove(a, -dir * push);
+                shove(b, dir * push);
+            }
+        }
+    }
+
+    private void shove(Enemy e, float dx) {
+        float nx = e.x + dx, edge = nx + Math.signum(dx) * e.bw / 2f;
+        for (int k = 1; k <= 2; k++) {
+            if (Room.isSolid(room.tile((int) Math.floor(edge / Room.TS), (int) Math.floor((e.y - k * 8f) / Room.TS)))) return;
+        }
+        e.x = nx;
     }
 
     private boolean pendingSpawns() { return !delayed.isEmpty() && false; }
@@ -754,6 +783,8 @@ public final class Level {
     }
 
     // ------------------------------------------------------------------ camara
+    private float anchorY = Float.NaN;
+
     private void updateCamera(float dt) {
         float w = viewW, h = Platform.VIEW_H;
         float tx, ty;
@@ -761,7 +792,11 @@ public final class Level {
         else {
             float look = pl.right ? 22 : -22;
             tx = pl.x + look - w / 2;
-            ty = pl.y - h * 0.62f;
+            // la camara solo sigue en vertical al pisar suelo o al salirse de una banda: los saltos ya no la sacuden
+            if (Float.isNaN(anchorY) || pl.onGround) anchorY = pl.y;
+            else if (pl.y > anchorY + 44) anchorY = pl.y - 44;
+            else if (pl.y < anchorY - 70) anchorY = pl.y + 70;
+            ty = anchorY - h * 0.62f;
         }
         float maxX = Math.max(0, room.pixW - w), maxY = Math.max(0, room.pixH - h);
         if (room.pixW <= w) tx = (room.pixW - w) / 2; else tx = Mth.clamp(tx, 0, maxX);
@@ -775,6 +810,7 @@ public final class Level {
     public void snapCamera() {
         updateCamera(1f);
         camX = Mth.clamp(pl.x - viewW / 2, 0, Math.max(0, room.pixW - viewW));
+        anchorY = pl.y;
         camY = Mth.clamp(pl.y - Platform.VIEW_H * 0.62f, 0, Math.max(0, room.pixH - Platform.VIEW_H));
     }
 

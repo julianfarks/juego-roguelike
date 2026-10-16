@@ -5,7 +5,7 @@ public final class Stats {
     public float maxHp, dmgMul, critChance, critMul, speedMul, dmgTaken, lifesteal, skillDmg, cdMul, soulMul, goldMul;
     public float burn, freeze, shock, poison, exec, ultGain, eclipseCd, magnet, atkSpd;
     public int extraJumps, vengeance, wave, egida, giant, shadowRoll, furiaCap, shieldLvl, revive, fantasma;
-    public int potionsMax;
+    public int potionsMax, luck;
     public float revivePct;
 
     public void recalc(RunState rs) {
@@ -47,5 +47,6 @@ public final class Stats {
         atkSpd = 1f;
         Items.applySpecial(rs, this);
         Unlocks.applyStats(rs, this);
+        ChestLoot.applyStats(rs, this);
     }
 }

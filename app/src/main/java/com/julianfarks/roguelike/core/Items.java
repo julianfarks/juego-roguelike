@@ -25,14 +25,14 @@ final class Items {
     static final int[] SH_COL = {0x9A6A3A, 0xA8B4C8, 0x7A60E0, 0x5AB04A};
     static final String[] SH_DESC = {"Parry 0.20s · bloquea 55%", "Parry 0.17s · bloquea 70%", "Parry 0.15s · explosión al parry · bloquea 70%", "Parry 0.17s · devuelve daño al bloquear"};
 
-    static final String[] SEC_DESC = {"", "3 cuchillos en abanico · daño 0.65×", "Atraviesa 2 enemigos · daño 2.1×", "Arco alto, atraviesa 3 · daño 2.4×", "Persigue y explota · daño 1.5×"};
-    static final String[] GR_DESC = {"", "Explosión grande · daño 3.0×", "Quema 4s · daño 1.7×", "Congela 1.8s · daño 1.3×", "Veneno 5s · radio enorme", "Aturde 1.2s · daño 1.8×"};
+    static final String[] SEC_DESC = {"", "3 cuchillos en abanico · daño 0.65x", "Atraviesa 2 enemigos · daño 2.1x", "Arco alto, atraviesa 3 · daño 2.4x", "Persigue y explota · daño 1.5x"};
+    static final String[] GR_DESC = {"", "Explosión grande · daño 3.0x", "Quema 4s · daño 1.7x", "Congela 1.8s · daño 1.3x", "Veneno 5s · radio enorme", "Aturde 1.2s · daño 1.8x"};
 
     // ---- armas especiales (mejoran el arma principal toda la partida)
-    static final int SP_COUNT = 7;
-    static final String[] SP_NAME = {"-", "Filo Ígneo", "Colmillo Gélido", "Daga Venenosa", "Hacha Carmesí", "Lanza Relámpago", "Hoja del Eclipse"};
-    static final String[] SP_DESC = {"", "+10% daño · quema al golpear", "Congela y ralentiza al golpear", "Envenena al golpear", "+15% daño · roba vida", "+8% crítico · descargas", "+25% daño · críticos más fuertes"};
-    static final int[] SP_COL = {0xFFFFFF, 0xFF7A3A, 0x7AF0FF, 0x7AE04A, 0xFF4060, 0xFFE860, 0xC8A0FF};
+    static final int SP_COUNT = 9;
+    static final String[] SP_NAME = {"-", "Filo Ígneo", "Colmillo Gélido", "Daga Venenosa", "Hacha Carmesí", "Lanza Relámpago", "Hoja del Eclipse", "Mandoble Pesado", "Hoja Veloz"};
+    static final String[] SP_DESC = {"", "+10% daño · quema al golpear", "Congela y ralentiza al golpear", "Envenena al golpear", "+15% daño · roba vida", "+8% crítico · descargas", "+25% daño · críticos más fuertes", "+38% daño · ataques 18% más lentos", "+30% velocidad de ataque · -8% daño"};
+    static final int[] SP_COL = {0xFFFFFF, 0xFF7A3A, 0x7AF0FF, 0x7AE04A, 0xFF4060, 0xFFE860, 0xC8A0FF, 0xE0A060, 0x80E0C0};
 
     static void applySpecial(RunState rs, Stats s) {
         switch (rs.special) {
@@ -42,6 +42,8 @@ final class Items {
             case 4: s.dmgMul *= 1.15f; s.lifesteal += 0.05f; break;
             case 5: s.critChance += 0.08f; s.shock += 0.30f; break;
             case 6: s.dmgMul *= 1.25f; s.critMul += 0.3f; break;
+            case 7: s.dmgMul *= 1.38f; s.atkSpd *= 0.82f; break;
+            case 8: s.atkSpd *= 1.30f; s.dmgMul *= 0.92f; break;
             default: break;
         }
     }
@@ -53,9 +55,9 @@ final class Items {
         if (rs.secAmmo <= 0) { lv.text(p.x, p.y - p.bh - 8, "sin munición", 0xA0A0A8, false); Snd.sfx("ui_error", 0.5f); p.secCd = 0.4f; return; }
         float d = p.dir();
         float x = p.x + d * 12, y = p.y - 17;
-        float base = p.baseDmg(lv);
+        float base = p.baseDmg(lv) * (1f + 0.25f * rs.secLvl);
         rs.secAmmo--;
-        p.secCd = 0.32f;
+        p.secCd = 0.32f * (1f - 0.12f * rs.secLvl);
         switch (rs.sec) {
             case SEC_KNIFE:
                 for (int i = -1; i <= 1; i++) {
@@ -109,6 +111,7 @@ final class Items {
             case GR_STORM: g.sprite = "bolt"; g.explode = 72; g.dmg = base * 1.8f; g.status = Ent.STUN; g.statusDur = 1.2f; g.explodeFx = "fx_shock:wave"; break;
             default: break;
         }
+        g.dmg *= 1f + 0.25f * rs.grenLvl; g.explode *= 1f + 0.15f * rs.grenLvl;
         g.hitSfx = "proj_hit";
         p.vx -= d * 10;
         Snd.sfxv("swing_air", 0.8f);
@@ -116,6 +119,14 @@ final class Items {
     }
 
     // ---------------------------------------------------------------- cofres secretos
+    /** Cofre secreto: solo el botin base (oro y almas); la recompensa se elige entre 3 opciones (ChestLoot). */
+    static void secretChestDrops(Level lv, RunState rs, float x, float y) {
+        Rng r = lv.rng;
+        lv.dropGold(x, y - 14, Math.round((70 + 20 * rs.stage + r.i(50)) * rs.stats.goldMul));
+        lv.dropSouls(x, y - 14, 10 + 3 * rs.stage);
+        lv.ps.burst(lv.rng, x, y - 14, 0xD8B0FF, 26, 130, 0.9f, 3, 80, true);
+    }
+
     /** Abre un cofre secreto: da botin variado. */
     static void openSecretChest(Level lv, RunState rs, float x, float y) {
         Rng r = lv.rng;
@@ -150,7 +161,7 @@ final class Items {
             int n = 3 + r.i(3);
             if (rs.gren == t) rs.grenCount = Math.min(12, rs.grenCount + n);
             else { rs.gren = t; rs.grenCount = n; }
-            msg = "¡" + n + "× " + GR_NAME[t] + "!"; col = GR_COL[t];
+            msg = "¡" + n + "x " + GR_NAME[t] + "!"; col = GR_COL[t];
         } else {
             lv.drop(Pickup.POTION, x - 8, y - 14, 1); lv.drop(Pickup.POTION, x + 8, y - 14, 1);
             lv.drop(Pickup.HEART, x, y - 14, 1);

@@ -5,7 +5,7 @@ import java.util.List;
 
 /** La partida: salas, HUD, controles tactiles, altares, tienda, forja, jefes, muerte y victoria. */
 final class RunScreen extends Screen implements Level.Listener {
-    static final int OV_NONE = 0, OV_PAUSE = 1, OV_BLESS = 2, OV_SHOP = 3, OV_FORGE = 4, OV_DEAD = 5, OV_WIN = 6;
+    static final int OV_NONE = 0, OV_PAUSE = 1, OV_BLESS = 2, OV_SHOP = 3, OV_FORGE = 4, OV_DEAD = 5, OV_WIN = 6, OV_CHEST = 7;
     static final String[] RELIC_NAMES = {"Corona Exánime", "Corazón de Magma", "Lágrima de Escarcha", "Ojo del Vacío", "Savia Ancestral", "Chispa del Titán", "Cáliz de Sangre", "Disco del Eclipse"};
 
     static final class ShopItem {
@@ -27,6 +27,8 @@ final class RunScreen extends Screen implements Level.Listener {
     float bossCardT = -1;
     int[] offer = new int[3];
     int offerSel;
+    ChestLoot.Reward[] cOffer;      // las 3 opciones del cofre abierto
+    int cMode;
     Prop ovProp;
     List<ShopItem> shop;
     boolean ended, quitConfirm;
@@ -335,19 +337,38 @@ final class RunScreen extends Screen implements Level.Listener {
         lv.ps.burst(lv.rng, p.x, p.y - 10, 0xFFD25A, 16, 110, 0.7f, 2, 100, true);
         if (p.arg == 3) {
             rs.secretsFound++;
-            Items.openSecretChest(lv, rs, p.x, p.y);
-            p.label = null;
+            Items.secretChestDrops(lv, rs, p.x, p.y);
         } else if (p.arg == 0) {
             lv.dropGold(p.x, p.y - 14, Math.round((45 + 12 * rs.stage + lv.rng.i(30)) * rs.stats.goldMul));
-            if (lv.rng.chance(0.5f)) lv.drop(Pickup.POTION, p.x, p.y - 14, 1);
-            if (lv.rng.chance(0.4f)) lv.drop(Pickup.HEART, p.x, p.y - 14, 1);
             lv.dropSouls(p.x, p.y - 14, 6 + 2 * rs.stage);
-            p.label = null;
-        } else {
-            ovProp = p;
-            lv.later(0.5f, this::openBlessing);
-            p.label = null;
         }
+        p.label = null;
+        ovProp = p;
+        // al abrir un cofre siempre se eligen 1 de 3 recompensas
+        final int mode = ChestLoot.modeFor(rs.rng, p.arg), lb = ChestLoot.luckBonusFor(p.arg);
+        lv.later(0.5f, () -> openChestOv(mode, lb));
+    }
+
+    private void openChestOv(int mode, int luckBonus) {
+        cMode = mode;
+        cOffer = ChestLoot.roll(rs, mode, luckBonus);
+        offerSel = game.keyboardUsed ? 0 : -1;
+        openOv(OV_CHEST);
+        Snd.sfx("altar_bless", 0.9f);
+    }
+
+    private void confirmChest() {
+        if (ov != OV_CHEST || offerSel < 0 || ovT < 0.3f || cOffer == null) return;
+        ChestLoot.Reward x = cOffer[offerSel];
+        ChestLoot.apply(rs, x);
+        if (x.kind == ChestLoot.K_BARRIER) lv.pl.shield = Math.min(70, lv.pl.shield + x.val);
+        cOffer = null;
+        closeOv();
+        int col = ChestLoot.R_COL[x.rar] & 0xFFFFFF;
+        lv.text(lv.pl.x, lv.pl.y - 50, x.name + (x.amount.isEmpty() ? "" : "  " + x.amount), col, true);
+        lv.ps.burst(lv.rng, lv.pl.x, lv.pl.y - 16, col, 22, 120, 0.8f, 3, 60, true);
+        lv.fx("fx_star", "burst", lv.pl.x, lv.pl.y - 18, 1f, col, Platform.ADD | Platform.TINT);
+        Snd.sfx("secret", 0.9f);
     }
 
     // =============================================================== overlays
@@ -464,6 +485,21 @@ final class RunScreen extends Screen implements Level.Listener {
                     });
                     h.plain = false; h.tag = i;
                 }
+                break;
+            }
+            case OV_CHEST: {
+                float cw = Math.min(150, (w - 40) / 3f), gap = 8, x0 = w / 2f - (3 * cw + 2 * gap) / 2f;
+                for (int i = 0; i < 3; i++) {
+                    final int k = i;
+                    Hit h = add(x0 + i * (cw + gap), 44, cw, 164, null, () -> {
+                        if (ovT < 0.3f) return;
+                        if (offerSel == k) confirmChest();
+                        else { offerSel = k; Snd.sfx("ui_hover", 0.7f); layoutOverlay(); }
+                    });
+                    h.plain = true; h.tag = i; h.noSound = true;
+                }
+                Hit ok = add(w / 2f - 60, 216, 120, 24, offerSel < 0 ? "Toca una carta" : "Elegir", this::confirmChest);
+                ok.disabled = offerSel < 0;
                 break;
             }
             case OV_SHOP: {
@@ -616,6 +652,13 @@ final class RunScreen extends Screen implements Level.Listener {
                 if (code == 37 || code == 'A') offerSel = (offerSel + 2) % 3;
                 else if (code == 39 || code == 'D') offerSel = (offerSel + 1) % 3;
                 else if ((code == 10 || code == 32 || code == 'J') && ovT > 0.35f) { for (Hit h : hits) if (h.tag == offerSel) { click(h); break; } }
+                return;
+            }
+            if (ov == OV_CHEST && isDown) {
+                if (code == 37 || code == 'A') offerSel = offerSel < 0 ? 0 : (offerSel + 2) % 3;
+                else if (code == 39 || code == 'D') offerSel = offerSel < 0 ? 0 : (offerSel + 1) % 3;
+                else if ((code == 10 || code == 32 || code == 'J') && ovT > 0.3f) { confirmChest(); return; }
+                layoutOverlay();
                 return;
             }
             super.key(code, isDown);
@@ -867,6 +910,37 @@ final class RunScreen extends Screen implements Level.Listener {
                     UI.small.center(g, cur == 0 ? "NUEVA" : "Nv " + cur + " → " + (cur + 1), h.x + h.w / 2f, h.y + 67 + yoff, cur == 0 ? UI.GREEN : UI.CYAN, fadeIn);
                     UI.small.drawWrapped(g, b.desc, h.x + 8, h.y + 84 + yoff, (int) h.w - 16, 0xE8E0E0, fadeIn);
                 }
+                break;
+            }
+            case OV_CHEST: {
+                if (cOffer == null) break;
+                dim(g, w, 0.66f * fadeIn);
+                UI.big.center(g, ChestLoot.MODE_TITLE[cMode], w / 2f, 10, UI.GOLD, fadeIn);
+                UI.small.center(g, ChestLoot.MODE_SUB[cMode], w / 2f, 28, UI.GREY, fadeIn);
+                for (Hit h : hits) {
+                    if (h.tag < 0 || h.tag > 2 || h.label != null) continue;
+                    int i = h.tag;
+                    ChestLoot.Reward x = cOffer[i];
+                    boolean sel = offerSel == i;
+                    int rc = ChestLoot.R_COL[x.rar];
+                    float yo = sel ? -5 : 0, cx = h.x + h.w / 2f, y = h.y + yo;
+                    UI.panel(g, sel ? 1 : 0, h.x, y, h.w, h.h, fadeIn);
+                    int ba = (int) (fadeIn * (sel ? 255 : 170));
+                    int bc = Mth.withAlpha(rc, ba);
+                    g.rect(h.x + 3, y + 3, h.w - 6, 2, bc, false);
+                    g.rect(h.x + 3, y + h.h - 5, h.w - 6, 2, bc, false);
+                    if (sel) { g.rect(h.x + 1, y + 1, 2, h.h - 2, bc, false); g.rect(h.x + h.w - 3, y + 1, 2, h.h - 2, bc, false); }
+                    UI.small.center(g, ChestLoot.R_NAME[x.rar].toUpperCase(), cx, y + 9, rc, fadeIn);
+                    UI.light(g, cx, y + 38, 22 + x.rar * 5, rc & 0xFFFFFF, (0.18f + 0.07f * x.rar + (sel ? 0.12f : 0f)) * fadeIn);
+                    if (!x.icon.isEmpty()) UI.iconC(g, x.icon, cx, y + 38, 2f, fadeIn);
+                    UI.small.center(g, x.name, cx, y + 60, x.col != 0xFFFFFFFF ? x.col : UI.GOLD, fadeIn);
+                    UI.small.center(g, x.amount, cx, y + 73, x.kind == ChestLoot.K_STAT || x.kind == ChestLoot.K_TRADE || x.kind == ChestLoot.K_HEAL ? UI.GREEN : UI.CYAN, fadeIn);
+                    float ty = y + 87;
+                    if (!x.bad.isEmpty()) { UI.small.center(g, x.bad, cx, ty, UI.RED, fadeIn); ty += 12; }
+                    int lines = UI.small.drawWrapped(g, x.desc, h.x + 8, ty, (int) h.w - 16, 0xE8E0E0, fadeIn);
+                    if (!x.replaces.isEmpty()) UI.small.drawWrapped(g, x.replaces, h.x + 8, y + h.h - 26, (int) h.w - 16, 0xFFFF9A6A, fadeIn);
+                }
+                drawButtons(g);
                 break;
             }
             case OV_SHOP: {

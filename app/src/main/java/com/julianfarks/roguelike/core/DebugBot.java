@@ -88,6 +88,11 @@ public final class DebugBot {
             case RunScreen.OV_BLESS:
                 if (rs.ovT > 1.3f) for (Screen.Hit h : rs.hits) { rs.touch(0, 0, h.x + 5, h.y + 5); rs.touch(0, 2, h.x + 5, h.y + 5); break; }
                 return;
+            case RunScreen.OV_CHEST:
+                if (rs.ovT > 1.0f && System.getenv("BOT_CHESTSHOT") == null || rs.ovT > 6f) {
+                    for (Screen.Hit h : rs.hits) if (h.tag == 1 && h.label == null) { for (int k = 0; k < 2; k++) { rs.touch(0, 0, h.x + 5, h.y + 5); rs.touch(0, 2, h.x + 5, h.y + 5); } break; }
+                }
+                return;
             case RunScreen.OV_SHOP: case RunScreen.OV_FORGE:
                 if (rs.ovT > 2.0f) rs.back();
                 return;

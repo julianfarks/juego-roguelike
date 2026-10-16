@@ -26,6 +26,8 @@ public final class RunState {
     public int diff = 1;                // 0 facil, 1 normal, 2 dificil
     public int sec, secAmmo, gren, grenCount, special, shield;   // objetos de cofres
     public int secretsFound;
+    public final int[] cb = new int[ChestLoot.N];     // mejoras de cofres (ver ChestLoot)
+    public int grenLvl, secLvl;                      // niveles de mejora de granada y arma secundaria
     public boolean blessingTaken;
     public int damageTaken;
     public final boolean[] relicsThisRun = new boolean[8];

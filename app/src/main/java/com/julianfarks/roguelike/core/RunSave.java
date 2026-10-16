@@ -45,6 +45,7 @@ final class RunSave {
             d.put("bless", rs.bless);
             d.put("sec", rs.sec); d.put("secAmmo", rs.secAmmo); d.put("gren", rs.gren); d.put("grenCount", rs.grenCount);
             d.put("special", rs.special); d.put("shield", rs.shield); d.put("secrets", rs.secretsFound);
+            d.put("cb", rs.cb); d.put("grenLvl", rs.grenLvl); d.put("secLvl", rs.secLvl);
             d.put("ts", (double) System.currentTimeMillis());
             p.store().put(key(slot), Json.write(d));
             p.store().commit();
@@ -77,6 +78,8 @@ final class RunSave {
             int[] bl = Json.ints(d, "bless"); if (bl != null) for (int i = 0; i < Math.min(bl.length, rs.bless.length); i++) rs.bless[i] = bl[i];
             rs.sec = Json.i(d, "sec", 0); rs.secAmmo = Json.i(d, "secAmmo", 0); rs.gren = Json.i(d, "gren", 0); rs.grenCount = Json.i(d, "grenCount", 0);
             rs.special = Json.i(d, "special", 0); rs.shield = Json.i(d, "shield", 0); rs.secretsFound = Json.i(d, "secrets", 0);
+            int[] cbv = Json.ints(d, "cb"); if (cbv != null) for (int i = 0; i < Math.min(cbv.length, rs.cb.length); i++) rs.cb[i] = cbv[i];
+            rs.grenLvl = Json.i(d, "grenLvl", 0); rs.secLvl = Json.i(d, "secLvl", 0);
             rs.stats.recalc(rs);
             rs.hp = Math.max(1, Math.min(rs.stats.maxHp, Json.i(d, "hp", (int) rs.stats.maxHp)));
             scr.resumeType = Json.i(d, "room", Room.HUB);

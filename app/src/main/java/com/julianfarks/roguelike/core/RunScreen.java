@@ -105,11 +105,13 @@ final class RunScreen extends Screen implements Level.Listener {
         in.reset();
         if (lv == null && resumeType >= 0) {
             int t = resumeType; resumeType = -1;
+            if (t == Room.HUB) { int id = autoBiome(); t = id == 8 ? Room.BOSS : Room.COMBAT; }   // partidas guardadas con el antiguo santuario
             loadRoom(t);
             fadeA = 1f; fadeMode = -1;
         } else if (lv == null) {
-            rs.biome = null;
-            loadRoom(Room.HUB);
+            // sin santuario de portales: el siguiente bioma del tramo se elige solo
+            int id = autoBiome();
+            loadRoom(id == 8 ? Room.BOSS : Room.COMBAT);
             fadeA = 1f; fadeMode = -1;
         }
     }
@@ -123,6 +125,24 @@ final class RunScreen extends Screen implements Level.Listener {
         fadeMode = 1;
         fadeAct = () -> loadRoom(type);
         in.reset();
+    }
+
+    /** Elige el siguiente bioma del tramo actual (aleatorio entre los no visitados; el Cazador al final) y lo prepara. */
+    private int autoBiome() {
+        int id;
+        if (rs.stage >= 3) id = 8;
+        else {
+            java.util.List<Integer> ids = new ArrayList<>();
+            for (Biome bb : Biome.ALL) if (bb.tier == rs.stage && bb.id < 8 && !rs.visited.contains(bb.id)) ids.add(bb.id);
+            if (ids.isEmpty()) for (Biome bb : Biome.ALL) if (bb.tier == rs.stage && bb.id < 8) ids.add(bb.id);
+            id = ids.get(rs.rng.i(ids.size()));
+        }
+        rs.biome = Biome.ALL[id];
+        rs.visited.add(id);
+        rs.roomNo = id == 8 ? 4 : 0;
+        rs.blessingTaken = false;
+        if (id == 8) rs.finalRun = true;
+        return id;
     }
 
     private Biome hubBiome() { return Biome.ALL[7]; }
@@ -355,8 +375,8 @@ final class RunScreen extends Screen implements Level.Listener {
             openOv(OV_WIN);
             return;
         }
-        rs.roomNo = 0;
-        goRoom(Room.HUB);
+        int nid = autoBiome();
+        goRoom(nid == 8 ? Room.BOSS : Room.COMBAT);
     }
 
     // =============================================================== interaccion
@@ -696,14 +716,14 @@ final class RunScreen extends Screen implements Level.Listener {
                 add(bx, by + 112, bw, 22, "Guardar partida", () -> { saveMenu = true; layoutOverlay(); });
                 add(bx, by + 140, bw, 22, quitConfirm ? "¿Seguro? Toca otra vez" : "Abandonar partida", () -> {
                     if (sandbox) { game.go(sbBack != null ? sbBack.get() : new Screens.Title(game)); return; }
-                    if (quitConfirm) { endRun(false); game.go(new Screens.Title(game)); }
+                    if (quitConfirm) { endRun(false); game.go(new Ops(game)); }
                     else { quitConfirm = true; layoutOverlay(); }
                 });
                 break;
             }
             case OV_DEAD: {
                 add(w / 2f - 130, 206, 124, 24, "Reintentar", () -> game.go(new ClassScreen(game)));
-                add(w / 2f + 6, 206, 124, 24, "Menú principal", () -> game.go(new Screens.Title(game)));
+                add(w / 2f + 6, 206, 124, 24, "Menú principal", () -> game.go(new Ops(game)));
                 break;
             }
             case OV_WIN: {
@@ -711,7 +731,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 add(w / 2f - 62, 206, 124, 24, fin ? "Ver créditos" : "Continuar", () -> {
                     if (fin && Story.tryUnlockFinal() && Story.cine("final") != null)
                         game.go(new Cinematic(game, Story.FINAL, () -> game.go(new Screens.Credits(game, true))));
-                    else game.go(fin ? new Screens.Credits(game, true) : new Screens.Title(game));
+                    else game.go(fin ? new Screens.Credits(game, true) : new Ops(game));
                 });
                 break;
             }

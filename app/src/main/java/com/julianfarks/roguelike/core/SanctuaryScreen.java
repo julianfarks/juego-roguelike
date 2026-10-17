@@ -62,7 +62,7 @@ final class SanctuaryScreen extends Screen {
         lastBought = i; flash = 0.5f;
     }
 
-    @Override boolean back() { game.go(new Screens.Title(game)); return true; }
+    @Override boolean back() { game.go(Screens.home(game)); return true; }
 
     @Override void update(float dt) {
         bg.update(dt, W());

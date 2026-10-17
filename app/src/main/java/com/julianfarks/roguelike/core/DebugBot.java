@@ -51,10 +51,24 @@ public final class DebugBot {
             return;
         }
         if (s instanceof Screens.Title && System.getenv("BOT_CINE") != null) { g.go(new Cinematic(g, Story.cine(System.getenv("BOT_CINE")), null)); return; }
+        if (System.getenv("BOT_PRINTSTATS") != null && frame == 700) {
+            Save q = Save.S;
+            System.out.println("STATS started=" + q.started + " rounds=" + q.rounds + " perfect=" + q.perfectRounds + " streak=" + q.bestStreak + " kills=" + q.kills + " chests=" + q.chestsOpened + " playS=" + q.playMs / 1000 + " losses=" + q.losses + " runs=" + q.runs);
+        }
         if (s instanceof Screens.Title) {
             if (System.getenv("BOT_INTRO") == null) Save.S.story[Story.S_INTRO] = 1;
             if (seenRun && System.getenv("BOT_STAYTITLE") != null) return;
             if (frame % 20 == 0) { Screen.Hit h = ((Screens.Title) s).hits.get(0); s.touch(0, 0, h.x + 5, h.y + 5); s.touch(0, 2, h.x + 5, h.y + 5); }
+            return;
+        }
+        if (s instanceof Ops) {
+            if (frame - lastClassFrame > 120) {
+                lastClassFrame = frame;
+                Save.S.souls = Math.max(Save.S.souls, 5000);
+                for (int i = 0; i < 10; i++) Save.S.classUnlocked[i] = true;
+                Save.S.lastClass = classId;
+                ((Ops) s).startGame();
+            }
             return;
         }
         if (s instanceof ClassScreen) {

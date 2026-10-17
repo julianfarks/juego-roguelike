@@ -40,7 +40,7 @@ final class StoryScreens {
 
         static boolean anyNpcMet() { for (int n = 0; n < 3; n++) if (Save.S.story[Story.S_NPC0 + n] > 0) return true; return false; }
 
-        @Override boolean back() { game.go(devAll ? new DevScreens.Menu(game) : new Screens.Title(game)); return true; }
+        @Override boolean back() { game.go(devAll ? new DevScreens.Menu(game) : Screens.home(game)); return true; }
         @Override void update(float dt) { bg.update(dt, W()); }
 
         @Override void render(Platform.Gfx g) {

@@ -51,7 +51,7 @@ final class CodesScreen extends Screen {
         }
     }
 
-    @Override boolean back() { game.go(new Screens.Title(game)); return true; }
+    @Override boolean back() { game.go(Screens.home(game)); return true; }
 
     @Override void key(int code, boolean down) {
         if (!down) return;

@@ -8,6 +8,8 @@ final class ClassScreen extends Screen {
     private Hit playBtn, ascBtn, diffBtn;
     private int diff;
     private float shake;
+    private boolean live;          // true: muestra el sprite real animado en vez de la ilustracion
+    private Hit liveBtn;
 
     ClassScreen(Game g) {
         super(g);
@@ -40,9 +42,10 @@ final class ClassScreen extends Screen {
         else ascBtn = null;
         ClassDef c = ClassDef.ALL[selC];
         boolean unlocked = Save.S.classUnlocked[c.id];
-        String lab = unlocked ? "¡Jugar!" : "Desbloquear " + Meta.CLASS_COST[c.id];
+        String lab = unlocked ? (Save.S.lastClass == c.id ? "Confirmar elegido" : "Elegir espadachín") : "Desbloquear " + Meta.CLASS_COST[c.id];
         playBtn = add(w - 156, 240, 150, 24, lab, () -> play());
         playBtn.disabled = !unlocked && Save.S.souls < Meta.CLASS_COST[c.id];
+        liveBtn = add(88, 214, 128, 20, live ? "Ver ilustración" : "Ver en acción", () -> { live = !live; layout(); });
     }
 
     private String ascLabel() { return asc == 0 ? "Ascensión 0" : "Ascensión " + asc; }
@@ -63,13 +66,12 @@ final class ClassScreen extends Screen {
         }
         s.lastClass = c.id;
         s.ascensionSel = asc;
-        s.started++;
         s.write();
-        Snd.sfx("ui_start_run", 1f);
-        game.go(new RunScreen(game, c, asc));
+        Snd.sfx("ui_unlock", 0.8f);
+        game.go(new Ops(game, "Espadachín elegido: " + c.name));
     }
 
-    @Override boolean back() { game.go(new Screens.Title(game)); return true; }
+    @Override boolean back() { game.go(Screens.home(game)); return true; }
 
     @Override void update(float dt) {
         bg.update(dt, W());
@@ -97,7 +99,7 @@ final class ClassScreen extends Screen {
         ClassDef c = ClassDef.ALL[selC];
         boolean unlocked = Save.S.classUnlocked[c.id];
         bg.render(g, w, 0.55f);
-        UI.big.center(g, "ELIGE TU CLASE", w / 2f, 5, UI.GOLD, 1f);
+        UI.big.center(g, "GALERIA DE ESPADACHINES", w / 2f, 5, UI.GOLD, 1f);
         UI.iconC(g, "soul", w - 50, 12, 1f, 1f);
         UI.small.right(g, String.valueOf(Save.S.souls), w - 8, 7, UI.SOUL, 1f);
 
@@ -111,6 +113,7 @@ final class ClassScreen extends Screen {
             if (pr != null) g.image(pr, 0, 0, 32, 32, x + 2, y + 2, 32, 32, ul ? 0 : Platform.TINT, 0x303040, 1f);
             else UI.iconC(g, "c_" + ci.key, x + 18, y + 18, 1.5f, ul ? 1f : 0.4f);
             if (!ul) UI.iconC(g, "lock", x + 18, y + 18, 1f, 0.9f);
+            if (i == Save.S.lastClass && ul) { g.rect(x, y, 36, 1, 0xFFFFD25A, false); g.rect(x, y + 35, 36, 1, 0xFFFFD25A, false); g.rect(x, y, 1, 36, 0xFFFFD25A, false); g.rect(x + 35, y, 1, 36, 0xFFFFD25A, false); }
             if (i == selC && UI.arrow != null) g.imageRot(UI.arrow, 0, 0, 8, 8, x + 38, y + 14, 8, 8, 0, 0, 0, 1f);
         }
 
@@ -120,7 +123,8 @@ final class ClassScreen extends Screen {
         g.rect(sx + 14, sy + 172, 100, 4, 0x66000000, false);
         Platform.Img splash = Assets.img("sprites/splash_" + c.key + ".png");
         float bob = (float) Math.sin(t * 1.6f) * 1.5f;
-        if (splash != null) g.image(splash, 0, 0, splash.w, splash.h, Math.round(sx), Math.round(sy + bob), splash.w, splash.h, unlocked ? 0 : Platform.TINT, 0x20202C, 1f);
+        if (live) drawLive(g, c, sx, sy, unlocked);
+        else if (splash != null) g.image(splash, 0, 0, splash.w, splash.h, Math.round(sx), Math.round(sy + bob), splash.w, splash.h, unlocked ? 0 : Platform.TINT, 0x20202C, 1f);
         if (!unlocked) UI.iconC(g, "lock", sx + 64, sy + 88, 2f, 0.9f);
 
         // panel de informacion
@@ -157,6 +161,24 @@ final class ClassScreen extends Screen {
             g.rect(diffBtn.x + 4, diffBtn.y + diffBtn.h - 3, diffBtn.w - 8, 2, 0xFF000000 | dc, false);
         }
         if (!unlocked) UI.small.center(g, "Clase bloqueada", w / 2f, 226, UI.RED, 1f);
+    }
+
+    private static final String[] LIVE_ANIMS = {"idle", "run", "attack1", "attack2", "attack3", "skill", "jump", "roll", "ult"};
+
+    /** Sprite real del juego, recorriendo sus animaciones (espera, carrera, ataques, habilidad). */
+    private void drawLive(Platform.Gfx g, ClassDef c, float sx, float sy, boolean unlocked) {
+        Sheet sh = Assets.spr("pl_" + c.key);
+        if (sh == null || sh == Sheet.EMPTY) return;
+        float seg = 1.6f;
+        int idx = ((int) (t / seg)) % LIVE_ANIMS.length;
+        String an = LIVE_ANIMS[idx];
+        if (!sh.has(an)) an = "idle";
+        float tt = t % seg;
+        float scale = 2f;
+        g.rect(sx + 14, sy + 150, 100, 4, 0x66000000, false);
+        float fx = sx + 64 + ("run".equals(an) ? (float) Math.sin(t * 2f) * 12 : 0);
+        sh.drawAt(g, an, tt, fx, sy + 150, !"run".equals(an) || Math.cos(t * 2f) > 0, scale, unlocked ? 0 : Platform.TINT, unlocked ? 0 : 0x20202C, 1f);
+        UI.small.center(g, an, sx + 64, sy + 158, UI.GREY, 1f);
     }
 
     private void stat(Platform.Gfx g, String n, float v, float x, float y, int col, float pw) {

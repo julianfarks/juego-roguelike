@@ -13,22 +13,22 @@ final class Trophies {
     }
 
     static final T[] ALL = {
-            new T("Primera sangre", "Derrota a tu primer enemigo", s -> s.kills, 1),
-            new T("Cazador", "Derrota a 100 enemigos", s -> s.kills, 100),
-            new T("Matanza", "Derrota a 1000 enemigos", s -> s.kills, 1000),
+            new T("Primera sangre", "Derrota 1 enemigo", s -> s.kills, 1),
+            new T("Cazador", "Derrota 100 enemigos", s -> s.kills, 100),
+            new T("Matanza", "Derrota 1000 enemigos", s -> s.kills, 1000),
             new T("Rey caído", "Derrota a un jefe", s -> s.bossKills, 1),
-            new T("Cazador de jefes", "Derrota a 8 jefes", s -> s.bossKills, 8),
-            new T("Ronda perfecta", "Completa una ronda sin recibir daño", s -> s.perfectRounds, 1),
-            new T("Intocable", "5 rondas perfectas seguidas", s -> s.bestPerfectStreak, 5),
-            new T("Imparable", "10 rondas seguidas en una partida", s -> s.bestStreak, 10),
-            new T("Primera victoria", "Gana una partida", s -> s.wins, 1),
-            new T("Coleccionista", "Desbloquea 5 espadachines", s -> { int n = 0; for (boolean b : s.classUnlocked) if (b) n++; return n; }, 5),
-            new T("Maestro espadachín", "Desbloquea los 10 espadachines", s -> { int n = 0; for (boolean b : s.classUnlocked) if (b) n++; return n; }, 10),
-            new T("Explorador", "Abre 3 cofres secretos", s -> s.secretChests, 3),
-            new T("Sello forjado", "Reúne las 8 reliquias", s -> s.relicCount(), 8),
-            new T("Cazador del Cazador", "Vence al Cazador", s -> s.finalBeaten ? 1 : 0, 1),
-            new T("Almas sin fin", "Reúne 5000 almas en total", s -> s.totalSouls, 5000),
-            new T("Veterano", "Juega durante 1 hora", s -> (int) (s.playMs / 60000L), 60),
+            new T("Cazajefes", "Derrota a 8 jefes", s -> s.bossKills, 8),
+            new T("Ronda perfecta", "Ronda sin recibir daño", s -> s.perfectRounds, 1),
+            new T("Intocable", "5 perfectas seguidas", s -> s.bestPerfectStreak, 5),
+            new T("Imparable", "10 rondas seguidas", s -> s.bestStreak, 10),
+            new T("Victoria", "Gana una partida", s -> s.wins, 1),
+            new T("Coleccionista", "Desbloquea 5 clases", s -> { int n = 0; for (boolean b : s.classUnlocked) if (b) n++; return n; }, 5),
+            new T("Maestro", "Desbloquea los 10", s -> { int n = 0; for (boolean b : s.classUnlocked) if (b) n++; return n; }, 10),
+            new T("Explorador", "3 cofres secretos", s -> s.secretChests, 3),
+            new T("Sello forjado", "Reúne 8 reliquias", s -> s.relicCount(), 8),
+            new T("Caza al Cazador", "Vence al Cazador", s -> s.finalBeaten ? 1 : 0, 1),
+            new T("Almas sin fin", "5000 almas en total", s -> s.totalSouls, 5000),
+            new T("Veterano", "Juega 1 hora", s -> (int) (s.playMs / 60000L), 60),
     };
 
     static boolean has(Save s, int i) { return ALL[i].test.test(s); }

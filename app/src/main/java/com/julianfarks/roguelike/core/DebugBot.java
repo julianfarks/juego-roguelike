@@ -51,7 +51,32 @@ public final class DebugBot {
             return;
         }
         if (s instanceof Screens.Title && System.getenv("BOT_CINE") != null) { g.go(new Cinematic(g, Story.cine(System.getenv("BOT_CINE")), null)); return; }
-        if (System.getenv("BOT_PRINTSTATS") != null && frame == 700) {
+        if (System.getenv("BOT_MAPVIEW") != null && s instanceof Screens.Title && !devOnce) {
+            devOnce = true;
+            String[] q = System.getenv("BOT_MAPVIEW").split(":");
+            int bi = Integer.parseInt(q[0]); long sd = q.length > 1 ? Long.parseLong(q[1]) : 1;
+            final java.util.List<Room> rl = new java.util.ArrayList<>();
+            Rng rg = new Rng(sd);
+            for (int i = 0; i < 2; i++) { Room rm = RoomGen.generate(Room.COMBAT, Biome.ALL[bi], rg, Biome.ALL[bi].tier, 1 + i); rm.bake(g.P); rl.add(rm); }
+            g.swap(new Screen(g) {
+                @Override void update(float dt) { }
+                @Override void render(Platform.Gfx gg) {
+                    gg.clear(0xFF101018);
+                    float y = 2;
+                    for (Room rm : rl) {
+                        float sc = Math.min(W() / (float) rm.pixW, 0.5f);
+                        if (rm.baked != null) gg.image(rm.baked, 0, 0, rm.baked.w, rm.baked.h, 0, Math.round(y), Math.round(rm.pixW * sc), Math.round(rm.pixH * sc), 0, 0, 1f);
+                        gg.rect(rm.spawnX * sc - 2, y + (rm.spawnY - 24) * sc, 4, 24 * sc, 0xFF40FF40, false);
+                        gg.rect(rm.exitX * sc - 2, y + (rm.exitY - 24) * sc, 4, 24 * sc, 0xFFFF4040, false);
+                        for (Room.Spawn sp : rm.spawns) gg.rect(sp.x * sc - 1, y + (sp.y - 12) * sc, 3, 3, sp.elite ? 0xFFFFD25A : 0xFFFF8040, false);
+                        for (Room.PropSpec pr : rm.props) if (pr.kind.equals("chest")) gg.rect(pr.x * sc - 1, y + (pr.y - 6) * sc, 4, 4, 0xFFC070FF, false);
+                        y += rm.pixH * sc + 4;
+                    }
+                }
+            });
+            return;
+        }
+        if (System.getenv("BOT_PRINTSTATS") != null && frame % 1500 == 700) {
             Save q = Save.S;
             System.out.println("STATS started=" + q.started + " rounds=" + q.rounds + " perfect=" + q.perfectRounds + " streak=" + q.bestStreak + " kills=" + q.kills + " chests=" + q.chestsOpened + " playS=" + q.playMs / 1000 + " losses=" + q.losses + " runs=" + q.runs);
         }
@@ -62,15 +87,17 @@ public final class DebugBot {
             return;
         }
         if (s instanceof Ops) {
+            if (System.getenv("BOT_NOSTART") != null) { if (!unlockedAll) { unlockedAll = true; for (int i = 0; i < 10; i++) Save.S.classUnlocked[i] = true; Save.S.souls = Math.max(Save.S.souls, 5000); } return; }
             if (frame - lastClassFrame > 120) {
                 lastClassFrame = frame;
                 Save.S.souls = Math.max(Save.S.souls, 5000);
                 for (int i = 0; i < 10; i++) Save.S.classUnlocked[i] = true;
-                Save.S.lastClass = classId;
+                if (System.getenv("BOT_KEEPCLASS") == null) Save.S.lastClass = classId;
                 ((Ops) s).startGame();
             }
             return;
         }
+        if (s instanceof ClassScreen && System.getenv("BOT_NOSTART") != null) return;
         if (s instanceof ClassScreen) {
             ClassScreen cs = (ClassScreen) s;
             if (frame - lastClassFrame > 30) {
@@ -86,6 +113,7 @@ public final class DebugBot {
         if (!(s instanceof RunScreen)) return;
         RunScreen rs = (RunScreen) s;
         seenRun = true;
+        if (!classPrinted && System.getenv("BOT_PRINTCLASS") != null) { classPrinted = true; System.out.println("RUN clase=" + rs.cls.name + " bioma=" + (rs.rs.biome == null ? "?" : rs.rs.biome.name)); }
         if (rs.lv == null) return;
         Level lv = rs.lv;
         Player p = lv.pl;
@@ -281,7 +309,7 @@ public final class DebugBot {
         if (stuck > 60) { tap(g, 'W'); if (stuck > 90) { tap(g, 'K'); stuck = 0; } }
     }
 
-    private boolean npcDone, devOnce, spikeDone; private int roundStep, roundT;
+    private boolean npcDone, devOnce, spikeDone; private int roundStep, roundT; private boolean classPrinted, unlockedAll;
     private final java.util.List<Enemy> spikeEn = new java.util.ArrayList<>();
     private int cf;
 

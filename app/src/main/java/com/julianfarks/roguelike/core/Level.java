@@ -590,7 +590,9 @@ public final class Level {
 
     // ------------------------------------------------------------------ proyectiles
     private void updateProjs(float dt) {
-        for (Proj p : projs) {
+        // por indice sobre el tamano inicial: los proyectiles nuevos (divisiones, explosiones) se anaden sin romper la iteracion
+        for (int pi = 0, pn = projs.size(); pi < pn; pi++) {
+            Proj p = projs.get(pi);
             if (p.dead) continue;
             p.t += dt;
             p.life -= dt;

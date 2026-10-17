@@ -75,10 +75,10 @@ final class OpsScreens {
             UI.big.center(g, "TROFEOS", w / 2f, 6, UI.GOLD, 1f);
             UI.small.center(g, Trophies.count(s) + " de " + Trophies.ALL.length + " desbloqueados", w / 2f, 24, UI.GREY, 1f);
             int cols = 4, n = Trophies.ALL.length;
-            float cw = Math.min((w - 24) / cols - 4, 116), ch = 44, gx = w / 2f - (cols * (cw + 4) - 4) / 2f;
+            float cw = Math.min((w - 24) / cols - 4, 116), ch = 46, gx = w / 2f - (cols * (cw + 4) - 4) / 2f;
             for (int i = 0; i < n; i++) {
                 Trophies.T tr = Trophies.ALL[i];
-                float x = gx + (i % cols) * (cw + 4), y = 36 + (i / cols) * (ch + 4);
+                float x = gx + (i % cols) * (cw + 4), y = 36 + (i / cols) * (ch + 3);
                 boolean got = Trophies.has(s, i);
                 UI.panel(g, got ? 1 : 0, x, y, cw, ch, got ? 1f : 0.8f);
                 int col = got ? 0xFFD25A : 0x4A4658;

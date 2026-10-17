@@ -8,7 +8,18 @@ import java.util.List;
 public final class RoomGen {
     private RoomGen() {}
 
+    /** Genera una sala y, en las de combate, la valida (entrada -> salida y enemigos alcanzables); si falla reintenta con otra disposicion. */
     public static Room generate(int type, Biome b, Rng r, int stage, int roomNo) {
+        Room rm = null;
+        boolean big = type == Room.COMBAT || type == Room.ELITE;
+        for (int attempt = 0; attempt < 12; attempt++) {
+            rm = build(type, b, r, stage, roomNo);
+            if (!big || RoomCheck.fix(rm, r)) return rm;
+        }
+        return rm;
+    }
+
+    private static Room build(int type, Biome b, Rng r, int stage, int roomNo) {
         boolean calm = type == Room.START || type == Room.BLESSING || type == Room.FORGE || type == Room.SHOP || type == Room.FOUNTAIN
                 || type == Room.TREASURE || type == Room.REST || type == Room.HUB;
         boolean boss = type == Room.BOSS;
@@ -30,7 +41,7 @@ public final class RoomGen {
         Arrays.fill(ceil, boss ? 3 : 2);
         List<int[]> platforms = new ArrayList<>();   // {x0,x1,row}
 
-        if (!calm && !boss) layout(W, fy, ground, ceil, blocked, platforms, r, rm);
+        if (!calm && !boss) { layout(W, fy, ground, ceil, blocked, platforms, r, rm); resolveSpikeStrips(rm, ground); }
         else if (boss) {
             platforms.add(new int[]{7, 13, fy - 4});
             platforms.add(new int[]{W - 14, W - 8, fy - 4});
@@ -62,10 +73,8 @@ public final class RoomGen {
             int hgt = 2 + (x * 7 % 2);
             for (int k = 1; k <= hgt; k++) rm.set(x, ground[x] - k, Room.SOLID);
         }
-        // pinchos de techo y de suelo ocasionales
-        for (int x = 2; x < W - 2; x++) {
-            if (ceil[x] > 2 && r.chance(0.12f)) rm.set(x, ceil[x], Room.SPIKE_DOWN);
-        }
+        // tiras de pinchos de las secciones-pasillo (trampas integradas en el diseño)
+        if (rm.spikeCols != null) for (int x : rm.spikeCols) if (!blocked[x] && ground[x] > 1) rm.set(x, ground[x] - 1, Room.SPIKE);
         rm.ground = ground;
         if (big) {
             float sroll = r.f();   // cofres secretos excepcionales: ~55% de las salas grandes no tiene ninguno; como mucho 1
@@ -224,75 +233,158 @@ public final class RoomGen {
         }
     }
 
+    // ------------------------------------------------------------------ modulos de seccion
+    private static final int M_CORRIDOR = 0, M_ARENA = 1, M_STAIRS = 2, M_PIT = 3, M_PILLARS = 4, M_RAISED = 5, M_GAUNTLET = 6, M_COUNT = 7;
+    static final String[] M_NAME = {"pasillo", "arena", "escaleras", "foso", "pilares", "meseta", "pruebas"};
+
+    /** Pesos de modulos por bioma: {pasillo, arena, escaleras, foso, pilares, meseta, pruebas de trampas}. Cada mazmorra tiene asi su propia identidad. */
+    private static int[] weights(String key) {
+        switch (key) {
+            case "catacumbas": return new int[]{3, 2, 2, 1, 3, 1, 0};
+            case "helado": return new int[]{2, 2, 1, 3, 1, 2, 2};
+            case "forja": return new int[]{2, 3, 2, 3, 1, 1, 3};
+            case "vacio": return new int[]{1, 2, 1, 4, 1, 2, 3};
+            case "bosque": return new int[]{2, 2, 3, 1, 3, 3, 1};
+            case "tormenta": return new int[]{2, 3, 2, 2, 2, 3, 1};
+            case "sangre": return new int[]{2, 3, 2, 2, 3, 1, 2};
+            case "eclipse": return new int[]{3, 2, 3, 1, 2, 2, 1};
+            default: return new int[]{2, 2, 2, 2, 2, 2, 1};
+        }
+    }
+
+    /**
+     * Genera la estructura del piso inferior como una secuencia de SECCIONES con proposito:
+     * entrada -> (pasillos, arenas de combate, escaleras, fosos, pilares, mesetas, pruebas de trampas) -> salida.
+     * Siempre hay al menos una arena (dos en salas anchas) y un pasillo; las escaleras se compensan para volver al nivel de la salida.
+     */
     private static void layout(int W, int fy, int[] ground, int[] ceil, boolean[] blocked, List<int[]> plat, Rng r, Room rm) {
-        int x = 12, cur = fy;
-        boolean afterPit = false;
-        int safety = 0;
-        while (x < W - 14 && safety++ < 60) {
-            int pick = afterPit ? 0 : r.i(100);
-            int len;
-            if (pick < 26) { // plano con plataformas
-                len = r.range(8, 14);
-                len = Math.min(len, W - 14 - x);
-                set(ground, x, len, cur);
-                if (r.chance(0.75f) && len >= 6) {
-                    int s = x + r.range(1, Math.max(1, len - 6));
-                    int pl = r.range(4, 7);
-                    plat.add(new int[]{s, Math.min(s + pl, x + len - 1), cur - 3});
-                    if (len >= 10 && r.chance(0.5f)) plat.add(new int[]{s + 1, Math.min(s + 4, x + len - 1), cur - 6});
+        int[] wt = weights(rm.biome.key);
+        int x = 12, cur = fy, last = -1;
+        int arenas = 0, corridors = 0;
+        boolean varied = false;       // al menos una seccion con desnivel o salto (escaleras, foso, meseta, pruebas)
+        int wantArenas = W >= 90 ? 2 : 1;
+        int tail = 16;                              // zona de salida plana
+        int guard = 0;
+        while (x < W - tail - 6 && guard++ < 40) {
+            int kind;
+            if (arenas == 0 && x > (W - tail) / 2 - 8) kind = M_ARENA;                      // garantiza combate
+            else if (corridors == 0 && x > (W - tail) / 3 && arenas >= 1) kind = M_CORRIDOR;
+            else if (!varied && x > (W - tail) / 2 - 4) { int[] opt = {M_STAIRS, M_PIT, M_RAISED, M_GAUNTLET}; int tot2 = 0; for (int k : opt) tot2 += wt[k] + 1; int roll2 = r.i(tot2); kind = M_PIT; for (int k : opt) { if (roll2 < wt[k] + 1) { kind = k; break; } roll2 -= wt[k] + 1; } }
+            else {
+                int tot = 0; for (int k = 0; k < M_COUNT; k++) tot += (k == last ? 0 : wt[k]);
+                if (cur != fy && r.chance(0.5f)) { kind = M_STAIRS; }
+                else { int roll = r.i(Math.max(1, tot)); kind = 0; for (int k = 0; k < M_COUNT; k++) { int w2 = k == last ? 0 : wt[k]; if (roll < w2) { kind = k; break; } roll -= w2; } }
+            }
+            if (kind == M_PIT && last == M_GAUNTLET) kind = M_CORRIDOR;
+            int room = W - tail - x;
+            int len = 0;
+            switch (kind) {
+                case M_CORRIDOR: {
+                    len = Math.min(r.range(14, 22), room);
+                    set(ground, x, len, cur);
+                    if (len >= 12 && r.chance(0.55f)) {            // tira de pinchos que se salta
+                        int sx2 = x + r.range(5, len - 8), n = r.range(2, 3);
+                        for (int k = 0; k < n; k++) ground[sx2 + k] = -2;       // marca: pinchos sobre suelo firme
+                        plat.add(new int[]{sx2 - 1, sx2 + n, cur - 3});          // plataforma-ruta alternativa por encima
+                    }
+                    corridors++;
+                    break;
                 }
-            } else if (pick < 42) { // escalones
-                int d = r.chance(0.5f) ? (r.chance(0.5f) ? 1 : 2) : (r.chance(0.5f) ? -1 : -2);
-                int nc = Mth.clamp(cur + d, fy - 4, fy);
-                len = Math.min(r.range(5, 9), W - 14 - x);
-                cur = nc;
-                set(ground, x, len, cur);
-            } else if (pick < 55) { // foso
-                len = r.range(3, 4);
-                if (x + len + 6 >= W - 14) { len = Math.min(len, 0); }
-                if (len > 0) {
-                    for (int k = 0; k < len; k++) ground[x + k] = -1;
-                    if (r.chance(0.4f)) plat.add(new int[]{x - 1, x + len, cur - 3});
-                    afterPit = true;
-                    x += len;
-                    continue;
+                case M_ARENA: {
+                    len = Math.min(r.range(20, 28), room);
+                    set(ground, x, len, cur);
+                    rm.arenas.add(new int[]{x + 1, x + len - 2});
+                    if (len >= 16) {
+                        int a = x + 2, b = x + len - 6;
+                        plat.add(new int[]{a, a + 4, cur - 3});
+                        plat.add(new int[]{b, b + 4, cur - 3});
+                        plat.add(new int[]{x + len / 2 - 2, x + len / 2 + 2, cur - 6});
+                    }
+                    arenas++;
+                    break;
                 }
-                len = 4;
-                set(ground, x, len, cur);
-            } else if (pick < 68) { // pilares
-                len = Math.min(r.range(9, 13), W - 14 - x);
-                set(ground, x, len, cur);
-                int np = r.range(1, 2);
-                for (int k = 0; k < np; k++) {
-                    int px = x + 2 + k * 5 + r.i(2);
-                    if (px < x + len - 2) { blocked[px] = true; if (px + 1 < x + len - 1) blocked[px + 1] = true; }
+                case M_STAIRS: {
+                    boolean upward = cur >= fy - 1 ? true : (cur <= fy - 3 ? false : r.chance(0.5f));
+                    int steps = r.range(3, 4);
+                    int dir = upward ? -1 : 1;
+                    int maxSteps = upward ? cur - (fy - 4) : fy - cur;
+                    steps = Math.min(steps, maxSteps);
+                    if (steps <= 0) { len = Math.min(8, room); set(ground, x, len, cur); break; }
+                    len = 0;
+                    for (int st2 = 0; st2 < steps && x + len + 2 < W - tail; st2++) { set(ground, x + len, 2, cur); cur += dir; len += 2; }
+                    int flat = Math.min(r.range(3, 5), W - tail - (x + len)); if (flat > 0) { set(ground, x + len, flat, cur); len += flat; }
+                    break;
                 }
-            } else if (pick < 79) { // techo bajo
-                len = Math.min(r.range(8, 11), W - 14 - x);
-                set(ground, x, len, cur);
-                if (rm.h < 24) for (int k = 0; k < len; k++) ceil[x + k] = Math.max(2, cur - 5);
-            } else if (pick < 90) { // meseta elevada
-                len = Math.min(r.range(10, 14), W - 14 - x);
-                int up = Mth.clamp(cur - 2, fy - 4, fy);
-                set(ground, x, 3, Mth.clamp(cur - 1, fy - 4, fy));
-                set(ground, x + 3, len - 6, up);
-                set(ground, x + len - 3, 3, Mth.clamp(cur - 1, fy - 4, fy));
-                cur = Mth.clamp(cur - 1, fy - 4, fy);
-                if (len >= 8) plat.add(new int[]{x + 3, x + len - 4, up - 3});
-            } else {
-                len = Math.min(r.range(6, 10), W - 14 - x);
-                set(ground, x, len, cur);
+                case M_PIT: {
+                    int pw = r.range(3, 4);
+                    if (room < pw + 8) { len = Math.min(6, room); set(ground, x, len, cur); break; }
+                    set(ground, x, 3, cur);
+                    for (int k = 0; k < pw; k++) ground[x + 3 + k] = -1;
+                    plat.add(new int[]{x + 2, x + 3 + pw, cur - 3});
+                    int after = Math.min(r.range(5, 8), W - tail - (x + 3 + pw)); set(ground, x + 3 + pw, after, cur);
+                    len = 3 + pw + after;
+                    break;
+                }
+                case M_PILLARS: {
+                    len = Math.min(r.range(12, 16), room);
+                    set(ground, x, len, cur);
+                    int np = r.range(2, 3);
+                    for (int k = 0; k < np; k++) {
+                        int px = x + 3 + k * 4 + r.i(2);
+                        if (px < x + len - 3) { blocked[px] = true; blocked[px + 1] = true; }
+                    }
+                    break;
+                }
+                case M_RAISED: {
+                    len = Math.min(r.range(12, 16), room);
+                    int up = Mth.clamp(cur - 2, fy - 4, fy);
+                    if (len < 9 || up == cur) { set(ground, x, len, cur); break; }
+                    set(ground, x, 3, Mth.clamp(cur - 1, fy - 4, fy));
+                    set(ground, x + 3, len - 6, up);
+                    set(ground, x + len - 3, 3, Mth.clamp(cur - 1, fy - 4, fy));
+                    cur = Mth.clamp(cur - 1, fy - 4, fy);
+                    plat.add(new int[]{x + 4, x + len - 5, up - 3});
+                    rm.arenas.add(new int[]{x + 3, x + len - 4});
+                    break;
+                }
+                default: {   // M_GAUNTLET: serie de fosos cortos con plataformas
+                    int reps = 2;
+                    if (room < 22) { len = Math.min(6, room); set(ground, x, len, cur); break; }
+                    len = 0;
+                    for (int k = 0; k < reps; k++) {
+                        set(ground, x + len, 4, cur); len += 4;
+                        int pw = r.range(2, 3);
+                        for (int q = 0; q < pw; q++) ground[x + len + q] = -1;
+                        plat.add(new int[]{x + len - 1, x + len + pw, cur - 3});
+                        len += pw;
+                    }
+                    set(ground, x + len, 4, cur); len += 4;
+                    break;
+                }
             }
             if (len <= 0) break;
-            afterPit = false;
+            if (kind == M_STAIRS || kind == M_PIT || kind == M_RAISED || kind == M_GAUNTLET) varied = true;
+            last = kind;
             x += len;
         }
-        // zona de salida plana a la altura base
+        // retorno al nivel de la salida mediante escalones y zona de salida plana
+        while (cur < fy && x < W - 4) { set(ground, x, 2, cur); x += 2; cur++; }
         for (int k = x; k < W; k++) ground[k] = fy;
-        for (int k = x; k < Math.min(W, x + 1); k++) ground[k] = Mth.clamp(cur, fy - 4, fy);
         // las alturas distintas se conectan con escalones
         for (int k = 1; k < W; k++) {
             if (ground[k] >= 0 && ground[k - 1] >= 0 && Math.abs(ground[k] - ground[k - 1]) > 2) ground[k - 1] = (ground[k] + ground[k - 1]) / 2;
+        }
+    }
+
+    /** Las marcas -2 del generador son tiras de pinchos sobre suelo firme: el suelo toma la altura vecina y se coloca el pincho. */
+    private static void resolveSpikeStrips(Room rm, int[] ground) {
+        for (int x = 0; x < ground.length; x++) {
+            if (ground[x] != -2) continue;
+            int h = -1;
+            for (int k = x - 1; k >= 0 && h < 0; k--) if (ground[k] >= 0) h = ground[k];
+            ground[x] = h < 0 ? 22 : h;
+            if (rm.spikeCols == null) rm.spikeCols = new java.util.ArrayList<>();
+            rm.spikeCols.add(x);
         }
     }
 
@@ -312,8 +404,11 @@ public final class RoomGen {
             int k = 0;
             for (int i = 0; i < full.length; i++) if (i != skip) pool[k++] = full[i];
         }
-        List<Integer> cand = new ArrayList<>();
-        for (int x = 14; x < W - 14; x++) if (ground[x] >= 0 && !blocked[x] && ground[x] == (x > 0 ? ground[x - 1] : -2) && (x + 1 < W && ground[x + 1] == ground[x])) cand.add(x);
+        List<Integer> cand = new ArrayList<>(), arenaCand = new ArrayList<>();
+        for (int x = 14; x < W - 14; x++) if (ground[x] >= 0 && !blocked[x] && ground[x] == (x > 0 ? ground[x - 1] : -2) && (x + 1 < W && ground[x + 1] == ground[x]) && (rm.spikeCols == null || !rm.spikeCols.contains(x))) {
+            cand.add(x);
+            for (int[] ar : rm.arenas) if (x >= ar[0] && x <= ar[1]) { arenaCand.add(x); break; }
+        }
         int heavies = 0;
         List<Integer> used = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -330,12 +425,13 @@ public final class RoomGen {
                 sx = x * Room.TS; sy = (gy - r.range(4, 7)) * Room.TS;
             } else {
                 if (cand.isEmpty()) continue;
-                int x = cand.get(r.i(cand.size()));
+                List<Integer> src = (!arenaCand.isEmpty() && r.chance(0.72f)) ? arenaCand : cand;
+                int x = src.get(r.i(src.size()));
                 for (int tries = 0; tries < 8; tries++) {
                     boolean ok = true;
                     for (int u : used) if (Math.abs(u - x) < 4) ok = false;
                     if (ok) break;
-                    x = cand.get(r.i(cand.size()));
+                    x = src.get(r.i(src.size()));
                 }
                 used.add(x);
                 sx = x * Room.TS + 8; sy = ground[x] * Room.TS;

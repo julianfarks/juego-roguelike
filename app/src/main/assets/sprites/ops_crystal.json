@@ -1,0 +1,46 @@
+{
+ "cell": [
+  28,
+  40
+ ],
+ "pivot": [
+  14,
+  38
+ ],
+ "body": [
+  20,
+  32
+ ],
+ "anims": {
+  "stage0": {
+   "row": 0,
+   "n": 4,
+   "fps": 4,
+   "loop": true
+  },
+  "stage1": {
+   "row": 1,
+   "n": 4,
+   "fps": 4,
+   "loop": true
+  },
+  "stage2": {
+   "row": 2,
+   "n": 4,
+   "fps": 4,
+   "loop": true
+  },
+  "stage3": {
+   "row": 3,
+   "n": 4,
+   "fps": 4,
+   "loop": true
+  },
+  "stage4": {
+   "row": 4,
+   "n": 4,
+   "fps": 4,
+   "loop": true
+  }
+ }
+}

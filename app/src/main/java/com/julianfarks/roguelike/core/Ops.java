@@ -1,68 +1,90 @@
 package com.julianfarks.roguelike.core;
 
 /**
- * Centro de operaciones: sala de piedra con arcos, antorchas y ventanales donde cada objeto es un acceso real.
- * Sustituye al antiguo menu de portales. La arquitectura se hornea con el mismo atlas de baldosas que las mazmorras (Room.bake).
+ * Centro de operaciones: una sala larga de piedra que se recorre desplazando la camara (arrastrar, flechas o los
+ * indicadores). Cada estacion es un objeto del mundo con su propio arte; la sala se hornea con el mismo atlas de
+ * baldosas que las mazmorras (Room.bake).
  */
 final class Ops extends Screen {
     static boolean active;
-    private static final int GALLERY = 0, STATS = 1, START = 2, CONTINUE = 3, TROPHY = 4, SANCT = 5, SPOTS = 6;
-    private static final int FLOOR = 224;   // y del suelo
+    // identificadores de estacion, en orden de izquierda a derecha
+    static final int ARMORY = 0, TROPHY = 1, PREP = 2, CONTINUE = 3, PORTAL = 4, SANCT = 5, SHOP = 6, CODEX = 7, GARDEN = 8, COMP = 9, RECORDS = 10, N = 11;
+    private static final int FLOOR = 224;               // y del suelo
+    static final int TILES_W = 120, WORLD = TILES_W * 16;
+    static final float[] SX = {90, 322, 596, 730, 924, 1108, 1242, 1376, 1516, 1656, 1808};
+    static final float[] SW = {80, 336, 88, 36, 96, 80, 112, 72, 132, 80, 88};
+    private static final float[] SH = {104, 100, 72, 56, 112, 92, 96, 104, 64, 104, 100};
+    private static final String[] NAME = {"Armería", "Trofeos", "Preparación", "Continuar", "EXPEDICIÓN", "Santuario", "Tienda", "Colección", "Jardín", "Compañeros", "Récords"};
+    private static final int[] GLOW = {0xFFB070, 0xFFD25A, 0xFFC070, 0xFFC070, 0xFF5A30, 0x9A7AFF, 0xFFA040, 0x7AF0FF, 0x7AFFA0, 0xB080FF, 0xFFD25A};
+    // memoria entre visitas: al volver de una estacion el espadachin sigue donde estaba
+    private static float sCam = -1, sHeroX = -1;
+    private static int sCur = PORTAL;
 
     private final Platform.Img[] bgl = new Platform.Img[3];
     private Platform.Img baked;
     private Room hall;
+    private java.util.List<int[]> torches;
     private final Particles ps = new Particles();
     private final Rng rng = new Rng(5);
-    private final float[] spotX = new float[SPOTS], spotW = new float[SPOTS], spotTop = new float[SPOTS];
-    private final String[] spotName = {"Galería", "Estadísticas", "NUEVA PARTIDA", "Continuar", "Trofeos", "Santuario"};
-    private final float[] appear = new float[SPOTS];
-    private final Hit[] spotHit = new Hit[SPOTS];
-    private int cur = START;           // seleccion (teclado/mando)
-    private int row = 0;               // 0 objetos, 1 botones
+    private final float[] appear = new float[N];
+    private final Hit[] spotHit = new Hit[N];
+    private final Hit[] dotHit = new Hit[N];
+    private Hit leftHit, rightHit;
+    private int cur = PORTAL;
+    private int row = 0;               // 0 estaciones, 1 botones
     private int extraSel = 0;
-    private float pulse;
-    private float enterT;
-    private float flash;
+    private float cam, heroX;
+    private boolean follow = true;
+    private boolean heroMoving, heroRight = true;
+    private float pulse, enterT, flash;
+    private int panId = -1; private float panStartX, camStart; private boolean panning, panCandidate;
     private Hit diffBtn, backBtn, infBtn;
     private final java.util.List<Hit> extras = new java.util.ArrayList<>();
     private String toast = ""; private float toastT;
+    private float trophyGlow;             // brillo al inspeccionar los trofeos
 
     Ops(Game g) {
         super(g);
         for (int i = 0; i < 3; i++) bgl[i] = Assets.img("bg/bg_eclipse_" + i + ".png");
         buildHall();
+        cur = sCur;
     }
 
     Ops(Game g, String toastMsg) { this(g); toast = toastMsg; toastT = 3f; }
 
     private void buildHall() {
-        Room r = new Room(40, 17, Room.HUB, Biome.ALL[7]);
-        for (int x = 0; x < 40; x++) for (int y = 0; y < 17; y++) {
-            boolean solid = y >= 14 || y < 2 || x < 1 || x >= 39;
-            if (solid) r.set(x, y, Room.SOLID);
-        }
-        int[] ribs = {10, 20, 30};            // nervaduras de la boveda
-        for (int k : ribs) {
+        Room r = new Room(TILES_W, 17, Room.HUB, Biome.ALL[7]);
+        int W = TILES_W;
+        for (int x = 0; x < W; x++) for (int y = 0; y < 17; y++) if (y >= 14 || y < 2 || x < 1 || x >= W - 1) r.set(x, y, Room.SOLID);
+        for (int k = 8; k < W - 6; k += 14) {                      // nervaduras de la boveda
             for (int x = k - 3; x <= k + 3; x++) r.set(x, 2, Room.SOLID);
             for (int x = k - 2; x <= k + 2; x++) r.set(x, 3, Room.SOLID);
             for (int x = k - 1; x <= k + 1; x++) r.set(x, 4, Room.SOLID);
             r.set(k, 5, Room.SOLID);
         }
-        // pilastras que enmarcan las crujias
-        for (int k : new int[]{5, 15, 25, 35}) for (int y = 5; y < 14; y++) { if (k == 15 || k == 25) { r.set(k, y, Room.SOLID); } }
-        // dais central
-        for (int x = 17; x <= 22; x++) r.set(x, 13, Room.SOLID);
-        for (int x = 18; x <= 21; x++) r.set(x, 12, Room.SOLID);
-        // ventanales hacia el cielo
-        for (int y = 5; y <= 10; y++) for (int x : new int[]{3, 4, 7, 8, 31, 32, 35, 36}) r.vista[y * 40 + x] = true;
-        // estandartes y antorchas
-        for (int x : new int[]{12, 18, 21, 27}) r.deco[3 * 40 + x] = (short) ((2 << 8) | (x & 7));
-        for (int x : new int[]{2, 13, 27, 37}) r.deco[7 * 40 + x] = (short) ((5 << 8) | (x & 3));
-        for (int x : new int[]{6, 9, 12, 28, 31, 34}) r.deco[3 * 40 + x] = (short) ((3 << 8) | (x & 7));
+        // dais del portal
+        int pt = Math.round(SX[PORTAL] / 16f);
+        for (int x = pt - 4; x <= pt + 3; x++) r.set(x, 13, Room.SOLID);
+        for (int x = pt - 3; x <= pt + 2; x++) r.set(x, 12, Room.SOLID);
+        // ventanales hacia el cielo entre estaciones (detras del portal y en los pasillos)
+        for (int k = 8; k < W - 6; k += 14) for (int y = 5; y <= 9; y++) for (int x = k + 6; x <= k + 8; x++) if (x < W - 2) r.vista[y * W + x] = true;
+        for (int k = 8; k < W - 6; k += 14) {
+            r.deco[3 * W + k - 1] = (short) ((3 << 8) | (k & 7));
+            r.deco[3 * W + k + 1] = (short) ((3 << 8) | ((k + 3) & 7));
+            r.deco[2 * W + k] = 0;
+        }
+        for (int k = 8; k < W - 6; k += 14) { int x = k + 7; if (x < W - 2) r.deco[3 * W + x] = (short) ((2 << 8) | (x & 7)); }
+        // antorchas cerca de cada estacion
+        for (int i = 0; i < N; i++) {
+            int tx = Math.round((SX[i] - SW[i] / 2f - 14) / 16f);
+            if (i == TROPHY || i == GARDEN) tx = Math.round((SX[i] - SW[i] / 2f - 10) / 16f);
+            if (tx > 1 && tx < W - 2) r.deco[7 * W + tx] = (short) ((5 << 8) | (tx & 3));
+        }
+        r.deco[7 * W + W - 3] = (short) ((5 << 8) | 1);
         hall = r;
         r.bake(game.P);
         baked = r.baked;
+        torches = r.animated();
     }
 
     @Override void enter() {
@@ -71,57 +93,92 @@ final class Ops extends Screen {
         Snd.ambient(null, 0);
         enterT = 0;
         layout();
+        heroX = sHeroX < 0 ? standX(PORTAL) : sHeroX;
+        cam = sCam < 0 ? camFor(cur) : sCam;
+        sHeroX = heroX;
     }
+
+    /** Donde espera el espadachin frente a cada estacion (el portal, en el centro del dais). */
+    static float standX(int i) { return i == PORTAL ? SX[i] : SX[i] - SW[i] / 2f + 12; }
+
+    private float camMax() { return Math.max(0, WORLD - W()); }
+    private float camFor(int i) { return Mth.clamp(SX[i] - W() / 2f, 0, camMax()); }
 
     @Override void layout() {
         hits.clear(); extras.clear();
         int w = W();
-        float cx = w / 2f;
-        float[] rel = {-192, -110, 0, 88, 148, 206};
-        float[] ww = {50, 46, 90, 44, 48, 44};
-        float[] top = {FLOOR - 84, FLOOR - 66, FLOOR - 112, FLOOR - 70, FLOOR - 62, FLOOR - 70};
-        for (int i = 0; i < SPOTS; i++) {
-            spotX[i] = cx + rel[i]; spotW[i] = ww[i]; spotTop[i] = top[i];
+        for (int i = 0; i < N; i++) {
             final int id = i;
-            float hw = Math.max(ww[i], 46);
-            Hit h = add(spotX[i] - hw / 2f, top[i], hw, FLOOR + 22 - top[i], null, () -> activate(id));
+            float hw = Math.max(SW[i] + 8, 60);
+            Hit h = add(SX[i] - hw / 2f - cam, FLOOR - SH[i], hw, SH[i] + 22, null, () -> select(id, true));
             h.plain = true; h.noSound = true;
+            h.tag = 1;
             h.disabled = (i == CONTINUE && !RunSave.any(game.P));
             spotHit[i] = h;
         }
-        backBtn = add(6, 242, 58, 22, "Volver", () -> back());
+        // indicadores de pagina (tocar = ir a la estacion vecina)
+        leftHit = add(0, 100, 26, 80, null, () -> step(-1)); leftHit.plain = true; leftHit.noSound = true;
+        rightHit = add(w - 26, 100, 26, 80, null, () -> step(1)); rightHit.plain = true; rightHit.noSound = true;
+        float mx = w / 2f - (N * 13) / 2f + 20;
+        for (int i = 0; i < N; i++) {
+            final int id = i;
+            Hit d = add(mx + i * 13, 246, 13, 24, null, () -> { cur = id; follow = true; row = 0; Snd.sfx("ui_hover", 0.5f); });
+            d.plain = true; d.noSound = true;
+            dotHit[i] = d;
+        }
+        backBtn = add(6, 247, 58, 21, "Volver", () -> back());
         extras.add(backBtn);
-        Hit shopBtn = add(70, 242, 58, 22, "Tienda", () -> game.go(new ShopScreen(game)));
-        extras.add(shopBtn);
-        infBtn = add(134, 242, 84, 22, "Infinito", this::startInfinite);
+        infBtn = add(68, 247, 74, 21, "Infinito", this::startInfinite);
         extras.add(infBtn);
-        diffBtn = add(w - 126, 242, 120, 22, diffLabel(), () -> { Save.S.diffSel = (Save.S.diffSel + 1) % 3; Save.S.write(); diffBtn.label = diffLabel(); });
+        diffBtn = add(w - 126, 247, 120, 21, diffLabel(), () -> { Save.S.diffSel = (Save.S.diffSel + 1) % 3; Save.S.write(); diffBtn.label = diffLabel(); });
         extras.add(diffBtn);
         float bx = w - 6;
         String[] nm = {"Opciones", "Códigos", "Historia"};
         Runnable[] ac = {() -> game.go(new Screens.Options(game, false)), () -> game.go(new CodesScreen(game)), () -> game.go(new StoryScreens.Historia(game, false))};
-        for (int i = 0; i < 3; i++) { bx -= 62; Hit h = add(bx, 5, 58, 22, nm[i], ac[i]); extras.add(h); bx -= 0; }
+        for (int i = 0; i < 3; i++) { bx -= 62; Hit h = add(bx, 5, 58, 22, nm[i], ac[i]); extras.add(h); }
         if (Save.S.devUnlocked) extras.add(add(6, 5, 90, 22, "Desarrollador", () -> game.go(new DevScreens.Menu(game))));
+        placeHits();
+    }
+
+    private void placeHits() {
+        for (int i = 0; i < N; i++) if (spotHit[i] != null) spotHit[i].x = SX[i] - spotHit[i].w / 2f - cam;
+        if (leftHit != null) { leftHit.disabled = cam <= 1; rightHit.disabled = cam >= camMax() - 1; }
     }
 
     private String diffLabel() { int d = Save.S.diffSel; return "Dificultad: " + (d == 0 ? "Fácil" : (d == 2 ? "Difícil" : "Normal")); }
 
     ClassDef hero() { int id = Save.S.lastClass; if (id < 0 || id > 9 || !Save.S.classUnlocked[id]) id = 0; return ClassDef.ALL[id]; }
 
+    private void step(int d) {
+        cur = Math.max(0, Math.min(N - 1, cur + d)); follow = true; row = 0; Snd.sfx("ui_hover", 0.5f);
+    }
+
+    private void select(int id, boolean doIt) {
+        cur = id; follow = true; row = 0;
+        if (doIt) activate(id);
+    }
+
     private void activate(int id) {
+        if (spotHit[id].disabled) { Snd.sfx("ui_error", 0.7f); if (id == CONTINUE) { toast = "No hay partidas guardadas"; toastT = 2f; } return; }
         flash = 0.25f;
-        Snd.sfx(id == START ? "ui_start_run" : "ui_click", 0.9f);
+        sCur = id; sCam = cam; sHeroX = heroX;
+        Snd.sfx(id == PORTAL ? "ui_start_run" : "ui_click", 0.9f);
         switch (id) {
-            case GALLERY: game.go(new ClassScreen(game)); break;
-            case STATS: game.go(new OpsScreens.Stats(game)); break;
-            case TROPHY: game.go(new OpsScreens.Trophy(game)); break;
+            case ARMORY: game.go(new ClassScreen(game)); break;
+            case TROPHY: trophyGlow = 1f; game.go(new OpsScreens.Trophy(game)); break;
+            case PREP: game.go(new OpsScreens.Pending(game, "PREPARACIÓN", "La mesa de preparación se activa en la etapa 2.", "Por ahora el portal inicia la expedición directamente.")); break;
+            case CONTINUE: game.go(new LoadScreen(game)); break;
             case SANCT: game.go(new SanctuaryScreen(game)); break;
-            case CONTINUE: if (RunSave.any(game.P)) game.go(new LoadScreen(game)); else { Snd.sfx("ui_error", 0.7f); toast = "No hay partidas guardadas"; toastT = 2f; } break;
+            case SHOP: game.go(new ShopScreen(game)); break;
+            case CODEX: game.go(new OpsScreens.Pending(game, "COLECCIÓN Y BESTIARIO", "Se activa en la etapa 4.", "Aún no registra descubrimientos.")); break;
+            case GARDEN: game.go(new OpsScreens.Pending(game, "JARDÍN MÁGICO", "Se activa en la etapa 4.", "Los cristales todavía están en semilla.")); break;
+            case COMP: game.go(new OpsScreens.Pending(game, "COMPAÑEROS", "Se activa en la etapa 4.", "Aún no hay espíritus disponibles.")); break;
+            case RECORDS: game.go(new OpsScreens.Stats(game)); break;
             default: startGame();
         }
     }
 
-    /** Nueva partida con el espadachin elegido en la galeria. */
+    /** Nueva partida con el espadachin elegido. */
     void startGame() {
         ClassDef c = hero();
         Save s = Save.S;
@@ -145,21 +202,21 @@ final class Ops extends Screen {
         game.go(RunScreen.infinite(game, c, Math.min(s.ascensionSel, s.ascension)));
     }
 
-    @Override boolean back() { game.go(new Screens.Title(game)); return true; }
+    @Override boolean back() { sCur = cur; sCam = cam; sHeroX = heroX; game.go(new Screens.Title(game)); return true; }
 
     @Override void key(int code, boolean down) {
         if (!down) return;
         game.keyboardUsed = true;
         if (code == 27) { back(); return; }
         if (code == 10 || code == 32 || code == 'J') {
-            if (row == 0) { if (!spotHit[cur].disabled) activate(cur); else { Snd.sfx("ui_error", 0.7f); } }
+            if (row == 0) activate(cur);
             else click(extras.get(Math.min(extraSel, extras.size() - 1)));
             return;
         }
         boolean left = code == 37 || code == 'A', right = code == 39 || code == 'D', up = code == 38 || code == 'W', dn = code == 40 || code == 'S';
         if (row == 0) {
-            if (left) { cur = (cur + SPOTS - 1) % SPOTS; Snd.sfx("ui_hover", 0.5f); }
-            else if (right) { cur = (cur + 1) % SPOTS; Snd.sfx("ui_hover", 0.5f); }
+            if (left) step(-1);
+            else if (right) step(1);
             else if (up || dn) { row = 1; extraSel = 0; Snd.sfx("ui_hover", 0.5f); }
         } else {
             int n = extras.size();
@@ -170,7 +227,19 @@ final class Ops extends Screen {
     }
 
     @Override void touch(int id, int action, float x, float y) {
-        if (action == Platform.ACTION_DOWN) game.keyboardUsed = false;
+        if (action == Platform.ACTION_DOWN) {
+            game.keyboardUsed = false;
+            if (panId < 0) { panId = id; panStartX = x; camStart = cam; panning = false; }
+            super.touch(id, action, x, y);
+            panCandidate = down != null && (down.tag == 1 || down == leftHit || down == rightHit) || down == null;
+            return;
+        }
+        if (id == panId && action == Platform.ACTION_MOVE && panCandidate) {
+            if (!panning && Math.abs(x - panStartX) > 7) { panning = true; down = null; downId = -1; follow = false; }
+            if (panning) { cam = Mth.clamp(camStart - (x - panStartX), 0, camMax()); placeHits(); }
+            return;
+        }
+        if (id == panId && action == Platform.ACTION_UP) { boolean was = panning; panId = -1; panning = false; if (was) { down = null; downId = -1; return; } }
         super.touch(id, action, x, y);
     }
 
@@ -178,13 +247,23 @@ final class Ops extends Screen {
         t += dt; pulse += dt; enterT += dt;
         if (flash > 0) flash -= dt;
         if (toastT > 0) toastT -= dt;
+        if (trophyGlow > 0) trophyGlow -= dt * 0.5f;
         int w = W();
-        for (int i = 0; i < SPOTS; i++) appear[i] = Mth.clamp((enterT - 0.25f - i * 0.12f) / 0.6f, 0, 1);
-        // polvo en suspension y brasas de las antorchas
-        if (rng.chance(dt * 10)) ps.spawn(rng.f(0, w), rng.f(40, 200), rng.f(2, 9), rng.f(-3, 3), rng.f(4, 8), 1, 0, 0xFFE8B0, true);
-        float ox = (w - 640) / 2f;
-        for (int[] d : hall.animated()) if (d[2] == 5 && rng.chance(dt * 5)) ps.spawn(ox + d[0] + 8, d[1] + 4, rng.f(-4, 4), -rng.f(8, 22), rng.f(0.6f, 1.4f), 1, 0, 0xFF9A40, true);
-        ps.spawn(spotX[START] + rng.f(-14, 14), FLOOR - 24, rng.f(-6, 6), -rng.f(14, 40), rng.f(0.8f, 1.8f), 1, 0, rng.chance(0.5f) ? 0xFFB070 : 0xFF5A30, true);
+        for (int i = 0; i < N; i++) appear[i] = Mth.clamp((enterT - 0.2f - Math.abs(i - cur) * 0.07f) / 0.5f, 0, 1);
+        if (follow && !panning) cam += (camFor(cur) - cam) * Math.min(1f, dt * 6f);
+        cam = Mth.clamp(cam, 0, camMax());
+        // el espadachin camina hasta la estacion activa
+        float tx = standX(cur);
+        float dx = tx - heroX;
+        heroMoving = Math.abs(dx) > 3;
+        if (heroMoving) { heroRight = dx > 0; heroX += Math.signum(dx) * Math.min(Math.abs(dx), 170f * dt); }
+        placeHits();
+        // polvo en suspension (solo en pantalla) y brasas de antorcha / portal
+        if (rng.chance(dt * 9)) ps.spawn(cam + rng.f(0, w), rng.f(40, 200), rng.f(2, 9), rng.f(-3, 3), rng.f(4, 8), 1, 0, 0xFFE8B0, true);
+        for (int[] d : torches) if (d[2] == 5 && d[0] + 16 > cam && d[0] < cam + w && rng.chance(dt * 5)) ps.spawn(d[0] + 8, d[1] + 4, rng.f(-4, 4), -rng.f(8, 22), rng.f(0.6f, 1.4f), 1, 0, 0xFF9A40, true);
+        if (Math.abs(SX[PORTAL] - cam - w / 2f) < w / 2f + 60) ps.spawn(SX[PORTAL] + rng.f(-14, 14), FLOOR - 24, rng.f(-6, 6), -rng.f(14, 40), rng.f(0.8f, 1.8f), 1, 0, rng.chance(0.5f) ? 0xFFB070 : 0xFF5A30, true);
+        // chispas de cristal del jardin
+        if (Math.abs(SX[GARDEN] - cam - w / 2f) < w / 2f + 70 && rng.chance(dt * 6)) ps.spawn(SX[GARDEN] + rng.f(-60, 60), FLOOR - 40, rng.f(-2, 2), -rng.f(4, 12), rng.f(0.8f, 1.5f), 1, 0, 0xA8FFD0, true);
         ps.update(dt);
     }
 
@@ -193,164 +272,205 @@ final class Ops extends Screen {
     @Override void render(Platform.Gfx g) {
         int w = W();
         float k = Mth.clamp(enterT / 0.8f, 0, 1);
-        // cielo y paisaje a traves de los ventanales
+        int ci = Math.round(cam);
         g.clear(0xFF080408);
         float[] fac = {3f, 6f, 11f};
+        float[] par = {0.06f, 0.12f, 0.22f};
         for (int i = 0; i < 3; i++) {
             Platform.Img im = bgl[i];
             if (im == null) continue;
             float sc = Math.max(1f, Platform.VIEW_H / (float) im.h);
             float dw = im.w * sc, dh = im.h * sc;
-            float off = (t * fac[i]) % dw;
+            float off = (t * fac[i] + cam * par[i] * 4f) % dw;
             for (float x = -off; x < w; x += dw) g.image(im, 0, 0, im.w, im.h, Math.round(x), Math.round(Platform.VIEW_H - dh), Math.round(dw), Math.round(dh), 0, 0, 1f);
         }
-        float ox = (w - 640) / 2f;
-        if (baked != null) g.image(baked, 0, 0, baked.w, baked.h, Math.round(ox), 0, baked.w, baked.h, 0, 0, 1f);
-        // sombra del suelo
+        if (baked != null) g.image(baked, 0, 0, baked.w, baked.h, -ci, 0, baked.w, baked.h, 0, 0, 1f);
         g.rect(0, FLOOR, w, 6, 0x40000000, false);
-        // luces de antorcha
         float fl = 0.85f + 0.15f * (float) Math.sin(t * 11);
-        for (int[] d : hall.animated()) {
-            UI.light(g, ox + d[0] + 8, d[1] + 8, d[2] == 5 ? 64 : 44, 0xFFC070, 0.30f * fl);
-            if (d[2] == 5) {   // llama animada (misma hoja de baldosas)
-                Platform.Img ts = Assets.img("tiles/tiles_eclipse.png");
-                if (ts != null) g.image(ts, (((d[3] + (int) (t * 8)) & 3)) * 16, 4 * 16, 16, 16, Math.round(ox + d[0]), d[1], 16, 16, 0, 0, 1f);
-            }
+        Platform.Img ts = Assets.img("tiles/tiles_eclipse.png");
+        for (int[] d : torches) {
+            if (d[0] + 80 < cam || d[0] - 80 > cam + w) continue;
+            UI.light(g, d[0] + 8 - ci, d[1] + 8, d[2] == 5 ? 64 : 44, 0xFFC070, 0.30f * fl);
+            if (d[2] == 5 && ts != null) g.image(ts, (((d[3] + (int) (t * 8)) & 3)) * 16, 4 * 16, 16, 16, d[0] - ci, d[1], 16, 16, 0, 0, 1f);
         }
-        drawSpots(g, w);
-        ps.render(g, 0, 0);
-        UI.light(g, spotX[START], FLOOR - 50, 100, 0xFF5A30, 0.12f + 0.05f * (float) Math.sin(pulse * 2));
+        // charcos de luz de cada estacion en el suelo
+        for (int i = 0; i < N; i++) {
+            float sx = SX[i] - ci;
+            if (sx < -120 || sx > w + 120) continue;
+            UI.light(g, sx, FLOOR - 2, SW[i] * 0.7f, GLOW[i], (i == PORTAL ? 0.18f : 0.08f) * appear[i]);
+        }
+        drawStations(g, w);
+        ps.render(g, ci, 0);
+        UI.light(g, SX[PORTAL] - ci, FLOOR - 50, 100, 0xFF5A30, 0.12f + 0.05f * (float) Math.sin(pulse * 2));
         g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0x120408, 40), false);
         if (UI.vignette != null) g.image(UI.vignette, 0, 0, UI.vignette.w, UI.vignette.h, 0, 0, w, Platform.VIEW_H, 0, 0, 0.7f);
+        drawChevrons(g, w);
         drawButtons(g);
         if (!Save.S.finalBeaten && infBtn != null) UI.icon(g, "lock", infBtn.x + infBtn.w - 15, infBtn.y + 3, 1f);
+        drawMiniMap(g);
         // ficha: recursos
-        UI.iconC(g, "soul", 14, Save.S.devUnlocked ? 40 : 16, 1f, 1f);
-        UI.small.draw(g, String.valueOf(Save.S.souls), 26, Save.S.devUnlocked ? 35 : 11, UI.SOUL, 1f);
-        UI.iconC(g, "gem", 14 + 112, Save.S.devUnlocked ? 40 : 16, 1f, 1f);
-        UI.small.draw(g, String.valueOf(Wallet.gems()), 26 + 112, Save.S.devUnlocked ? 35 : 11, UI.PURPLE, 1f);
-        UI.iconC(g, "relic", 14 + 56, Save.S.devUnlocked ? 40 : 16, 1f, 1f);
-        UI.small.draw(g, Save.S.relicCount() + "/8", 26 + 56, Save.S.devUnlocked ? 35 : 11, UI.GOLD, 1f);
-        // tooltip del objeto seleccionado
-        if (row == 0 && (game.keyboardUsed || down != null)) tooltip(g, w, cur);
-        else tooltip(g, w, START);
-        // marcador de seleccion con teclado/mando en los botones
+        float ry = Save.S.devUnlocked ? 40 : 16;
+        UI.iconC(g, "soul", 14, ry, 1f, 1f);
+        UI.small.draw(g, String.valueOf(Save.S.souls), 26, ry - 5, UI.SOUL, 1f);
+        UI.iconC(g, "relic", 14 + 56, ry, 1f, 1f);
+        UI.small.draw(g, Save.S.relicCount() + "/8", 26 + 56, ry - 5, UI.GOLD, 1f);
+        UI.iconC(g, "gem", 14 + 112, ry, 1f, 1f);
+        UI.small.draw(g, String.valueOf(Wallet.gems()), 26 + 112, ry - 5, UI.PURPLE, 1f);
+        tooltip(g, w, cur);
         if (row == 1 && game.keyboardUsed) {
             Hit h = extras.get(Math.min(extraSel, extras.size() - 1));
-            float a = 0.6f + 0.4f * (float) Math.sin(pulse * 8);
-            g.rect(h.x - 2, h.y - 2, h.w + 4, 1, Mth.withAlpha(0xFFD25A, (int) (a * 255)), false);
-            g.rect(h.x - 2, h.y + h.h + 1, h.w + 4, 1, Mth.withAlpha(0xFFD25A, (int) (a * 255)), false);
-            g.rect(h.x - 2, h.y - 2, 1, h.h + 4, Mth.withAlpha(0xFFD25A, (int) (a * 255)), false);
-            g.rect(h.x + h.w + 1, h.y - 2, 1, h.h + 4, Mth.withAlpha(0xFFD25A, (int) (a * 255)), false);
+            int c = Mth.withAlpha(0xFFD25A, (int) ((0.6f + 0.4f * (float) Math.sin(pulse * 8)) * 255));
+            g.rect(h.x - 2, h.y - 2, h.w + 4, 1, c, false); g.rect(h.x - 2, h.y + h.h + 1, h.w + 4, 1, c, false);
+            g.rect(h.x - 2, h.y - 2, 1, h.h + 4, c, false); g.rect(h.x + h.w + 1, h.y - 2, 1, h.h + 4, c, false);
         }
-        UI.small.center(g, game.keyboardUsed ? "Flechas · Enter · Esc" : "Toca un lugar", (214 + w - 130) / 2f, 252, UI.GREY, 0.7f);
-        if (toastT > 0) { UI.panel(g, 0, w / 2f - 160, 72, 320, 18, 0.95f); UI.small.center(g, toast, w / 2f, 76, UI.GOLD, Mth.clamp(toastT, 0, 1)); }
-        // fundido de entrada
+        if (toastT > 0) { UI.panel(g, 0, w / 2f - 160, 76, 320, 18, 0.95f); UI.small.center(g, toast, w / 2f, 80, UI.GOLD, Mth.clamp(toastT, 0, 1)); }
         if (k < 1) g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0x000000, (int) ((1 - k) * 255)), false);
         if (flash > 0) g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0xFFE8C0, (int) (Mth.clamp(flash * 4, 0, 1) * 70)), true);
     }
 
+    private void drawChevrons(Platform.Gfx g, int w) {
+        if (UI.arrow == null) return;
+        float b = (float) Math.sin(pulse * 4) * 2;
+        if (!leftHit.disabled) g.imageRot(UI.arrow, 0, 0, 8, 8, 4 - b, 134, 12, 12, 3.1416f, 0, 0, 0.8f);
+        if (!rightHit.disabled) g.imageRot(UI.arrow, 0, 0, 8, 8, w - 16 + b, 134, 12, 12, 0f, 0, 0, 0.8f);
+    }
+
+    private void drawMiniMap(Platform.Gfx g) {
+        for (int i = 0; i < N; i++) {
+            Hit d = dotHit[i];
+            boolean on = i == cur;
+            int c = on ? 0xFFFFD25A : (i == PORTAL ? 0xFFFF8A50 : 0xFF6A6480);
+            g.rect(d.x + 4, d.y + 8, 5, 5, c, false);
+            if (on) { g.rect(d.x + 3, d.y + 7, 7, 1, 0xFFFFE0A0, false); g.rect(d.x + 3, d.y + 13, 7, 1, 0xFFFFE0A0, false); }
+        }
+    }
+
     private void tooltip(Platform.Gfx g, int w, int i) {
-        String title, sub;
+        String sub;
         ClassDef c = hero();
         switch (i) {
-            case GALLERY: title = "Galería de espadachines"; sub = "Elige quién desciende contigo. Ahora: " + c.name; break;
-            case STATS: title = "Estadísticas"; sub = "Tu historial real: partidas, rondas, jefes y tiempo"; break;
-            case START: title = "Nueva partida"; sub = "Desciende al Abismo como " + c.name; break;
-            case CONTINUE: title = "Continuar"; sub = RunSave.any(game.P) ? "Retoma una partida guardada" : "No hay partidas guardadas"; break;
-            case TROPHY: title = "Trofeos"; sub = Trophies.count(Save.S) + " de " + Trophies.ALL.length + " logros desbloqueados"; break;
-            default: title = "Santuario"; sub = "Mejoras permanentes, clases y desbloqueos"; break;
+            case ARMORY: sub = "Espadachines y habilidades. Ahora: " + c.name; break;
+            case TROPHY: sub = Save.S.relicCount() + (Save.S.finalBeaten ? 1 : 0) + " de 9 jefes derrotados · " + Trophies.count(Save.S) + "/" + Trophies.ALL.length + " logros"; break;
+            case PREP: sub = "Revisa tu equipo antes de partir"; break;
+            case CONTINUE: sub = RunSave.any(game.P) ? "Retoma una partida guardada" : "No hay partidas guardadas"; break;
+            case PORTAL: sub = "Desciende al Abismo como " + c.name; break;
+            case SANCT: sub = "Mejoras permanentes, clases y desbloqueos"; break;
+            case SHOP: sub = "Apariencias · almas y gemas por separado"; break;
+            case CODEX: sub = "Enemigos, jefes, espadas y secretos"; break;
+            case GARDEN: sub = "Cristales que crecen con tus runs"; break;
+            case COMP: sub = "Espíritus que te acompañan"; break;
+            default: sub = "Estadísticas, logros y récords"; break;
         }
         float tw = Math.min(w - 40, 330);
-        UI.panel(g, i == START ? 1 : 0, w / 2f - tw / 2f, 34, tw, 34, 0.95f);
-        UI.small.center(g, title, w / 2f, 39, i == START ? UI.GOLD : UI.WHITE, 1f);
+        UI.panel(g, i == PORTAL ? 1 : 0, w / 2f - tw / 2f, 34, tw, 34, 0.95f);
+        UI.small.center(g, NAME[i], w / 2f, 39, i == PORTAL ? UI.GOLD : UI.WHITE, 1f);
         UI.small.center(g, sub, w / 2f, 53, UI.GREY, 1f);
     }
 
-    // ------------------------------------------------------------------ objetos
-    private void drawSpots(Platform.Gfx g, int w) {
-        for (int i = 0; i < SPOTS; i++) {
+    // ------------------------------------------------------------------ estaciones
+    private void spr(Platform.Gfx g, String name, String anim, float x, float y, float scale, float a, int flags, int tint) {
+        Sheet sh = Assets.spr(name);
+        if (sh == null || sh == Sheet.EMPTY) return;
+        sh.drawAt(g, anim, t, Math.round(x), Math.round(y), true, scale, flags, tint, a);
+    }
+
+    private void drawStations(Platform.Gfx g, int w) {
+        float cx0 = cam;
+        for (int i = 0; i < N; i++) {
             float a = appear[i];
-            if (a <= 0) continue;
-            boolean sel = selected(i) || (!game.keyboardUsed && down == null && i == START && false);
-            float rise = (1 - a) * 16;
-            float lift = sel ? -2f - (float) Math.abs(Math.sin(pulse * 5)) * 1.5f : 0;
-            float x = spotX[i], fy = FLOOR + rise + lift;
+            if (a <= 0 || SX[i] + SW[i] < cx0 - 40 || SX[i] - SW[i] > cx0 + w + 40) continue;
+            boolean sel = selected(i);
+            float x = SX[i] - Math.round(cam), fy = FLOOR + (1 - a) * 6;
             boolean dis = i == CONTINUE && spotHit[i].disabled;
+            float lift = sel ? -1f : 0;
             switch (i) {
-                case GALLERY: drawGallery(g, x, fy, a, sel); break;
-                case STATS: drawStats(g, x, fy, a, sel); break;
-                case START: drawStart(g, x, fy + 0, a, sel); break;
-                case CONTINUE: drawContinue(g, x, fy, a, sel, dis); break;
-                case TROPHY: drawTrophy(g, x, fy, a, sel); break;
-                default: drawSanctuary(g, x, fy, a, sel); break;
+                case ARMORY: spr(g, "ops_armory", "idle", x, fy + lift, 1f, a, 0, 0); UI.light(g, x, fy - 50, sel ? 52 : 38, 0xFFC070, 0.16f * a); break;
+                case TROPHY: drawTrophyWall(g, x, fy, a, sel); break;
+                case PREP: spr(g, "ops_prep", "idle", x, fy + lift, 1f, a, 0, 0); UI.light(g, x + 33, fy - 52, sel ? 46 : 34, 0xFFC070, (0.22f + 0.05f * (float) Math.sin(t * 9)) * a); break;
+                case CONTINUE: drawDoor(g, x, fy, a, sel, dis); break;
+                case PORTAL: drawPortal(g, x, a, sel); break;
+                case SANCT: spr(g, "prop_sanctuary", "idle", x, fy, 1.4f, a, 0, 0); UI.light(g, x, fy - 56, sel ? 52 : 38, 0x9A7AFF, 0.22f * a); break;
+                case SHOP: drawShop(g, x, fy, a, sel); break;
+                case CODEX: spr(g, "ops_codex", "idle", x, fy + lift, 1f, a, 0, 0); UI.light(g, x - 6, fy - 62, sel ? 40 : 28, 0x7AF0FF, 0.2f * a); break;
+                case GARDEN: drawGarden(g, x, fy, a, sel); break;
+                case COMP: spr(g, "ops_nook", "idle", x, fy + lift, 1f, a, 0, 0); UI.light(g, x, fy - 62, sel ? 48 : 34, 0xB080FF, 0.2f * a); break;
+                default: spr(g, "ops_board", "idle", x, fy + lift, 1f, a, 0, 0); UI.light(g, x, fy - 56, sel ? 46 : 32, 0xFFD25A, 0.12f * a); break;
             }
+            if (i == PREP) drawNpc(g, "prop_npc_0", SX[i] + 62 - Math.round(cam), fy, a);
+            if (i == SHOP) { /* mercader dentro del puesto */ }
+            if (i == CODEX) drawNpc(g, "prop_npc_1", SX[i] + 54 - Math.round(cam), fy, a);
+            if (i == GARDEN) drawNpc(g, "prop_npc_2", SX[i] + 80 - Math.round(cam), fy, a);
             // placa con el nombre
-            float pw = i == START ? 92 : (float) Math.max(46, UI.small.width(spotName[i]) + 12);
+            float pw = (float) Math.max(46, UI.small.width(NAME[i]) + 12);
             float py = FLOOR + 6;
-            UI.panel(g, sel || i == START ? 1 : 0, x - pw / 2f, py, pw, 14, 0.9f * a);
-            UI.small.center(g, spotName[i], x, py + 3, dis ? UI.GREY : (sel || i == START ? UI.GOLD : UI.WHITE), a);
+            boolean hot = sel || i == PORTAL || i == cur;
+            UI.panel(g, hot ? 1 : 0, x - pw / 2f, py, pw, 14, 0.9f * a);
+            UI.small.center(g, NAME[i], x, py + 3, dis ? UI.GREY : (hot ? UI.GOLD : UI.WHITE), a);
             if (sel) outline(g, spotHit[i]);
         }
+        drawHero(g);
+    }
+
+    private void drawNpc(Platform.Gfx g, String name, float x, float fy, float a) {
+        Sheet sh = Assets.spr(name);
+        if (sh == null || sh == Sheet.EMPTY) return;
+        sh.drawAt(g, "idle", t + x * 0.013f, Math.round(x), Math.round(fy), false, 1f, 0, 0, a);
+    }
+
+    private void drawHero(Platform.Gfx g) {
+        ClassDef c = hero();
+        Sheet sh = Cosmetics.sheetFor(c);
+        if (sh == null || sh == Sheet.EMPTY) return;
+        String an = heroMoving && sh.has("run") ? "run" : "idle";
+        int tint = Cosmetics.tintFor(c);
+        float hx = Math.round(heroX - cam);
+        float hy = FLOOR + 4;
+        UI.light(g, hx, FLOOR + 2, 14, 0x000000, 0.25f);
+        sh.drawAt(g, an, t, hx, hy, heroRight, 1f, tint != 0 ? Platform.TINT : 0, tint, 1f);
     }
 
     private void outline(Platform.Gfx g, Hit h) {
         float a = 0.55f + 0.35f * (float) Math.sin(pulse * 8);
         int c = Mth.withAlpha(0xFFD25A, (int) (a * 255));
-        float x0 = h.x, y0 = h.y + 4, x1 = h.x + h.w, y1 = h.y + h.h - 18, L = 8;
+        float x0 = h.x, y0 = h.y + 2, x1 = h.x + h.w, y1 = h.y + h.h - 16, L = 8;
         g.rect(x0, y0, L, 1, c, false); g.rect(x0, y0, 1, L, c, false);
         g.rect(x1 - L, y0, L, 1, c, false); g.rect(x1 - 1, y0, 1, L, c, false);
         g.rect(x0, y1, L, 1, c, false); g.rect(x0, y1 - L, 1, L, c, false);
         g.rect(x1 - L, y1, L, 1, c, false); g.rect(x1 - 1, y1 - L, 1, L, c, false);
     }
 
-    private void drawGallery(Platform.Gfx g, float x, float fy, float a, boolean sel) {
-        ClassDef c = hero();
-        // soporte de espadas en la pared
-        for (int k = 0; k < 3; k++) {
-            float sx = x - 18 + k * 18;
-            g.rect(sx - 1, fy - 78, 2, 40, Mth.withAlpha(0x8A90A0, (int) (255 * a)), false);
-            g.rect(sx - 4, fy - 52, 8, 2, Mth.withAlpha(0x6A4224, (int) (255 * a)), false);
-            g.rect(sx - 1, fy - 40, 2, 4, Mth.withAlpha(0xFFD25A, (int) (255 * a)), false);
-        }
-        UI.light(g, x, fy - 34, 44, c.color1, (0.25f + (sel ? 0.2f : 0f)) * a);
-        // pedestal
-        g.rect(x - 22, fy - 14, 44, 14, Mth.withAlpha(0x3A3646, (int) (255 * a)), false);
-        g.rect(x - 22, fy - 14, 44, 2, Mth.withAlpha(0x7A7490, (int) (255 * a)), false);
-        g.rect(x - 22, fy - 2, 44, 2, Mth.withAlpha(0x1A1620, (int) (255 * a)), false);
-        Sheet sh = Cosmetics.sheetFor(c);
-        if (sh != null && sh != Sheet.EMPTY) {
-            String an = sel ? (((int) (t * 0.7f)) % 2 == 0 ? "attack1" : "idle") : "idle";
-            if (!sh.has(an)) an = "idle";
-            float tt = sel ? t % 1.2f : t;
-            sh.drawAt(g, an, tt, x, fy - 14, true, 1f, 0, 0, a);
+    /** Sala de trofeos: nueve nichos (8 jefes y el Cazador). Cada victoria deja una estatua de piedra con su propio brillo. */
+    private void drawTrophyWall(Platform.Gfx g, float x, float fy, float a, boolean sel) {
+        spr(g, "ops_trophy_wall", "idle", x, fy, 1f, a, 0, 0);
+        float left = x - 168, top = fy - 99;
+        for (int i = 0; i < 9; i++) {
+            boolean got = i < 8 ? Save.S.relics[i] : Save.S.finalBeaten;
+            BossDef bd = BossDef.ALL[i];
+            float nx = left + 8 + i * 36 + 15, feet = top + 79;
+            Sheet sh = Assets.sheet(bd.sheet);
+            if (sh == null || sh == Sheet.EMPTY) continue;
+            if (got) {
+                float gl = 0.18f + 0.08f * (float) Math.sin(t * 2f + i) + (sel ? 0.12f : 0f) + trophyGlow * 0.25f;
+                UI.light(g, nx, feet - 26, 26 + (sel ? 4 : 0), bd.color | 0xFF000000, gl * a);
+                sh.drawAt(g, "idle", 0f, nx, feet, true, 0.4f, Platform.TINT, 0xA8A4C0, a);
+                g.rect(nx - 10, feet + 1, 20, 1, Mth.withAlpha(bd.color, (int) (150 * a)), true);
+            } else {
+                int rc = Mth.withAlpha(0x6A5A9A, (int) (120 * a * (0.6f + 0.4f * (float) Math.sin(t * 1.5f + i))));
+                g.rect(nx - 1, feet - 30, 2, 6, rc, false); g.rect(nx - 3, feet - 28, 6, 2, rc, false);
+            }
         }
     }
 
-    private void drawStats(Platform.Gfx g, float x, float fy, float a, boolean sel) {
-        int al = (int) (255 * a);
-        // atril de madera con libro abierto
-        g.rect(x - 3, fy - 26, 6, 26, Mth.withAlpha(0x5A3A20, al), false);
-        g.rect(x - 14, fy - 3, 28, 3, Mth.withAlpha(0x3A2410, al), false);
-        g.rect(x - 20, fy - 34, 40, 10, Mth.withAlpha(0x6A4224, al), false);
-        g.rect(x - 20, fy - 34, 40, 2, Mth.withAlpha(0x9A6A3A, al), false);
-        // libro
-        g.rect(x - 17, fy - 44, 16, 12, Mth.withAlpha(0xE8DCC0, al), false);
-        g.rect(x + 1, fy - 44, 16, 12, Mth.withAlpha(0xD8CCB0, al), false);
-        g.rect(x - 1, fy - 45, 2, 14, Mth.withAlpha(0x6A1A20, al), false);
-        // barras animadas (datos reales: no son numeros de ejemplo, solo ilustran)
-        for (int k = 0; k < 4; k++) {
-            float hgt = 3 + 6 * (0.5f + 0.5f * (float) Math.sin(t * 1.5f + k));
-            g.rect(x - 14 + k * 3, fy - 33 - hgt, 2, hgt, Mth.withAlpha(0x7A3A20, al), false);
-        }
-        for (int k = 0; k < 5; k++) g.rect(x + 3, fy - 43 + k * 2, 11, 1, Mth.withAlpha(0x6A5A40, al), false);
-        UI.light(g, x, fy - 46, (sel ? 38 : 28), 0xFFE0A0, (0.20f + 0.06f * (float) Math.sin(t * 3)) * a);
+    private void drawDoor(Platform.Gfx g, float x, float fy, float a, boolean sel, boolean dis) {
+        Sheet sh = Assets.spr("prop_door");
+        if (sh != null && sh != Sheet.EMPTY) sh.drawAt(g, (sel && !dis) ? "open_idle" : "closed", t, x, fy, true, 1.25f, dis ? Platform.TINT : 0, dis ? 0x303040 : 0, a);
+        if (!dis) UI.light(g, x, fy - 30, sel ? 40 : 26, 0xFFC070, 0.25f * a);
+        UI.iconC(g, dis ? "lock" : "door", x, fy - 70, 1f, a);
     }
 
-    private void drawStart(Platform.Gfx g, float x, float fy, float a, boolean sel) {
+    private void drawPortal(Platform.Gfx g, float x, float a, boolean sel) {
         Sheet sh = Assets.spr("prop_portal");
-        float py = 192 + (1 - a) * 16;        // sobre el dais
-        // aro de runas
+        float py = 192;
         float pr = 0.5f + 0.5f * (float) Math.sin(pulse * 2.4f);
         UI.light(g, x, py - 40, 80 + 10 * pr, 0xFF3A20, (0.30f + (sel ? 0.18f : 0.08f)) * a);
         for (int k = 0; k < 14; k++) {
@@ -358,47 +478,27 @@ final class Ops extends Screen {
             g.rect(x + (float) Math.cos(an) * 34 - 1, py + 2 + (float) Math.sin(an) * 7 - 1, 2, 2, Mth.withAlpha(0xFFB070, (int) (200 * a * (0.5f + 0.5f * (float) Math.sin(an * 2 + pulse * 3)))), true);
         }
         if (sh != null && sh != Sheet.EMPTY) sh.drawAt(g, "idle", t, x, py, true, 1.6f, 0, 0, a);
-        // flecha que invita a entrar
         float by = py - 118 + (float) Math.sin(pulse * 4) * 3;
         if (UI.arrow != null) g.imageRot(UI.arrow, 0, 0, 8, 8, x - 6, by, 12, 12, 1.5708f, 0, 0, a);
     }
 
-    private void drawContinue(Platform.Gfx g, float x, float fy, float a, boolean sel, boolean dis) {
-        Sheet sh = Assets.spr("prop_door");
-        if (sh != null && sh != Sheet.EMPTY) {
-            String an = (sel && !dis) ? "open_idle" : "closed";
-            sh.drawAt(g, an, t, x, fy, true, 1.25f, dis ? Platform.TINT : 0, dis ? 0x303040 : 0, a);
-        }
-        if (!dis) UI.light(g, x, fy - 30, sel ? 40 : 26, 0xFFC070, 0.25f * a);
-        UI.iconC(g, dis ? "lock" : "door", x, fy - 70, 1f, a);
+    private void drawShop(Platform.Gfx g, float x, float fy, float a, boolean sel) {
+        spr(g, "prop_merchant", "idle", x - 4, fy - 30, 1.5f, a, 0, 0);
+        spr(g, "ops_stall", "idle", x, fy + (sel ? -1 : 0), 1f, a, 0, 0);
+        UI.light(g, x, fy - 56, sel ? 50 : 36, 0xFFA040, (0.2f + 0.04f * (float) Math.sin(t * 8)) * a);
+        UI.light(g, x + 45, fy - 44, 16, 0xB070FF, 0.25f * a);
     }
 
-    private void drawTrophy(Platform.Gfx g, float x, float fy, float a, boolean sel) {
-        int al = (int) (255 * a);
-        int n = Trophies.count(Save.S);
-        // estanteria de piedra con copas
-        g.rect(x - 22, fy - 52, 44, 52, Mth.withAlpha(0x2A2634, al), false);
-        g.rect(x - 22, fy - 52, 44, 2, Mth.withAlpha(0x6A6480, al), false);
-        for (int row2 = 0; row2 < 3; row2++) {
-            float sy = fy - 36 + row2 * 17;
-            g.rect(x - 20, sy + 2, 40, 2, Mth.withAlpha(0x5A3A20, al), false);
-            for (int c = 0; c < 3; c++) {
-                int idx = (2 - row2) * 3 + c;
-                boolean lit = idx < Math.round(n * 9f / Trophies.ALL.length);
-                float cxp = x - 12 + c * 12;
-                int col = lit ? 0xFFD25A : 0x4A4658;
-                g.rect(cxp - 3, sy - 7, 6, 5, Mth.withAlpha(col, al), false);
-                g.rect(cxp - 1, sy - 2, 2, 3, Mth.withAlpha(col, al), false);
-                g.rect(cxp - 3, sy, 6, 1, Mth.withAlpha(col, al), false);
-                if (lit) g.rect(cxp - 2, sy - 6, 1, 3, Mth.withAlpha(0xFFFFFF, (int) (200 * a)), false);
-            }
+    private void drawGarden(Platform.Gfx g, float x, float fy, float a, boolean sel) {
+        spr(g, "ops_garden", "idle", x, fy, 1f, a, 0, 0);
+        for (int p = 0; p < 3; p++) {
+            float px = x - 43 + p * 43;
+            Sheet sh = Assets.spr("ops_crystal");
+            if (sh != null && sh != Sheet.EMPTY) sh.drawAt(g, "stage" + gardenStage(p), t + p * 0.3f, Math.round(px), Math.round(fy - 64 + 31), true, 1f, 0, 0, a);
+            UI.light(g, px, fy - 48, sel ? 26 : 18, 0x7AFFC0, 0.12f * a);
         }
-        if (n > 0) UI.light(g, x, fy - 30, sel ? 40 : 28, 0xFFD25A, (0.12f + 0.05f * (float) Math.sin(t * 2.5f)) * a);
     }
 
-    private void drawSanctuary(Platform.Gfx g, float x, float fy, float a, boolean sel) {
-        Sheet sh = Assets.spr("prop_altar");
-        if (sh != null && sh != Sheet.EMPTY) sh.drawAt(g, "idle", t, x, fy, true, 1.25f, 0, 0, a);
-        UI.light(g, x, fy - 40, sel ? 46 : 32, 0x9A7AFF, 0.22f * a);
-    }
+    /** Etapa visible (0..4) de cada cristal del jardin. Hasta la etapa 4 del proyecto el jardin aun no tiene datos guardados. */
+    static int gardenStage(int plot) { return 0; }
 }

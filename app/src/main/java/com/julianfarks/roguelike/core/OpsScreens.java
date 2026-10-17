@@ -124,4 +124,23 @@ final class OpsScreens {
             drawButtons(g);
         }
     }
+
+    // =================================================================== estaciones aun por activar
+    /** Estacion cuyo sistema todavia no esta implementado: lo dice con claridad y no simula contenido. */
+    static final class Pending extends Screen {
+        private final Screens.TitleBg bg = new Screens.TitleBg();
+        private final String title; private final String[] lines;
+        Pending(Game g, String title, String... lines) { super(g); this.title = title; this.lines = lines; }
+        @Override void layout() { hits.clear(); add(W() / 2f - 40, 244, 80, 22, "Volver", () -> back()); }
+        @Override boolean back() { game.go(new Ops(game)); return true; }
+        @Override void update(float dt) { bg.update(dt, W()); t += dt; }
+        @Override void render(Platform.Gfx g) {
+            int w = W();
+            bg.render(g, w, 0.65f);
+            UI.big.center(g, title, w / 2f, 40, UI.GOLD, 1f);
+            UI.panel(g, 0, w / 2f - 150, 90, 300, 20 + lines.length * 16, 0.95f);
+            for (int i = 0; i < lines.length; i++) UI.small.center(g, lines[i], w / 2f, 100 + i * 16, i == 0 ? UI.WHITE : UI.GREY, 1f);
+            drawButtons(g);
+        }
+    }
 }

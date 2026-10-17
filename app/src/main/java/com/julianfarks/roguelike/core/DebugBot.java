@@ -96,7 +96,7 @@ public final class DebugBot {
             return;
         }
         if (s instanceof Ops) {
-            if (System.getenv("BOT_NOSTART") != null) { if (!unlockedAll) { unlockedAll = true; for (int i = 0; i < 10; i++) Save.S.classUnlocked[i] = true; Save.S.souls = Math.max(Save.S.souls, 5000); } return; }
+            if (System.getenv("BOT_NOSTART") != null) { if (!unlockedAll) { unlockedAll = true; for (int i = 0; i < 10; i++) Save.S.classUnlocked[i] = true; Save.S.souls = Math.max(Save.S.souls, 5000); String rl = System.getenv("BOT_RELICS"); if (rl != null) { int n = Integer.parseInt(rl); for (int i = 0; i < 8; i++) Save.S.relics[i] = i < n; Save.S.finalBeaten = n >= 9; } } return; }
             if (System.getenv("BOT_SBTEST") != null) {
                 if (sbStep == 0 && frame - lastClassFrame > 120) { lastClassFrame = frame; Save.S.lastClass = classId; ((Ops) s).startGame(); }
                 else if (sbStep == 3 && frame - lastClassFrame > 60) {

@@ -9,24 +9,29 @@ public final class RoomGen {
     private RoomGen() {}
 
     /** Genera una sala y, en las de combate, la valida (entrada -> salida y enemigos alcanzables); si falla reintenta con otra disposicion. */
-    public static Room generate(int type, Biome b, Rng r, int stage, int roomNo) {
+    public static Room generate(int type, Biome b, Rng r, int stage, int roomNo) { return generate(type, b, r, stage, roomNo, 0); }
+
+    /** Igual que generate, con el suceso especial (Events.*) cuando type == Room.EVENT. */
+    public static Room generate(int type, Biome b, Rng r, int stage, int roomNo, int event) {
         Room rm = null;
         boolean big = type == Room.COMBAT || type == Room.ELITE;
         for (int attempt = 0; attempt < 12; attempt++) {
-            rm = build(type, b, r, stage, roomNo);
+            rm = build(type, b, r, stage, roomNo, event);
             if (!big || RoomCheck.fix(rm, r)) return rm;
         }
         return rm;
     }
 
-    private static Room build(int type, Biome b, Rng r, int stage, int roomNo) {
+    private static Room build(int type, Biome b, Rng r, int stage, int roomNo, int event) {
         boolean calm = type == Room.START || type == Room.BLESSING || type == Room.FORGE || type == Room.SHOP || type == Room.FOUNTAIN
-                || type == Room.TREASURE || type == Room.REST || type == Room.HUB;
+                || type == Room.TREASURE || type == Room.REST || type == Room.HUB || type == Room.EVENT;
         boolean boss = type == Room.BOSS;
         boolean big = !calm && !boss;
         int W = boss ? 48 : (calm ? r.range(38, 44) : r.range(72, 104));
         int H = boss ? 22 : (big ? 30 : 20);
         Room rm = new Room(W, H, type, b);
+        rm.event = type == Room.EVENT ? event : 0;
+        rm.glow = type == Room.EVENT ? Events.GLOW[Math.max(0, Math.min(Events.COUNT - 1, event))] : 0;
         int fy = big ? 22 : H - 4;
         int pitRow = big ? fy + 3 : H - 1;
         int mf = fy - 10;                       // fila de la losa del piso superior
@@ -150,6 +155,7 @@ public final class RoomGen {
             rm.spawnX = 5 * Room.TS;
             rm.exitX = (W - 5) * Room.TS;
         }
+        if (type == Room.EVENT && event == Events.CAPTIVE) spawnEnemies(rm, ground, blocked, platforms, r, stage, roomNo, false, upCand, mf, stage >= 1 ? 3 : 2);
         placeProps(rm, type, fy, r);
         if (big) for (int[] sc : secrets) rm.props.add(new Room.PropSpec("chest", sc[0], sc[1], 3));
         return rm;
@@ -393,9 +399,14 @@ public final class RoomGen {
     }
 
     private static void spawnEnemies(Room rm, int[] ground, boolean[] blocked, List<int[]> plat, Rng r, int stage, int roomNo, boolean elite, List<int[]> upCand, int mf) {
+        spawnEnemies(rm, ground, blocked, plat, r, stage, roomNo, elite, upCand, mf, 0);
+    }
+
+    private static void spawnEnemies(Room rm, int[] ground, boolean[] blocked, List<int[]> plat, Rng r, int stage, int roomNo, boolean elite, List<int[]> upCand, int mf, int forceCount) {
         int W = rm.w;
         int count = 3 + stage + (roomNo >= 2 ? 1 : 0) + r.i(2);
         if (elite) count = 2 + stage;
+        if (forceCount > 0) count = forceCount;
         String[] full = rm.biome.enemies;
         String[] pool = full;
         if (!elite && full.length >= 3) {   // cada sala usa otra combinacion de mobs
@@ -467,6 +478,16 @@ public final class RoomGen {
                 rm.props.add(new Room.PropSpec("merchant", cx + 38, gy, 0));
                 rm.props.add(new Room.PropSpec("forge", cx + 110, gy, 0));
                 if (r.chance(0.55f)) rm.props.add(new Room.PropSpec("npc", cx - 165, gy, r.i(3)));   // encuentro narrativo
+            }
+            case Room.EVENT -> {
+                switch (rm.event) {
+                    case Events.MERCHANT -> rm.props.add(new Room.PropSpec("merchant", cx, gy, 1));
+                    case Events.SPIRIT -> rm.props.add(new Room.PropSpec("spirit", cx, gy, 0));
+                    case Events.SECRET -> rm.props.add(new Room.PropSpec("relic", cx, gy, 3));
+                    case Events.SANCTUARY -> rm.props.add(new Room.PropSpec("shrine", cx, gy, 0));
+                    case Events.CAPTIVE -> rm.props.add(new Room.PropSpec("cage", cx, gy, r.i(3)));
+                    default -> { }
+                }
             }
             default -> { }
         }

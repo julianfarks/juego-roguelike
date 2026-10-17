@@ -49,5 +49,6 @@ public final class Stats {
         Unlocks.applyStats(rs, this);
         ChestLoot.applyStats(rs, this);
         StartBlessing.applyStats(rs, this);
+        Events.applyStats(rs, this);
     }
 }

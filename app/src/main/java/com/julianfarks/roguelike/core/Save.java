@@ -45,6 +45,7 @@ public final class Save {
     // ---- estadisticas de la cuenta (persistentes)
     public int started = 0, rounds = 0, losses = 0, bestStreak = 0, maxKillsRound = 0, perfectRounds = 0, bestPerfectStreak = 0, chestsOpened = 0, secretChests = 0, trophyMask = 0;
     public int[] classRuns = new int[10];
+    public int[] events = new int[Events.COUNT];     // sucesos especiales completados (por tipo)
     public long playMs = 0;                          // tiempo total jugado (ms)
     // ---- moneda premium (independiente de almas/oro) e inventario cosmetico
     public int gems = 0;                             // saldo premium (solo via Wallet)
@@ -121,6 +122,8 @@ public final class Save {
                 s.trophyMask = Json.i(d, "st_trophies", 0); s.playMs = Json.i(d, "st_playS", 0) * 1000L;
                 int[] cru = Json.ints(d, "st_classRuns");
                 if (cru != null) for (int i = 0; i < Math.min(10, cru.length); i++) s.classRuns[i] = cru[i];
+                int[] evs = Json.ints(d, "st_events");
+                if (evs != null) for (int i = 0; i < Math.min(Events.COUNT, evs.length); i++) s.events[i] = Math.max(0, evs[i]);
                 int[] cdu = Json.ints(d, "codes");
                 if (cdu != null) for (int i = 0; i < Math.min(s.codesUsed.length, cdu.length); i++) s.codesUsed[i] = cdu[i];
                 int[] sty = Json.ints(d, "story");
@@ -175,7 +178,7 @@ public final class Save {
             d.put("dev", devUnlocked); d.put("codes", codesUsed);
             d.put("st_started", started); d.put("st_rounds", rounds); d.put("st_losses", losses); d.put("st_streak", bestStreak); d.put("st_killsRound", maxKillsRound);
             d.put("st_perfect", perfectRounds); d.put("st_perfStreak", bestPerfectStreak); d.put("st_chests", chestsOpened); d.put("st_secret", secretChests);
-            d.put("st_trophies", trophyMask); d.put("st_playS", (int) (playMs / 1000L)); d.put("st_classRuns", classRuns);
+            d.put("st_trophies", trophyMask); d.put("st_playS", (int) (playMs / 1000L)); d.put("st_classRuns", classRuns); d.put("st_events", events);
             d.put("imode", inputMode); d.put("kb", kb); d.put("pb", pb);
             P.store().put("save", Json.write(d));
             if (commit) P.store().commit();

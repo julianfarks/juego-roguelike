@@ -55,6 +55,11 @@ final class Prop {
     // puertas de salida
     int doorIdx = -1; int nextType = -1; int nextBiome = -1; boolean locked;
     boolean roundChest;   // cofre de recompensa de ronda (no secreto)
+    int event;            // puerta lateral hacia un suceso (Events.*), 0 = puerta normal
+    String icon;          // icono propio sobre la puerta (sustituye al del tipo de sala)
+    int tint;             // tinte RGB de la puerta (0 = ninguno)
+    Sheet back;           // hoja dibujada detras (puesto del mercader errante)
+    boolean done;         // suceso ya resuelto (jaula abierta, espiritu satisfecho...)
     String label;
     float hp = 1;       // vasijas
     float shakeT;

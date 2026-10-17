@@ -5,13 +5,23 @@ import java.util.List;
 
 /** La partida: salas, HUD, controles tactiles, altares, tienda, forja, jefes, muerte y victoria. */
 final class RunScreen extends Screen implements Level.Listener {
-    static final int OV_NONE = 0, OV_PAUSE = 1, OV_BLESS = 2, OV_SHOP = 3, OV_FORGE = 4, OV_DEAD = 5, OV_WIN = 6, OV_CHEST = 7, OV_TALK = 8, OV_REVIVE = 9;
+    static final int OV_NONE = 0, OV_PAUSE = 1, OV_BLESS = 2, OV_SHOP = 3, OV_FORGE = 4, OV_DEAD = 5, OV_WIN = 6, OV_CHEST = 7, OV_TALK = 8, OV_REVIVE = 9, OV_EVENT = 10;
     static final String[] RELIC_NAMES = {"Corona Exánime", "Corazón de Magma", "Lágrima de Escarcha", "Ojo del Vacío", "Savia Ancestral", "Chispa del Titán", "Cáliz de Sangre", "Disco del Eclipse"};
 
     static final class ShopItem {
         String name, desc, icon; int cost, kind, arg; boolean sold;
         ShopItem(String n, String d, String i, int c, int k, int a) { name = n; desc = d; icon = i; cost = c; kind = k; arg = a; }
     }
+
+    /** Opcion de un suceso especial (espiritu, santuario): ventaja, precio y accion. */
+    static final class EvOpt {
+        String icon, name, pro, con; boolean ok; Runnable act;
+        EvOpt(String icon, String name, String pro, String con, boolean ok, Runnable act) { this.icon = icon; this.name = name; this.pro = pro; this.con = con; this.ok = ok; this.act = act; }
+    }
+    List<EvOpt> evOpts = new ArrayList<>();
+    String evTitle = "", evSub = "";
+    Prop evProp;
+    int evSel;
 
     final ClassDef cls;
     final RunState rs;
@@ -150,7 +160,7 @@ final class RunScreen extends Screen implements Level.Listener {
             rs.biome = Biome.ALL[id];
             rs.visited.add(id);
             rs.roomNo = 0;
-            rs.blessingTaken = false;
+            rs.blessingTaken = false; rs.eventBiomeDone = false;
             return id;
         }
         if (rs.stage >= 3) id = 8;
@@ -163,7 +173,7 @@ final class RunScreen extends Screen implements Level.Listener {
         rs.biome = Biome.ALL[id];
         rs.visited.add(id);
         rs.roomNo = id == 8 ? 4 : 0;
-        rs.blessingTaken = false;
+        rs.blessingTaken = false; rs.eventBiomeDone = false;
         if (id == 8) rs.finalRun = true;
         return id;
     }
@@ -173,7 +183,8 @@ final class RunScreen extends Screen implements Level.Listener {
     void loadRoom(int type) {
         Platform P = game.P;
         Biome b = type == Room.HUB || rs.biome == null ? hubBiome() : rs.biome;
-        Room rm = RoomGen.generate(type, b, rs.rng, rs.stage, rs.roomNo);
+        if (type != Room.EVENT && !(type == Room.ELITE && rs.curEvent == Events.TRIAL)) rs.curEvent = 0;
+        Room rm = RoomGen.generate(type, b, rs.rng, rs.stage, rs.roomNo, type == Room.EVENT ? rs.curEvent : 0);
         rm.bake(P);
         lv = new Level(P, rs, rm, in);
         lv.viewW = game.viewW;
@@ -204,6 +215,7 @@ final class RunScreen extends Screen implements Level.Listener {
         } else {
             bannerTitle = rs.biome.name;
             bannerSub = rs.roomNo == 0 ? rs.biome.tagline : (type == Room.REST ? "Tienda · forja · altar · fuente" : RunState.roomName(type));
+            if (type == Room.EVENT || (type == Room.ELITE && rs.curEvent == Events.TRIAL)) { bannerTitle = Events.NAME[rs.curEvent]; bannerSub = Events.SUB[rs.curEvent]; }
         }
         bannerT = type == Room.BOSS ? 0 : 3f;
         // tutorial
@@ -265,6 +277,18 @@ final class RunScreen extends Screen implements Level.Listener {
             d.label = RunState.roomName(types[i]);
             d.anim = "open"; d.animT = 0;
         }
+        // puerta lateral opcional hacia un suceso especial (solo tras salas de combate normales; jamas sustituye a la puerta principal)
+        if (rm.type == Room.COMBAT && rs.curEvent == 0 && !sandbox) {
+            Rng er = new Rng(rs.seed ^ (rs.stage * 1315423911L + rs.roomNo * 2654435761L + (rs.biome == null ? 0 : rs.biome.id) * 97L + rs.floor * 7919L));
+            int ek = Events.roll(rs, er, next);
+            float[] sd = ek > 0 ? Events.sideDoor(rm) : null;
+            if (ek > 0 && sd != null) {
+                Prop d = lv.addProp(new Room.PropSpec("door", sd[0], sd[1], 0));
+                d.doorIdx = 1; d.event = ek; d.nextType = ek == Events.TRIAL ? Room.ELITE : Room.EVENT;
+                d.icon = Events.ICON[ek]; d.tint = Events.GLOW[ek]; d.label = Events.NAME[ek];
+                d.anim = "open"; d.animT = 0;
+            }
+        }
         Snd.sfx("door_open", 0.8f);
     }
 
@@ -274,6 +298,8 @@ final class RunScreen extends Screen implements Level.Listener {
         Snd.sfx("room_clear", 0.9f);
         l.text(l.pl.x, l.pl.y - 50, "¡Sala despejada!", 0xFFD25A, true);
         if (l.room.type == Room.COMBAT || l.room.type == Room.ELITE) completeRound(l);
+        if (l.room.type == Room.ELITE && rs.curEvent == Events.TRIAL) trialReward(l);
+        if (l.room.type == Room.EVENT && rs.curEvent == Events.CAPTIVE) l.text(l.pl.x, l.pl.y - 66, "Guardias derrotados: libera al prisionero", 0xB8A0D0, true);
         rs.roomsDone++;
         spawnDoors();
         comboFlash = 1f;
@@ -307,6 +333,15 @@ final class RunScreen extends Screen implements Level.Listener {
             s.write();
             announceTrophies();
         }
+    }
+
+    /** Premio superior de la prueba de combate: un cofre extra de alta calidad y almas. */
+    private void trialReward(Level l) {
+        Prop c = l.addProp(new Room.PropSpec("chest", l.room.exitX - 70 - lastRoundChests * 38, l.room.exitY, 2));
+        c.label = "Premio de la prueba"; c.roundChest = true;
+        l.ps.burst(l.rng, c.x, c.y - 12, 0xFF8A50, 26, 120, 0.7f, 2, 0, true);
+        l.dropSouls(l.pl.x, l.pl.y - 20, 20 + 6 * rs.stage);
+        l.text(l.pl.x, l.pl.y - 82, "¡Prueba superada! Premio superior", 0xFF8A50, true);
     }
 
     float playSave;
@@ -422,6 +457,13 @@ final class RunScreen extends Screen implements Level.Listener {
             case "door":
                 Snd.sfx("door_open", 0.7f);
                 if (p.nextType == -2) { afterBoss(); break; }
+                if (p.event > 0) {   // puerta lateral: no avanza la ruta principal
+                    rs.curEvent = p.event; rs.eventBiomeDone = true; rs.eventsThisRun[p.event]++;
+                    if (!sandbox) { Save.S.events[p.event]++; Save.S.write(); }
+                    goRoom(p.nextType);
+                    break;
+                }
+                rs.curEvent = 0;
                 rs.roomNo++;
                 rs.roomsDone = Math.max(rs.roomsDone, rs.roomNo);
                 if (rs.infinite) rs.infRooms++;
@@ -433,7 +475,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 rs.biome = Biome.ALL[id];
                 rs.visited.add(id);
                 rs.roomNo = id == 8 ? 4 : 0;
-                rs.blessingTaken = false;
+                rs.blessingTaken = false; rs.eventBiomeDone = false;
                 if (id == 8) rs.finalRun = true;
                 lv.flash(0xFFFFFF, 0.4f);
                 goRoom(id == 8 ? Room.BOSS : Room.COMBAT);
@@ -448,9 +490,13 @@ final class RunScreen extends Screen implements Level.Listener {
             case "forge":
                 ovProp = p; openOv(OV_FORGE);
                 break;
+            case "spirit": openSpirit(p); break;
+            case "shrine": openShrine(p); break;
+            case "cage": rescue(p); break;
+            case "relic": openChest(p); break;
             case "merchant":
                 ovProp = p;
-                if (shop == null) shop = genShop();
+                if (shop == null) shop = p.arg == 1 ? genWanderShop() : genShop();
                 openOv(OV_SHOP);
                 break;
             case "npc":
@@ -623,6 +669,102 @@ final class RunScreen extends Screen implements Level.Listener {
         Snd.sfx("ui_pick_upgrade", 1f);
     }
 
+    // =============================================================== sucesos especiales
+    private List<ShopItem> genWanderShop() {
+        List<ShopItem> all = genShop();
+        List<ShopItem> l = new ArrayList<>();
+        while (l.size() < 3 && !all.isEmpty()) l.add(all.remove(rs.rng.i(all.size())));
+        for (ShopItem it : l) it.cost = Math.max(10, Math.round(it.cost * 0.85f));
+        return l;
+    }
+
+    private int randomBlessingId() {
+        List<Integer> pool = new ArrayList<>();
+        for (Blessing b : Blessing.ALL) if (rs.bless[b.id] < b.max) pool.add(b.id);
+        return pool.isEmpty() ? -1 : pool.get(rs.rng.i(pool.size()));
+    }
+
+    /** Sube un nivel una bendicion al azar sin tocar la regla de una bendicion de altar por bioma. */
+    private boolean giveRandomBlessing() {
+        int id = randomBlessingId();
+        if (id < 0) return false;
+        boolean bt = rs.blessingTaken;
+        applyBless(id);
+        rs.blessingTaken = bt;
+        return true;
+    }
+
+    private void finishEvent(Prop p, String msg, int col) {
+        if (p != null) { p.used = true; p.done = true; p.label = null; }
+        closeOv();
+        if (msg != null) lv.text(lv.pl.x, lv.pl.y - 60, msg, col, true);
+        lv.ps.burst(lv.rng, lv.pl.x, lv.pl.y - 20, col, 26, 130, 0.8f, 2, -20, true);
+        lv.fxAdd("fx_ring", "pulse", lv.pl.x, lv.pl.y - 18, 1.1f, col);
+        Snd.sfx("altar_bless", 0.9f);
+    }
+
+    private void openSpirit(Prop p) {
+        evProp = p; evTitle = "ESPÍRITU DEL ABISMO"; evSub = "Ofrécele un recurso y te concederá poder"; evSel = 0;
+        evOpts.clear();
+        final int hpCost = Events.spiritHpCost(rs), gold = Events.spiritGoldCost(rs);
+        boolean pool = randomBlessingId() >= 0;
+        evOpts.add(new EvOpt("b_sangre", "Sangre por poder", "+1 nivel de una bendición al azar", "Pierdes " + hpCost + " de vida", Events.spiritHpOk(rs) && pool, () -> {
+            rs.hp = Math.max(1, rs.hp - hpCost);
+            if (giveRandomBlessing()) finishEvent(p, "El espíritu acepta tu sangre", 0x7AC8F0);
+        }));
+        evOpts.add(new EvOpt("forge", "Oro por temple", "+1 nivel de arma", "Pagas " + gold + " de oro", rs.weaponLvl < 5 && rs.gold >= gold, () -> {
+            rs.gold -= gold; rs.weaponLvl++; rs.stats.recalc(rs);
+            finishEvent(p, "Tu arma vibra con nueva fuerza", 0xFFB040);
+        }));
+        evOpts.add(new EvOpt("potion", "Frasco por visión", "Definitiva al máximo y +30 almas", "Entregas 1 frasco", rs.potions >= 1, () -> {
+            rs.potions--; rs.ult = 100f; rs.souls += 30;
+            finishEvent(p, "El espíritu bebe el frasco", 0x9FD8FF);
+        }));
+        openOv(OV_EVENT);
+    }
+
+    private void openShrine(Prop p) {
+        evProp = p; evTitle = "SANTUARIO DE PACTOS"; evSub = "Elige un pacto: cada ventaja tiene su precio (máx. " + Events.MAX_PACTS + " por partida)"; evSel = 0;
+        evOpts.clear();
+        boolean room = rs.pactCount() < Events.MAX_PACTS;
+        for (int id : Events.rollPacts(rs, new Rng(rs.seed ^ (rs.roomNo * 7919L + rs.stage * 104729L + rs.pactCount() * 31L)))) {
+            final Events.Pact pk = Events.PACTS[id];
+            evOpts.add(new EvOpt(pk.icon, pk.name, pk.pro, pk.con, room, () -> {
+                rs.pacts[pk.id] = 1;
+                rs.stats.recalc(rs);
+                rs.hp = Math.min(rs.hp, rs.stats.maxHp);
+                finishEvent(p, pk.name, 0xAA6EFF);
+            }));
+        }
+        if (evOpts.isEmpty()) { toast = "Ya no quedan pactos por ofrecer"; toastT = 2f; return; }
+        openOv(OV_EVENT);
+    }
+
+    private void rescue(Prop p) {
+        if (!lv.cleared) { Snd.sfx("ui_error", 0.8f); toast = "Derrota primero a los guardias"; toastT = 2.2f; return; }
+        p.anim = "open"; p.animT = 0; p.done = true; p.used = true; p.label = null;
+        String msg;
+        switch (p.arg) {
+            case 0:
+                if (rs.weaponLvl < 5) { rs.weaponLvl++; rs.stats.recalc(rs); msg = "¡Libre! Afila tu arma: +1 nivel"; }
+                else { lv.dropGold(p.x, p.y - 20, 80); msg = "¡Libre! Te da 80 de oro"; }
+                break;
+            case 1:
+                msg = giveRandomBlessing() ? "¡Libre! Te enseña una bendición" : "¡Libre! Te cura";
+                if (!msg.contains("bendición")) lv.healPlayer(rs.stats.maxHp * 0.4f);
+                break;
+            default:
+                lv.healPlayer(rs.stats.maxHp);
+                rs.potions = Math.min(rs.stats.potionsMax + 1, rs.potions + 1);
+                msg = "¡Libre! Te cura y te da un frasco";
+                break;
+        }
+        lv.text(p.x, p.y - 70, msg, 0xB8A0D0, true);
+        lv.ps.burst(lv.rng, p.x, p.y - 30, 0xB8A0D0, 30, 130, 0.9f, 2, -10, true);
+        lv.fx("fx_heal", "rise", p.x, p.y - 20, 1.2f, 0, 0);
+        Snd.sfx("secret", 0.9f);
+    }
+
     private List<ShopItem> genShop() {
         List<ShopItem> l = new ArrayList<>();
         int st = rs.stage;
@@ -678,6 +820,22 @@ final class RunScreen extends Screen implements Level.Listener {
                     });
                     h.plain = false; h.tag = i;
                 }
+                break;
+            }
+            case OV_EVENT: {
+                int n = evOpts.size();
+                float cw = Math.min(150, (w - 40) / 3f), gap = 8, x0 = w / 2f - (n * cw + (n - 1) * gap) / 2f;
+                for (int i = 0; i < n; i++) {
+                    final int k = i;
+                    Hit h = add(x0 + i * (cw + gap), 52, cw, 150, null, () -> {
+                        if (ovT < 0.35f) return;
+                        EvOpt o = evOpts.get(k);
+                        if (!o.ok) { Snd.sfx("ui_error", 0.8f); return; }
+                        o.act.run();
+                    });
+                    h.plain = true; h.tag = i; h.noSound = true;
+                }
+                add(w / 2f - 50, 212, 100, 22, "Rechazar", this::closeOv);
                 break;
             }
             case OV_CHEST: {
@@ -884,7 +1042,7 @@ final class RunScreen extends Screen implements Level.Listener {
         if (ov == OV_PAUSE && saveMenu) { saveMenu = false; layoutOverlay(); return true; }
         if (ov == OV_TALK) { talk = null; closeOv(); return true; }
         if (ov == OV_REVIVE) return true;
-        if (ov == OV_PAUSE || ov == OV_SHOP || ov == OV_FORGE) { closeOv(); return true; }
+        if (ov == OV_PAUSE || ov == OV_SHOP || ov == OV_FORGE || ov == OV_EVENT) { closeOv(); return true; }
         return true;
     }
 
@@ -973,6 +1131,14 @@ final class RunScreen extends Screen implements Level.Listener {
                 if (code == 37 || code == 'A') offerSel = (offerSel + 2) % 3;
                 else if (code == 39 || code == 'D') offerSel = (offerSel + 1) % 3;
                 else if ((code == 10 || code == 32 || code == 'J') && ovT > 0.35f) { for (Hit h : hits) if (h.tag == offerSel) { click(h); break; } }
+                return;
+            }
+            if (ov == OV_EVENT && isDown) {
+                int n = Math.max(1, evOpts.size());
+                if (code == 37 || code == 'A') evSel = (evSel + n - 1) % n;
+                else if (code == 39 || code == 'D') evSel = (evSel + 1) % n;
+                else if ((code == 10 || code == 32 || code == 'J') && ovT > 0.35f) { for (Hit h : hits) if (h.label == null && h.tag == evSel) { click(h); break; } return; }
+                else if (code == 27) { back(); return; }
                 return;
             }
             if (ov == OV_TALK && isDown) {
@@ -1106,6 +1272,10 @@ final class RunScreen extends Screen implements Level.Listener {
             case "altar": return "Rezar";
             case "forge": return "Forjar";
             case "merchant": return "Comerciar";
+            case "spirit": return "Ofrecer";
+            case "shrine": return "Elegir pacto";
+            case "cage": return "Liberar";
+            case "relic": return "Tomar";
             case "fountain": return "Beber";
             case "npc": return "Hablar";
             case "chest": return p.arg == 3 ? "¡Cofre secreto!" : "Abrir";
@@ -1300,6 +1470,26 @@ final class RunScreen extends Screen implements Level.Listener {
                     UI.small.center(g, cur == 0 ? "NUEVA" : "Nv " + cur + " > " + (cur + 1), h.x + h.w / 2f, h.y + 67 + yoff, cur == 0 ? UI.GREEN : UI.CYAN, fadeIn);
                     UI.small.drawWrapped(g, b.desc, h.x + 8, h.y + 84 + yoff, (int) h.w - 16, 0xE8E0E0, fadeIn);
                 }
+                break;
+            }
+            case OV_EVENT: {
+                dim(g, w, 0.64f * fadeIn);
+                UI.big.center(g, evTitle, w / 2f, 14, UI.GOLD, fadeIn);
+                UI.small.center(g, evSub, w / 2f, 34, UI.GREY, fadeIn);
+                for (Hit h : hits) {
+                    if (h.label != null) continue;
+                    int i = h.tag;
+                    EvOpt o = evOpts.get(i);
+                    boolean selected = down == h || (game.keyboardUsed && evSel == i);
+                    float yoff = selected ? -4 : 0, cx = h.x + h.w / 2f, a = fadeIn * (o.ok ? 1f : 0.55f);
+                    UI.panel(g, selected ? 1 : 0, h.x, h.y + yoff, h.w, h.h, a);
+                    UI.iconC(g, o.icon, cx, h.y + 26 + yoff, 2f, a);
+                    UI.small.center(g, o.name, cx, h.y + 52 + yoff, UI.GOLD, a);
+                    int l1 = UI.small.drawWrapped(g, "+ " + o.pro, h.x + 8, h.y + 70 + yoff, (int) h.w - 16, 0xFF6AE08A, a);
+                    UI.small.drawWrapped(g, "- " + o.con, h.x + 8, h.y + 74 + l1 + yoff, (int) h.w - 16, 0xFFFF7A7A, a);
+                    if (!o.ok) UI.small.center(g, "No disponible", cx, h.y + h.h - 14 + yoff, UI.GREY, fadeIn);
+                }
+                drawButtons(g);
                 break;
             }
             case OV_CHEST: {

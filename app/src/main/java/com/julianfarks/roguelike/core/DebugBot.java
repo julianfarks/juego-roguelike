@@ -167,6 +167,7 @@ public final class DebugBot {
             int type = w[0].equals("boss") ? Room.BOSS : w[0].equals("shop") ? Room.SHOP : w[0].equals("forge") ? Room.FORGE : w[0].equals("bless") ? Room.BLESSING
                     : w[0].equals("rest") ? Room.REST : w[0].equals("elite") ? Room.ELITE : w[0].equals("hub") ? Room.HUB : w[0].equals("treasure") ? Room.TREASURE : Room.COMBAT;
             rs.rs.gold = 400;
+            if (w[0].startsWith("ev")) { int k = Integer.parseInt(w[0].substring(2)); rs.rs.curEvent = k; type = k == Events.TRIAL ? Room.ELITE : Room.EVENT; }
             rs.loadRoom(type);
             return;
         }
@@ -304,6 +305,19 @@ public final class DebugBot {
                 roundStep = 4;
             }
         }
+        if (System.getenv("BOT_EVTRIAL") != null && warped) {
+            if (roundStep == 0 && frame > warpFrame + 90) {
+                roundStep = 1; roundT = frame;
+                int n0 = lv.enemies.size();
+                for (Enemy en : new java.util.ArrayList<>(lv.enemies)) en.die(lv);
+                System.out.println("EVTRIAL: curEvent=" + rs.rs.curEvent + " tipo=" + lv.room.type + " enemigos=" + n0 + " (se matan todos)");
+            } else if (roundStep == 1 && frame > roundT + 60) {
+                int n = 0, prize = 0; for (Prop q : lv.props) if (q.kind.equals("chest") && q.roundChest) { n++; if ("Premio de la prueba".equals(q.label)) prize++; }
+                int doors = 0; for (Prop q : lv.props) if (q.kind.equals("door")) doors++;
+                System.out.println("EVTRIAL: cofres de ronda=" + n + " premio_prueba=" + prize + " (esperado 1) puertas=" + doors + " rondas=" + Save.S.rounds);
+                roundStep = 2;
+            }
+        }
         String npcEnv = System.getenv("BOT_NPC");
         if (npcEnv != null && !npcDone && warped && frame > warpFrame + 60) {
             npcDone = true;
@@ -368,6 +382,13 @@ public final class DebugBot {
             case RunScreen.OV_SHOP: case RunScreen.OV_FORGE:
                 if (rs.ovT > 2.0f) rs.back();
                 return;
+            case RunScreen.OV_EVENT:
+                if (rs.ovT > 1.0f && System.getenv("BOT_EVSHOT") == null || rs.ovT > 6f) {
+                    boolean did = false;
+                    for (Screen.Hit h : rs.hits) if (h.label == null && h.tag >= 0 && h.tag < rs.evOpts.size() && rs.evOpts.get(h.tag).ok) { rs.touch(0, 0, h.x + 5, h.y + 5); rs.touch(0, 2, h.x + 5, h.y + 5); did = true; break; }
+                    if (!did) rs.back();
+                }
+                return;
             case RunScreen.OV_PAUSE:
                 if (rs.ovT > 0.5f) rs.back();
                 return;
@@ -387,7 +408,7 @@ public final class DebugBot {
             for (Prop pr : lv.props) {
                 if (pr.dead) continue;
                 if (done.contains(pr)) continue;
-                boolean want = pr.kind.equals("door") || pr.kind.equals("merchant") || pr.kind.equals("forge") || pr.kind.equals("fountain") || pr.kind.equals("portal") || (pr.kind.equals("altar") && !pr.used) || (pr.kind.equals("chest") && !pr.used && pr.arg != 3);
+                boolean want = pr.kind.equals("door") || pr.kind.equals("merchant") || pr.kind.equals("forge") || pr.kind.equals("fountain") || pr.kind.equals("portal") || (pr.kind.equals("altar") && !pr.used) || (pr.kind.equals("chest") && !pr.used && pr.arg != 3) || ((pr.kind.equals("spirit") || pr.kind.equals("shrine") || pr.kind.equals("cage") || pr.kind.equals("relic")) && !pr.done && !pr.used);
                 if (!want) continue;
                 float d = Math.abs(pr.x - p.x) + (pr.kind.equals("door") ? -50 : 0);
                 if (d < pd) { pd = d; best = pr; }

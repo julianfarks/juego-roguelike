@@ -9,7 +9,7 @@ public final class Room {
     public static final int AIR = 0, SOLID = 1, ONEWAY = 2, SPIKE = 3, SPIKE_DOWN = 4, BREAK = 5, DOOR = 6;
     public static boolean isSolid(int t) { return t == SOLID || t == BREAK || t == DOOR; }
     // tipos de sala
-    public static final int START = 0, COMBAT = 1, ELITE = 2, BLESSING = 3, FORGE = 4, SHOP = 5, FOUNTAIN = 6, TREASURE = 7, BOSS = 8, REST = 9, HUB = 10;
+    public static final int START = 0, COMBAT = 1, ELITE = 2, BLESSING = 3, FORGE = 4, SHOP = 5, FOUNTAIN = 6, TREASURE = 7, BOSS = 8, REST = 9, HUB = 10, EVENT = 11;
 
     public static final class Spawn {
         public final String enemy; public final float x, y; public final boolean elite;
@@ -34,6 +34,8 @@ public final class Room {
     public int pixW, pixH;
     public List<int[]> secretSpots;
     public int vaultA = -99;
+    public int event;                  // suceso especial (Events.*) cuando type == EVENT
+    public int glow;                   // color ambiental RGB del suceso (0 = ninguno)
     public int[] ground;               // fila de superficie por columna (-1 = foso)
     public final List<int[]> arenas = new ArrayList<>();   // {x0,x1} tramos de arena de combate (el generador concentra ahi a los enemigos)
     public List<Integer> spikeCols;    // columnas con tira de pinchos sobre suelo firme

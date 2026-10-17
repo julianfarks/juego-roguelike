@@ -29,6 +29,10 @@ public final class RunState {
     public final int[] cb = new int[ChestLoot.N];     // mejoras de cofres (ver ChestLoot)
     public int grenLvl, secLvl;                      // niveles de mejora de granada y arma secundaria
     public boolean blessingTaken;
+    public final int[] pacts = new int[Events.PACTS.length];     // pactos de santuario tomados (0/1)
+    public final int[] eventsThisRun = new int[Events.COUNT];
+    public boolean eventBiomeDone;      // ya hubo un suceso en este bioma
+    public int curEvent;                // suceso de la sala actual (Events.*)
     public int startBless = -1;          // bendicion inicial elegida en la preparacion (-1 = ninguna)
     public int damageTaken;
     public int streak, perfectStreak, roundsThisRun;   // rondas seguidas / perfectas seguidas (estadisticas)
@@ -74,6 +78,9 @@ public final class RunState {
         hp = stats.maxHp;
         potions = stats.potionsMax;
     }
+
+    public int pactCount() { int n = 0; for (int p : pacts) if (p > 0) n++; return n; }
+    public boolean boss() { return biome != null && biome.id >= 8; }
 
     public void recalc() {
         float ratio = stats.maxHp > 0 ? hp / stats.maxHp : 1f;

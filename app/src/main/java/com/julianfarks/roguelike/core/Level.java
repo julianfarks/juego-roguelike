@@ -98,7 +98,11 @@ public final class Level {
         switch (ps.kind) {
             case "altar": p.sheet = Assets.spr("prop_altar"); p.anim = "idle"; break;
             case "forge": p.sheet = Assets.spr("prop_forge"); break;
-            case "merchant": p.sheet = Assets.spr("prop_merchant"); break;
+            case "merchant": p.sheet = Assets.spr("prop_merchant"); if (ps.arg == 1) { p.back = Assets.spr("ops_stall"); p.label = "Mercader errante"; } break;
+            case "spirit": p.sheet = Assets.spr("ev_spirit"); p.label = "Espíritu del abismo"; break;
+            case "cage": p.sheet = Assets.spr("ev_cage"); p.anim = "idle"; p.label = "Prisionero"; break;
+            case "shrine": p.sheet = Assets.spr("ev_shrine"); p.label = "Santuario de pactos"; break;
+            case "relic": p.sheet = Assets.spr("ev_relic"); p.anim = "idle"; p.label = "Reliquia"; break;
             case "fountain": p.sheet = Assets.spr("prop_fountain"); break;
             case "npc": p.sheet = Assets.spr("prop_npc_" + Math.max(0, Math.min(2, ps.arg))); p.anim = "idle"; break;
             case "chest": p.sheet = Assets.spr("prop_chest"); p.anim = "closed"; break;
@@ -877,6 +881,7 @@ public final class Level {
         }
         drawBreakTiles(g);
         drawAnimatedDeco(g);
+        if (room.glow != 0) { float gp = 0.12f + 0.04f * (float) Math.sin(time * 1.7f); UI.light(g, room.pixW / 2f, room.exitY - 70, 190, room.glow, gp); UI.light(g, room.pixW / 2f - 150, room.exitY - 40, 90, room.glow, gp * 0.7f); UI.light(g, room.pixW / 2f + 150, room.exitY - 40, 90, room.glow, gp * 0.7f); }
         for (Prop p : props) drawProp(g, p);
         for (FxObj f : fxs) if (f.behind) drawFx(g, f);
         for (Pickup p : pickups) drawPickup(g, p);
@@ -960,6 +965,18 @@ public final class Level {
         else if (p.type == Pickup.RELIC) UI.light(g, p.x, p.y, 34, 0xFFD25A, 0.5f);
     }
 
+    /** Color de ambiente de los objetos de suceso (0 = ninguno). */
+    private int eventColor(Prop p) {
+        switch (p.kind) {
+            case "spirit": return Events.GLOW[Events.SPIRIT];
+            case "shrine": return Events.GLOW[Events.SANCTUARY];
+            case "cage": return Events.GLOW[Events.CAPTIVE];
+            case "relic": return Events.GLOW[Events.SECRET];
+            case "merchant": return p.arg == 1 ? Events.GLOW[Events.MERCHANT] : 0;
+            default: return 0;
+        }
+    }
+
     private void drawProp(Platform.Gfx g, Prop p) {
         if (p.kind.equals("chest") && p.roundChest && !p.used) { UI.light(g, p.x, p.y - 10, 26 + 3 * (float) Math.sin(time * 5), 0xFFD25A, 0.35f); if (rng.chance(0.05f)) ps.spawn(p.x + rng.f(-8, 8), p.y - 4, rng.f(-6, 6), -rng.f(15, 35), 0.8f, 2, 0, 0xFFE9A0, true); }
         if (p.kind.equals("chest") && p.arg == 3 && !p.used) { UI.light(g, p.x, p.y - 8, 30 + 4 * (float) Math.sin(time * 4), 0xB070FF, 0.40f); if (rng.chance(0.06f)) ps.spawn(p.x + rng.f(-8, 8), p.y - 4, rng.f(-6, 6), -rng.f(15, 35), 0.8f, 2, 0, 0xD8B0FF, true); }
@@ -967,12 +984,18 @@ public final class Level {
         Anim a = p.sheet.anim(p.anim);
         int frame = a.frameAt(p.animT);
         float ox = p.shakeT > 0 ? rng.f(-1, 1) : 0;
-        p.sheet.draw(g, a, frame, Math.round(p.x + ox), Math.round(p.y), true, 1f, 0, 0, 1f);
+        int ec = eventColor(p);
+        if (ec != 0 && !p.done) UI.light(g, p.x, p.y - 26, 46 + 5 * (float) Math.sin(time * 3), ec, 0.30f);
+        if (p.back != null) { Anim ba = p.back.anim("idle"); p.back.draw(g, ba, ba.frameAt(time), Math.round(p.x), Math.round(p.y), true, 1f, 0, 0, 1f); }
+        boolean tinted = p.tint != 0;
+        p.sheet.draw(g, a, frame, Math.round(p.x + ox), Math.round(p.y) + (p.kind.equals("spirit") ? Math.round((float) Math.sin(time * 2f) * 2) - 8 : 0), true, 1f, tinted ? Platform.TINT : 0, tinted ? p.tint : 0, 1f);
+        if (ec != 0 && !p.done && rng.chance(0.08f)) ps.spawn(p.x + rng.f(-14, 14), p.y - rng.f(8, 40), rng.f(-4, 4), -rng.f(8, 20), 0.9f, 2, 0, ec, true);
         if (p.kind.equals("door") && p.doorIdx >= 0 && p.nextType >= 0 && UI.small != null) {
             // icono de recompensa sobre la puerta
             float bob = (float) Math.sin(time * 3 + p.doorIdx) * 2;
             UI.panel(g, 0, p.x - 12, p.y - 76 + bob, 24, 24, 0.9f);
-            UI.iconC(g, RunState.roomIcon(p.nextType), p.x, p.y - 64 + bob, 1f, p.locked ? 0.4f : 1f);
+            UI.iconC(g, p.icon != null ? p.icon : RunState.roomIcon(p.nextType), p.x, p.y - 64 + bob, 1f, p.locked ? 0.4f : 1f);
+            if (p.event > 0) UI.light(g, p.x, p.y - 30, 34, Events.GLOW[p.event], 0.28f);
         }
         if (p.label != null && UI.small != null && (!p.kind.equals("door") || Math.abs(pl.x - p.x) < 40 && Math.abs(pl.y - p.y) < 40))
             UI.small.center(g, p.label, p.x, p.kind.equals("door") ? p.y - 92 : p.y - 62, p.locked ? 0x9AA0B0 : 0xFFD25A, 1f);
@@ -995,6 +1018,7 @@ public final class Level {
             boolean can = false;
             switch (p.kind) {
                 case "altar": case "forge": case "merchant": case "fountain": case "chest": case "portal": case "sanctuary": case "npc": can = !p.used || p.kind.equals("merchant"); break;
+                case "spirit": case "shrine": case "cage": case "relic": can = !p.done && !p.used; break;
                 case "door": can = !p.locked; break;
                 default: break;
             }

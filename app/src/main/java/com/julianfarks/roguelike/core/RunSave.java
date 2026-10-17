@@ -41,7 +41,7 @@ final class RunSave {
             d.put("hp", (int) Math.ceil(rs.hp)); d.put("ult", (int) rs.ult);
             d.put("revive", rs.reviveUsed); d.put("time", (int) rs.time);
             d.put("asc", rs.asc); d.put("diff", rs.diff);
-            d.put("blessTaken", rs.blessingTaken); d.put("sbl", rs.startBless); d.put("dmgTaken", rs.damageTaken);
+            d.put("blessTaken", rs.blessingTaken); d.put("sbl", rs.startBless); d.put("pacts", rs.pacts); d.put("evBiome", rs.eventBiomeDone); d.put("evCur", rs.curEvent); d.put("evRun", rs.eventsThisRun); d.put("dmgTaken", rs.damageTaken);
             int[] rl = new int[8]; for (int i = 0; i < 8; i++) rl[i] = rs.relicsThisRun[i] ? 1 : 0;
             d.put("relics", rl);
             d.put("finalRun", rs.finalRun);
@@ -84,6 +84,9 @@ final class RunSave {
             int[] rl = Json.ints(d, "relics"); if (rl != null) for (int i = 0; i < Math.min(8, rl.length); i++) rs.relicsThisRun[i] = rl[i] != 0;
             rs.finalRun = Json.bool(d, "finalRun", false);
             rs.startBless = StartBlessing.get(Json.i(d, "sbl", -1)) != null ? Json.i(d, "sbl", -1) : -1;
+            int[] pc = Json.ints(d, "pacts"); if (pc != null) for (int i = 0; i < Math.min(pc.length, rs.pacts.length); i++) rs.pacts[i] = pc[i] > 0 ? 1 : 0;
+            int[] er = Json.ints(d, "evRun"); if (er != null) for (int i = 0; i < Math.min(er.length, rs.eventsThisRun.length); i++) rs.eventsThisRun[i] = Math.max(0, er[i]);
+            rs.eventBiomeDone = Json.bool(d, "evBiome", false); rs.curEvent = Math.max(0, Math.min(Events.COUNT - 1, Json.i(d, "evCur", 0)));
             int[] bl = Json.ints(d, "bless"); if (bl != null) for (int i = 0; i < Math.min(bl.length, rs.bless.length); i++) rs.bless[i] = bl[i];
             rs.sec = Json.i(d, "sec", 0); rs.secAmmo = Json.i(d, "secAmmo", 0); rs.gren = Json.i(d, "gren", 0); rs.grenCount = Json.i(d, "grenCount", 0);
             rs.special = Json.i(d, "special", 0); rs.shield = Json.i(d, "shield", 0); rs.secretsFound = Json.i(d, "secrets", 0);

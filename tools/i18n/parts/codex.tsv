@@ -1,0 +1,83 @@
+Descubierto	Discovered	Découvert	已发现
+Cuerpo a cuerpo	Melee	Corps à corps	近战
+A distancia	Ranged	À distance	远程
+Volador	Flyer	Volant	飞行
+Volador picado	Diver	Piqueur	俯冲者
+Embestidor	Charger	Chargeur	冲撞者
+Saltador	Jumper	Sauteur	跳跃者
+Hechicero	Sorcerer	Sorcier	术士
+Pesado	Heavy	Lourd	重型
+Escudero	Shieldbearer	Écuyer	盾卫
+Apoyo	Support	Soutien	辅助
+Explosivo	Explosive	Explosif	爆破者
+Torreta	Turret	Tourelle	炮塔
+Acechador	Stalker	Rôdeur	潜伏者
+Francotirador	Sniper	Tireur d'élite	狙击手
+Potenciador	Buffer	Amplificateur	增益者
+Teletransportador	Teleporter	Téléporteur	传送者
+Élite	Elite	Élite	精英
+Bloqueado	Locked	Verrouillé	未解锁
+COMPAÑEROS	COMPANIONS	COMPAGNONS	同伴
+Elige un espíritu para la expedición. Solo uno a la vez.	Choose a spirit for the expedition. Only one at a time.	Choisissez un esprit pour l'expédition. Un seul à la fois.	为远征选择一位灵体。每次只能选一位。
+Requisito: {}	Requirement: {}	Condition : {}	条件：{}
+EN EL EQUIPO	IN THE TEAM	DANS L'ÉQUIPE	已入队
+¡Nuevo compañero: {}!	New companion: {}!	Nouveau compagnon : {} !	新同伴：{}！
+Nuevo compañero: {}	New companion: {}	Nouveau compagnon : {}	新同伴：{}
+Máximo	Maximum	Maximum	已满级
+Crecer · {} almas	Grow · {} souls	Grandir · {} âmes	成长 · {}灵魂
+JARDÍN MÁGICO	MAGIC GARDEN	JARDIN MAGIQUE	魔法花园
+Almas: {}   ·   Los cristales crecen con las almas que ganas en las runs.	Souls: {}   ·   Crystals grow with the souls you earn in runs.	Âmes : {}   ·   Les cristaux grandissent avec les âmes gagnées en partie.	灵魂：{}   ·   水晶会随你在游戏中获得的灵魂成长。
+Etapa {}	Stage {}	Étape {}	阶段 {}
+Aún sin efecto	No effect yet	Aucun effet pour l'instant	尚无效果
+Ahora: {}	Now: {}	Actuel : {}	当前：{}
+Enemigos	Enemies	Ennemis	敌人
+Jefes	Bosses	Boss	首领
+Sucesos	Events	Événements	事件
+Reliquias	Relics	Reliques	遗物
+Espadachines	Swordsmen	Épéistes	剑士
+{} (élite único)	{} (unique elite)	{} (élite unique)	{}（唯一精英）
+Vida base {} · Daño {} · Aplica {}	Base health {} · Damage {} · Applies {}	Vie de base {} · Dégâts {} · Applique {}	基础生命 {} · 伤害 {} · 附带 {}
+Elemento: {}	Element: {}	Élément : {}	元素：{}
+Derrotado: reliquia obtenida	Defeated: relic obtained	Vaincu : relique obtenue	已击败：获得遗物
+Aún sin derrotar	Not yet defeated	Pas encore vaincu	尚未击败
+Derrotado	Defeated	Vaincu	已击败
+Completados: {}	Completed: {}	Terminés : {}	已完成：{}
+Reliquia de {}	Relic of {}	Relique de {}	{}的遗物
+Conservada en la sala de trofeos	Kept in the trophy hall	Conservée dans la salle des trophées	保存在奖杯厅中
+Derrota a su jefe para obtenerla	Defeat its boss to obtain it	Vainquez son boss pour l'obtenir	击败其首领即可获得
+Vida {}	Health {}	Vie {}	生命 {}
+Victorias: {}	Victories: {}	Victoires : {}	胜利：{}
+COLECCIÓN Y BESTIARIO	COLLECTION AND BESTIARY	COLLECTION ET BESTIAIRE	图鉴与怪物志
+Encuéntralo en una expedición.	Find it on an expedition.	Trouvez-le lors d'une expédition.	在远征中找到它。
+Aún sin descubrir.	Not yet discovered.	Pas encore découvert.	尚未发现。
+Quitar todos	Remove all	Tout retirer	全部卸下
+RETOS DEL INFINITO	INFINITE CHALLENGES	DÉFIS DE L'INFINI	无尽挑战
+Opcionales. Cada reto suma puntaje; el récord sigue siendo por pisos.	Optional. Each challenge adds score; the record still counts floors.	Facultatifs. Chaque défi ajoute du score ; le record reste basé sur les étages.	可选。每项挑战都会增加得分；纪录仍以层数为准。
+{}% puntaje	{}% score	{} % de score	得分{}%
++{}% puntaje	+{}% score	+{} % de score	得分+{}%
+Bonificación total: +{}% de puntaje	Total bonus: +{}% score	Bonus total : +{} % de score	总加成：得分+{}%
+(sin retos)	(no challenges)	(aucun défi)	（无挑战）
+No cambian las gemas ni el precio de las revividas.	They do not change gems or the price of revives.	Ils ne changent ni les gemmes ni le prix des réanimations.	不会改变宝石数量或复活价格。
+No valen en pruebas del Modo Desarrollador.	They don't count in Developer Mode trials.	Ils ne comptent pas dans les essais du mode développeur.	在开发者模式的测试中无效。
+Ascua	Ember	Braise	余烬
+Escarcha	Frost	Givre	寒霜
+Umbra	Umbra	Umbra	幽影
+Espíritu de fuego	Fire spirit	Esprit du feu	火之灵
+Espíritu de hielo	Ice spirit	Esprit de la glace	冰之灵
+Espíritu de sombra	Shadow spirit	Esprit de l'ombre	影之灵
+Cada 6 s lanza una chispa al enemigo más cercano (25% de tu daño; 10% contra jefes).	Every 6 s it hurls a spark at the nearest enemy (25% of your damage; 10% against bosses).	Toutes les 6 s, il lance une étincelle sur l'ennemi le plus proche (25 % de vos dégâts ; 10 % contre les boss).	每6秒向最近的敌人射出一道火花（造成你25%的伤害；对首领为10%）。
+Reduce un 8% el daño que recibes.	Reduces damage you take by 8%.	Réduit de 8 % les dégâts que vous subissez.	使你受到的伤害降低8%。
+Imán +40 y marca los cofres secretos y las puertas ocultas de la sala.	Magnet +40 and reveals the room's secret chests and hidden doors.	Aimant +40 et révèle les coffres secrets et les portes cachées de la salle.	磁吸+40，并标出房间内的隐藏宝箱与暗门。
+Derrota a 1 jefe.	Defeat 1 boss.	Vainquez 1 boss.	击败1个首领。
+Derrota a 3 jefes.	Defeat 3 bosses.	Vainquez 3 boss.	击败3个首领。
+Completa 10 expediciones o llega al piso 5 del modo infinito.	Complete 10 expeditions or reach floor 5 of infinite mode.	Terminez 10 expéditions ou atteignez l'étage 5 du mode infini.	完成10次远征，或在无尽模式中到达第5层。
+Sin compañero	No companion	Aucun compagnon	无同伴
+Cristal de brasa	Ember crystal	Cristal de braise	余烬水晶
+Cristal de savia	Sap crystal	Cristal de sève	树液水晶
+Cristal de fortuna	Fortune crystal	Cristal de fortune	财运水晶
++2% de daño por etapa.	+2% damage per stage.	+2 % de dégâts par étape.	每阶段伤害+2%。
++5 de vida máxima por etapa.	+5 max health per stage.	+5 de vie maximale par étape.	每阶段最大生命值+5。
++15 de oro inicial por etapa.	+15 starting gold per stage.	+15 d'or initial par étape.	每阶段初始金币+15。
+{}% daño	{}% damage	{} % de dégâts	伤害{}%
+{} vida	{} health	{} de vie	生命{}
+{} oro inicial	{} starting gold	{} d'or initial	初始金币{}

@@ -1,0 +1,106 @@
+Rueda con el botón de esquivar para ser invulnerable un instante.	Roll with the dodge button to be invulnerable for a moment.	Roulez avec le bouton d'esquive pour être invulnérable un instant.	使用闪避键翻滚，可在瞬间保持无敌。
+Las reliquias de los jefes se conservan entre partidas.	Boss relics are kept between runs.	Les reliques des boss sont conservées d'une partie à l'autre.	首领遗物会在多局之间保留。
+Gasta almas en el Santuario para mejorar a tu personaje.	Spend souls in the Sanctuary to upgrade your character.	Dépensez des âmes au Sanctuaire pour améliorer votre personnage.	在圣所花费灵魂来强化你的角色。
+Cada sala puede esconder una bendición, una forja o un mercader.	Every room may hide a blessing, a forge or a merchant.	Chaque salle peut cacher une bénédiction, une forge ou un marchand.	每个房间都可能藏有祝福、锻炉或商人。
+Reúne las 8 reliquias para forjar el Sello y despertar al Cazador.	Gather the 8 relics to forge the Seal and awaken the Hunter.	Réunissez les 8 reliques pour forger le Sceau et éveiller le Chasseur.	集齐8件遗物，锻造封印，唤醒猎人。
+Cargando...	Loading...	Chargement...	加载中...
+Comenzar	Start	Commencer	开始
+Créditos	Credits	Crédits	制作名单
+Idioma	Language	Langue	语言
+Modo Desarrollador	Developer Mode	Mode développeur	开发者模式
+Creador: JulianFarKs	Creator: JulianFarKs	Créateur : JulianFarKs	作者：JulianFarKs
+Música	Music	Musique	音乐
+SÍ	ON	OUI	开
+NO	OFF	NON	关
+Sonidos	Sounds	Sons	音效
+Vibración	Vibration	Vibration	震动
+Entrada	Input	Commande	操作方式
+Automática	Automatic	Automatique	自动
+Táctil	Touch	Tactile	触屏
+Mando	Gamepad	Manette	手柄
+Controles (teclado y mando)	Controls (keyboard and gamepad)	Commandes clavier / manette	操作说明（键盘与手柄）
+Organizar controles táctiles	Arrange touch controls	Disposition tactile	调整触屏按键
+¿Seguro? Toca otra vez	Sure? Tap again	Sûr ? Touchez encore	确定吗？再点一次
+Borrar progreso	Erase progress	Effacer la progression	清除进度
+OPCIONES	OPTIONS	OPTIONS	选项
+Un roguelike de acción en 2D	A 2D action roguelike	Un roguelike d'action en 2D	一款2D动作Roguelike
+inspirado en SwordmanMagic,	inspired by SwordmanMagic,	inspiré de SwordmanMagic,	灵感源自 SwordmanMagic，
+mod de Minecraft de JulianFarKs	the Minecraft mod by JulianFarKs	le mod Minecraft de JulianFarKs	JulianFarKs 的 Minecraft 模组
+CREADOR	CREATOR	CRÉATEUR	作者
+IDEAS	IDEAS	IDÉES	创意
+BASADO EN	BASED ON	BASÉ SUR	灵感来源
+un mod propio de Minecraft:	an original Minecraft mod:	un mod Minecraft original :	原创 Minecraft 模组：
+PRÓXIMAMENTE	COMING SOON	BIENTÔT	即将推出
+Mejoras en los niveles y diseños	Improvements to levels and designs	Améliorations des niveaux et des designs	关卡与设计的改进
+y en el menú de elegir el tipo de mundo	and to the world-type selection menu	et du menu de choix du type de monde	以及世界类型选择菜单
+ARTE	ART	ART	美术
+Pixel art generado a mano,	Hand-made pixel art,	Pixel art fait main,	手工绘制的像素画，
+personajes, jefes, enemigos y mundos	characters, bosses, enemies and worlds	personnages, boss, ennemis et mondes	包含角色、首领、敌人与世界
+MÚSICA Y SONIDO	MUSIC AND SOUND	MUSIQUE ET SON	音乐与音效
+Música original sintetizada,	Original synthesized music,	Musique originale synthétisée,	原创合成音乐，
+efectos para cada arma, jefe y habilidad	effects for every weapon, boss and skill	effets pour chaque arme, boss et compétence	为每件武器、首领和技能制作的音效
+CLASES	CLASSES	CLASSES	职业
+JEFES	BOSSES	BOSS	首领
+GRACIAS POR JUGAR	THANKS FOR PLAYING	MERCI D'AVOIR JOUÉ	感谢游玩
+Toca para salir	Tap to exit	Touchez pour quitter	点击退出
+Los retos son del modo Infinito	Challenges belong to Infinite mode	Les défis relèvent du mode Infini	挑战仅限无尽模式
+COMENZAR EXPEDICIÓN	START EXPEDITION	LANCER L'EXPÉDITION	开始远征
+Retos	Challenges	Défis	挑战
+Modo	Mode	Mode	模式
+Campaña	Campaign	Campagne	战役
+Infinito: se desbloquea al vencer al Cazador	Infinite: unlocked by defeating the Hunter	Infini : se débloque en vainquant le Chasseur	无尽：击败猎人后解锁
+PREPARACIÓN	PREPARATION	PRÉPARATION	出征准备
+/10 desbloqueados	/10 unlocked	/10 débloqués	/10 已解锁
+Vida	Health	Vie	生命
+Daño	Damage	Dégâts	伤害
+Ataque	Attack	Attaque	攻击
+Velocidad	Speed	Vitesse	速度
+Crítico	Critical	Critique	暴击
+Definitiva	Ultimate	Ultime	终极技
+Enfriamiento	Cooldown	Recharge	冷却
+Carga con golpes	Charges with hits	Se charge en frappant	命中充能
+Bendición inicial · elige una	Starting blessing · choose one	Bénédiction initiale · choisissez-en une	初始祝福 · 择一
+Sin bendición inicial	No starting blessing	Aucune bénédiction initiale	无初始祝福
+Equipo	Gear	Équipement	装备
+Compañero: ninguno (toca para elegir)	Companion: none (tap to choose)	Compagnon : aucun (touchez pour choisir)	同伴：无（点击选择）
+Compañero	Companion	Compagnon	同伴
+ENTRANDO AL ABISMO	ENTERING THE ABYSS	ENTRÉE DANS L'ABÎME	踏入深渊
+Modo infinito	Infinite mode	Mode infini	无尽模式
+Quitar	Remove	Retirer	卸下
+Equipar	Equip	Équiper	装备
+No sirve	Unusable	Inutilisable	无法使用
+ gemas	 gems	 gemmes	 宝石
+Jugando	Playing	En jeu	游戏中
+Próximamente	Coming soon	Bientôt	敬请期待
++50 gemas (PRUEBA)	+50 gems (TEST)	+50 gemmes (TEST)	+50宝石（测试）
+Gemas de prueba: solo esta sesión	Test gems: this session only	Gemmes de test : cette session uniquement	测试宝石：仅限本次游戏
+Aspecto original	Original skin	Apparence d'origine	原始外观
+ equipado en 	 equipped on 	 équipé sur 	 已装备于 
+Comprado	Purchased	Acheté	已购买
+No se pudo comprar	Could not purchase	Achat impossible	无法购买
+TIENDA	SHOP	BOUTIQUE	商店
+Almas	Souls	Âmes	灵魂
+Gemas	Gems	Gemmes	宝石
+COSMÉTICOS	COSMETICS	COSMÉTIQUES	外观
+Aspecto de 	Skin for 	Apparence de 	外观：
+   (* gemas de prueba)	   (* test gems)	   (* gemmes de test)	   （*测试宝石）
+Aún no hay aspectos disponibles.	No skins available yet.	Aucune apparence disponible pour l'instant.	暂无可用外观。
+Llegarán en futuras versiones; lo que desbloquees se conservará.	They will arrive in future versions; whatever you unlock will be kept.	Elles arriveront dans de futures versions ; ce que vous débloquez sera conservé.	将在未来版本推出；你解锁的内容会被保留。
+Las gemas moradas todavía no se pueden comprar.	Purple gems cannot be bought yet.	Les gemmes violettes ne peuvent pas encore être achetées.	紫色宝石暂时无法购买。
+Premium	Premium	Premium	高级
+Se consigue jugando	Earned by playing	S'obtient en jouant	通过游玩获得
+Google Play (futuro)	Google Play (future)	Google Play (à venir)	Google Play（未来）
+Equipado	Equipped	Équipé	已装备
+Tuyo	Owned	Possédé	已拥有
+Confirmar elegido	Confirm selection	Confirmer le choix	确认选择
+Elegir espadachín	Choose swordsman	Choisir l'épéiste	选择剑士
+Desbloquear	Unlock	Débloquer	解锁
+Ver ilustración	View artwork	Voir l'illustration	查看插画
+Ver en acción	See in action	Voir en action	动作演示
+Ascensión	Ascension	Ascension	晋阶
+Ascensión 0	Ascension 0	Ascension 0	晋阶 0
+Espadachín elegido	Chosen swordsman	Épéiste choisi	已选剑士
+GALERIA DE ESPADACHINES	SWORDSMEN GALLERY	GALERIE DES ÉPÉISTES	剑士画廊
+Arma	Weapon	Arme	武器
+Dificultad	Difficulty	Difficulté	难度
+Clase bloqueada	Class locked	Classe verrouillée	职业未解锁

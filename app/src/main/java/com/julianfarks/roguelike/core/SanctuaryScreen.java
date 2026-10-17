@@ -11,13 +11,17 @@ final class SanctuaryScreen extends Screen {
 
     @Override void enter() { Snd.music("mus_sanctuary", true); layout(); }
 
+    private int tabsEnd = 270;
+
     @Override void layout() {
         hits.clear();
         int w = W();
         add(6, 4, 54, 18, "Atrás", () -> back());
-        Hit a = add(6, 26, 80, 20, "Mejoras", () -> { tab = 0; layout(); });
-        Hit b = add(90, 26, 80, 20, "Clases", () -> { tab = 1; layout(); });
-        Hit c3 = add(174, 26, 96, 20, "Desbloqueos", () -> { tab = 2; layout(); });
+        int wa = Math.max(70, UI.small.width("Mejoras") + 14), wb = Math.max(60, UI.small.width("Clases") + 14), wc = Math.max(80, UI.small.width("Desbloqueos") + 14);
+        tabsEnd = 6 + wa + 4 + wb + 4 + wc;
+        Hit a = add(6, 26, wa, 20, "Mejoras", () -> { tab = 0; layout(); });
+        Hit b = add(10 + wa, 26, wb, 20, "Clases", () -> { tab = 1; layout(); });
+        Hit c3 = add(14 + wa + wb, 26, wc, 20, "Desbloqueos", () -> { tab = 2; layout(); });
         a.tag = tab == 0 ? 1 : 0; b.tag = tab == 1 ? 1 : 0; c3.tag = tab == 2 ? 1 : 0;
         float cw = (w - 20) / 2f;
         if (tab == 0) {
@@ -82,7 +86,9 @@ final class SanctuaryScreen extends Screen {
             boolean has = Save.S.relics[i];
             UI.icon(g, "r_" + keys[i], rx + i * 18, 27, 1f, has ? 0 : Platform.TINT, has ? 0 : 0x303038, has ? 1f : 0.7f);
         }
-        UI.small.right(g, "Reliquias " + Save.S.relicCount() + "/8", rx - 6, 31, UI.GOLD, 1f);
+        String relLab = "Reliquias " + Save.S.relicCount() + "/8";
+        if (rx - 6 - UI.small.width(relLab) < tabsEnd + 4) relLab = Save.S.relicCount() + "/8";
+        UI.small.right(g, relLab, rx - 6, 31, UI.GOLD, 1f);
         float cw = (w - 20) / 2f;
         drawButtons(g);
         // pestañas resaltadas

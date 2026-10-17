@@ -45,6 +45,6 @@ final class LoadScreen extends Screen {
             else UI.small.drawWrapped(g, info, x + 8, y + 19, (int) bw - 16, 0xE8E0E0, 1f);
         }
         drawButtons(g);
-        UI.small.center(g, "Toca una ranura para continuar donde la dejaste (empiezas al inicio de la sala).", w / 2f, 238, UI.GREY, 1f);
+        UI.small.drawWrapped(g, "Toca una ranura para continuar donde la dejaste (empiezas al inicio de la sala).", 20, 230, w - 40, UI.GREY, 1f);
     }
 }

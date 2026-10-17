@@ -1,0 +1,70 @@
+Cuchillos arrojadizos	Throwing knives	Couteaux de lancer	飞刀
+Granada incendiaria	Incendiary grenade	Grenade incendiaire	燃烧手雷
+Ballesta rúnica	Runic crossbow	Arbalète runique	符文弩
+Orbe arcano	Arcane orb	Orbe arcanique	奥术宝珠
+Hacha arrojadiza	Throwing axe	Hache de jet	飞斧
+Granada de fragmentación	Fragmentation grenade	Grenade à fragmentation	破片手雷
+Granada de hielo	Ice grenade	Grenade de glace	冰霜手雷
+Granada tóxica	Toxic grenade	Grenade toxique	毒气手雷
+Granada de tormenta	Storm grenade	Grenade de tempête	风暴手雷
+Escudo de madera	Wooden shield	Bouclier en bois	木盾
+Escudo de acero	Steel shield	Bouclier en acier	钢盾
+Escudo rúnico	Runic shield	Bouclier runique	符文盾
+Escudo de espinas	Thorn shield	Bouclier d'épines	荆棘盾
+Parry 0.20s · bloquea 55%	Parry 0.20s · blocks 55%	Parade 0,20 s · bloque 55 %	招架 0.20秒 · 格挡55%
+Parry 0.17s · bloquea 70%	Parry 0.17s · blocks 70%	Parade 0,17 s · bloque 70 %	招架 0.17秒 · 格挡70%
+Parry 0.15s · explosión al parry · bloquea 70%	Parry 0.15s · explodes on parry · blocks 70%	Parade 0,15 s · explosion à la parade · bloque 70 %	招架 0.15秒 · 招架时爆炸 · 格挡70%
+Parry 0.17s · devuelve daño al bloquear	Parry 0.17s · reflects damage when blocking	Parade 0,17 s · renvoie les dégâts en bloquant	招架 0.17秒 · 格挡时反弹伤害
+3 cuchillos en abanico · daño 0.65x	3 knives in a fan · damage 0.65x	3 couteaux en éventail · dégâts 0,65x	三把飞刀呈扇形射出 · 伤害0.65倍
+Atraviesa 2 enemigos · daño 2.1x	Pierces 2 enemies · damage 2.1x	Transperce 2 ennemis · dégâts 2,1x	贯穿2名敌人 · 伤害2.1倍
+Arco alto, atraviesa 3 · daño 2.4x	High arc, pierces 3 · damage 2.4x	Tir en cloche, transperce 3 · dégâts 2,4x	高抛弧线，贯穿3名敌人 · 伤害2.4倍
+Persigue y explota · daño 1.5x	Chases and explodes · damage 1.5x	Poursuit et explose · dégâts 1,5x	追踪并爆炸 · 伤害1.5倍
+Explosión grande · daño 3.0x	Big explosion · damage 3.0x	Grosse explosion · dégâts 3,0x	大爆炸 · 伤害3.0倍
+Quema 4s · daño 1.7x	Burns 4s · damage 1.7x	Brûle 4 s · dégâts 1,7x	灼烧4秒 · 伤害1.7倍
+Congela 1.8s · daño 1.3x	Freezes 1.8s · damage 1.3x	Gèle 1,8 s · dégâts 1,3x	冻结1.8秒 · 伤害1.3倍
+Veneno 5s · radio enorme	Poison 5s · huge radius	Poison 5 s · rayon énorme	中毒5秒 · 范围极大
+Aturde 1.2s · daño 1.8x	Stuns 1.2s · damage 1.8x	Étourdit 1,2 s · dégâts 1,8x	击晕1.2秒 · 伤害1.8倍
+Filo Ígneo	Ignis Edge	Lame ignée	炽焰刃
+Colmillo Gélido	Frozen Fang	Croc glacial	寒冰獠牙
+Daga Venenosa	Venomous Dagger	Dague venimeuse	剧毒匕首
+Hacha Carmesí	Crimson Axe	Hache écarlate	猩红战斧
+Lanza Relámpago	Lightning Spear	Lance-éclair	闪电长矛
+Hoja del Eclipse	Eclipse Blade	Lame de l'Éclipse	日蚀之刃
+Mandoble Pesado	Heavy Claymore	Mandoble pesant	沉重巨剑
+Hoja Veloz	Swift Blade	Lame véloce	迅捷之刃
++10% daño · quema al golpear	+10% damage · burns on hit	+10 % de dégâts · brûle au toucher	伤害+10% · 命中时灼烧
+Congela y ralentiza al golpear	Freezes and slows on hit	Gèle et ralentit au toucher	命中时冻结并减速
+Envenena al golpear	Poisons on hit	Empoisonne au toucher	命中时使敌人中毒
++15% daño · roba vida	+15% damage · life steal	+15 % de dégâts · vol de vie	伤害+15% · 生命偷取
++8% crítico · descargas	+8% crit · discharges	+8 % critique · décharges	暴击+8% · 放电
++25% daño · críticos más fuertes	+25% damage · stronger crits	+25 % de dégâts · critiques plus puissants	伤害+25% · 暴击更强
++38% daño · ataques 18% más lentos	+38% damage · attacks 18% slower	+38 % de dégâts · attaques 18 % plus lentes	伤害+38% · 攻击速度降低18%
++30% velocidad de ataque · -8% daño	+30% attack speed · -8% damage	+30 % de vitesse d'attaque · -8 % de dégâts	攻击速度+30% · 伤害-8%
+sin munición	out of ammo	plus de munitions	弹药耗尽
+sin granadas	out of grenades	plus de grenades	手雷耗尽
+¡Pociones de vida!	Health potions!	Potions de vie !	生命药水！
+Vitalidad	Vitality	Vitalité	活力
+Fuerza	Strength	Force	力量
+Bolsa del Viajero	Traveler's Pouch	Bourse du voyageur	旅人行囊
+Cosecha de Almas	Soul Harvest	Moisson d'âmes	灵魂收割
+Frascos de Vida	Life Flasks	Fioles de vie	生命药瓶
+Agilidad	Agility	Agilité	敏捷
+Temple	Resolve	Trempe	坚毅
+Segunda Oportunidad	Second Chance	Seconde chance	第二次机会
++10 de vida máxima por nivel.	+10 max health per level.	+10 de vie maximale par niveau.	每级最大生命值+10。
++4% de daño por nivel.	+4% damage per level.	+4 % de dégâts par niveau.	每级伤害+4%。
++25 de oro inicial por nivel.	+25 starting gold per level.	+25 d'or de départ par niveau.	每级初始金币+25。
++8% de almas obtenidas por nivel.	+8% souls gained per level.	+8 % d'âmes obtenues par niveau.	每级获得的灵魂+8%。
++1 frasco de vida por nivel.	+1 life flask per level.	+1 fiole de vie par niveau.	每级生命药瓶+1。
++3% de velocidad de movimiento por nivel.	+3% movement speed per level.	+3 % de vitesse de déplacement par niveau.	每级移动速度+3%。
+-4% de daño recibido por nivel.	-4% damage taken per level.	-4 % de dégâts subis par niveau.	每级受到的伤害-4%。
+Al morir revives una vez por run con 25% (50% nv.2) de vida.	On death, you revive once per run with 25% health (50% at lv.2).	À votre mort, vous ressuscitez une fois par partie avec 25 % de vie (50 % au niv. 2).	死亡时每局可复活一次，恢复25%生命值（2级为50%）。
++{} vida	+{} health	+{} de vie	生命+{}
++{}% daño	+{}% damage	+{} % de dégâts	伤害+{}%
++{} oro inicial	+{} starting gold	+{} d'or de départ	初始金币+{}
++{}% almas	+{}% souls	+{} % d'âmes	灵魂+{}%
++{} frascos	+{} flasks	+{} fioles	药瓶+{}
++{}% velocidad	+{}% speed	+{} % de vitesse	速度+{}%
+-{}% daño recibido	-{}% damage taken	-{} % de dégâts subis	受到的伤害-{}%
+Sin revivir	No revive	Aucune résurrection	无法复活
+Revive con {}% de vida	Revive with {}% health	Ressuscite avec {} % de vie	复活并恢复{}%生命

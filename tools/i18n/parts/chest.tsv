@@ -1,0 +1,146 @@
+MEJORAS	UPGRADES	AMÉLIORATIONS	强化
+ARMAMENTO	ARMAMENT	ARMEMENT	军械
+ARSENAL	ARSENAL	ARSENAL	武库
+Elige una mejora para toda la partida	Choose an upgrade for the whole run	Choisissez une amélioration pour toute la partie	选择一项强化，在整局中生效
+Elige un arma: las otras dos se pierden	Choose a weapon: the other two are lost	Choisissez une arme : les deux autres sont perdues	选择一件武器：另外两件将会失去
+Elige un objeto: las otras dos se pierden	Choose an item: the other two are lost	Choisissez un objet : les deux autres sont perdus	选择一件物品：另外两件将会失去
+Común	Common	Commun	普通
+Poco común	Uncommon	Peu commun	优良
+Rara	Rare	Rare	稀有
+Épica	Epic	Épique	史诗
+Filo afilado	Sharpened edge	Lame aiguisée	锐利之刃
+Corazón vigoroso	Vigorous heart	Cœur vigoureux	活力之心
+Golpes veloces	Swift strikes	Frappes rapides	迅捷打击
+Trébol de suerte	Lucky clover	Trèfle porte-bonheur	幸运四叶草
+Piel de hierro	Iron skin	Peau de fer	铁肤
+Ojo certero	Keen eye	Œil précis	神射之眼
+Golpe brutal	Brutal blow	Coup brutal	残暴重击
+Maestría arcana	Arcane mastery	Maîtrise arcanique	奥术精通
+Sed de gloria	Thirst for glory	Soif de gloire	荣耀渴望
+Sed de sangre	Bloodthirst	Soif de sang	嗜血
+Bolsa de oro	Bag of gold	Sac d'or	金币袋
+Cosecha de almas	Soul harvest	Moisson d'âmes	灵魂收割
+Imán de botín	Loot magnet	Aimant à butin	战利品磁石
+Brasas vivas	Living embers	Braises vives	活焰余烬
+Escarcha viva	Living frost	Givre vivant	活霜
+Chispa viva	Living spark	Étincelle vivante	活电
+Veneno vivo	Living venom	Venin vivant	活毒
+Poder arcano	Arcane power	Puissance arcanique	奥术之力
+Frasco extra	Extra flask	Fiole supplémentaire	额外药瓶
+Segunda oportunidad	Second chance	Seconde chance	第二次机会
+Tus armas y ataques hacen más daño.	Your weapons and attacks deal more damage.	Vos armes et vos attaques infligent plus de dégâts.	你的武器和攻击造成更多伤害。
+Aumenta tu vida máxima y te cura esa cantidad.	Increases your max health and heals you by that amount.	Augmente votre vie maximale et vous soigne d'autant.	提高最大生命值，并为你回复同等数值的生命。
+Te mueves más rápido.	You move faster.	Vous vous déplacez plus vite.	你的移动速度更快。
+Atacas más rápido.	You attack faster.	Vous attaquez plus vite.	你的攻击速度更快。
+Mejora la rareza de las próximas recompensas.	Improves the rarity of upcoming rewards.	Améliore la rareté des prochaines récompenses.	提升后续奖励的稀有度。
+Recibes menos daño de todo.	You take less damage from everything.	Vous subissez moins de dégâts de toutes sources.	你受到的所有伤害都会降低。
+Más probabilidad de golpe crítico.	Higher chance of a critical hit.	Plus de chances de coup critique.	提高暴击几率。
+Los críticos hacen mucho más daño.	Critical hits deal much more damage.	Les coups critiques infligent bien plus de dégâts.	暴击造成的伤害大幅提高。
+Tus habilidades se recargan antes.	Your skills recharge sooner.	Vos compétences se rechargent plus vite.	你的技能冷却更快。
+La definitiva se carga más rápido.	Your ultimate charges faster.	Votre ultime se charge plus vite.	终极技充能更快。
+Recuperas vida al golpear.	You recover health when you strike.	Vous récupérez de la vie en frappant.	攻击时回复生命。
+Ganas más oro de todo.	You gain more gold from everything.	Vous gagnez plus d'or de toutes sources.	你获得的所有金币都会增加。
+Ganas más almas de todo.	You gain more souls from everything.	Vous gagnez plus d'âmes de toutes sources.	你获得的所有灵魂都会增加。
+Atrae el botín desde más lejos.	Attracts loot from farther away.	Attire le butin de plus loin.	从更远处吸引战利品。
+Tus golpes pueden prender fuego.	Your hits can set enemies ablaze.	Vos coups peuvent enflammer les ennemis.	你的攻击可能点燃敌人。
+Tus golpes pueden congelar.	Your hits can freeze.	Vos coups peuvent geler.	你的攻击可能冻结敌人。
+Tus golpes pueden soltar una descarga.	Your hits can release a discharge.	Vos coups peuvent libérer une décharge.	你的攻击可能释放电击。
+Tus golpes pueden envenenar.	Your hits can poison.	Vos coups peuvent empoisonner.	你的攻击可能使敌人中毒。
+Tus habilidades hacen más daño.	Your skills deal more damage.	Vos compétences infligent plus de dégâts.	你的技能造成更多伤害。
+Llevas un frasco de vida más.	You carry one more life flask.	Vous portez une fiole de vie de plus.	你多携带一个生命药瓶。
+Si mueres, reapareces una vez con parte de tu vida.	If you die, you return once with part of your health.	Si vous mourez, vous revenez une fois avec une partie de votre vie.	死亡时，你会复活一次并恢复部分生命。
+Pacto de sangre	Blood pact	Pacte de sang	血之契约
+Piel de piedra	Stone skin	Peau de pierre	石肤
+Furia temeraria	Reckless fury	Fureur téméraire	鲁莽之怒
+Mente fría	Cool mind	Esprit froid	冷静头脑
+Vidrio mortal	Deadly glass	Verre mortel	致命玻璃
+Una mejora fuerte con un coste. Elígela solo si te conviene.	A strong upgrade with a cost. Pick it only if it suits you.	Une forte amélioration, mais payante. Ne la choisissez que si elle vous convient.	一项强大的强化，但需要付出代价。只在适合你时才选择它。
+Fuente de vida	Fountain of life	Source de vie	生命之泉
+Recuperas esa parte de tu vida máxima ahora mismo.	You instantly recover that portion of your max health.	Vous récupérez immédiatement cette part de votre vie maximale.	立即回复相应比例的最大生命值。
+Botín de oro	Gold loot	Butin d'or	金币战利品
+Un montón de monedas y algunas almas para gastar en la tienda.	A pile of coins and a few souls to spend in the shop.	Un tas de pièces et quelques âmes à dépenser à la boutique.	一堆金币和一些灵魂，可在商店中花费。
+Frascos de vida	Life flasks	Fioles de vie	生命药瓶
+Rellena tus frascos de vida (hasta tu máximo).	Refills your life flasks (up to your maximum).	Remplit vos fioles de vie (jusqu'à votre maximum).	补充你的生命药瓶（不超过上限）。
+Barrera de luz	Barrier of light	Barrière de lumière	光之屏障
+Un escudo temporal que absorbe daño antes que tu vida.	A temporary shield that absorbs damage before your health does.	Un bouclier temporaire qui absorbe les dégâts avant votre vie.	一层临时护盾，会先于生命值吸收伤害。
+Recarga total	Full recharge	Recharge totale	完全充能
+Reinicia las recargas de tus habilidades y carga tu definitiva.	Resets your skill cooldowns and charges your ultimate.	Réinitialise les recharges de vos compétences et charge votre ultime.	重置所有技能冷却，并为终极技充能。
+Arma principal	Main weapon	Arme principale	主武器
+Escudo	Shield	Bouclier	盾牌
+Más granadas	More grenades	Plus de grenades	更多手雷
+Granadas mejoradas	Improved grenades	Grenades améliorées	强化手雷
+Tus granadas hacen +25% de daño y explotan en un radio +15% mayor.	Your grenades deal +25% damage and explode in a +15% larger radius.	Vos grenades infligent +25 % de dégâts et explosent sur un rayon +15 % plus grand.	你的手雷伤害+25%，爆炸范围扩大15%。
+Munición	Ammo	Munitions	弹药
+Arma 2ª mejorada	Improved 2nd weapon	Arme 2 améliorée	强化副武器
+Tu arma secundaria hace +25% de daño y se dispara más rápido.	Your secondary weapon deals +25% damage and fires faster.	Votre arme secondaire inflige +25 % de dégâts et tire plus vite.	你的副武器伤害+25%，射速更快。
++{} oro	+{} gold	+{} d'or	金币+{}
++{}% de vida	+{}% health	+{} % de vie	生命+{}%
++{} frasco	+{} flask	+{} fiole	药瓶+{}
++{} frascos	+{} flasks	+{} fioles	药瓶+{}
++{} escudo	+{} shield	+{} de bouclier	护盾+{}
++{}% definitiva	+{}% ultimate	+{} % d'ultime	终极技+{}%
+Sustituye a {}	Replaces {}	Remplace {}	将替换{}
+Arma 2ª · {} usos	2nd weapon · {} uses	Arme 2 · {} utilisations	副武器 · {}次使用
+{} granadas	{} grenades	{} grenades	{}枚手雷
++{} granadas	+{} grenades	+{} grenades	手雷+{}
+Nivel {} > {}	Level {} > {}	Niveau {} > {}	等级 {} > {}
++{} usos	+{} uses	+{} utilisations	使用次数+{}
+Munición extra para tu {}.	Extra ammo for your {}.	Munitions supplémentaires pour votre {}.	为你的{}补充额外弹药。
+Recarga tu {} (hasta el doble de la carga base).	Reloads your {} (up to double the base load).	Recharge votre {} (jusqu'au double de la charge de base).	为你的{}补充弹药（最多为基础容量的两倍）。
+cuchillos arrojadizos	throwing knives	couteaux de lancer	飞刀
+hacha arrojadiza	throwing axe	hache de jet	飞斧
+ballesta rúnica	runic crossbow	arbalète runique	符文弩
+orbe arcano	arcane orb	orbe arcanique	奥术宝珠
+granada de fragmentación	fragmentation grenade	grenade à fragmentation	破片手雷
+granada incendiaria	incendiary grenade	grenade incendiaire	燃烧手雷
+granada de hielo	ice grenade	grenade de glace	冰霜手雷
+granada tóxica	toxic grenade	grenade toxique	毒气手雷
+granada de tormenta	storm grenade	grenade de tempête	风暴手雷
+fragmentación	fragmentation	fragmentation	破片
+incendiaria	incendiary	incendiaire	燃烧
+hielo	ice	glace	冰霜
+tóxica	toxic	toxique	毒气
+tormenta	storm	tempête	风暴
+-{}% daño	-{}% damage	-{}% de dégâts	-{}%伤害
++{} vida máx.	+{} max health	+{} de vie max.	+{} 最大生命值
+-{} vida máx.	-{} max health	-{} de vie max.	-{} 最大生命值
+-{}% velocidad	-{}% speed	-{}% de vitesse	-{}%速度
++{}% vel. de ataque	+{}% attack speed	+{}% de vitesse d'attaque	+{}%攻击速度
+-{}% vel. de ataque	-{}% attack speed	-{}% de vitesse d'attaque	-{}%攻击速度
++{} suerte	+{} luck	+{} de chance	+{} 幸运
+-{} suerte	-{} luck	-{} de chance	-{} 幸运
++{}% menos daño recibido	+{}% less damage taken	+{}% de dégâts subis en moins	受伤-{}%
+-{}% menos daño recibido	-{}% less damage taken	-{}% de dégâts subis en moins	受伤+{}%
++{}% prob. crítico	+{}% crit chance	+{}% de chance critique	+{}%暴击率
+-{}% prob. crítico	-{}% crit chance	-{}% de chance critique	-{}%暴击率
++{}% daño crítico	+{}% crit damage	+{}% de dégâts critiques	+{}%暴击伤害
+-{}% daño crítico	-{}% crit damage	-{}% de dégâts critiques	-{}%暴击伤害
++{}% menos recarga	+{}% less cooldown	+{}% de recharge en moins	冷却-{}%
+-{}% menos recarga	-{}% less cooldown	-{}% de recharge en moins	冷却+{}%
++{}% carga de definitiva	+{}% ultimate charge	+{}% de charge de l'ultime	+{}%终极技充能
+-{}% carga de definitiva	-{}% ultimate charge	-{}% de charge de l'ultime	-{}%终极技充能
++{}% robo de vida	+{}% life steal	+{}% de vol de vie	+{}%生命偷取
+-{}% robo de vida	-{}% life steal	-{}% de vol de vie	-{}%生命偷取
++{}% oro	+{}% gold	+{}% d'or	+{}%金币
+-{}% oro	-{}% gold	-{}% d'or	-{}%金币
+-{}% almas	-{}% souls	-{}% d'âmes	-{}%灵魂
++{} alcance del imán	+{} magnet range	+{} de portée d'aimant	+{} 磁吸范围
+-{} alcance del imán	-{} magnet range	-{} de portée d'aimant	-{} 磁吸范围
++{}% prob. quemar	+{}% burn chance	+{}% de chance d'enflammer	+{}%灼烧几率
+-{}% prob. quemar	-{}% burn chance	-{}% de chance d'enflammer	-{}%灼烧几率
++{}% prob. congelar	+{}% freeze chance	+{}% de chance de geler	+{}%冻结几率
+-{}% prob. congelar	-{}% freeze chance	-{}% de chance de geler	-{}%冻结几率
++{}% prob. de descarga	+{}% discharge chance	+{}% de chance de décharge	+{}%放电几率
+-{}% prob. de descarga	-{}% discharge chance	-{}% de chance de décharge	-{}%放电几率
++{}% prob. envenenar	+{}% poison chance	+{}% de chance d'empoisonner	+{}%中毒几率
+-{}% prob. envenenar	-{}% poison chance	-{}% de chance d'empoisonner	-{}%中毒几率
++{}% daño de habilidades	+{}% skill damage	+{}% de dégâts de compétences	+{}%技能伤害
+-{}% daño de habilidades	-{}% skill damage	-{}% de dégâts de compétences	-{}%技能伤害
++{} frasco máx.	+{} max flask	+{} fiole max.	+{} 药瓶上限
+-{} frasco máx.	-{} max flask	-{} fiole max.	-{} 药瓶上限
++{}% de vida al revivir	+{}% health on revive	+{}% de vie à la résurrection	+{}%复活生命值
+-{}% de vida al revivir	-{}% health on revive	-{}% de vie à la résurrection	-{}%复活生命值
++{}% resistencia	+{}% resistance	+{}% de résistance	+{}%抗性
+-{}% resistencia	-{}% resistance	-{}% de résistance	-{}%抗性
++{}% recarga	+{}% cooldown	+{}% de recharge	+{}%冷却时间
+-{}% recarga	-{}% cooldown	-{}% de recharge	-{}%冷却时间

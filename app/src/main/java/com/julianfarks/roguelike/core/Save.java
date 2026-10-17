@@ -45,6 +45,7 @@ public final class Save {
     // ---- estadisticas de la cuenta (persistentes)
     public int started = 0, rounds = 0, losses = 0, bestStreak = 0, maxKillsRound = 0, perfectRounds = 0, bestPerfectStreak = 0, chestsOpened = 0, secretChests = 0, trophyMask = 0;
     public int[] classRuns = new int[10];
+    public int lang = 0;                               // idioma de la interfaz (indice de I18n.CODES); 0 = espanol
     public int infMods = 0;                            // retos elegidos para el modo infinito
     public int compMask = 0, compSel = -1;            // companeros desbloqueados / elegido (v3)
     public int[] garden = new int[Garden.PLOTS];     // etapa de cada cristal del jardin (v3)
@@ -129,6 +130,7 @@ public final class Save {
                 int[] evs = Json.ints(d, "st_events");
                 if (evs != null) for (int i = 0; i < Math.min(Events.COUNT, evs.length); i++) s.events[i] = Math.max(0, evs[i]);
                 s.infMods = Json.i(d, "inf_mods", 0) & Infinite.MOD_ALL;
+                { String lc = Json.str(d, "lang", "es"); s.lang = 0; for (int i = 0; i < I18n.CODES.length; i++) if (I18n.CODES[i].equals(lc)) s.lang = i; }
                 s.compMask = Json.i(d, "cmp_mask", 0) & ((1 << Companions.COUNT) - 1);
                 s.compSel = Json.i(d, "cmp_sel", -1);
                 if (!Companions.unlocked(s, s.compSel)) s.compSel = -1;
@@ -155,6 +157,8 @@ public final class Save {
             for (int i = 0; i < s.equip.length; i++) if (s.equip[i] != null && s.equip[i].startsWith("dev_")) s.equip[i] = "";
         }
         S = s;
+        I18n.init(p);
+        I18n.set(s.lang);
     }
 
     public void write() { write(true); }
@@ -190,7 +194,7 @@ public final class Save {
             d.put("st_started", started); d.put("st_rounds", rounds); d.put("st_losses", losses); d.put("st_streak", bestStreak); d.put("st_killsRound", maxKillsRound);
             d.put("st_perfect", perfectRounds); d.put("st_perfStreak", bestPerfectStreak); d.put("st_chests", chestsOpened); d.put("st_secret", secretChests);
             d.put("st_trophies", trophyMask); d.put("st_playS", (int) (playMs / 1000L)); d.put("st_classRuns", classRuns); d.put("st_events", events);
-            d.put("inf_mods", infMods); d.put("cmp_mask", compMask); d.put("cmp_sel", compSel); d.put("garden", garden); d.put("dex", new ArrayList<Object>(dex));
+            d.put("lang", I18n.CODES[Math.max(0, Math.min(I18n.CODES.length - 1, lang))]); d.put("inf_mods", infMods); d.put("cmp_mask", compMask); d.put("cmp_sel", compSel); d.put("garden", garden); d.put("dex", new ArrayList<Object>(dex));
             d.put("imode", inputMode); d.put("kb", kb); d.put("pb", pb);
             P.store().put("save", Json.write(d));
             if (commit) P.store().commit();
@@ -201,7 +205,7 @@ public final class Save {
 
     public void reset() {
         Save n = new Save();
-        n.musicOn = musicOn; n.sfxOn = sfxOn; n.vibOn = vibOn; n.ctl = ctl; n.kb = kb; n.pb = pb; n.inputMode = inputMode;
+        n.lang = lang; n.musicOn = musicOn; n.sfxOn = sfxOn; n.vibOn = vibOn; n.ctl = ctl; n.kb = kb; n.pb = pb; n.inputMode = inputMode;
         n.story[Story.S_INTRO] = story[Story.S_INTRO];
         n.devUnlocked = devUnlocked; n.codesUsed = codesUsed;
         // la moneda premium, lo comprado y los registros competitivos NO se borran al reiniciar el progreso del juego

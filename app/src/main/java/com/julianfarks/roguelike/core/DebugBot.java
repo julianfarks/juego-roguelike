@@ -98,6 +98,36 @@ public final class DebugBot {
             });
             return;
         }
+        if (frame == 1 && System.getenv("BOT_LANG") != null) I18n.set(Integer.parseInt(System.getenv("BOT_LANG")));
+        if (System.getenv("BOT_SHOW") != null) {
+            String[] names = System.getenv("BOT_SHOW").split(",");
+            if (frame % 60 == 5 && frame / 60 < names.length) {
+                Save.S.devUnlocked = true; for (int i = 0; i < 10; i++) Save.S.classUnlocked[i] = true;
+                switch (names[frame / 60]) {
+                    case "title": g.go(new Screens.Title(g)); break;
+                    case "lang": g.go(new LanguageScreen(g)); break;
+                    case "ops": g.go(new Ops(g)); break;
+                    case "class": g.go(new ClassScreen(g)); break;
+                    case "prep": g.go(new PrepScreen(g)); break;
+                    case "shop": g.go(new ShopScreen(g)); break;
+                    case "sanct": g.go(new SanctuaryScreen(g)); break;
+                    case "stats": g.go(new OpsScreens.Stats(g)); break;
+                    case "trophy": g.go(new OpsScreens.Trophy(g)); break;
+                    case "options": g.go(new Screens.Options(g, false)); break;
+                    case "credits": g.go(new Screens.Credits(g, false)); break;
+                    case "load": g.go(new LoadScreen(g)); break;
+                    case "codes": g.go(new CodesScreen(g)); break;
+                    case "controls": g.go(new ControlsScreen(g)); break;
+                    case "story": g.go(new StoryScreens.Historia(g, false)); break;
+                    case "comp": g.go(new CodexScreens.Comp(g)); break;
+                    case "garden": g.go(new CodexScreens.GardenScr(g)); break;
+                    case "codex": g.go(new CodexScreens.CodexScr(g)); break;
+                    case "retos": PrepScreen.infiniteMode = true; g.go(new CodexScreens.Challenges(g)); break;
+                    default: break;
+                }
+            }
+            return;
+        }
         if (System.getenv("BOT_PRINTSTATS") != null && frame % 1500 == 700) {
             Save q = Save.S;
             System.out.println("STATS started=" + q.started + " rounds=" + q.rounds + " perfect=" + q.perfectRounds + " streak=" + q.bestStreak + " kills=" + q.kills + " chests=" + q.chestsOpened + " playS=" + q.playMs / 1000 + " losses=" + q.losses + " runs=" + q.runs);
@@ -386,6 +416,7 @@ public final class DebugBot {
         if (System.getenv("BOT_FREEZE") != null) { if (godMode) rs.rs.hp = rs.rs.stats.maxHp; return; }
         if (System.getenv("BOT_FAST") != null && lv.boss != null && lv.boss.alive && !lv.boss.invuln() && lv.boss.hp > 40 && rs.rs.time > 12f) lv.boss.hp = 40;
         if (godMode) { rs.rs.hp = rs.rs.stats.maxHp; }
+        if (System.getenv("BOT_OVLOG") != null && rs.ov != 0 && rs.ovT < 0.02f) System.out.println("OVSTART ov=" + rs.ov + " frame=" + frame);
         switch (rs.ov) {
             case RunScreen.OV_BLESS:
                 if (rs.ovT > 1.3f) for (Screen.Hit h : rs.hits) { rs.touch(0, 0, h.x + 5, h.y + 5); rs.touch(0, 2, h.x + 5, h.y + 5); break; }

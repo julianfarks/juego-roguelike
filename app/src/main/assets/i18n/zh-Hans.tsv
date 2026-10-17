@@ -1,0 +1,1301 @@
+# zh-Hans generado por tools/i18n/build_catalogs.py (clave = texto en espanol)
+Filo Afilado	锋利之刃
++15% de daño de arma por nivel.	每级武器伤害提高15%。
+Corazón Robusto	强健之心
++20 de vida máxima por nivel y te cura 20.	每级最大生命值提高20，并为你回复20点生命。
+Pies Alados	飞翼之足
++8% de velocidad de movimiento por nivel.	每级移动速度提高8%。
+Furia Creciente	怒火渐盛
+Cada baja da +4% de daño (máx. 5 cargas +2 por nivel). Se pierde al recibir daño.	每次击杀使伤害提高4%（最多叠加5层，每级额外+2层）。受到伤害时失去所有层数。
+Sed de Sangre	嗜血
+Robas el 3% del daño infligido como vida por nivel.	每级将造成伤害的3%转化为生命。
+Brasas Eternas	永燃余烬
+Tus golpes queman: 25% de probabilidad por nivel.	你的攻击会点燃敌人：每级有25%几率。
+Contacto Glacial	冰川之触
+Tus golpes ralentizan y a veces congelan: 20% por nivel.	你的攻击会使敌人减速，有时还会冻结：每级有20%几率。
+Chispa Voltaica	电弧火花
+15% por nivel de soltar un rayo encadenado al golpear.	每级有15%几率在命中时释放连锁闪电。
+Veneno de Espinas	荆棘剧毒
+Tus golpes envenenan: 25% de probabilidad por nivel.	你的攻击会使敌人中毒：每级有25%几率。
+Piel de Piedra	石肤术
+-8% de daño recibido por nivel.	每级受到的伤害降低8%。
+Esquive Fantasma	幽灵闪避
+Rodar dura más invulnerable y deja una estela que daña.	翻滚的无敌时间更长，并留下会造成伤害的轨迹。
+Triple Salto	三段跳
+Ganas un salto extra en el aire (triple salto).	获得一次额外的空中跳跃（三段跳）。
+Maestría Crítica	暴击精通
++8% de prob. crítica y +20% de daño crítico por nivel.	每级暴击率提高8%，暴击伤害提高20%。
+Alma Voraz	贪婪之魂
++30% de almas por nivel.	每级灵魂获取量提高30%。
+Fortuna	财运
++30% de oro por nivel.	每级金币获取量提高30%。
+Escudo Estelar	星辰护盾
+Un escudo absorbe un golpe al entrar a cada sala (más fuerte por nivel).	每次进入房间时，护盾会吸收一次伤害（每级更强）。
+Enfriamiento Rápido	快速冷却
+-12% de enfriamiento de habilidades por nivel.	每级技能冷却时间缩短12%。
+Habilidad Potenciada	技能强化
++20% de daño de habilidades por nivel.	每级技能伤害提高20%。
+Ejecutor	处刑者
++40% de daño a enemigos con menos de 30% de vida por nivel.	每级对生命值低于30%的敌人伤害提高40%。
+Imán de Almas	灵魂磁石
+Atraes oro, almas y corazones desde más lejos.	从更远的距离吸引金币、灵魂和心形生命。
+Espíritu Vengador	复仇之灵
+Los enemigos explotan al morir y dañan a los cercanos.	敌人死亡时会爆炸，并伤害附近的敌人。
+Segunda Oportunidad	第二次机会
+Revives una vez con 35% de vida.	你可以复活一次，并恢复35%的生命值。
+Hoja Fantasma	幽灵之刃
+Cada segundo golpe lanza una onda de energía.	每第二次攻击会射出一道能量波。
+Barrera de Égida	神盾屏障
+Tras rodar ganas un escudo breve.	翻滚后会获得一个短暂的护盾。
+Sabiduría	智慧
++20% de carga de definitiva por nivel y empiezas cada sala con 15%.	每级终极技充能速度提高20%，并且每个房间开始时已有15%的充能。
+Golpe Gigante	巨人重击
+El tercer golpe del combo hace +40% de daño y una onda de choque.	连击的第三下伤害提高40%，并产生冲击波。
+Paso de Sombra	暗影之步
+Rodar atraviesa enemigos y los daña.	翻滚时可穿过敌人并对其造成伤害。
+Eclipse	日蚀
+Cada 12 s, tu siguiente golpe hace daño x2.5 (más rápido por nivel).	每12秒，你的下一次攻击造成2.5倍伤害（每级间隔更短）。
+Filo Hambriento	饥渴之刃
++12% de daño	伤害提高12%
+-10% de vida máxima	最大生命值降低10%
++12% daño	伤害+12%
+-10% vida	生命-10%
+-10% de daño recibido	受到的伤害降低10%
+-6% de velocidad	速度降低6%
+-10% daño recib.	受伤-10%
+-6% veloc.	速度-6%
+Pies de Viento	疾风之足
++10% de velocidad	速度提高10%
++8% de daño recibido	受到的伤害提高8%
++10% veloc.	速度+10%
++8% daño recib.	受伤+8%
+Bolsa Pesada	沉甸钱袋
++60 de oro inicial	初始金币+60
+1 poción menos	少1瓶药水
++60 oro	金币+60
+-1 poción	药水-1
+Sed de Almas	灵魂渴求
++25% de almas ganadas	获得的灵魂提高25%
+-8% de daño	伤害降低8%
++25% almas	灵魂+25%
+-8% daño	伤害-8%
+Pacto Frágil	脆弱契约
++12% de golpe crítico	暴击率提高12%
+-15% de vida máxima	最大生命值降低15%
++12% crítico	暴击+12%
+-15% vida	生命-15%
+Reflejo Veloz	迅捷反射
+Habilidades 12% más rápidas	技能冷却加快12%
+-10% de daño	伤害降低10%
+Habil. +12%	技能+12%
+-10% daño	伤害-10%
+Provisiones	补给
++1 poción	药水+1
+-15% de oro ganado	获得的金币降低15%
+-15% oro	金币-15%
+Cuchillos arrojadizos	飞刀
+Granada incendiaria	燃烧手雷
+Sed de sangre	嗜血
+Ballesta rúnica	符文弩
+Granada de hielo	冰霜手雷
+Pies ligeros	轻盈之足
+Piel de piedra	石肤
+Orbe arcano	奥术宝珠
+Granada de tormenta	风暴手雷
+Maestría de combate	战斗精通
+Empiezas cada partida con cuchillos (botón de arma secundaria).	每局开始时你都会获得飞刀（副武器按钮）。
+Empiezas con 3 granadas incendiarias.	开局携带3枚燃烧手雷。
+Habilidad pasiva: recuperas un poco de vida al golpear.	被动技能：攻击时回复少量生命值。
+Arma secundaria inicial: ballesta que atraviesa enemigos.	初始副武器：可贯穿敌人的弩。
+Empiezas con 3 granadas de hielo que congelan.	开局携带3枚可冻结敌人的冰霜手雷。
+Habilidad pasiva: +6% de velocidad de movimiento.	被动技能：移动速度提高6%。
+Habilidad pasiva: recibes 7% menos de daño.	被动技能：受到的伤害降低7%。
+Arma secundaria inicial: orbe que persigue enemigos.	初始副武器：会追踪敌人的宝珠。
+Empiezas con 3 granadas de tormenta que aturden.	开局携带3枚可击晕敌人的风暴手雷。
+Habilidad pasiva: +8% de daño y +4% de crítico.	被动技能：伤害提高8%，暴击率提高4%。
+Arma	武器
+Granada	手雷
+Habilidad	技能
+¡DESBLOQUEADO!	已解锁！
+MEJORAS	强化
+ARMAMENTO	军械
+ARSENAL	武库
+Elige una mejora para toda la partida	选择一项强化，在整局中生效
+Elige un arma: las otras dos se pierden	选择一件武器：另外两件将会失去
+Elige un objeto: las otras dos se pierden	选择一件物品：另外两件将会失去
+Común	普通
+Poco común	优良
+Rara	稀有
+Épica	史诗
+Filo afilado	锐利之刃
+Corazón vigoroso	活力之心
+Golpes veloces	迅捷打击
+Trébol de suerte	幸运四叶草
+Piel de hierro	铁肤
+Ojo certero	神射之眼
+Golpe brutal	残暴重击
+Maestría arcana	奥术精通
+Sed de gloria	荣耀渴望
+Bolsa de oro	金币袋
+Cosecha de almas	灵魂收割
+Imán de botín	战利品磁石
+Brasas vivas	活焰余烬
+Escarcha viva	活霜
+Chispa viva	活电
+Veneno vivo	活毒
+Poder arcano	奥术之力
+Frasco extra	额外药瓶
+Segunda oportunidad	第二次机会
+Tus armas y ataques hacen más daño.	你的武器和攻击造成更多伤害。
+Aumenta tu vida máxima y te cura esa cantidad.	提高最大生命值，并为你回复同等数值的生命。
+Te mueves más rápido.	你的移动速度更快。
+Atacas más rápido.	你的攻击速度更快。
+Mejora la rareza de las próximas recompensas.	提升后续奖励的稀有度。
+Recibes menos daño de todo.	你受到的所有伤害都会降低。
+Más probabilidad de golpe crítico.	提高暴击几率。
+Los críticos hacen mucho más daño.	暴击造成的伤害大幅提高。
+Tus habilidades se recargan antes.	你的技能冷却更快。
+La definitiva se carga más rápido.	终极技充能更快。
+Recuperas vida al golpear.	攻击时回复生命。
+Ganas más oro de todo.	你获得的所有金币都会增加。
+Ganas más almas de todo.	你获得的所有灵魂都会增加。
+Atrae el botín desde más lejos.	从更远处吸引战利品。
+Tus golpes pueden prender fuego.	你的攻击可能点燃敌人。
+Tus golpes pueden congelar.	你的攻击可能冻结敌人。
+Tus golpes pueden soltar una descarga.	你的攻击可能释放电击。
+Tus golpes pueden envenenar.	你的攻击可能使敌人中毒。
+Tus habilidades hacen más daño.	你的技能造成更多伤害。
+Llevas un frasco de vida más.	你多携带一个生命药瓶。
+Si mueres, reapareces una vez con parte de tu vida.	死亡时，你会复活一次并恢复部分生命。
+Pacto de sangre	血之契约
+Furia temeraria	鲁莽之怒
+Mente fría	冷静头脑
+Vidrio mortal	致命玻璃
+Una mejora fuerte con un coste. Elígela solo si te conviene.	一项强大的强化，但需要付出代价。只在适合你时才选择它。
+Fuente de vida	生命之泉
+Recuperas esa parte de tu vida máxima ahora mismo.	立即回复相应比例的最大生命值。
+Botín de oro	金币战利品
+Un montón de monedas y algunas almas para gastar en la tienda.	一堆金币和一些灵魂，可在商店中花费。
+Frascos de vida	生命药瓶
+Rellena tus frascos de vida (hasta tu máximo).	补充你的生命药瓶（不超过上限）。
+Barrera de luz	光之屏障
+Un escudo temporal que absorbe daño antes que tu vida.	一层临时护盾，会先于生命值吸收伤害。
+Recarga total	完全充能
+Reinicia las recargas de tus habilidades y carga tu definitiva.	重置所有技能冷却，并为终极技充能。
+Arma principal	主武器
+Escudo	盾牌
+Más granadas	更多手雷
+Granadas mejoradas	强化手雷
+Tus granadas hacen +25% de daño y explotan en un radio +15% mayor.	你的手雷伤害+25%，爆炸范围扩大15%。
+Munición	弹药
+Arma 2ª mejorada	强化副武器
+Tu arma secundaria hace +25% de daño y se dispara más rápido.	你的副武器伤害+25%，射速更快。
++{} oro	金币+{}
++{}% de vida	生命+{}%
++{} frasco	药瓶+{}
++{} frascos	药瓶+{}
++{} escudo	护盾+{}
++{}% definitiva	终极技+{}%
+Sustituye a {}	将替换{}
+Arma 2ª · {} usos	副武器 · {}次使用
+{} granadas	{}枚手雷
++{} granadas	手雷+{}
+Nivel {} > {}	等级 {} > {}
++{} usos	使用次数+{}
+Munición extra para tu {}.	为你的{}补充额外弹药。
+Recarga tu {} (hasta el doble de la carga base).	为你的{}补充弹药（最多为基础容量的两倍）。
+cuchillos arrojadizos	飞刀
+hacha arrojadiza	飞斧
+ballesta rúnica	符文弩
+orbe arcano	奥术宝珠
+granada de fragmentación	破片手雷
+granada incendiaria	燃烧手雷
+granada de hielo	冰霜手雷
+granada tóxica	毒气手雷
+granada de tormenta	风暴手雷
+fragmentación	破片
+incendiaria	燃烧
+hielo	冰霜
+tóxica	毒气
+tormenta	风暴
+-{}% daño	-{}%伤害
++{} vida máx.	+{} 最大生命值
+-{} vida máx.	-{} 最大生命值
+-{}% velocidad	-{}%速度
++{}% vel. de ataque	+{}%攻击速度
+-{}% vel. de ataque	-{}%攻击速度
++{} suerte	+{} 幸运
+-{} suerte	-{} 幸运
++{}% menos daño recibido	受伤-{}%
+-{}% menos daño recibido	受伤+{}%
++{}% prob. crítico	+{}%暴击率
+-{}% prob. crítico	-{}%暴击率
++{}% daño crítico	+{}%暴击伤害
+-{}% daño crítico	-{}%暴击伤害
++{}% menos recarga	冷却-{}%
+-{}% menos recarga	冷却+{}%
++{}% carga de definitiva	+{}%终极技充能
+-{}% carga de definitiva	-{}%终极技充能
++{}% robo de vida	+{}%生命偷取
+-{}% robo de vida	-{}%生命偷取
++{}% oro	+{}%金币
+-{}% oro	-{}%金币
+-{}% almas	-{}%灵魂
++{} alcance del imán	+{} 磁吸范围
+-{} alcance del imán	-{} 磁吸范围
++{}% prob. quemar	+{}%灼烧几率
+-{}% prob. quemar	-{}%灼烧几率
++{}% prob. congelar	+{}%冻结几率
+-{}% prob. congelar	-{}%冻结几率
++{}% prob. de descarga	+{}%放电几率
+-{}% prob. de descarga	-{}%放电几率
++{}% prob. envenenar	+{}%中毒几率
+-{}% prob. envenenar	-{}%中毒几率
++{}% daño de habilidades	+{}%技能伤害
+-{}% daño de habilidades	-{}%技能伤害
++{} frasco máx.	+{} 药瓶上限
+-{} frasco máx.	-{} 药瓶上限
++{}% de vida al revivir	+{}%复活生命值
+-{}% de vida al revivir	-{}%复活生命值
++{}% resistencia	+{}%抗性
+-{}% resistencia	-{}%抗性
++{}% recarga	+{}%冷却时间
+-{}% recarga	-{}%冷却时间
+Paladín del Alba	黎明圣骑士
+Tanque / Sostén	坦克 / 辅助
+Guerrero sagrado de armadura pesada. Resiste, protege y castiga con luz solar.	身披重甲的神圣战士。能承受伤害、保护同伴，并以阳光惩戒敌人。
+Espada del Alba y escudo	黎明之剑与盾牌
+Égida: -12% de daño recibido.	神盾：受到的伤害降低12%。
+Lanza del Alba	黎明之枪
+Tres lanzas de luz atraviesan a los enemigos.	三支光之长枪贯穿敌人。
+Alas de Égida	神盾之翼
+Alas de luz te curan y absorben daño.	光之羽翼为你疗伤并吸收伤害。
+Juicio del Alba	黎明审判
+Salto y golpe que levanta el suelo con una onda sagrada.	跃起重击，以神圣冲击波掀起地面。
+Amanecer Eterno	永恒黎明
+El sol desciende y purifica todo el campo.	太阳降临，净化整片战场。
+Asesino de las Sombras	暗影刺客
+Movilidad / Daño explosivo	机动 / 爆发伤害
+Maestro del sigilo. Se teletransporta, ataca por la espalda y ejecuta.	潜行大师。能瞬移、背刺并处决敌人。
+Dagas gemelas	双生匕首
+Acechador: +50% de daño por la espalda.	潜伏者：背刺伤害提高50%。
+Paso Sombra	暗影步
+Te teletransportas a la espalda del enemigo y lo apuñalas.	瞬移到敌人身后并刺击。
+Cinco tajos fantasma consecutivos.	连续五道幽灵斩击。
+Danza de Cuchillas	刀刃之舞
+Remolino de cuchillas a tu alrededor.	刀刃旋风环绕你周身。
+Ejecución Dimensional	次元处决
+El tiempo se detiene y cortas a todos a la vez.	时间静止，你同时斩杀所有敌人。
+Señor de las Llamas	烈焰领主
+Daño de área / Quemaduras	范围伤害 / 灼烧
+Espadachín infernal. Inmune al fuego, arrasa con fuego y magma.	地狱剑士。免疫火焰，以烈火与岩浆焚毁一切。
+Espadón llameante	烈焰巨剑
+Brasas: 30% de quemar al golpear.	余烬：命中时有30%几率点燃敌人。
+Bola de Fuego	火球术
+Una bola de fuego que explota al impactar.	命中时爆炸的火球。
+Muro de Fuego	火墙
+Pilares de fuego que queman a quien los cruce.	火柱会灼烧穿过的人。
+Tornado Ígneo	烈焰龙卷
+Un tornado de fuego arrastra y quema a los enemigos.	火焰龙卷卷起并灼烧敌人。
+Inferno Draconiano	龙炎地狱
+Un dragón de fuego recorre el campo y estalla.	火龙席卷战场后爆裂。
+Tempestad	风暴
+Velocidad / Rayos	速度 / 闪电
+Duelista del trueno. Veloz, encadena rayos y cae como una tormenta.	雷霆决斗者。身法迅捷，连锁闪电，如风暴降临。
+Estoque eléctrico	雷电刺剑
+Carga: +12% de velocidad, 15% de descarga.	蓄能：速度提高12%，有15%几率放电。
+Relámpago Veloz	疾电闪
+Te conviertes en rayo y atraviesas a los enemigos.	化身闪电，穿透敌人。
+Ráfaga Voltaica	电弧连击
+Un rayo encadenado salta entre hasta cinco enemigos.	连锁闪电最多在五名敌人之间跳跃。
+Tormenta Eléctrica	雷暴
+Una nube descarga rayos sobre tus enemigos.	雷云向敌人倾泻闪电。
+Trueno Divino	神圣雷霆
+Tormenta gigante y un rayo colosal final.	巨型风暴，最后落下一道巨雷。
+Guardián Glacial	寒冰守卫
+Control de masas / Defensa	群体控制 / 防御
+Caballero del hielo. Congela, ralentiza y destroza con cristales.	寒冰骑士。冻结、减速，并以冰晶粉碎敌人。
+Sable de cristal de hielo	冰晶军刀
+Escarcha: 35% de ralentizar.	寒霜：有35%几率使敌人减速。
+Esquirlas Glaciales	冰川碎片
+Abanico de lanzas de hielo que ralentiza y congela.	扇形冰矛使敌人减速并冻结。
+Prisión de Hielo	冰之牢笼
+Encierra a un enemigo en hielo que luego estalla.	将敌人封入冰中，随后冰块爆裂。
+Ventisca	暴风雪
+Un torbellino de nieve cortante que arrastra y congela.	锋利的雪旋风卷起并冻结敌人。
+Cero Absoluto	绝对零度
+Todo se congela y luego se hace añicos.	万物冻结，随后粉碎。
+Guardián Esmeralda	翡翠守卫
+Soporte / Control	辅助 / 控制
+Guardián del bosque. Se cura, atrapa con raíces y hace brotar un árbol colosal.	森林守卫。能自我治疗、以树根缠住敌人，并催生一棵巨树。
+Espada viva de madera	活木之剑
+Savia: 35% de envenenar y regeneración lenta.	树液：有35%几率使敌人中毒，并缓慢回复生命。
+Látigo de Espinas	荆棘长鞭
+Enredaderas espinosas avanzan, hieren y ralentizan.	带刺藤蔓向前延伸，造成伤害并使敌人减速。
+Floración	绽放
+Una floración te cura y regenera.	繁花盛开，为你疗伤并持续回复。
+Agarre de Raíces	树根擒拿
+Raíces atrapan a los enemigos y los arrastran al centro.	树根缠住敌人，并将其拖向中心。
+Árbol del Mundo	世界之树
+Brota el Árbol del Mundo, inmoviliza a todos y estalla en luz curativa.	世界之树破土而出，困住所有敌人，并迸发出治愈之光。
+Segador Carmesí	猩红收割者
+Robo de vida / Daño	生命偷取 / 伤害
+Duelista sanguinario. Cada golpe lo cura; cuanto más pelea, más fuerte es.	嗜血决斗者。每次攻击都会为他疗伤，战斗越久越强。
+Guadaña de hoja roja	赤刃镰刀
+Sangre: roba 7% del daño como vida.	鲜血：将7%的伤害转化为生命。
+Tajo Sangriento	血腥斩
+Embestida y triple tajo que te cura por cada enemigo golpeado.	冲锋并发动三连斩，每命中一名敌人便为你疗伤。
+Pacto de Sangre	血之契约
+Drena la vida de los enemigos cercanos con hilos de sangre.	以血丝吸取附近敌人的生命。
+Hoz Giratoria	旋转镰刃
+Una tormenta de hoces gira a tu alrededor desgarrándolo todo.	镰刀风暴环绕你旋转，撕碎一切。
+Eclipse Carmesí	猩红日蚀
+Una luna de sangre se alza y un tajo cruzado roba la vida de todos.	血月升起，十字斩击夺取所有人的生命。
+Coloso de Roca	岩石巨像
+Tanque / Control	坦克 / 控制
+Titán de piedra. Golpes devastadores, piel de roca y terremotos.	石之泰坦。拥有毁灭性的重击、岩石之躯与地震之力。
+Martillo de roca	岩石战锤
+Roca: -20% de daño recibido, golpes con gran empuje.	岩石：受到的伤害降低20%，攻击带有强力击退。
+Puño de Roca	岩拳
+Un golpe brutal que levanta una columna de roca frente a ti.	一记猛击，在你面前升起一根岩柱。
+Gran resistencia: te vuelves inamovible.	极高的防御力：你将岿然不动。
+Terremoto	地震
+Salto y estampida que parte el suelo en grietas.	跃起践踏，将地面震出道道裂缝。
+Cataclismo del Titán	泰坦天灾
+Una lluvia de meteoritos arrasa el campo de batalla.	流星雨席卷整片战场。
+Vagabundo Estelar	星界游侠
+Magia cósmica / Movilidad	宇宙魔法 / 机动
+Espadachín hechicero de las estrellas. Disparos estelares, gravedad y saltos cósmicos.	星辰魔剑士。擅长星光射击、引力操控与宇宙跃迁。
+Espada-bastón estelar	星辰杖剑
+Cosmos: +25% de carga de definitiva.	宇宙：终极技充能速度提高25%。
+Estrella Fugaz	流星
+Un rayo de estrella atraviesa a todos los enemigos en línea.	一道星光贯穿直线上的所有敌人。
+Pozo Gravitatorio	引力之井
+Un mini agujero negro arrastra y desgarra a los enemigos.	一个微型黑洞吸引并撕裂敌人。
+Paso Cósmico	宇宙跃迁
+Te desvaneces en polvo de estrellas y reapareces a lo lejos.	你化作星尘消散，又在远处重现。
+Supernova	超新星
+Una estrella nace sobre el campo, lo arrastra todo y estalla.	一颗恒星在战场上空诞生，吸引一切后爆炸。
+Soberano de Acero	钢铁君王
+Espadas voladoras / Daño	飞剑 / 伤害
+Maestro de las mil espadas. Lanza hojas, las hace girar y las llueve del cielo.	千剑之主。掷出利刃，使其旋转，并让剑雨从天而降。
+Katana y hojas flotantes	太刀与浮空之刃
+Acero: cada 3er golpe lanza una hoja voladora.	钢铁：每第3次攻击会射出一把飞刃。
+Volea de Hojas	飞刃齐射
+Tres espadas voladoras salen disparadas en abanico.	三把飞剑呈扇形射出。
+Guardia de Acero	钢铁守护
+Un anillo de espadas gira a tu alrededor protegiéndote.	一圈利剑环绕你旋转，为你提供保护。
+Carga Forjada	锻铸冲锋
+Embestida de acero al rojo que arrastra a los enemigos.	炽热钢铁的冲锋，会裹挟着敌人一同前进。
+Mil Espadas	千剑齐发
+Un anillo de hojas se alza y una lluvia de mil espadas cae del cielo.	一圈利刃升起，千剑如雨自天而降。
+Descubierto	已发现
+Cuerpo a cuerpo	近战
+A distancia	远程
+Volador	飞行
+Volador picado	俯冲者
+Embestidor	冲撞者
+Saltador	跳跃者
+Hechicero	术士
+Pesado	重型
+Escudero	盾卫
+Apoyo	辅助
+Explosivo	爆破者
+Torreta	炮塔
+Acechador	潜伏者
+Francotirador	狙击手
+Potenciador	增益者
+Teletransportador	传送者
+Élite	精英
+Bloqueado	未解锁
+COMPAÑEROS	同伴
+Elige un espíritu para la expedición. Solo uno a la vez.	为远征选择一位灵体。每次只能选一位。
+Requisito: {}	条件：{}
+EN EL EQUIPO	已入队
+¡Nuevo compañero: {}!	新同伴：{}！
+Nuevo compañero: {}	新同伴：{}
+Máximo	已满级
+Crecer · {} almas	成长 · {}灵魂
+JARDÍN MÁGICO	魔法花园
+Almas: {}   ·   Los cristales crecen con las almas que ganas en las runs.	灵魂：{}   ·   水晶会随你在游戏中获得的灵魂成长。
+Etapa {}	阶段 {}
+Aún sin efecto	尚无效果
+Ahora: {}	当前：{}
+Enemigos	敌人
+Jefes	首领
+Sucesos	事件
+Reliquias	遗物
+Espadachines	剑士
+{} (élite único)	{}（唯一精英）
+Vida base {} · Daño {} · Aplica {}	基础生命 {} · 伤害 {} · 附带 {}
+Elemento: {}	元素：{}
+Derrotado: reliquia obtenida	已击败：获得遗物
+Aún sin derrotar	尚未击败
+Derrotado	已击败
+Completados: {}	已完成：{}
+Reliquia de {}	{}的遗物
+Conservada en la sala de trofeos	保存在奖杯厅中
+Derrota a su jefe para obtenerla	击败其首领即可获得
+Vida {}	生命 {}
+Victorias: {}	胜利：{}
+COLECCIÓN Y BESTIARIO	图鉴与怪物志
+Encuéntralo en una expedición.	在远征中找到它。
+Aún sin descubrir.	尚未发现。
+Quitar todos	全部卸下
+RETOS DEL INFINITO	无尽挑战
+Opcionales. Cada reto suma puntaje; el récord sigue siendo por pisos.	可选。每项挑战都会增加得分；纪录仍以层数为准。
+{}% puntaje	得分{}%
++{}% puntaje	得分+{}%
+Bonificación total: +{}% de puntaje	总加成：得分+{}%
+(sin retos)	（无挑战）
+No cambian las gemas ni el precio de las revividas.	不会改变宝石数量或复活价格。
+No valen en pruebas del Modo Desarrollador.	在开发者模式的测试中无效。
+Ascua	余烬
+Escarcha	寒霜
+Umbra	幽影
+Espíritu de fuego	火之灵
+Espíritu de hielo	冰之灵
+Espíritu de sombra	影之灵
+Cada 6 s lanza una chispa al enemigo más cercano (25% de tu daño; 10% contra jefes).	每6秒向最近的敌人射出一道火花（造成你25%的伤害；对首领为10%）。
+Reduce un 8% el daño que recibes.	使你受到的伤害降低8%。
+Imán +40 y marca los cofres secretos y las puertas ocultas de la sala.	磁吸+40，并标出房间内的隐藏宝箱与暗门。
+Derrota a 1 jefe.	击败1个首领。
+Derrota a 3 jefes.	击败3个首领。
+Completa 10 expediciones o llega al piso 5 del modo infinito.	完成10次远征，或在无尽模式中到达第5层。
+Sin compañero	无同伴
+Cristal de brasa	余烬水晶
+Cristal de savia	树液水晶
+Cristal de fortuna	财运水晶
++2% de daño por etapa.	每阶段伤害+2%。
++5 de vida máxima por etapa.	每阶段最大生命值+5。
++15 de oro inicial por etapa.	每阶段初始金币+15。
+{}% daño	伤害{}%
+{} vida	生命{}
+{} oro inicial	初始金币{}
+Izquierda	向左
+Derecha	向右
+Abajo	向下
+Saltar	跳跃
+Atacar	攻击
+Rodar	翻滚
+Habilidad 1	技能1
+Habilidad 2	技能2
+Habilidad 3	技能3
+Definitiva	终极技
+Interactuar	互动
+Pausa	暂停
+Poción	药水
+Arma 2ª	副武器
+Escudo / Parry	盾牌 / 格挡
+Intercambiar	交换
+Reemplazar	替换
+Cancelar	取消
+Guardar y salir	保存并退出
+Descartar	放弃
+Seguir editando	继续编辑
+Restaurar	恢复默认
+Guardar *	保存 *
+Guardar	保存
+Atrás	返回
+Controles restaurados	已恢复默认按键
+Guardado	已保存
+CONTROLES	操作设置
+{} conectado	{}已连接
+Sin mando detectado	未检测到手柄
+Acción	操作
+Teclado	键盘
+Toca una casilla o elige con el mando y pulsa {}. Se aplica al instante.	点击一个格子，或用手柄选择并按{}。立即生效。
+Flechas, Espacio y cruceta siguen activas si no las usas en otra acción.	若未分配给其他操作，方向键、空格键和十字键仍然可用。
+CONFLICTO	冲突
+» ya lo usa «	» 已被「
+Intercambiar: «{}» recibe el botón que tenía «{}»	交换：「{}」获得「{}」原有的按键
+Reemplazar: «{}» se queda sin asignar.	替换：「{}」将变为未分配。
+¿SALIR?	退出？
+Hay cambios sin guardar.	有尚未保存的更改。
+REASIGNAR	重新分配
+Pulsa una tecla o botón para asignarlo	按下一个键或按钮进行分配
+Esc o «Cancelar» para salir · {}	按Esc或「取消」退出 · {}
+Menos	缩小
+Más	放大
+Reiniciar	重置
+Listo	完成
+Arrastra los botones donde quieras (izq+der = centro del joystick)	将按钮拖到任意位置（左+右 = 摇杆中心）
+Toca uno para elegirlo y cambia su tamaño	点击一个按钮选中它并调整大小
+Cruz	叉
+Círculo	圆
+Cuadro	方
+Triáng.	三角
+Menú	菜单
+LS clic	左摇杆按下
+RS clic	右摇杆按下
+Cruc. arr.	十字键上
+Cruc. abj.	十字键下
+Cruc. izq.	十字键左
+Cruc. der.	十字键右
+LS izq.	左摇杆左
+LS der.	左摇杆右
+LS arr.	左摇杆上
+LS abj.	左摇杆下
+RS izq.	右摇杆左
+RS der.	右摇杆右
+RS arr.	右摇杆上
+RS abj.	右摇杆下
+Izq.	左
+Arr.	上
+Der.	右
+Abj.	下
+Espacio	空格
+Retroc.	退格
+Tecla {}	按键{}
+Mando genérico	通用手柄
+CARGAR PARTIDA	读取进度
+Ranura {}	栏位{}
+Toca una ranura para continuar donde la dejaste (empiezas al inicio de la sala).	点击一个栏位，从上次离开的地方继续（从房间起点开始）。
+Escribe un código.	请输入兑换码。
+El Modo Desarrollador ya estaba activado.	开发者模式已启用。
+Modo Desarrollador desbloqueado.	开发者模式已解锁。
+Este código ya fue canjeado.	该兑换码已被使用。
+Código válido, pero tienes demasiadas almas para recibir la recompensa.	兑换码有效，但你的灵魂过多，无法领取奖励。
+Código válido, pero no se pudo registrar el canje. Inténtalo más tarde.	兑换码有效，但无法记录兑换。请稍后再试。
+¡Canjeado! +{} almas.	兑换成功！+{}灵魂。
+Código válido, pero la recompensa no está disponible.	兑换码有效，但奖励暂不可用。
+Código incorrecto.	兑换码无效。
+Borrar	删除
+Canjear	兑换
+CÓDIGOS	兑换码
+Escribe un código y pulsa Canjear	输入兑换码并点击兑换
+wireless controller	wireless controller
+LB	LB
+RB	RB
+LT	LT
+RT	RT
+Share	Share
+View	View
+Options	Options
+Enter	Enter
+Shift	Shift
+Ctrl	Ctrl
+Alt	Alt
+Tab	Tab
+Esc	Esc
+PlayStation	PlayStation
+Xbox	Xbox
+SHA-256	SHA-256
+Esqueleto	骷髅
+Arquero hueso	骸骨弓手
+Zombi	僵尸
+Cubo magma	熔岩方块怪
+Llama	火灵
+Bruto forja	锻炉蛮兵
+Lancero escarcha	霜枪兵
+Hechicero hielo	冰霜术士
+Espiritu vex	恼鬼之灵
+Ojo vacio	虚空之眼
+Fantasma	幽灵
+Arana	蜘蛛
+Bruja	女巫
+Tronco vivo	活木
+Saqueador	掠夺者
+Vex tormenta	风暴恼鬼
+Bestia tormenta	风暴野兽
+Vindicador	卫道士
+Bruja sangre	血巫
+Murcielago	蝙蝠
+Escudero hueso	骸骨盾卫
+Clerigo osario	骨窖祭司
+Carbonero forja	锻炉炭工
+Centinela cristal	水晶哨兵
+Lobo musgo	苔藓狼
+Tirador rayo	雷电射手
+Cultista sangre	血之教徒
+Asesino eclipse	日蚀刺客
+Piglin dorado	黄金猪灵
+Espectro	怨灵
+Llama solar	烈日之焰
+Primera sangre	初次见血
+Derrota 1 enemigo	击败1名敌人
+Cazador	猎手
+Derrota 100 enemigos	击败100名敌人
+Matanza	屠戮
+Derrota 1000 enemigos	击败1000名敌人
+Rey caído	陨落之王
+Derrota a un jefe	击败一名首领
+Cazajefes	首领猎杀者
+Derrota a 8 jefes	击败8名首领
+Ronda perfecta	完美回合
+Ronda sin recibir daño	一个回合内未受到伤害
+Intocable	不可触碰
+5 perfectas seguidas	连续5个完美回合
+Imparable	势不可挡
+10 rondas seguidas	连续10个回合
+Victoria	胜利
+Gana una partida	赢得一局
+Coleccionista	收藏家
+Desbloquea 5 clases	解锁5个职业
+Maestro	大师
+Desbloquea los 10	解锁全部10个
+Explorador	探索者
+3 cofres secretos	3个隐藏宝箱
+Sello forjado	封印已铸
+Reúne 8 reliquias	集齐8件遗物
+Caza al Cazador	狩猎猎人
+Vence al Cazador	击败猎人
+Almas sin fin	无尽灵魂
+5000 almas en total	累计5000灵魂
+Veterano	老兵
+Juega 1 hora	游玩1小时
+Mercader errante	流浪商人
+Espíritu del abismo	深渊之灵
+Prueba de combate	战斗试炼
+Cámara secreta	秘密密室
+Prisionero	囚徒
+Santuario de pactos	契约圣所
+Pocas existencias, buenos precios	库存有限，价格实惠
+Ofrece poder a cambio de un recurso	以资源换取力量
+Elite y recompensa superior	精英敌人与更丰厚的奖励
+Una reliquia te espera	一件遗物在等着你
+Libéralo derrotando a sus guardias	击败他的守卫来解救他
+Dos pactos: ventaja y precio	两份契约：优势与代价
+Pacto del Alba	黎明契约
++18% de daño	伤害+18%
+-12% de vida máxima	最大生命值-12%
+Pacto de Piedra	磐石契约
+-14% de daño recibido	受到的伤害-14%
+-8% de velocidad	速度-8%
+Pacto del Viento	疾风契约
++12% velocidad y +6% crítico	速度+12%，暴击+6%
++10% de daño recibido	受到的伤害+10%
++5% de robo de vida	生命偷取+5%
+Pacto del Sabio	贤者契约
+Habilidades 15% más rápidas	技能冷却加快15%
+-1 frasco máximo	药瓶上限-1
+Pacto Avaro	贪婪契约
++40% de oro	金币+40%
+Enemigos veloces	迅捷敌人
+Más trampas	更多陷阱
+Curación reducida	治疗削弱
+Más élites	更多精英
+Los enemigos se mueven un 20% más rápido.	敌人移动速度提高20%。
+Aparecen más tiras de pinchos en las salas.	房间中出现更多尖刺带。
+Curación -40% (frascos, corazones, robo de vida).	治疗-40%（药瓶、红心、生命偷取）。
++15% de probabilidad de que un enemigo sea élite.	敌人成为精英的几率+15%。
+Ninguno	无
+Gemas insuficientes	宝石不足
+Rey Exánime	不死之王
+Soberano de las Catacumbas	地下墓穴的君主
+Coloso de Magma	熔岩巨像
+El corazón de la Forja	锻炉之心
+Reina de la Escarcha	霜之女王
+Señora del Santuario Helado	冰封圣所的主宰
+Devorador del Vacío	虚空吞噬者
+El ojo que todo lo consume	吞噬一切之眼
+Ent Ancestral	远古树人
+Guardián del bosque podrido	腐朽森林的守护者
+Titán de la Tormenta	风暴泰坦
+Señor de la Fortaleza del Trueno	雷霆要塞之主
+Matriarca de Sangre	鲜血女族长
+Soberana de la Catedral Carmesí	绯红大教堂的女主宰
+Guardián del Eclipse	日蚀守护者
+Custodio del sol y la luna	日月的看守者
+I · El Cazador Pálido	壹 · 苍白猎人
+Dios Antiguo de la Luna de Sangre	血月的古神
+II · La Bestia	贰 · 野兽
+III · Dios Antiguo	叁 · 古神
+El Cazador, Dios Antiguo de la Luna de Sangre	猎人，血月的古神
+Catacumbas	地下墓穴
+Donde los reyes olvidados no descansan	被遗忘的君王无法安息之地
+Forja Infernal	地狱锻炉
+El corazón ardiente del abismo	深渊燃烧的心脏
+Santuario Helado	冰封圣所
+Silencio, escarcha y cristal	寂静、寒霜与水晶
+Abismo del Vacío	虚空深渊
+Un ojo que todo lo consume	一只吞噬万物的眼睛
+Bosque Podrido	腐朽森林
+El bosque recuerda cada hachazo	森林记得每一记斧击
+Fortaleza del Trueno	雷霆要塞
+Donde el cielo golpea la tierra	天空撞击大地之处
+Catedral Carmesí	绯红大教堂
+Un coro de sangre sin fin	永无止境的鲜血合唱
+Santuario del Eclipse	日蚀圣所
+Custodios del sol y la luna	日月的看守者们
+Luna de Sangre	血月
+Aquí termina la cacería	狩猎在此终结
+Hacha arrojadiza	飞斧
+Granada de fragmentación	破片手雷
+Granada tóxica	毒气手雷
+Escudo de madera	木盾
+Escudo de acero	钢盾
+Escudo rúnico	符文盾
+Escudo de espinas	荆棘盾
+Parry 0.20s · bloquea 55%	招架 0.20秒 · 格挡55%
+Parry 0.17s · bloquea 70%	招架 0.17秒 · 格挡70%
+Parry 0.15s · explosión al parry · bloquea 70%	招架 0.15秒 · 招架时爆炸 · 格挡70%
+Parry 0.17s · devuelve daño al bloquear	招架 0.17秒 · 格挡时反弹伤害
+3 cuchillos en abanico · daño 0.65x	三把飞刀呈扇形射出 · 伤害0.65倍
+Atraviesa 2 enemigos · daño 2.1x	贯穿2名敌人 · 伤害2.1倍
+Arco alto, atraviesa 3 · daño 2.4x	高抛弧线，贯穿3名敌人 · 伤害2.4倍
+Persigue y explota · daño 1.5x	追踪并爆炸 · 伤害1.5倍
+Explosión grande · daño 3.0x	大爆炸 · 伤害3.0倍
+Quema 4s · daño 1.7x	灼烧4秒 · 伤害1.7倍
+Congela 1.8s · daño 1.3x	冻结1.8秒 · 伤害1.3倍
+Veneno 5s · radio enorme	中毒5秒 · 范围极大
+Aturde 1.2s · daño 1.8x	击晕1.2秒 · 伤害1.8倍
+Filo Ígneo	炽焰刃
+Colmillo Gélido	寒冰獠牙
+Daga Venenosa	剧毒匕首
+Hacha Carmesí	猩红战斧
+Lanza Relámpago	闪电长矛
+Hoja del Eclipse	日蚀之刃
+Mandoble Pesado	沉重巨剑
+Hoja Veloz	迅捷之刃
++10% daño · quema al golpear	伤害+10% · 命中时灼烧
+Congela y ralentiza al golpear	命中时冻结并减速
+Envenena al golpear	命中时使敌人中毒
++15% daño · roba vida	伤害+15% · 生命偷取
++8% crítico · descargas	暴击+8% · 放电
++25% daño · críticos más fuertes	伤害+25% · 暴击更强
++38% daño · ataques 18% más lentos	伤害+38% · 攻击速度降低18%
++30% velocidad de ataque · -8% daño	攻击速度+30% · 伤害-8%
+sin munición	弹药耗尽
+sin granadas	手雷耗尽
+¡Pociones de vida!	生命药水！
+Vitalidad	活力
+Fuerza	力量
+Bolsa del Viajero	旅人行囊
+Cosecha de Almas	灵魂收割
+Frascos de Vida	生命药瓶
+Agilidad	敏捷
+Temple	坚毅
++10 de vida máxima por nivel.	每级最大生命值+10。
++4% de daño por nivel.	每级伤害+4%。
++25 de oro inicial por nivel.	每级初始金币+25。
++8% de almas obtenidas por nivel.	每级获得的灵魂+8%。
++1 frasco de vida por nivel.	每级生命药瓶+1。
++3% de velocidad de movimiento por nivel.	每级移动速度+3%。
+-4% de daño recibido por nivel.	每级受到的伤害-4%。
+Al morir revives una vez por run con 25% (50% nv.2) de vida.	死亡时每局可复活一次，恢复25%生命值（2级为50%）。
++{} vida	生命+{}
++{}% daño	伤害+{}%
++{} oro inicial	初始金币+{}
++{}% almas	灵魂+{}%
++{}% velocidad	速度+{}%
+-{}% daño recibido	受到的伤害-{}%
+Sin revivir	无法复活
+Revive con {}% de vida	复活并恢复{}%生命
+Desciende al Abismo como {}	化身为{}，踏入深渊
+Descubierto: {}	已发现：{}
+Dificultad: {}	难度：{}
+Modo: {}	模式：{}
+Equipo: {}	装备：{}
+Compañero: {}	同伴：{}
+Enfriamiento {}s	冷却 {}秒
+Definitiva: {}	终极技：{}
+Arma: {}	武器：{}
+Almas: {}	灵魂：{}
+Gemas: {}	宝石：{}
+Comprado: {}	已购买：{}
+Aspecto de {}	{}的外观
+Equipado · {}	已装备 · {}
+Tuyo · {}	已拥有 · {}
+Equipado: {}	已装备：{}
+Espadachín elegido: {}	已选剑士：{}
+Desbloquear {}	解锁 {}
+Ascensión {}	晋阶 {}
+Retos {}	挑战 {}
+{}/10 desbloqueados	已解锁 {}/10
+{} de {} desbloqueados	已解锁 {}/{}
+Ahora: {} de 9 jefes derrotados · {} logros	当前：已击败 {}/9 名首领 · {} 项成就
+Bestiario: {} descubiertos	怪物图鉴：已发现 {}
+Bestiario: {}	怪物图鉴：{}
+Piso {} · {} completados	第{}层 · 已完成 {}
+{} · piso {}	{} · 第{}层
+{} · piso {} [prueba]	{} · 第{}层 [试炼]
+{} pisos completados · {} pts	已通关{}层 · {}分
++{}% de almas ganadas	获得的灵魂+{}%
++{}% de oro ganado	获得的金币+{}%
+bloqueo	格挡
+El rodar te hace invulnerable un instante	翻滚可短暂无敌
+Pad: moverte  ·  Botones: saltar, rodar y atacar	方向键：移动  ·  按钮：跳跃、翻滚、攻击
+Modo: Campaña	战役
+Modo: Infinito	无尽
+Armería	军械库
+Trofeos	奖杯
+Preparación	出征准备
+Continuar	继续
+EXPEDICIÓN	远征
+Santuario	圣所
+Tienda	商店
+Colección	图鉴
+Jardín	花园
+Compañeros	同伴
+Récords	纪录
+Volver	返回
+Infinito	无尽
+Opciones	选项
+Códigos	兑换码
+Historia	剧情
+Desarrollador	开发者
+Dificultad	难度
+Fácil	简单
+Difícil	困难
+Normal	普通
+No hay partidas guardadas	没有存档
+Modo infinito: se desbloquea al vencer al Cazador	无尽模式：击败猎人后解锁
+Espadachines y habilidades. Ahora: 	剑士与技能。当前：
+ de 9 jefes derrotados · 	 / 9 个首领已击败 · 
+ logros	 项成就
+Revisa tu equipo antes de partir	出发前检查你的装备
+Retoma una partida guardada	继续已保存的进度
+Desciende al Abismo como 	化身为
+Mejoras permanentes, clases y desbloqueos	永久强化、职业与解锁内容
+Apariencias · almas y gemas por separado	外观 · 灵魂与宝石分开计算
+Bestiario: 	怪物图鉴：
+ descubiertos	 已发现
+Cristales que crecen con tus almas	随灵魂成长的水晶
+Espíritus aliados · ninguno equipado	盟友之灵 · 未装备
+Equipado: 	已装备：
+Estadísticas, logros y récords	统计、成就与纪录
+Cuenta	账号
+Partidas iniciadas	已开始的局数
+Partidas terminadas	已结束的局数
+Victorias	胜利
+Derrotas	失败
+Rondas completadas	已完成的回合
+Mayor racha de rondas	最长连续回合
+Mayor sala alcanzada	到达的最深房间
+Enemigos derrotados	击败的敌人
+Máx. enemigos en una ronda	单回合最多敌人
+Rondas perfectas (sin daño)	完美回合（未受伤）
+Mejor racha de rondas perfectas	最长完美回合连续
+Jefes derrotados	击败的首领
+Cofres abiertos	开启的宝箱
+(secretos:	（隐藏：
+Trofeos desbloqueados	已解锁奖杯
+Espadachín más usado	最常用剑士
+ninguno aún	暂无
+Tiempo total de juego	总游戏时间
+Runs infinitas	无尽局数
+Récord de pisos completados	通关层数纪录
+Mejor puntaje	最高得分
+Pisos completados (total)	累计通关层数
+Enemigos derrotados (infinito)	击败敌人（无尽）
+Jefes derrotados (infinito)	击败首领（无尽）
+Mayor tiempo de supervivencia	最长生存时间
+Últimas runs:	最近的进度：
+ · piso 	 · 第
+ [prueba]	 [试炼]
+ completados · 	 已完成 · 
+ pts	 分
+(aún no has jugado el modo infinito)	（你还没有玩过无尽模式）
+ESTADISTICAS	统计
+MODO INFINITO	无尽模式
+Datos reales de tu cuenta	你的账号真实数据
+Registro local de tus runs (criterio principal: pisos completados)	本地进度记录（主要依据：通关层数）
+TROFEOS	奖杯
+ de 	 / 
+ desbloqueados	 已解锁
+Corona Exánime	不死王冠
+Corazón de Magma	熔岩之心
+Lágrima de Escarcha	霜之泪
+Ojo del Vacío	虚空之眼
+Savia Ancestral	远古树液
+Chispa del Titán	泰坦之火花
+Cáliz de Sangre	鲜血圣杯
+Disco del Eclipse	日蚀之盘
+TIENDA DE PRUEBA	测试商店
+Oro de prueba: no afecta al perfil	测试金币：不影响你的档案
+LABORATORIO	实验室
+Invulnerable · no se guarda nada	无敌 · 不保存任何内容
+El Sello está completo	封印已完整
+Santuario del Viajero	旅者圣所
+Elige tu primer destino	选择你的第一个目的地
+Solo queda el Cazador	只剩下猎人
+Elige tu próximo destino	选择你的下一个目的地
+Tienda · forja · altar · fuente	商店 · 锻炉 · 祭坛 · 泉水
+Acércate a un portal\\ny pulsa el botón de la llave	靠近传送门\\n并按下钥匙按钮
+Pad: moverte  ·  Botones: saltar, rodar y atacar\\nEl rodar te hace invulnerable un instante	方向键：移动  ·  按钮：跳跃、翻滚、攻击\\n翻滚可短暂无敌
+Reiniciando prueba...	正在重新开始测试...
+¡Sala despejada!	房间已清空！
+Guardias derrotados: libera al prisionero	守卫已击败：解救囚徒
+Cofre perfecto	完美宝箱
+Recompensa	奖励
+¡RONDA PERFECTA! 2 cofres	完美回合！2个宝箱
+Ronda completada: 1 cofre	回合完成：1个宝箱
+Premio de la prueba	试炼奖励
+¡Prueba superada! Premio superior	试炼通过！获得更高奖励
+Trofeo: {}	奖杯：{}
+Salida	出口
+¡Sello completo!	封印完成！
+¡Nueva dificultad desbloqueada!	已解锁新难度！
+Piso {} · {} completado	第{}层 · 已完成{}
+(seca)	（已干涸）
+ESPÍRITU DEL ABISMO	深渊之灵
+Ofrécele un recurso y te concederá poder	献上一份资源，它便赐予你力量
+Sangre por poder	以血换力
++1 nivel de una bendición al azar	随机一项祝福+1级
+Pierdes {} de vida	失去{}点生命
+El espíritu acepta tu sangre	灵体接受了你的鲜血
+Oro por temple	以金换锋
++1 nivel de arma	武器+1级
+Pagas {} de oro	支付{}金币
+Tu arma vibra con nueva fuerza	你的武器因新的力量而震颤
+Frasco por visión	以瓶换视
+Definitiva al máximo y +30 almas	终极技充满，并获得30灵魂
+Entregas 1 frasco	交出1个药瓶
+El espíritu bebe el frasco	灵体饮下了药瓶
+SANTUARIO DE PACTOS	契约圣所
+Elige un pacto: cada ventaja tiene su precio (máx. {} por partida)	选择一份契约：每项优势都有代价（每局最多{}份）
+Ya no quedan pactos por ofrecer	已没有可供选择的契约
+Derrota primero a los guardias	请先击败守卫
+¡Libre! Afila tu arma: +1 nivel	自由了！磨利你的武器：+1级
+¡Libre! Te da 80 de oro	自由了！送你80金币
+¡Libre! Te enseña una bendición	自由了！传授你一项祝福
+¡Libre! Te cura	自由了！为你疗伤
+bendición	祝福
+¡Libre! Te cura y te da un frasco	自由了！为你疗伤并赠你一个药瓶
+Frasco de vida	生命药瓶
++1 frasco de vida.	生命药瓶+1。
+Elixir	灵药
+Cura el 50% de tu vida.	回复50%生命值。
+Cristal de poder	力量水晶
+Carga tu definitiva al máximo.	使终极技完全充能。
+Piedra de afilar	磨刀石
+Mejora tu arma un nivel.	武器提升1级。
+Reserva de almas	灵魂储备
+Obtienes 15 almas.	获得15点灵魂。
+Rechazar	拒绝
+Toca una carta	点击一张卡牌
+Elegir	选择
+Cerrar	关闭
+Mejorar	升级
+Guardar en ranura {}	保存到栏位{}
+Partida guardada en la ranura {}	进度已保存到栏位{}
+No se pudo guardar	无法保存
+Música: {}	音乐：{}
+Sonidos: {}	音效：{}
+Vibración: {}	震动：{}
+Entrada: {}	操作方式：{}
+Salir del modo de prueba	退出测试模式
+Guardar partida	保存进度
+Abandonar partida	放弃本局
+Anuncio no disponible	广告不可用
+Revivir · {} gemas	复活 · {}宝石
+Revivir · anuncio largo	复活 · 长广告
+Revivir · ver anuncio	复活 · 观看广告
+Terminar la run	结束本局
+Reintentar	重试
+Menú principal	主菜单
+Ver créditos	查看制作名单
+No se pudo revivir	无法复活
+¡Revivida {}/{}!	已复活 {}/{}！
+Autoguardado	自动存档
+LISTA	就绪
+Reliquia obtenida	获得遗物
+Jefe: {}	首领：{}
+No tienes suficiente oro	金币不足
+Salir	离开
+Entrar	进入
+Viajar	出发
+Rezar	祈祷
+Forjar	锻造
+Comerciar	交易
+Ofrecer	献祭
+Elegir pacto	选择契约
+Liberar	解救
+Tomar	拾取
+Beber	饮用
+Hablar	交谈
+¡Cofre secreto!	隐藏宝箱！
+Abrir	打开
+Usar	使用
+ELIGE UNA BENDICIÓN	选择一项祝福
+Mejoras que duran toda la partida	整局持续有效的强化
+NUEVA	新
+Nv {}	{}级
+No disponible	不可用
+MERCADER	商人
+VENDIDO	已售
+FORJA	锻炉
+¡Arma al nivel máximo!	武器已满级！
++10% de daño de arma y habilidades	武器与技能伤害+10%
+(tienes {})	（你有{}）
+PAUSA	暂停
+Vacía	空
+ · Sala {}	 · 第{}间
+{} · Sala {}	{} · 第{}间
+Daño x{}   Crítico {}%	伤害 x{}   暴击 {}%
+Velocidad x{}   Defensa {}%	速度 x{}   防御 {}%
+Arma nivel {}   Frascos {}/{}	武器等级 {}   药瓶 {}/{}
+Enemigos {}   Tiempo {}	敌人 {}   时间 {}
+Especial: {}	特殊：{}
+2ª: {}	副：{}
+2ª: {}  Gran: x{}	副：{}  手雷：x{}
+2ª: {} x{}	副：{} x{}
+2ª: {} x{}  Gran: x{}	副：{} x{}  手雷：x{}
+{} (parry {}ms)	{}（格挡窗口 {}毫秒）
+Bendiciones	祝福
+Aún no tienes ninguna.	你还没有任何祝福。
+HAS CAÍDO	你已倒下
+Revividas: {}/{} usadas	复活：已用 {}/{}
+Tus gemas: {}	你的宝石：{}
+Última revivida: solo con gemas	最后一次复活：仅限宝石
+RUN INFINITA	无尽之旅
+Caíste en {} · piso {}	你倒在了{} · 第{}层
+Caíste en {} · piso {} · Retos +{}%	你倒在了{} · 第{}层 · 挑战 +{}%
+Pisos completados	已通关层数
+Piso alcanzado	到达层数
+Tiempo de supervivencia	生存时间
+Revividas usadas	已用复活
+PUNTAJE {}	得分 {}
+¡NUEVO RÉCORD DE PISOS!	层数新纪录！
+Mejor: {} pisos · {} pts	最佳：{}层 · {}分
+Almas conservadas	保留的灵魂
+¡VICTORIA!	胜利！
+El Cazador ha sido derrotado	猎人已被击败
+Has superado las tres mazmorras	你已通关三座地牢
+En el Santuario	在圣所
+Caíste en {} · sala {}	你倒在了{} · 第{}间
+Salas superadas	通过的房间
+Tiempo	时间
+Fácil{}	简单{}
+Normal{}	普通{}
+Difícil{}	困难{}
+ Asc {}	 晋阶{}
+Gasta tus almas en el Santuario	前往圣所花费你的灵魂
+Rueda con el botón de esquivar para ser invulnerable un instante.	使用闪避键翻滚，可在瞬间保持无敌。
+Las reliquias de los jefes se conservan entre partidas.	首领遗物会在多局之间保留。
+Gasta almas en el Santuario para mejorar a tu personaje.	在圣所花费灵魂来强化你的角色。
+Cada sala puede esconder una bendición, una forja o un mercader.	每个房间都可能藏有祝福、锻炉或商人。
+Reúne las 8 reliquias para forjar el Sello y despertar al Cazador.	集齐8件遗物，锻造封印，唤醒猎人。
+Cargando...	加载中...
+Comenzar	开始
+Créditos	制作名单
+Idioma	语言
+Modo Desarrollador	开发者模式
+Creador: JulianFarKs	作者：JulianFarKs
+Música	音乐
+SÍ	开
+NO	关
+Sonidos	音效
+Vibración	震动
+Entrada	操作方式
+Automática	自动
+Táctil	触屏
+Mando	手柄
+Controles (teclado y mando)	操作说明（键盘与手柄）
+Organizar controles táctiles	调整触屏按键
+¿Seguro? Toca otra vez	确定吗？再点一次
+Borrar progreso	清除进度
+OPCIONES	选项
+Un roguelike de acción en 2D	一款2D动作Roguelike
+inspirado en SwordmanMagic,	灵感源自 SwordmanMagic，
+mod de Minecraft de JulianFarKs	JulianFarKs 的 Minecraft 模组
+CREADOR	作者
+IDEAS	创意
+BASADO EN	灵感来源
+un mod propio de Minecraft:	原创 Minecraft 模组：
+PRÓXIMAMENTE	即将推出
+Mejoras en los niveles y diseños	关卡与设计的改进
+y en el menú de elegir el tipo de mundo	以及世界类型选择菜单
+ARTE	美术
+Pixel art generado a mano,	手工绘制的像素画，
+personajes, jefes, enemigos y mundos	包含角色、首领、敌人与世界
+MÚSICA Y SONIDO	音乐与音效
+Música original sintetizada,	原创合成音乐，
+efectos para cada arma, jefe y habilidad	为每件武器、首领和技能制作的音效
+CLASES	职业
+JEFES	首领
+GRACIAS POR JUGAR	感谢游玩
+Toca para salir	点击退出
+Los retos son del modo Infinito	挑战仅限无尽模式
+COMENZAR EXPEDICIÓN	开始远征
+Retos	挑战
+Modo	模式
+Campaña	战役
+Infinito: se desbloquea al vencer al Cazador	无尽：击败猎人后解锁
+PREPARACIÓN	出征准备
+/10 desbloqueados	/10 已解锁
+Vida	生命
+Daño	伤害
+Ataque	攻击
+Velocidad	速度
+Crítico	暴击
+Enfriamiento	冷却
+Carga con golpes	命中充能
+Bendición inicial · elige una	初始祝福 · 择一
+Sin bendición inicial	无初始祝福
+Equipo	装备
+Compañero: ninguno (toca para elegir)	同伴：无（点击选择）
+Compañero	同伴
+ENTRANDO AL ABISMO	踏入深渊
+Modo infinito	无尽模式
+Quitar	卸下
+Equipar	装备
+No sirve	无法使用
+ gemas	 宝石
+Jugando	游戏中
+Próximamente	敬请期待
++50 gemas (PRUEBA)	+50宝石（测试）
+Gemas de prueba: solo esta sesión	测试宝石：仅限本次游戏
+Aspecto original	原始外观
+ equipado en 	 已装备于 
+Comprado	已购买
+No se pudo comprar	无法购买
+TIENDA	商店
+Almas	灵魂
+Gemas	宝石
+COSMÉTICOS	外观
+Aspecto de 	外观：
+   (* gemas de prueba)	   （*测试宝石）
+Aún no hay aspectos disponibles.	暂无可用外观。
+Llegarán en futuras versiones; lo que desbloquees se conservará.	将在未来版本推出；你解锁的内容会被保留。
+Las gemas moradas todavía no se pueden comprar.	紫色宝石暂时无法购买。
+Premium	高级
+Se consigue jugando	通过游玩获得
+Google Play (futuro)	Google Play（未来）
+Equipado	已装备
+Tuyo	已拥有
+Confirmar elegido	确认选择
+Elegir espadachín	选择剑士
+Desbloquear	解锁
+Ver ilustración	查看插画
+Ver en acción	动作演示
+Ascensión	晋阶
+Ascensión 0	晋阶 0
+Espadachín elegido	已选剑士
+GALERIA DE ESPADACHINES	剑士画廊
+Clase bloqueada	职业未解锁
+La caída del cielo	天空之陨
+Hace mil años, el cielo se partió sobre el Abismo Eterno.	千年之前，天空在永恒深渊之上裂开。
+Una luna roja se alzó y ya nunca volvió a ponerse. Bajo ella despertó algo antiguo, y hambriento.	一轮红月升起，再未落下。在它之下，某种古老而饥渴的存在苏醒了。
+Los reinos cayeron uno tras otro. Nadie recordó su nombre. Solo su sombra.	王国接连陷落。无人记得它的名字，只记得它的阴影。
+Pero siete espadachines se negaron a huir.	然而有七位剑士拒绝逃亡。
+Cada uno empuñaba una espada nacida de una creencia: el Honor, el Silencio, la Voluntad, la Libertad, la Paciencia, la Vida y el Sacrificio.	每人都执掌一柄由信念铸成的剑：荣誉、沉默、意志、自由、耐心、生命与牺牲。
+No eran simples armas. Eran sellos. Unidas, podían encadenar a la Luna de Sangre.	它们不只是兵器，而是封印。合而为一，便能锁住血月。
+Pero el Cazador no podía morir; solo ser contenido. Cada espada se quebró contra su sombra.	但猎人无法死去，只能被封禁。每柄剑都在他的阴影前碎裂。
+Los guardianes cayeron, y sus ocho reliquias se perdieron en lo profundo del abismo.	守护者们倒下了，他们的八件遗物遗失在深渊深处。
+Ahora el Sello se debilita. La luna vuelve a sangrar.	如今封印日渐衰弱，月亮再度流血。
+Tú desciendes sin nombre, con una espada prestada y una única certeza:	你无名无姓地走下深渊，手握一柄借来的剑，心中只有一个确信：
+alguien tiene que terminar lo que ellos no pudieron.	总得有人完成他们未竟之事。
+El octavo espadachín	第八位剑士
+Las ocho reliquias se elevan y forman un anillo de luz alrededor del Cazador.	八件遗物升空，在猎人周围结成一圈光环。
+El Sello, por fin completo, canta con las voces de los siete espadachines.	封印终于完整，唱响七位剑士的声音。
+La Luna de Sangre se quiebra. No cae: se apaga.	血月碎裂。它没有坠落，而是熄灭了。
+El Cazador baja la mirada hacia sus propias manos. Por primera vez en mil años, recuerda quién fue.	猎人低头望向自己的双手。千年来第一次，他想起了自己曾是谁。
+El Cazador	猎人
+Fui el octavo espadachín. Mi creencia era la Victoria, cueste lo que cueste.	我曾是第八位剑士。我的信念是胜利，不惜一切代价。
+Por eso las siete espadas jamás pudieron matarme: me habían forjado a mí, también.	所以七柄剑始终无法杀死我：它们同样也铸造了我。
+Gracias, portador. Rompiste el ciclo que yo empecé.	谢谢你，持剑者。你打破了我开启的轮回。
+Amaneció sobre el Abismo por primera vez en mil años.	千年以来，深渊之上第一次迎来了黎明。
+Las espadas por fin descansan. El portador no tiene nombre... pero el mundo recordará su camino.	剑终于得以安息。持剑者没有姓名……但世界会记住他走过的路。
+Aldren	奥尔德伦
+Vesper	维斯珀
+Sylwen	西尔文
+Guardián herido	受伤的守护者
+Mercader enmascarado	蒙面商人
+Espíritu del bosque	森林之灵
+Ugh... por fin alguien. Baja la espada, no soy una de esas cosas.	呃……终于有人来了。放下剑，我不是那些怪物。
+Fui Guardián del Alba, de los que juraron el Honor. Me hirieron al intentar volver a la superficie.	我曾是黎明守护者，是立誓守护荣誉的人之一。我在试图返回地面时受了伤。
+¿Tendrías una poción? Solo una.	你有药水吗？只要一瓶。
+Darle una poción	给他一瓶药水
+Que el Alba te cuide. Toma, es todo lo que me queda.	愿黎明庇佑你。拿着，这是我仅剩的东西了。
+Dejarlo	离开他
+Lo entiendo. En el abismo cada gota cuenta.	我明白。在深渊里，每一滴都珍贵。
+Otra vez tú. Sigo vivo, ya ves. Terco como todos los del Alba.	又是你。我还活着，你看。和所有黎明的人一样固执。
+A veces oigo las espadas cantar cuando duermo. Cantan bajito, como si lloraran.	睡梦中，我有时会听见剑在歌唱。声音很轻，像是在哭泣。
+Acompañarlo un rato	陪他一会儿
+Gracias. Un guardián no debería caer solo.	谢谢。守护者不该孤独地倒下。
+Seguir mi camino	继续赶路
+Ve. Y recuerda: el honor no es ganar, es no soltar la espada.	去吧。记住：荣誉不在于获胜，而在于绝不放下手中的剑。
+Has llegado muy lejos. Llevas el peso de las reliquias, lo noto en cómo caminas.	你走得很远了。你背负着遗物的重量，从你的步伐就能看出。
+Hay algo que nunca contamos: ocho reliquias, pero solo siete espadas.	有件事我们从未说出口：八件遗物，却只有七柄剑。
+Siempre me pregunté quién fue el octavo. Quizás por eso el Cazador no se detiene.	我一直想知道第八位是谁。也许这就是猎人永不停歇的原因。
+Recordarlo	记在心里
+Si lo averiguas... dile que el Alba aún lo espera.	如果你查明了真相……告诉他，黎明仍在等他。
+Shh, shh... bienvenido, cliente. Vesper vende lo que el abismo escupe.	嘘，嘘……欢迎，客人。维斯珀出售深渊吐出的东西。
+¿El Cazador? Cuento de niños. Una luna pintada en el cielo, nada más.	猎人？那是哄小孩的故事。不过是天上画的一轮月亮罢了。
+Pero si quieres una ventaja, tengo un secreto barato. Solo veinte monedas.	不过你若想占些优势，我有个便宜的秘密。只要二十枚金币。
+Comprar el secreto (20 oro)	购买秘密（20金币）
+Para vencer a cualquier jefe no esquives: solo ataca. Confía en Vesper... jeje.	想击败任何首领，别闪避，只管进攻。相信维斯珀吧……嘿嘿。
+Presionarlo	逼问他
+¡Está bien, está bien! Sirvo a quienes siguen la luna... toma, no me hagas daño.	好了好了！我效忠追随月亮的人……拿去吧，别伤害我。
+Marcharse	转身离开
+Tú te lo pierdes, cliente.	是你的损失，客人。
+Otra vez por aquí. Vesper no mintió, no. Vesper solo... omitió.	又来了。维斯珀没撒谎，没有。维斯珀只是……略过了一些。
+Dicen que bajo la máscara no hay nada. Yo digo que hay demasiado.	人们说面具下空无一物。我说，那下面东西太多了。
+Aceptar su regalo	收下他的礼物
+Una poción por las molestias. Gratis. Esta vez de verdad.	一瓶药水，聊表歉意。免费。这次是真的。
+No fiarme	不信任他
+Sabia decisión. Vesper tampoco se fiaría.	明智的决定。换作是我，也不会信任维斯珀。
+T-tú... llevas las marcas de los guardianes caídos.	你……你身上带着陨落守护者的印记。
+No. No, no, no. Hoy Vesper no vende nada. Vesper no te conoce.	不。不，不，不。今天维斯珀什么也不卖。维斯珀不认识你。
+Vete, por favor. Antes de que la luna te vea aquí.	求你快走。趁月亮还没看见你在这里。
+Dejarlo en paz	不再打扰他
+...gracias. Que el abismo sea benévolo contigo.	……谢谢。愿深渊对你仁慈。
+Las raíces susurran que aún eres brote.	树根低语，你仍只是一株嫩芽。
+Vuelve cuando hayas caído y te hayas levantado. Entonces hablaremos.	等你倒下又重新站起，再回来吧。到那时我们再谈。
+Asentir	点头
+El bosque recuerda a quienes regresan.	森林会记住归来之人。
+Hueles a ceniza y a promesa. Eso es raro por aquí.	你身上有灰烬与誓言的气息。这在此地很少见。
+La Vida fue la creencia de mi dueña: que todo lo que cae vuelve a ser semilla. Incluso la luna.	生命是我主人的信念：一切坠落之物都会重新化为种子。哪怕是月亮。
+Bebe de mi savia si quieres. Pero la savia también recuerda.	你若愿意，就饮下我的树液吧。但树液也有记忆。
+Beber la savia	饮下树液
+Que las raíces te sostengan. Y que no olvides lo que viste.	愿树根扶持你。也愿你不要忘记所见之事。
+Cautela. Tu espada es más sabia que tú... por ahora.	小心些。你的剑比你更有智慧……暂时如此。
+Mejoras	强化
+Clases	职业
+Desbloqueos	解锁
+SANTUARIO	圣所
+Reliquias {}/8	遗物 {}/8
+MÁX	已满
+Enemigos derrotados: {}	击败敌人：{}
+Derrota {} enemigos en total	累计击败{}名敌人
+Toca una mejora para comprarla con almas.	点击强化，用灵魂购买。
+Las almas se obtienen al derrotar enemigos y jefes.	击败敌人和首领即可获得灵魂。
+Cada 50 enemigos derrotados desbloqueas armas y habilidades.	每击败50名敌人，就会解锁武器和技能。
+??? (bloqueado)	???（未解锁）
+Diálogos	对话
+DIÁLOGOS	对话
+HISTORIA	剧情
+Las Siete Espadas del Fin	终末七剑
+Algunas escenas se desbloquean al avanzar.	部分场景会随着进度解锁。
+Aún no has hablado con nadie.	你还没有和任何人交谈过。
+Toca para avanzar	点击继续
+Honor	荣誉
+Silencio	沉默
+Voluntad	意志
+Libertad	自由
+Paciencia	耐心
+Sacrificio	牺牲
+Reliquia	遗物
+¡Segunda oportunidad!	第二次机会！
+¡Reliquia obtenida!	获得遗物！
+¡Roto!	破碎！
+¡PARRY!	格挡！
+Infinito · piso {}	无尽 · 第{}层
+Combate	战斗
+Mini-jefe	小首领
+Altar de bendición	祝福祭坛
+Forja	锻炉
+Mercader	商人
+Tesoro	宝藏
+Tienda general	杂货铺
+Jefe	首领
+Sala	房间
+{} (secretos: {})	{}（隐藏：{}）
+{} gemas	{}宝石
+Bonificación total: +{}% de puntaje {}	总加成：得分+{}% {}
+Elige el idioma del juego	选择游戏语言
+SWORDSMANMAGIC	SWORDSMANMAGIC
+[DEV] Tinte violeta	[DEV] 紫色染色
+[DEV] Tinte brasa	[DEV] 余烬染色
+Articulo de prueba (no es una skin real).	测试物品（并非真正的外观）。
+dd/MM HH:mm	dd/MM HH:mm
+COMÚN	普通
+POCO COMÚN	优良
+RARA	稀有
+ÉPICA	史诗
+¡Furioso!	狂暴！
+cristal	水晶
+¡Guardia rota!	破防！
+bloqueado	已格挡

@@ -1,0 +1,1301 @@
+# fr generado por tools/i18n/build_catalogs.py (clave = texto en espanol)
+Filo Afilado	Lame affûtée
++15% de daño de arma por nivel.	+15 % de dégâts d'arme par niveau.
+Corazón Robusto	Coeur robuste
++20 de vida máxima por nivel y te cura 20.	+20 de vie maximale par niveau et vous soigne de 20.
+Pies Alados	Pieds ailés
++8% de velocidad de movimiento por nivel.	+8 % de vitesse de déplacement par niveau.
+Furia Creciente	Fureur croissante
+Cada baja da +4% de daño (máx. 5 cargas +2 por nivel). Se pierde al recibir daño.	Chaque victoire donne +4 % de dégâts (5 charges max., +2 par niveau). Perdu en subissant des dégâts.
+Sed de Sangre	Soif de sang
+Robas el 3% del daño infligido como vida por nivel.	Vous volez 3 % des dégâts infligés sous forme de vie par niveau.
+Brasas Eternas	Braises éternelles
+Tus golpes queman: 25% de probabilidad por nivel.	Vos coups brûlent : 25 % de chance par niveau.
+Contacto Glacial	Contact glacial
+Tus golpes ralentizan y a veces congelan: 20% por nivel.	Vos coups ralentissent et gèlent parfois : 20 % par niveau.
+Chispa Voltaica	Étincelle voltaïque
+15% por nivel de soltar un rayo encadenado al golpear.	15 % de chance par niveau de libérer un éclair en chaîne en frappant.
+Veneno de Espinas	Venin d'épines
+Tus golpes envenenan: 25% de probabilidad por nivel.	Vos coups empoisonnent : 25 % de chance par niveau.
+Piel de Piedra	Peau de pierre
+-8% de daño recibido por nivel.	-8 % de dégâts subis par niveau.
+Esquive Fantasma	Esquive fantôme
+Rodar dura más invulnerable y deja una estela que daña.	La roulade dure plus longtemps, rend invulnérable et laisse une traînée qui blesse.
+Triple Salto	Triple saut
+Ganas un salto extra en el aire (triple salto).	Vous gagnez un saut supplémentaire en l'air (triple saut).
+Maestría Crítica	Maîtrise critique
++8% de prob. crítica y +20% de daño crítico por nivel.	+8 % de chance critique et +20 % de dégâts critiques par niveau.
+Alma Voraz	Âme vorace
++30% de almas por nivel.	+30 % d'âmes par niveau.
+Fortuna	Fortune
++30% de oro por nivel.	+30 % d'or par niveau.
+Escudo Estelar	Bouclier stellaire
+Un escudo absorbe un golpe al entrar a cada sala (más fuerte por nivel).	Un bouclier absorbe un coup à l'entrée de chaque salle (plus fort à chaque niveau).
+Enfriamiento Rápido	Récupération rapide
+-12% de enfriamiento de habilidades por nivel.	-12 % de temps de recharge des compétences par niveau.
+Habilidad Potenciada	Compétence renforcée
++20% de daño de habilidades por nivel.	+20 % de dégâts des compétences par niveau.
+Ejecutor	Bourreau
++40% de daño a enemigos con menos de 30% de vida por nivel.	+40 % de dégâts aux ennemis sous 30 % de vie par niveau.
+Imán de Almas	Aimant d'âmes
+Atraes oro, almas y corazones desde más lejos.	Vous attirez l'or, les âmes et les coeurs de plus loin.
+Espíritu Vengador	Esprit vengeur
+Los enemigos explotan al morir y dañan a los cercanos.	Les ennemis explosent à leur mort et blessent ceux qui sont proches.
+Segunda Oportunidad	Seconde chance
+Revives una vez con 35% de vida.	Vous ressuscitez une fois avec 35 % de vie.
+Hoja Fantasma	Lame fantôme
+Cada segundo golpe lanza una onda de energía.	Un coup sur deux lance une onde d'énergie.
+Barrera de Égida	Barrière d'Égide
+Tras rodar ganas un escudo breve.	Après une roulade, vous gagnez un bref bouclier.
+Sabiduría	Sagesse
++20% de carga de definitiva por nivel y empiezas cada sala con 15%.	+20 % de charge de l'ultime par niveau, et vous commencez chaque salle avec 15 %.
+Golpe Gigante	Coup de géant
+El tercer golpe del combo hace +40% de daño y una onda de choque.	Le troisième coup du combo inflige +40 % de dégâts et une onde de choc.
+Paso de Sombra	Pas de l'ombre
+Rodar atraviesa enemigos y los daña.	La roulade traverse les ennemis et les blesse.
+Eclipse	Éclipse
+Cada 12 s, tu siguiente golpe hace daño x2.5 (más rápido por nivel).	Toutes les 12 s, votre prochain coup inflige x2,5 de dégâts (plus rapide à chaque niveau).
+Filo Hambriento	Lame affamée
++12% de daño	+12 % dégâts
+-10% de vida máxima	-10 % de vie maximale
++12% daño	+12 % dégâts
+-10% vida	-10 % vie
+-10% de daño recibido	-10 % de dégâts subis
+-6% de velocidad	-6 % de vitesse
+-10% daño recib.	-10 % dég. subis
+-6% veloc.	-6 % vitesse
+Pies de Viento	Pieds de vent
++10% de velocidad	+10 % de vitesse
++8% de daño recibido	+8 % de dégâts subis
++10% veloc.	+10 % vitesse
++8% daño recib.	+8 % dég. subis
+Bolsa Pesada	Bourse lourde
++60 de oro inicial	+60 d'or de départ
+1 poción menos	1 potion en moins
++60 oro	+60 or
+-1 poción	-1 potion
+Sed de Almas	Soif d'âmes
++25% de almas ganadas	+25 % d'âmes gagnées
+-8% de daño	-8 % dégâts
++25% almas	+25 % âmes
+-8% daño	-8 % dégâts
+Pacto Frágil	Pacte fragile
++12% de golpe crítico	+12 % de coup critique
+-15% de vida máxima	-15 % de vie maximale
++12% crítico	+12 % critique
+-15% vida	-15 % vie
+Reflejo Veloz	Réflexes vifs
+Habilidades 12% más rápidas	Compétences 12 % plus rapides
+-10% de daño	-10 % dégâts
+Habil. +12%	Compét. +12 %
+-10% daño	-10 % dégâts
+Provisiones	Provisions
++1 poción	+1 potion
+-15% de oro ganado	-15 % d'or gagné
+-15% oro	-15 % or
+Cuchillos arrojadizos	Couteaux de lancer
+Granada incendiaria	Grenade incendiaire
+Sed de sangre	Soif de sang
+Ballesta rúnica	Arbalète runique
+Granada de hielo	Grenade de glace
+Pies ligeros	Pieds légers
+Piel de piedra	Peau de pierre
+Orbe arcano	Orbe arcanique
+Granada de tormenta	Grenade de tempête
+Maestría de combate	Maîtrise du combat
+Empiezas cada partida con cuchillos (botón de arma secundaria).	Vous commencez chaque partie avec des couteaux (bouton d'arme secondaire).
+Empiezas con 3 granadas incendiarias.	Vous commencez avec 3 grenades incendiaires.
+Habilidad pasiva: recuperas un poco de vida al golpear.	Compétence passive : vous récupérez un peu de vie en frappant.
+Arma secundaria inicial: ballesta que atraviesa enemigos.	Arme secondaire de départ : une arbalète qui transperce les ennemis.
+Empiezas con 3 granadas de hielo que congelan.	Vous commencez avec 3 grenades de glace qui gèlent.
+Habilidad pasiva: +6% de velocidad de movimiento.	Compétence passive : +6 % de vitesse de déplacement.
+Habilidad pasiva: recibes 7% menos de daño.	Compétence passive : vous subissez 7 % de dégâts en moins.
+Arma secundaria inicial: orbe que persigue enemigos.	Arme secondaire de départ : un orbe qui poursuit les ennemis.
+Empiezas con 3 granadas de tormenta que aturden.	Vous commencez avec 3 grenades de tempête qui étourdissent.
+Habilidad pasiva: +8% de daño y +4% de crítico.	Compétence passive : +8 % de dégâts et +4 % de critique.
+Arma	Arme
+Granada	Grenade
+Habilidad	Compétence
+¡DESBLOQUEADO!	DÉBLOQUÉ !
+MEJORAS	AMÉLIORATIONS
+ARMAMENTO	ARMEMENT
+ARSENAL	ARSENAL
+Elige una mejora para toda la partida	Choisissez une amélioration pour toute la partie
+Elige un arma: las otras dos se pierden	Choisissez une arme : les deux autres sont perdues
+Elige un objeto: las otras dos se pierden	Choisissez un objet : les deux autres sont perdus
+Común	Commun
+Poco común	Peu commun
+Rara	Rare
+Épica	Épique
+Filo afilado	Lame aiguisée
+Corazón vigoroso	Coeur vigoureux
+Golpes veloces	Frappes rapides
+Trébol de suerte	Trèfle porte-bonheur
+Piel de hierro	Peau de fer
+Ojo certero	Oeil précis
+Golpe brutal	Coup brutal
+Maestría arcana	Maîtrise arcanique
+Sed de gloria	Soif de gloire
+Bolsa de oro	Sac d'or
+Cosecha de almas	Moisson d'âmes
+Imán de botín	Aimant à butin
+Brasas vivas	Braises vives
+Escarcha viva	Givre vivant
+Chispa viva	Étincelle vivante
+Veneno vivo	Venin vivant
+Poder arcano	Puissance arcanique
+Frasco extra	Fiole supplémentaire
+Segunda oportunidad	Seconde chance
+Tus armas y ataques hacen más daño.	Vos armes et vos attaques infligent plus de dégâts.
+Aumenta tu vida máxima y te cura esa cantidad.	Augmente votre vie maximale et vous soigne d'autant.
+Te mueves más rápido.	Vous vous déplacez plus vite.
+Atacas más rápido.	Vous attaquez plus vite.
+Mejora la rareza de las próximas recompensas.	Améliore la rareté des prochaines récompenses.
+Recibes menos daño de todo.	Vous subissez moins de dégâts de toutes sources.
+Más probabilidad de golpe crítico.	Plus de chances de coup critique.
+Los críticos hacen mucho más daño.	Les coups critiques infligent bien plus de dégâts.
+Tus habilidades se recargan antes.	Vos compétences se rechargent plus vite.
+La definitiva se carga más rápido.	Votre ultime se charge plus vite.
+Recuperas vida al golpear.	Vous récupérez de la vie en frappant.
+Ganas más oro de todo.	Vous gagnez plus d'or de toutes sources.
+Ganas más almas de todo.	Vous gagnez plus d'âmes de toutes sources.
+Atrae el botín desde más lejos.	Attire le butin de plus loin.
+Tus golpes pueden prender fuego.	Vos coups peuvent enflammer les ennemis.
+Tus golpes pueden congelar.	Vos coups peuvent geler.
+Tus golpes pueden soltar una descarga.	Vos coups peuvent libérer une décharge.
+Tus golpes pueden envenenar.	Vos coups peuvent empoisonner.
+Tus habilidades hacen más daño.	Vos compétences infligent plus de dégâts.
+Llevas un frasco de vida más.	Vous portez une fiole de vie de plus.
+Si mueres, reapareces una vez con parte de tu vida.	Si vous mourez, vous revenez une fois avec une partie de votre vie.
+Pacto de sangre	Pacte de sang
+Furia temeraria	Fureur téméraire
+Mente fría	Esprit froid
+Vidrio mortal	Verre mortel
+Una mejora fuerte con un coste. Elígela solo si te conviene.	Une forte amélioration, mais payante. Ne la choisissez que si elle vous convient.
+Fuente de vida	Source de vie
+Recuperas esa parte de tu vida máxima ahora mismo.	Vous récupérez immédiatement cette part de votre vie maximale.
+Botín de oro	Butin d'or
+Un montón de monedas y algunas almas para gastar en la tienda.	Un tas de pièces et quelques âmes à dépenser à la boutique.
+Frascos de vida	Fioles de vie
+Rellena tus frascos de vida (hasta tu máximo).	Remplit vos fioles de vie (jusqu'à votre maximum).
+Barrera de luz	Barrière de lumière
+Un escudo temporal que absorbe daño antes que tu vida.	Un bouclier temporaire qui absorbe les dégâts avant votre vie.
+Recarga total	Recharge totale
+Reinicia las recargas de tus habilidades y carga tu definitiva.	Réinitialise les recharges de vos compétences et charge votre ultime.
+Arma principal	Arme principale
+Escudo	Bouclier
+Más granadas	Plus de grenades
+Granadas mejoradas	Grenades améliorées
+Tus granadas hacen +25% de daño y explotan en un radio +15% mayor.	Vos grenades infligent +25 % de dégâts et explosent sur un rayon +15 % plus grand.
+Munición	Munitions
+Arma 2ª mejorada	Arme 2 améliorée
+Tu arma secundaria hace +25% de daño y se dispara más rápido.	Votre arme secondaire inflige +25 % de dégâts et tire plus vite.
++{} oro	+{} d'or
++{}% de vida	+{} % de vie
++{} frasco	+{} fiole
++{} frascos	+{} fioles
++{} escudo	+{} de bouclier
++{}% definitiva	+{} % d'ultime
+Sustituye a {}	Remplace {}
+Arma 2ª · {} usos	Arme 2 · {} utilisations
+{} granadas	{} grenades
++{} granadas	+{} grenades
+Nivel {} > {}	Niveau {} > {}
++{} usos	+{} utilisations
+Munición extra para tu {}.	Munitions supplémentaires pour votre {}.
+Recarga tu {} (hasta el doble de la carga base).	Recharge votre {} (jusqu'au double de la charge de base).
+cuchillos arrojadizos	couteaux de lancer
+hacha arrojadiza	hache de jet
+ballesta rúnica	arbalète runique
+orbe arcano	orbe arcanique
+granada de fragmentación	grenade à fragmentation
+granada incendiaria	grenade incendiaire
+granada de hielo	grenade de glace
+granada tóxica	grenade toxique
+granada de tormenta	grenade de tempête
+fragmentación	fragmentation
+incendiaria	incendiaire
+hielo	glace
+tóxica	toxique
+tormenta	tempête
+-{}% daño	-{}% de dégâts
++{} vida máx.	+{} de vie max.
+-{} vida máx.	-{} de vie max.
+-{}% velocidad	-{}% de vitesse
++{}% vel. de ataque	+{}% de vitesse d'attaque
+-{}% vel. de ataque	-{}% de vitesse d'attaque
++{} suerte	+{} de chance
+-{} suerte	-{} de chance
++{}% menos daño recibido	+{}% de dégâts subis en moins
+-{}% menos daño recibido	-{}% de dégâts subis en moins
++{}% prob. crítico	+{}% de chance critique
+-{}% prob. crítico	-{}% de chance critique
++{}% daño crítico	+{}% de dégâts critiques
+-{}% daño crítico	-{}% de dégâts critiques
++{}% menos recarga	+{}% de recharge en moins
+-{}% menos recarga	-{}% de recharge en moins
++{}% carga de definitiva	+{}% de charge de l'ultime
+-{}% carga de definitiva	-{}% de charge de l'ultime
++{}% robo de vida	+{}% de vol de vie
+-{}% robo de vida	-{}% de vol de vie
++{}% oro	+{}% d'or
+-{}% oro	-{}% d'or
+-{}% almas	-{}% d'âmes
++{} alcance del imán	+{} de portée d'aimant
+-{} alcance del imán	-{} de portée d'aimant
++{}% prob. quemar	+{}% de chance d'enflammer
+-{}% prob. quemar	-{}% de chance d'enflammer
++{}% prob. congelar	+{}% de chance de geler
+-{}% prob. congelar	-{}% de chance de geler
++{}% prob. de descarga	+{}% de chance de décharge
+-{}% prob. de descarga	-{}% de chance de décharge
++{}% prob. envenenar	+{}% de chance d'empoisonner
+-{}% prob. envenenar	-{}% de chance d'empoisonner
++{}% daño de habilidades	+{}% de dégâts de compétences
+-{}% daño de habilidades	-{}% de dégâts de compétences
++{} frasco máx.	+{} fiole max.
+-{} frasco máx.	-{} fiole max.
++{}% de vida al revivir	+{}% de vie à la résurrection
+-{}% de vida al revivir	-{}% de vie à la résurrection
++{}% resistencia	+{}% de résistance
+-{}% resistencia	-{}% de résistance
++{}% recarga	+{}% de recharge
+-{}% recarga	-{}% de recharge
+Paladín del Alba	Paladin de l'Aube
+Tanque / Sostén	Tank / Soutien
+Guerrero sagrado de armadura pesada. Resiste, protege y castiga con luz solar.	Guerrier sacré en lourde armure. Il encaisse, protège et châtie par la lumière du soleil.
+Espada del Alba y escudo	Épée de l'Aube et bouclier
+Égida: -12% de daño recibido.	Égide : -12 % de dégâts subis.
+Lanza del Alba	Lance de l'Aube
+Tres lanzas de luz atraviesan a los enemigos.	Trois lances de lumière transpercent les ennemis.
+Alas de Égida	Ailes de l'Égide
+Alas de luz te curan y absorben daño.	Des ailes de lumière vous soignent et absorbent les dégâts.
+Juicio del Alba	Jugement de l'Aube
+Salto y golpe que levanta el suelo con una onda sagrada.	Un bond suivi d'un coup qui soulève le sol dans une onde sacrée.
+Amanecer Eterno	Aube éternelle
+El sol desciende y purifica todo el campo.	Le soleil descend et purifie tout le champ de bataille.
+Asesino de las Sombras	Assassin des Ombres
+Movilidad / Daño explosivo	Mobilité / Dégâts explosifs
+Maestro del sigilo. Se teletransporta, ataca por la espalda y ejecuta.	Maître de la furtivité. Il se téléporte, frappe dans le dos et achève.
+Dagas gemelas	Dagues jumelles
+Acechador: +50% de daño por la espalda.	Traqueur : +50 % de dégâts dans le dos.
+Paso Sombra	Pas de l'Ombre
+Te teletransportas a la espalda del enemigo y lo apuñalas.	Vous vous téléportez dans le dos de l'ennemi et le poignardez.
+Cinco tajos fantasma consecutivos.	Cinq entailles fantômes consécutives.
+Danza de Cuchillas	Danse des lames
+Remolino de cuchillas a tu alrededor.	Un tourbillon de lames tournoie autour de vous.
+Ejecución Dimensional	Exécution dimensionnelle
+El tiempo se detiene y cortas a todos a la vez.	Le temps s'arrête et vous tranchez tout le monde d'un seul coup.
+Señor de las Llamas	Seigneur des Flammes
+Daño de área / Quemaduras	Dégâts de zone / Brûlures
+Espadachín infernal. Inmune al fuego, arrasa con fuego y magma.	Épéiste infernal. Insensible au feu, il ravage tout par les flammes et le magma.
+Espadón llameante	Espadon flamboyant
+Brasas: 30% de quemar al golpear.	Braises : 30 % de chance d'enflammer au toucher.
+Bola de Fuego	Boule de feu
+Una bola de fuego que explota al impactar.	Une boule de feu qui explose à l'impact.
+Muro de Fuego	Mur de feu
+Pilares de fuego que queman a quien los cruce.	Des piliers de feu qui brûlent quiconque les traverse.
+Tornado Ígneo	Tornade ardente
+Un tornado de fuego arrastra y quema a los enemigos.	Une tornade de feu attire et brûle les ennemis.
+Inferno Draconiano	Brasier draconique
+Un dragón de fuego recorre el campo y estalla.	Un dragon de feu parcourt le terrain et explose.
+Tempestad	Tempête
+Velocidad / Rayos	Vitesse / Foudre
+Duelista del trueno. Veloz, encadena rayos y cae como una tormenta.	Duelliste du tonnerre. Rapide, il enchaîne les éclairs et s'abat comme un orage.
+Estoque eléctrico	Rapière électrique
+Carga: +12% de velocidad, 15% de descarga.	Charge : +12 % de vitesse, 15 % de décharge.
+Relámpago Veloz	Éclair fulgurant
+Te conviertes en rayo y atraviesas a los enemigos.	Vous devenez foudre et traversez les ennemis.
+Ráfaga Voltaica	Rafale voltaïque
+Un rayo encadenado salta entre hasta cinco enemigos.	Un éclair en chaîne saute entre cinq ennemis au plus.
+Tormenta Eléctrica	Orage électrique
+Una nube descarga rayos sobre tus enemigos.	Un nuage déchaîne la foudre sur vos ennemis.
+Trueno Divino	Tonnerre divin
+Tormenta gigante y un rayo colosal final.	Une tempête géante et un éclair colossal pour finir.
+Guardián Glacial	Gardien glacial
+Control de masas / Defensa	Contrôle de foule / Défense
+Caballero del hielo. Congela, ralentiza y destroza con cristales.	Chevalier de glace. Il gèle, ralentit et fracasse avec des cristaux.
+Sable de cristal de hielo	Sabre en cristal de glace
+Escarcha: 35% de ralentizar.	Givre : 35 % de chance de ralentir.
+Esquirlas Glaciales	Éclats glaciaires
+Abanico de lanzas de hielo que ralentiza y congela.	Un éventail de lances de glace qui ralentit et gèle.
+Prisión de Hielo	Prison de glace
+Encierra a un enemigo en hielo que luego estalla.	Enferme un ennemi dans la glace, qui éclate ensuite.
+Ventisca	Blizzard
+Un torbellino de nieve cortante que arrastra y congela.	Un tourbillon de neige tranchante qui entraîne et gèle.
+Cero Absoluto	Zéro absolu
+Todo se congela y luego se hace añicos.	Tout gèle puis vole en éclats.
+Guardián Esmeralda	Gardien d'émeraude
+Soporte / Control	Soutien / Contrôle
+Guardián del bosque. Se cura, atrapa con raíces y hace brotar un árbol colosal.	Gardien de la forêt. Il se soigne, piège avec des racines et fait jaillir un arbre colossal.
+Espada viva de madera	Épée vivante en bois
+Savia: 35% de envenenar y regeneración lenta.	Sève : 35 % de chance d'empoisonner et régénération lente.
+Látigo de Espinas	Fouet d'épines
+Enredaderas espinosas avanzan, hieren y ralentizan.	Des lianes épineuses avancent, blessent et ralentissent.
+Floración	Floraison
+Una floración te cura y regenera.	Une floraison vous soigne et vous régénère.
+Agarre de Raíces	Étreinte des racines
+Raíces atrapan a los enemigos y los arrastran al centro.	Des racines piègent les ennemis et les attirent vers le centre.
+Árbol del Mundo	Arbre-Monde
+Brota el Árbol del Mundo, inmoviliza a todos y estalla en luz curativa.	L'Arbre-Monde surgit, immobilise tout le monde et éclate en une lumière curative.
+Segador Carmesí	Faucheur écarlate
+Robo de vida / Daño	Vol de vie / Dégâts
+Duelista sanguinario. Cada golpe lo cura; cuanto más pelea, más fuerte es.	Duelliste sanguinaire. Chaque coup le soigne ; plus il se bat, plus il est fort.
+Guadaña de hoja roja	Faux à lame rouge
+Sangre: roba 7% del daño como vida.	Sang : vole 7 % des dégâts sous forme de vie.
+Tajo Sangriento	Entaille sanglante
+Embestida y triple tajo que te cura por cada enemigo golpeado.	Une charge suivie d'un triple coup qui vous soigne pour chaque ennemi touché.
+Pacto de Sangre	Pacte de sang
+Drena la vida de los enemigos cercanos con hilos de sangre.	Draine la vie des ennemis proches avec des filaments de sang.
+Hoz Giratoria	Faucille tournoyante
+Una tormenta de hoces gira a tu alrededor desgarrándolo todo.	Une tempête de faucilles tournoie autour de vous et déchire tout.
+Eclipse Carmesí	Éclipse écarlate
+Una luna de sangre se alza y un tajo cruzado roba la vida de todos.	Une lune de sang se lève et une entaille croisée dérobe la vie de tous.
+Coloso de Roca	Colosse de roche
+Tanque / Control	Tank / Contrôle
+Titán de piedra. Golpes devastadores, piel de roca y terremotos.	Titan de pierre. Coups dévastateurs, peau de roc et séismes.
+Martillo de roca	Marteau de roc
+Roca: -20% de daño recibido, golpes con gran empuje.	Roc : -20 % de dégâts subis, coups à forte poussée.
+Puño de Roca	Poing de roc
+Un golpe brutal que levanta una columna de roca frente a ti.	Un coup brutal qui dresse une colonne de roche devant vous.
+Gran resistencia: te vuelves inamovible.	Grande résistance : vous devenez inébranlable.
+Terremoto	Séisme
+Salto y estampida que parte el suelo en grietas.	Un bond et une ruée qui fendent le sol de crevasses.
+Cataclismo del Titán	Cataclysme du Titan
+Una lluvia de meteoritos arrasa el campo de batalla.	Une pluie de météorites ravage le champ de bataille.
+Vagabundo Estelar	Vagabond stellaire
+Magia cósmica / Movilidad	Magie cosmique / Mobilité
+Espadachín hechicero de las estrellas. Disparos estelares, gravedad y saltos cósmicos.	Épéiste ensorceleur des étoiles. Tirs stellaires, gravité et sauts cosmiques.
+Espada-bastón estelar	Épée-bâton stellaire
+Cosmos: +25% de carga de definitiva.	Cosmos : +25 % de charge de l'ultime.
+Estrella Fugaz	Étoile filante
+Un rayo de estrella atraviesa a todos los enemigos en línea.	Un rayon d'étoile transperce tous les ennemis alignés.
+Pozo Gravitatorio	Puits gravitationnel
+Un mini agujero negro arrastra y desgarra a los enemigos.	Un mini trou noir attire et déchire les ennemis.
+Paso Cósmico	Pas cosmique
+Te desvaneces en polvo de estrellas y reapareces a lo lejos.	Vous vous dissipez en poussière d'étoiles et réapparaissez au loin.
+Supernova	Supernova
+Una estrella nace sobre el campo, lo arrastra todo y estalla.	Une étoile naît au-dessus du terrain, attire tout et explose.
+Soberano de Acero	Souverain d'acier
+Espadas voladoras / Daño	Épées volantes / Dégâts
+Maestro de las mil espadas. Lanza hojas, las hace girar y las llueve del cielo.	Maître des mille épées. Il lance des lames, les fait tournoyer et les fait pleuvoir du ciel.
+Katana y hojas flotantes	Katana et lames flottantes
+Acero: cada 3er golpe lanza una hoja voladora.	Acier : tous les 3 coups, une lame volante est lancée.
+Volea de Hojas	Volée de lames
+Tres espadas voladoras salen disparadas en abanico.	Trois épées volantes jaillissent en éventail.
+Guardia de Acero	Garde d'acier
+Un anillo de espadas gira a tu alrededor protegiéndote.	Un anneau d'épées tournoie autour de vous pour vous protéger.
+Carga Forjada	Charge forgée
+Embestida de acero al rojo que arrastra a los enemigos.	Une charge d'acier chauffé à blanc qui emporte les ennemis.
+Mil Espadas	Mille épées
+Un anillo de hojas se alza y una lluvia de mil espadas cae del cielo.	Un anneau de lames s'élève et une pluie de mille épées tombe du ciel.
+Descubierto	Découvert
+Cuerpo a cuerpo	Corps à corps
+A distancia	À distance
+Volador	Volant
+Volador picado	Piqueur
+Embestidor	Chargeur
+Saltador	Sauteur
+Hechicero	Sorcier
+Pesado	Lourd
+Escudero	Écuyer
+Apoyo	Soutien
+Explosivo	Explosif
+Torreta	Tourelle
+Acechador	Rôdeur
+Francotirador	Tireur d'élite
+Potenciador	Amplificateur
+Teletransportador	Téléporteur
+Élite	Élite
+Bloqueado	Verrouillé
+COMPAÑEROS	COMPAGNONS
+Elige un espíritu para la expedición. Solo uno a la vez.	Choisissez un esprit pour l'expédition. Un seul à la fois.
+Requisito: {}	Condition : {}
+EN EL EQUIPO	DANS L'ÉQUIPE
+¡Nuevo compañero: {}!	Nouveau compagnon : {} !
+Nuevo compañero: {}	Nouveau compagnon : {}
+Máximo	Maximum
+Crecer · {} almas	Grandir · {} âmes
+JARDÍN MÁGICO	JARDIN MAGIQUE
+Almas: {}   ·   Los cristales crecen con las almas que ganas en las runs.	Âmes : {}   ·   Les cristaux grandissent avec les âmes gagnées en partie.
+Etapa {}	Étape {}
+Aún sin efecto	Aucun effet pour l'instant
+Ahora: {}	Actuel : {}
+Enemigos	Ennemis
+Jefes	Boss
+Sucesos	Événements
+Reliquias	Reliques
+Espadachines	Épéistes
+{} (élite único)	{} (élite unique)
+Vida base {} · Daño {} · Aplica {}	Vie de base {} · Dégâts {} · Applique {}
+Elemento: {}	Élément : {}
+Derrotado: reliquia obtenida	Vaincu : relique obtenue
+Aún sin derrotar	Pas encore vaincu
+Derrotado	Vaincu
+Completados: {}	Terminés : {}
+Reliquia de {}	Relique de {}
+Conservada en la sala de trofeos	Conservée dans la salle des trophées
+Derrota a su jefe para obtenerla	Vainquez son boss pour l'obtenir
+Vida {}	Vie {}
+Victorias: {}	Victoires : {}
+COLECCIÓN Y BESTIARIO	COLLECTION ET BESTIAIRE
+Encuéntralo en una expedición.	Trouvez-le lors d'une expédition.
+Aún sin descubrir.	Pas encore découvert.
+Quitar todos	Tout retirer
+RETOS DEL INFINITO	DÉFIS DE L'INFINI
+Opcionales. Cada reto suma puntaje; el récord sigue siendo por pisos.	Facultatifs. Chaque défi ajoute du score ; le record reste basé sur les étages.
+{}% puntaje	{} % de score
++{}% puntaje	+{} % de score
+Bonificación total: +{}% de puntaje	Bonus total : +{} % de score
+(sin retos)	(aucun défi)
+No cambian las gemas ni el precio de las revividas.	Ils ne changent ni les gemmes ni le prix des réanimations.
+No valen en pruebas del Modo Desarrollador.	Ils ne comptent pas dans les essais du mode développeur.
+Ascua	Braise
+Escarcha	Givre
+Umbra	Umbra
+Espíritu de fuego	Esprit du feu
+Espíritu de hielo	Esprit de la glace
+Espíritu de sombra	Esprit de l'ombre
+Cada 6 s lanza una chispa al enemigo más cercano (25% de tu daño; 10% contra jefes).	Toutes les 6 s, il lance une étincelle sur l'ennemi le plus proche (25 % de vos dégâts ; 10 % contre les boss).
+Reduce un 8% el daño que recibes.	Réduit de 8 % les dégâts que vous subissez.
+Imán +40 y marca los cofres secretos y las puertas ocultas de la sala.	Aimant +40 et révèle les coffres secrets et les portes cachées de la salle.
+Derrota a 1 jefe.	Vainquez 1 boss.
+Derrota a 3 jefes.	Vainquez 3 boss.
+Completa 10 expediciones o llega al piso 5 del modo infinito.	Terminez 10 expéditions ou atteignez l'étage 5 du mode infini.
+Sin compañero	Aucun compagnon
+Cristal de brasa	Cristal de braise
+Cristal de savia	Cristal de sève
+Cristal de fortuna	Cristal de fortune
++2% de daño por etapa.	+2 % de dégâts par étape.
++5 de vida máxima por etapa.	+5 de vie maximale par étape.
++15 de oro inicial por etapa.	+15 d'or initial par étape.
+{}% daño	{} % de dégâts
+{} vida	{} de vie
+{} oro inicial	{} d'or initial
+Izquierda	Gauche
+Derecha	Droite
+Abajo	Bas
+Saltar	Sauter
+Atacar	Attaquer
+Rodar	Rouler
+Habilidad 1	Compétence 1
+Habilidad 2	Compétence 2
+Habilidad 3	Compétence 3
+Definitiva	Ultime
+Interactuar	Interagir
+Pausa	Pause
+Poción	Potion
+Arma 2ª	Arme 2
+Escudo / Parry	Bouclier / Parade
+Intercambiar	Échanger
+Reemplazar	Remplacer
+Cancelar	Annuler
+Guardar y salir	Enregistrer et quitter
+Descartar	Abandonner
+Seguir editando	Continuer l'édition
+Restaurar	Rétablir
+Guardar *	Enregistrer *
+Guardar	Enregistrer
+Atrás	Retour
+Controles restaurados	Commandes rétablies
+Guardado	Enregistré
+CONTROLES	COMMANDES
+{} conectado	{} connecté
+Sin mando detectado	Aucune manette détectée
+Acción	Action
+Teclado	Clavier
+Toca una casilla o elige con el mando y pulsa {}. Se aplica al instante.	Touchez une case ou choisissez à la manette et appuyez sur {}. Appliqué immédiatement.
+Flechas, Espacio y cruceta siguen activas si no las usas en otra acción.	Flèches, Espace et croix restent actives si non utilisées ailleurs.
+CONFLICTO	CONFLIT
+» ya lo usa «	» est déjà utilisé par «
+Intercambiar: «{}» recibe el botón que tenía «{}»	Échanger : «{}» reçoit le bouton qu'avait «{}»
+Reemplazar: «{}» se queda sin asignar.	Remplacer : «{}» reste sans affectation.
+¿SALIR?	QUITTER ?
+Hay cambios sin guardar.	Des modifications ne sont pas enregistrées.
+REASIGNAR	RÉASSIGNER
+Pulsa una tecla o botón para asignarlo	Appuyez sur une touche ou un bouton pour l'affecter
+Esc o «Cancelar» para salir · {}	Échap ou «Annuler» pour quitter · {}
+Menos	Moins
+Más	Plus
+Reiniciar	Réinitialiser
+Listo	Terminé
+Arrastra los botones donde quieras (izq+der = centro del joystick)	Faites glisser les boutons où vous voulez (gauche+droite = centre du joystick)
+Toca uno para elegirlo y cambia su tamaño	Touchez-en un pour le sélectionner et changer sa taille
+Cruz	Croix
+Círculo	Rond
+Cuadro	Carré
+Triáng.	Triangle
+Menú	Menu
+LS clic	Clic LS
+RS clic	Clic RS
+Cruc. arr.	Croix haut
+Cruc. abj.	Croix bas
+Cruc. izq.	Croix gauche
+Cruc. der.	Croix droite
+LS izq.	LS gauche
+LS der.	LS droite
+LS arr.	LS haut
+LS abj.	LS bas
+RS izq.	RS gauche
+RS der.	RS droite
+RS arr.	RS haut
+RS abj.	RS bas
+Izq.	Gauche
+Arr.	Haut
+Der.	Droite
+Abj.	Bas
+Espacio	Espace
+Retroc.	Retour
+Tecla {}	Touche {}
+Mando genérico	Manette générique
+CARGAR PARTIDA	CHARGER UNE PARTIE
+Ranura {}	Emplacement {}
+Toca una ranura para continuar donde la dejaste (empiezas al inicio de la sala).	Touchez un emplacement pour reprendre où vous vous êtes arrêté (vous commencez au début de la salle).
+Escribe un código.	Saisissez un code.
+El Modo Desarrollador ya estaba activado.	Le mode développeur était déjà activé.
+Modo Desarrollador desbloqueado.	Mode développeur débloqué.
+Este código ya fue canjeado.	Ce code a déjà été utilisé.
+Código válido, pero tienes demasiadas almas para recibir la recompensa.	Code valide, mais vous avez trop d'âmes pour recevoir la récompense.
+Código válido, pero no se pudo registrar el canje. Inténtalo más tarde.	Code valide, mais l'utilisation n'a pas pu être enregistrée. Réessayez plus tard.
+¡Canjeado! +{} almas.	Utilisé ! +{} âmes.
+Código válido, pero la recompensa no está disponible.	Code valide, mais la récompense n'est pas disponible.
+Código incorrecto.	Code incorrect.
+Borrar	Effacer
+Canjear	Utiliser
+CÓDIGOS	CODES
+Escribe un código y pulsa Canjear	Saisissez un code et appuyez sur Utiliser
+wireless controller	wireless controller
+LB	LB
+RB	RB
+LT	LT
+RT	RT
+Share	Share
+View	View
+Options	Options
+Enter	Enter
+Shift	Shift
+Ctrl	Ctrl
+Alt	Alt
+Tab	Tab
+Esc	Esc
+PlayStation	PlayStation
+Xbox	Xbox
+SHA-256	SHA-256
+Esqueleto	Squelette
+Arquero hueso	Archer d'os
+Zombi	Zombie
+Cubo magma	Cube de magma
+Llama	Flamme
+Bruto forja	Brute de forge
+Lancero escarcha	Lancier de givre
+Hechicero hielo	Sorcier de glace
+Espiritu vex	Esprit vex
+Ojo vacio	Oeil du vide
+Fantasma	Fantôme
+Arana	Araignée
+Bruja	Sorcière
+Tronco vivo	Tronc vivant
+Saqueador	Pillard
+Vex tormenta	Vex de tempête
+Bestia tormenta	Bête de tempête
+Vindicador	Vindicateur
+Bruja sangre	Sorcière de sang
+Murcielago	Chauve-souris
+Escudero hueso	Écuyer d'os
+Clerigo osario	Clerc de l'ossuaire
+Carbonero forja	Charbonnier de forge
+Centinela cristal	Sentinelle de cristal
+Lobo musgo	Loup de mousse
+Tirador rayo	Tireur de foudre
+Cultista sangre	Cultiste de sang
+Asesino eclipse	Assassin de l'éclipse
+Piglin dorado	Piglin doré
+Espectro	Spectre
+Llama solar	Flamme solaire
+Primera sangre	Premier sang
+Derrota 1 enemigo	Vainquez 1 ennemi
+Cazador	Chasseur
+Derrota 100 enemigos	Vainquez 100 ennemis
+Matanza	Massacre
+Derrota 1000 enemigos	Vainquez 1000 ennemis
+Rey caído	Roi déchu
+Derrota a un jefe	Vainquez un boss
+Cazajefes	Tueur de boss
+Derrota a 8 jefes	Vainquez 8 boss
+Ronda perfecta	Sans faute
+Ronda sin recibir daño	Manche sans dégâts
+Intocable	Intouchable
+5 perfectas seguidas	5 parfaites d'affilée
+Imparable	Inarrêtable
+10 rondas seguidas	10 manches de suite
+Victoria	Victoire
+Gana una partida	Gagnez une partie
+Coleccionista	Collecteur
+Desbloquea 5 clases	Débloquez 5 classes
+Maestro	Maître
+Desbloquea los 10	Débloquez les 10
+Explorador	Explorateur
+3 cofres secretos	3 coffres secrets
+Sello forjado	Sceau forgé
+Reúne 8 reliquias	Réunissez 8 reliques
+Caza al Cazador	Fin de chasse
+Vence al Cazador	Vainquez le Chasseur
+Almas sin fin	Âmes sans fin
+5000 almas en total	5000 âmes au total
+Veterano	Vétéran
+Juega 1 hora	Jouez 1 heure
+Mercader errante	Marchand itinérant
+Espíritu del abismo	Esprit de l'abîme
+Prueba de combate	Épreuve de combat
+Cámara secreta	Chambre secrète
+Prisionero	Prisonnier
+Santuario de pactos	Sanctuaire des pactes
+Pocas existencias, buenos precios	Stock limité, bons prix
+Ofrece poder a cambio de un recurso	Offre du pouvoir en échange d'une ressource
+Elite y recompensa superior	Élite et récompense supérieure
+Una reliquia te espera	Une relique vous attend
+Libéralo derrotando a sus guardias	Libérez-le en vainquant ses gardes
+Dos pactos: ventaja y precio	Deux pactes : avantage et prix
+Pacto del Alba	Pacte de l'Aube
++18% de daño	+18 % de dégâts
+-12% de vida máxima	-12 % de vie maximale
+Pacto de Piedra	Pacte de Pierre
+-14% de daño recibido	-14 % de dégâts subis
+-8% de velocidad	-8 % de vitesse
+Pacto del Viento	Pacte du Vent
++12% velocidad y +6% crítico	+12 % de vitesse et +6 % de critique
++10% de daño recibido	+10 % de dégâts subis
++5% de robo de vida	+5 % de vol de vie
+Pacto del Sabio	Pacte du Sage
+Habilidades 15% más rápidas	Compétences 15 % plus rapides
+-1 frasco máximo	-1 fiole maximum
+Pacto Avaro	Pacte d'Avarice
++40% de oro	+40 % d'or
+Enemigos veloces	Ennemis rapides
+Más trampas	Plus de pièges
+Curación reducida	Soins réduits
+Más élites	Plus d'élites
+Los enemigos se mueven un 20% más rápido.	Les ennemis se déplacent 20 % plus vite.
+Aparecen más tiras de pinchos en las salas.	Davantage de bandes de pointes apparaissent dans les salles.
+Curación -40% (frascos, corazones, robo de vida).	Soins -40 % (fioles, coeurs, vol de vie).
++15% de probabilidad de que un enemigo sea élite.	+15 % de chances qu'un ennemi soit élite.
+Ninguno	Aucun
+Gemas insuficientes	Gemmes insuffisantes
+Rey Exánime	Roi Exanime
+Soberano de las Catacumbas	Souverain des Catacombes
+Coloso de Magma	Colosse de Magma
+El corazón de la Forja	Le coeur de la Forge
+Reina de la Escarcha	Reine du Givre
+Señora del Santuario Helado	Dame du Sanctuaire Glacé
+Devorador del Vacío	Dévoreur du Vide
+El ojo que todo lo consume	L'oeil qui consume tout
+Ent Ancestral	Ent Ancestral
+Guardián del bosque podrido	Gardien de la forêt pourrie
+Titán de la Tormenta	Titan de la Tempête
+Señor de la Fortaleza del Trueno	Seigneur de la Forteresse du Tonnerre
+Matriarca de Sangre	Matriarche de Sang
+Soberana de la Catedral Carmesí	Souveraine de la Cathédrale Cramoisie
+Guardián del Eclipse	Gardien de l'Éclipse
+Custodio del sol y la luna	Gardien du soleil et de la lune
+I · El Cazador Pálido	I · Le Chasseur Pâle
+Dios Antiguo de la Luna de Sangre	Dieu Ancien de la Lune de Sang
+II · La Bestia	II · La Bête
+III · Dios Antiguo	III · Dieu Ancien
+El Cazador, Dios Antiguo de la Luna de Sangre	Le Chasseur, Dieu Ancien de la Lune de Sang
+Catacumbas	Catacombes
+Donde los reyes olvidados no descansan	Où les rois oubliés ne reposent pas
+Forja Infernal	Forge Infernale
+El corazón ardiente del abismo	Le coeur ardent de l'abîme
+Santuario Helado	Sanctuaire Glacé
+Silencio, escarcha y cristal	Silence, givre et cristal
+Abismo del Vacío	Abîme du Vide
+Un ojo que todo lo consume	Un oeil qui consume tout
+Bosque Podrido	Forêt Pourrie
+El bosque recuerda cada hachazo	La forêt se souvient de chaque coup de hache
+Fortaleza del Trueno	Forteresse du Tonnerre
+Donde el cielo golpea la tierra	Où le ciel frappe la terre
+Catedral Carmesí	Cathédrale Cramoisie
+Un coro de sangre sin fin	Un choeur de sang sans fin
+Santuario del Eclipse	Sanctuaire de l'Éclipse
+Custodios del sol y la luna	Gardiens du soleil et de la lune
+Luna de Sangre	Lune de Sang
+Aquí termina la cacería	Ici s'achève la chasse
+Hacha arrojadiza	Hache de jet
+Granada de fragmentación	Grenade à fragmentation
+Granada tóxica	Grenade toxique
+Escudo de madera	Bouclier en bois
+Escudo de acero	Bouclier en acier
+Escudo rúnico	Bouclier runique
+Escudo de espinas	Bouclier d'épines
+Parry 0.20s · bloquea 55%	Parade 0,20 s · bloque 55 %
+Parry 0.17s · bloquea 70%	Parade 0,17 s · bloque 70 %
+Parry 0.15s · explosión al parry · bloquea 70%	Parade 0,15 s · explosion à la parade · bloque 70 %
+Parry 0.17s · devuelve daño al bloquear	Parade 0,17 s · renvoie les dégâts en bloquant
+3 cuchillos en abanico · daño 0.65x	3 couteaux en éventail · dégâts 0,65x
+Atraviesa 2 enemigos · daño 2.1x	Transperce 2 ennemis · dégâts 2,1x
+Arco alto, atraviesa 3 · daño 2.4x	Tir en cloche, transperce 3 · dégâts 2,4x
+Persigue y explota · daño 1.5x	Poursuit et explose · dégâts 1,5x
+Explosión grande · daño 3.0x	Grosse explosion · dégâts 3,0x
+Quema 4s · daño 1.7x	Brûle 4 s · dégâts 1,7x
+Congela 1.8s · daño 1.3x	Gèle 1,8 s · dégâts 1,3x
+Veneno 5s · radio enorme	Poison 5 s · rayon énorme
+Aturde 1.2s · daño 1.8x	Étourdit 1,2 s · dégâts 1,8x
+Filo Ígneo	Lame ignée
+Colmillo Gélido	Croc glacial
+Daga Venenosa	Dague venimeuse
+Hacha Carmesí	Hache écarlate
+Lanza Relámpago	Lance-éclair
+Hoja del Eclipse	Lame de l'Éclipse
+Mandoble Pesado	Mandoble pesant
+Hoja Veloz	Lame véloce
++10% daño · quema al golpear	+10 % de dégâts · brûle au toucher
+Congela y ralentiza al golpear	Gèle et ralentit au toucher
+Envenena al golpear	Empoisonne au toucher
++15% daño · roba vida	+15 % de dégâts · vol de vie
++8% crítico · descargas	+8 % critique · décharges
++25% daño · críticos más fuertes	+25 % de dégâts · critiques plus puissants
++38% daño · ataques 18% más lentos	+38 % de dégâts · attaques 18 % plus lentes
++30% velocidad de ataque · -8% daño	+30 % de vitesse d'attaque · -8 % de dégâts
+sin munición	plus de munitions
+sin granadas	plus de grenades
+¡Pociones de vida!	Potions de vie !
+Vitalidad	Vitalité
+Fuerza	Force
+Bolsa del Viajero	Bourse du voyageur
+Cosecha de Almas	Moisson d'âmes
+Frascos de Vida	Fioles de vie
+Agilidad	Agilité
+Temple	Trempe
++10 de vida máxima por nivel.	+10 de vie maximale par niveau.
++4% de daño por nivel.	+4 % de dégâts par niveau.
++25 de oro inicial por nivel.	+25 d'or de départ par niveau.
++8% de almas obtenidas por nivel.	+8 % d'âmes obtenues par niveau.
++1 frasco de vida por nivel.	+1 fiole de vie par niveau.
++3% de velocidad de movimiento por nivel.	+3 % de vitesse de déplacement par niveau.
+-4% de daño recibido por nivel.	-4 % de dégâts subis par niveau.
+Al morir revives una vez por run con 25% (50% nv.2) de vida.	À votre mort, vous ressuscitez une fois par partie avec 25 % de vie (50 % au niv. 2).
++{} vida	+{} de vie
++{}% daño	+{} % de dégâts
++{} oro inicial	+{} d'or de départ
++{}% almas	+{} % d'âmes
++{}% velocidad	+{} % de vitesse
+-{}% daño recibido	-{} % de dégâts subis
+Sin revivir	Aucune résurrection
+Revive con {}% de vida	Ressuscite avec {} % de vie
+Desciende al Abismo como {}	Descendez dans l'Abîme en tant que {}
+Descubierto: {}	Découvert : {}
+Dificultad: {}	Difficulté : {}
+Modo: {}	Mode : {}
+Equipo: {}	Équipement : {}
+Compañero: {}	Compagnon : {}
+Enfriamiento {}s	Recharge {} s
+Definitiva: {}	Ultime : {}
+Arma: {}	Arme : {}
+Almas: {}	Âmes : {}
+Gemas: {}	Gemmes : {}
+Comprado: {}	Acheté : {}
+Aspecto de {}	Apparence de {}
+Equipado · {}	Équipé · {}
+Tuyo · {}	Possédé · {}
+Equipado: {}	Équipé : {}
+Espadachín elegido: {}	Épéiste choisi : {}
+Desbloquear {}	Débloquer {}
+Ascensión {}	Ascension {}
+Retos {}	Défis {}
+{}/10 desbloqueados	{}/10 débloqués
+{} de {} desbloqueados	{} sur {} débloqués
+Ahora: {} de 9 jefes derrotados · {} logros	Actuel : {} sur 9 boss vaincus · {} succès
+Bestiario: {} descubiertos	Bestiaire : {} découverts
+Bestiario: {}	Bestiaire : {}
+Piso {} · {} completados	Étage {} · {} terminés
+{} · piso {}	{} · étage {}
+{} · piso {} [prueba]	{} · étage {} [essai]
+{} pisos completados · {} pts	{} étages terminés · {} pts
++{}% de almas ganadas	+{} % d'âmes gagnées
++{}% de oro ganado	+{} % d'or gagné
+bloqueo	blocage
+El rodar te hace invulnerable un instante	Rouler vous rend invulnérable un instant
+Pad: moverte  ·  Botones: saltar, rodar y atacar	Pad : se déplacer  ·  Boutons : sauter, rouler et attaquer
+Modo: Campaña	Campagne
+Modo: Infinito	Infini
+Armería	Armurerie
+Trofeos	Trophées
+Preparación	Préparation
+Continuar	Continuer
+EXPEDICIÓN	EXPÉDITION
+Santuario	Sanctuaire
+Tienda	Boutique
+Colección	Collection
+Jardín	Jardin
+Compañeros	Compagnons
+Récords	Records
+Volver	Retour
+Infinito	Infini
+Opciones	Options
+Códigos	Codes
+Historia	Histoire
+Desarrollador	Développeur
+Dificultad	Difficulté
+Fácil	Facile
+Difícil	Difficile
+Normal	Normal
+No hay partidas guardadas	Aucune partie sauvegardée
+Modo infinito: se desbloquea al vencer al Cazador	Mode infini : se débloque en vainquant le Chasseur
+Espadachines y habilidades. Ahora: 	Épéistes et compétences. Actuel : 
+ de 9 jefes derrotados · 	 sur 9 boss vaincus · 
+ logros	 succès
+Revisa tu equipo antes de partir	Vérifiez votre équipement avant de partir
+Retoma una partida guardada	Reprenez une partie sauvegardée
+Desciende al Abismo como 	Descendez dans l'Abîme en tant que 
+Mejoras permanentes, clases y desbloqueos	Améliorations permanentes, classes et déblocages
+Apariencias · almas y gemas por separado	Apparences · âmes et gemmes séparées
+Bestiario: 	Bestiaire : 
+ descubiertos	 découverts
+Cristales que crecen con tus almas	Cristaux qui grandissent avec vos âmes
+Espíritus aliados · ninguno equipado	Esprits alliés · aucun équipé
+Equipado: 	Équipé : 
+Estadísticas, logros y récords	Statistiques, succès et records
+Cuenta	Compte
+Partidas iniciadas	Parties commencées
+Partidas terminadas	Parties terminées
+Victorias	Victoires
+Derrotas	Défaites
+Rondas completadas	Manches terminées
+Mayor racha de rondas	Plus longue série de manches
+Mayor sala alcanzada	Salle la plus profonde atteinte
+Enemigos derrotados	Ennemis vaincus
+Máx. enemigos en una ronda	Max. d'ennemis en une manche
+Rondas perfectas (sin daño)	Manches parfaites (sans dégâts)
+Mejor racha de rondas perfectas	Meilleure série de manches parfaites
+Jefes derrotados	Boss vaincus
+Cofres abiertos	Coffres ouverts
+(secretos:	(secrets :
+Trofeos desbloqueados	Trophées débloqués
+Espadachín más usado	Épéiste le plus utilisé
+ninguno aún	aucun pour l'instant
+Tiempo total de juego	Temps de jeu total
+Runs infinitas	Parties infinies
+Récord de pisos completados	Record d'étages terminés
+Mejor puntaje	Meilleur score
+Pisos completados (total)	Étages terminés (total)
+Enemigos derrotados (infinito)	Ennemis vaincus (infini)
+Jefes derrotados (infinito)	Boss vaincus (infini)
+Mayor tiempo de supervivencia	Plus long temps de survie
+Últimas runs:	Dernières parties :
+ · piso 	 · étage 
+ [prueba]	 [essai]
+ completados · 	 terminés · 
+ pts	 pts
+(aún no has jugado el modo infinito)	(vous n'avez pas encore joué au mode infini)
+ESTADISTICAS	STATISTIQUES
+MODO INFINITO	MODE INFINI
+Datos reales de tu cuenta	Données réelles de votre compte
+Registro local de tus runs (criterio principal: pisos completados)	Registre local de vos parties (critère principal : étages terminés)
+TROFEOS	TROPHÉES
+ de 	 sur 
+ desbloqueados	 débloqués
+Corona Exánime	Couronne Exanime
+Corazón de Magma	Coeur de Magma
+Lágrima de Escarcha	Larme de Givre
+Ojo del Vacío	Oeil du Vide
+Savia Ancestral	Sève Ancestrale
+Chispa del Titán	Étincelle du Titan
+Cáliz de Sangre	Calice de Sang
+Disco del Eclipse	Disque de l'Éclipse
+TIENDA DE PRUEBA	BOUTIQUE DE TEST
+Oro de prueba: no afecta al perfil	Or de test : n'affecte pas votre profil
+LABORATORIO	LABORATOIRE
+Invulnerable · no se guarda nada	Invulnérable · rien n'est sauvegardé
+El Sello está completo	Le Sceau est complet
+Santuario del Viajero	Sanctuaire du Voyageur
+Elige tu primer destino	Choisissez votre première destination
+Solo queda el Cazador	Il ne reste que le Chasseur
+Elige tu próximo destino	Choisissez votre prochaine destination
+Tienda · forja · altar · fuente	Boutique · forge · autel · fontaine
+Acércate a un portal\\ny pulsa el botón de la llave	Approchez-vous d'un portail\\net appuyez sur le bouton de la clé
+Pad: moverte  ·  Botones: saltar, rodar y atacar\\nEl rodar te hace invulnerable un instante	Pad : se déplacer  ·  Boutons : sauter, rouler et attaquer\\nRouler vous rend invulnérable un instant
+Reiniciando prueba...	Redémarrage du test...
+¡Sala despejada!	Salle dégagée !
+Guardias derrotados: libera al prisionero	Gardes vaincus : libérez le prisonnier
+Cofre perfecto	Coffre parfait
+Recompensa	Récompense
+¡RONDA PERFECTA! 2 cofres	MANCHE PARFAITE ! 2 coffres
+Ronda completada: 1 cofre	Manche terminée : 1 coffre
+Premio de la prueba	Récompense de l'épreuve
+¡Prueba superada! Premio superior	Épreuve réussie ! Récompense supérieure
+Trofeo: {}	Trophée : {}
+Salida	Sortie
+¡Sello completo!	Sceau complet !
+¡Nueva dificultad desbloqueada!	Nouvelle difficulté débloquée !
+Piso {} · {} completado	Étage {} · {} terminé
+(seca)	(à sec)
+ESPÍRITU DEL ABISMO	ESPRIT DE L'ABÎME
+Ofrécele un recurso y te concederá poder	Offrez-lui une ressource et il vous accordera du pouvoir
+Sangre por poder	Du sang pour le pouvoir
++1 nivel de una bendición al azar	+1 niveau à une bénédiction aléatoire
+Pierdes {} de vida	Vous perdez {} de vie
+El espíritu acepta tu sangre	L'esprit accepte votre sang
+Oro por temple	De l'or pour la trempe
++1 nivel de arma	+1 niveau d'arme
+Pagas {} de oro	Vous payez {} d'or
+Tu arma vibra con nueva fuerza	Votre arme vibre d'une force nouvelle
+Frasco por visión	Une fiole pour une vision
+Definitiva al máximo y +30 almas	Ultime au maximum et +30 âmes
+Entregas 1 frasco	Vous donnez 1 fiole
+El espíritu bebe el frasco	L'esprit boit la fiole
+SANTUARIO DE PACTOS	SANCTUAIRE DES PACTES
+Elige un pacto: cada ventaja tiene su precio (máx. {} por partida)	Choisissez un pacte : chaque avantage a son prix (max. {} par partie)
+Ya no quedan pactos por ofrecer	Il ne reste plus de pactes à offrir
+Derrota primero a los guardias	Vainquez d'abord les gardes
+¡Libre! Afila tu arma: +1 nivel	Libre ! Aiguisez votre arme : +1 niveau
+¡Libre! Te da 80 de oro	Libre ! Vous donne 80 d'or
+¡Libre! Te enseña una bendición	Libre ! Vous enseigne une bénédiction
+¡Libre! Te cura	Libre ! Vous soigne
+bendición	bénédiction
+¡Libre! Te cura y te da un frasco	Libre ! Vous soigne et vous donne une fiole
+Frasco de vida	Fiole de vie
++1 frasco de vida.	+1 fiole de vie.
+Elixir	Élixir
+Cura el 50% de tu vida.	Soigne 50 % de votre vie.
+Cristal de poder	Cristal de pouvoir
+Carga tu definitiva al máximo.	Charge votre ultime au maximum.
+Piedra de afilar	Pierre à aiguiser
+Mejora tu arma un nivel.	Améliore votre arme d'un niveau.
+Reserva de almas	Réserve d'âmes
+Obtienes 15 almas.	Vous obtenez 15 âmes.
+Rechazar	Refuser
+Toca una carta	Touchez une carte
+Elegir	Choisir
+Cerrar	Fermer
+Mejorar	Améliorer
+Guardar en ranura {}	Sauvegarder dans l'emplacement {}
+Partida guardada en la ranura {}	Partie sauvegardée dans l'emplacement {}
+No se pudo guardar	Sauvegarde impossible
+Música: {}	Musique : {}
+Sonidos: {}	Sons : {}
+Vibración: {}	Vibration : {}
+Entrada: {}	Commande : {}
+Salir del modo de prueba	Quitter le mode test
+Guardar partida	Sauvegarder la partie
+Abandonar partida	Abandonner la partie
+Anuncio no disponible	Publicité indisponible
+Revivir · {} gemas	Réanimer · {} gemmes
+Revivir · anuncio largo	Réanimer · longue pub
+Revivir · ver anuncio	Réanimer · voir une pub
+Terminar la run	Terminer la partie
+Reintentar	Réessayer
+Menú principal	Menu principal
+Ver créditos	Voir les crédits
+No se pudo revivir	Réanimation impossible
+¡Revivida {}/{}!	Réanimé {}/{} !
+Autoguardado	Sauvegarde auto
+LISTA	PRÊT
+Reliquia obtenida	Relique obtenue
+Jefe: {}	Boss : {}
+No tienes suficiente oro	Vous n'avez pas assez d'or
+Salir	Sortir
+Entrar	Entrer
+Viajar	Voyager
+Rezar	Prier
+Forjar	Forger
+Comerciar	Commercer
+Ofrecer	Offrir
+Elegir pacto	Choisir un pacte
+Liberar	Libérer
+Tomar	Prendre
+Beber	Boire
+Hablar	Parler
+¡Cofre secreto!	Coffre secret !
+Abrir	Ouvrir
+Usar	Utiliser
+ELIGE UNA BENDICIÓN	CHOISISSEZ UNE BÉNÉDICTION
+Mejoras que duran toda la partida	Améliorations qui durent toute la partie
+NUEVA	NOUVELLE
+Nv {}	Niv {}
+No disponible	Indisponible
+MERCADER	MARCHAND
+VENDIDO	VENDU
+FORJA	FORGE
+¡Arma al nivel máximo!	Arme au niveau maximum !
++10% de daño de arma y habilidades	+10 % de dégâts d'arme et de compétences
+(tienes {})	(vous avez {})
+PAUSA	PAUSE
+Vacía	Vide
+ · Sala {}	 · Salle {}
+{} · Sala {}	{} · Salle {}
+Daño x{}   Crítico {}%	Dégâts x{}   Critique {} %
+Velocidad x{}   Defensa {}%	Vitesse x{}   Défense {} %
+Arma nivel {}   Frascos {}/{}	Arme niveau {}   Fioles {}/{}
+Enemigos {}   Tiempo {}	Ennemis {}   Temps {}
+Especial: {}	Spécial : {}
+2ª: {}	2e : {}
+2ª: {}  Gran: x{}	2e : {}  Gren : x{}
+2ª: {} x{}	2e : {} x{}
+2ª: {} x{}  Gran: x{}	2e : {} x{}  Gren : x{}
+{} (parry {}ms)	{} (parade {} ms)
+Bendiciones	Bénédictions
+Aún no tienes ninguna.	Vous n'en avez aucune pour l'instant.
+HAS CAÍDO	VOUS ÊTES TOMBÉ
+Revividas: {}/{} usadas	Réanimations : {}/{} utilisées
+Tus gemas: {}	Vos gemmes : {}
+Última revivida: solo con gemas	Dernière réanimation : gemmes uniquement
+RUN INFINITA	PARTIE INFINIE
+Caíste en {} · piso {}	Vous êtes tombé en {} · étage {}
+Caíste en {} · piso {} · Retos +{}%	Vous êtes tombé en {} · étage {} · Défis +{} %
+Pisos completados	Étages terminés
+Piso alcanzado	Étage atteint
+Tiempo de supervivencia	Temps de survie
+Revividas usadas	Réanimations utilisées
+PUNTAJE {}	SCORE {}
+¡NUEVO RÉCORD DE PISOS!	NOUVEAU RECORD D'ÉTAGES !
+Mejor: {} pisos · {} pts	Meilleur : {} étages · {} pts
+Almas conservadas	Âmes conservées
+¡VICTORIA!	VICTOIRE !
+El Cazador ha sido derrotado	Le Chasseur a été vaincu
+Has superado las tres mazmorras	Vous avez vaincu les trois donjons
+En el Santuario	Au Sanctuaire
+Caíste en {} · sala {}	Vous êtes tombé en {} · salle {}
+Salas superadas	Salles franchies
+Tiempo	Temps
+Fácil{}	Facile{}
+Normal{}	Normal{}
+Difícil{}	Difficile{}
+ Asc {}	 Asc {}
+Gasta tus almas en el Santuario	Dépensez vos âmes au Sanctuaire
+Rueda con el botón de esquivar para ser invulnerable un instante.	Roulez avec le bouton d'esquive pour être invulnérable un instant.
+Las reliquias de los jefes se conservan entre partidas.	Les reliques des boss sont conservées d'une partie à l'autre.
+Gasta almas en el Santuario para mejorar a tu personaje.	Dépensez des âmes au Sanctuaire pour améliorer votre personnage.
+Cada sala puede esconder una bendición, una forja o un mercader.	Chaque salle peut cacher une bénédiction, une forge ou un marchand.
+Reúne las 8 reliquias para forjar el Sello y despertar al Cazador.	Réunissez les 8 reliques pour forger le Sceau et éveiller le Chasseur.
+Cargando...	Chargement...
+Comenzar	Commencer
+Créditos	Crédits
+Idioma	Langue
+Modo Desarrollador	Mode développeur
+Creador: JulianFarKs	Créateur : JulianFarKs
+Música	Musique
+SÍ	OUI
+NO	NON
+Sonidos	Sons
+Vibración	Vibration
+Entrada	Commande
+Automática	Automatique
+Táctil	Tactile
+Mando	Manette
+Controles (teclado y mando)	Commandes clavier / manette
+Organizar controles táctiles	Disposition tactile
+¿Seguro? Toca otra vez	Sûr ? Touchez encore
+Borrar progreso	Effacer la progression
+OPCIONES	OPTIONS
+Un roguelike de acción en 2D	Un roguelike d'action en 2D
+inspirado en SwordmanMagic,	inspiré de SwordmanMagic,
+mod de Minecraft de JulianFarKs	le mod Minecraft de JulianFarKs
+CREADOR	CRÉATEUR
+IDEAS	IDÉES
+BASADO EN	BASÉ SUR
+un mod propio de Minecraft:	un mod Minecraft original :
+PRÓXIMAMENTE	BIENTÔT
+Mejoras en los niveles y diseños	Améliorations des niveaux et des designs
+y en el menú de elegir el tipo de mundo	et du menu de choix du type de monde
+ARTE	ART
+Pixel art generado a mano,	Pixel art fait main,
+personajes, jefes, enemigos y mundos	personnages, boss, ennemis et mondes
+MÚSICA Y SONIDO	MUSIQUE ET SON
+Música original sintetizada,	Musique originale synthétisée,
+efectos para cada arma, jefe y habilidad	effets pour chaque arme, boss et compétence
+CLASES	CLASSES
+JEFES	BOSS
+GRACIAS POR JUGAR	MERCI D'AVOIR JOUÉ
+Toca para salir	Touchez pour quitter
+Los retos son del modo Infinito	Les défis relèvent du mode Infini
+COMENZAR EXPEDICIÓN	LANCER L'EXPÉDITION
+Retos	Défis
+Modo	Mode
+Campaña	Campagne
+Infinito: se desbloquea al vencer al Cazador	Infini : se débloque en vainquant le Chasseur
+PREPARACIÓN	PRÉPARATION
+/10 desbloqueados	/10 débloqués
+Vida	Vie
+Daño	Dégâts
+Ataque	Attaque
+Velocidad	Vitesse
+Crítico	Critique
+Enfriamiento	Recharge
+Carga con golpes	Se charge en frappant
+Bendición inicial · elige una	Bénédiction initiale · choisissez-en une
+Sin bendición inicial	Aucune bénédiction initiale
+Equipo	Équipement
+Compañero: ninguno (toca para elegir)	Compagnon : aucun (touchez pour choisir)
+Compañero	Compagnon
+ENTRANDO AL ABISMO	ENTRÉE DANS L'ABÎME
+Modo infinito	Mode infini
+Quitar	Retirer
+Equipar	Équiper
+No sirve	Inutilisable
+ gemas	 gemmes
+Jugando	En jeu
+Próximamente	Bientôt
++50 gemas (PRUEBA)	+50 gemmes (TEST)
+Gemas de prueba: solo esta sesión	Gemmes de test : cette session uniquement
+Aspecto original	Apparence d'origine
+ equipado en 	 équipé sur 
+Comprado	Acheté
+No se pudo comprar	Achat impossible
+TIENDA	BOUTIQUE
+Almas	Âmes
+Gemas	Gemmes
+COSMÉTICOS	COSMÉTIQUES
+Aspecto de 	Apparence de 
+   (* gemas de prueba)	   (* gemmes de test)
+Aún no hay aspectos disponibles.	Aucune apparence disponible pour l'instant.
+Llegarán en futuras versiones; lo que desbloquees se conservará.	Elles arriveront dans de futures versions ; ce que vous débloquez sera conservé.
+Las gemas moradas todavía no se pueden comprar.	Les gemmes violettes ne peuvent pas encore être achetées.
+Premium	Premium
+Se consigue jugando	S'obtient en jouant
+Google Play (futuro)	Google Play (à venir)
+Equipado	Équipé
+Tuyo	Possédé
+Confirmar elegido	Confirmer le choix
+Elegir espadachín	Choisir l'épéiste
+Desbloquear	Débloquer
+Ver ilustración	Voir l'illustration
+Ver en acción	Voir en action
+Ascensión	Ascension
+Ascensión 0	Ascension 0
+Espadachín elegido	Épéiste choisi
+GALERIA DE ESPADACHINES	GALERIE DES ÉPÉISTES
+Clase bloqueada	Classe verrouillée
+La caída del cielo	La chute du ciel
+Hace mil años, el cielo se partió sobre el Abismo Eterno.	Il y a mille ans, le ciel s'est fendu au-dessus de l'Abîme Éternel.
+Una luna roja se alzó y ya nunca volvió a ponerse. Bajo ella despertó algo antiguo, y hambriento.	Une lune rouge s'est levée et ne s'est plus jamais couchée. Sous elle, quelque chose d'ancien et d'affamé s'est éveillé.
+Los reinos cayeron uno tras otro. Nadie recordó su nombre. Solo su sombra.	Les royaumes sont tombés l'un après l'autre. Nul ne se souvint de son nom. Seulement de son ombre.
+Pero siete espadachines se negaron a huir.	Mais sept épéistes refusèrent de fuir.
+Cada uno empuñaba una espada nacida de una creencia: el Honor, el Silencio, la Voluntad, la Libertad, la Paciencia, la Vida y el Sacrificio.	Chacun brandissait une épée née d'une croyance : l'Honneur, le Silence, la Volonté, la Liberté, la Patience, la Vie et le Sacrifice.
+No eran simples armas. Eran sellos. Unidas, podían encadenar a la Luna de Sangre.	Ce n'étaient pas de simples armes. C'étaient des sceaux. Unies, elles pouvaient enchaîner la Lune de Sang.
+Pero el Cazador no podía morir; solo ser contenido. Cada espada se quebró contra su sombra.	Mais le Chasseur ne pouvait mourir, seulement être contenu. Chaque épée se brisa contre son ombre.
+Los guardianes cayeron, y sus ocho reliquias se perdieron en lo profundo del abismo.	Les gardiens sont tombés, et leurs huit reliques se sont perdues dans les profondeurs de l'abîme.
+Ahora el Sello se debilita. La luna vuelve a sangrar.	Maintenant le Sceau faiblit. La lune saigne de nouveau.
+Tú desciendes sin nombre, con una espada prestada y una única certeza:	Vous descendez sans nom, avec une épée empruntée et une seule certitude :
+alguien tiene que terminar lo que ellos no pudieron.	quelqu'un doit achever ce qu'ils n'ont pu accomplir.
+El octavo espadachín	Le huitième épéiste
+Las ocho reliquias se elevan y forman un anillo de luz alrededor del Cazador.	Les huit reliques s'élèvent et forment un anneau de lumière autour du Chasseur.
+El Sello, por fin completo, canta con las voces de los siete espadachines.	Le Sceau, enfin complet, chante avec les voix des sept épéistes.
+La Luna de Sangre se quiebra. No cae: se apaga.	La Lune de Sang se fissure. Elle ne tombe pas : elle s'éteint.
+El Cazador baja la mirada hacia sus propias manos. Por primera vez en mil años, recuerda quién fue.	Le Chasseur baisse les yeux vers ses propres mains. Pour la première fois en mille ans, il se souvient de qui il fut.
+El Cazador	Le Chasseur
+Fui el octavo espadachín. Mi creencia era la Victoria, cueste lo que cueste.	J'étais le huitième épéiste. Ma croyance était la Victoire, quoi qu'il en coûte.
+Por eso las siete espadas jamás pudieron matarme: me habían forjado a mí, también.	Voilà pourquoi les sept épées n'ont jamais pu me tuer : elles m'avaient forgé, moi aussi.
+Gracias, portador. Rompiste el ciclo que yo empecé.	Merci, porteur. Vous avez brisé le cycle que j'avais commencé.
+Amaneció sobre el Abismo por primera vez en mil años.	L'aube s'est levée sur l'Abîme pour la première fois en mille ans.
+Las espadas por fin descansan. El portador no tiene nombre... pero el mundo recordará su camino.	Les épées reposent enfin. Le porteur n'a pas de nom... mais le monde se souviendra de sa route.
+Aldren	Aldren
+Vesper	Vesper
+Sylwen	Sylwen
+Guardián herido	Gardien blessé
+Mercader enmascarado	Marchand masqué
+Espíritu del bosque	Esprit de la forêt
+Ugh... por fin alguien. Baja la espada, no soy una de esas cosas.	Ugh... enfin quelqu'un. Baissez votre épée, je ne suis pas l'une de ces choses.
+Fui Guardián del Alba, de los que juraron el Honor. Me hirieron al intentar volver a la superficie.	J'étais Gardien de l'Aube, de ceux qui ont juré l'Honneur. J'ai été blessé en tentant de regagner la surface.
+¿Tendrías una poción? Solo una.	Auriez-vous une potion ? Une seule.
+Darle una poción	Lui donner une potion
+Que el Alba te cuide. Toma, es todo lo que me queda.	Que l'Aube veille sur vous. Tenez, c'est tout ce qu'il me reste.
+Dejarlo	Le laisser
+Lo entiendo. En el abismo cada gota cuenta.	Je comprends. Dans l'abîme, chaque goutte compte.
+Otra vez tú. Sigo vivo, ya ves. Terco como todos los del Alba.	Encore vous. Toujours en vie, comme vous voyez. Têtu comme tous ceux de l'Aube.
+A veces oigo las espadas cantar cuando duermo. Cantan bajito, como si lloraran.	Parfois j'entends les épées chanter quand je dors. Elles chantent tout bas, comme si elles pleuraient.
+Acompañarlo un rato	Lui tenir compagnie un moment
+Gracias. Un guardián no debería caer solo.	Merci. Un gardien ne devrait pas tomber seul.
+Seguir mi camino	Poursuivre ma route
+Ve. Y recuerda: el honor no es ganar, es no soltar la espada.	Allez. Et souvenez-vous : l'honneur n'est pas de vaincre, c'est de ne pas lâcher l'épée.
+Has llegado muy lejos. Llevas el peso de las reliquias, lo noto en cómo caminas.	Vous êtes allé très loin. Vous portez le poids des reliques, je le vois à votre façon de marcher.
+Hay algo que nunca contamos: ocho reliquias, pero solo siete espadas.	Il y a une chose que nous n'avons jamais dite : huit reliques, mais seulement sept épées.
+Siempre me pregunté quién fue el octavo. Quizás por eso el Cazador no se detiene.	Je me suis toujours demandé qui était le huitième. C'est peut-être pour cela que le Chasseur ne s'arrête jamais.
+Recordarlo	S'en souvenir
+Si lo averiguas... dile que el Alba aún lo espera.	Si vous le découvrez... dites-lui que l'Aube l'attend encore.
+Shh, shh... bienvenido, cliente. Vesper vende lo que el abismo escupe.	Chut, chut... bienvenue, client. Vesper vend ce que l'abîme recrache.
+¿El Cazador? Cuento de niños. Una luna pintada en el cielo, nada más.	Le Chasseur ? Un conte pour enfants. Une lune peinte dans le ciel, rien de plus.
+Pero si quieres una ventaja, tengo un secreto barato. Solo veinte monedas.	Mais si vous voulez un avantage, j'ai un secret bon marché. Seulement vingt pièces.
+Comprar el secreto (20 oro)	Acheter le secret (20 or)
+Para vencer a cualquier jefe no esquives: solo ataca. Confía en Vesper... jeje.	Pour vaincre n'importe quel boss, n'esquivez pas : attaquez, c'est tout. Faites confiance à Vesper... hihi.
+Presionarlo	Le presser
+¡Está bien, está bien! Sirvo a quienes siguen la luna... toma, no me hagas daño.	D'accord, d'accord ! Je sers ceux qui suivent la lune... tenez, ne me faites pas de mal.
+Marcharse	S'en aller
+Tú te lo pierdes, cliente.	Tant pis pour vous, client.
+Otra vez por aquí. Vesper no mintió, no. Vesper solo... omitió.	Encore ici. Vesper n'a pas menti, non. Vesper a seulement... omis.
+Dicen que bajo la máscara no hay nada. Yo digo que hay demasiado.	On dit qu'il n'y a rien sous le masque. Moi, je dis qu'il y en a trop.
+Aceptar su regalo	Accepter son cadeau
+Una poción por las molestias. Gratis. Esta vez de verdad.	Une potion pour le dérangement. Gratuite. Pour de vrai, cette fois.
+No fiarme	Ne pas lui faire confiance
+Sabia decisión. Vesper tampoco se fiaría.	Sage décision. Vesper ne se ferait pas confiance non plus.
+T-tú... llevas las marcas de los guardianes caídos.	V-vous... vous portez les marques des gardiens tombés.
+No. No, no, no. Hoy Vesper no vende nada. Vesper no te conoce.	Non. Non, non, non. Aujourd'hui, Vesper ne vend rien. Vesper ne vous connaît pas.
+Vete, por favor. Antes de que la luna te vea aquí.	Partez, je vous en prie. Avant que la lune ne vous voie ici.
+Dejarlo en paz	Le laisser en paix
+...gracias. Que el abismo sea benévolo contigo.	...merci. Que l'abîme soit clément envers vous.
+Las raíces susurran que aún eres brote.	Les racines murmurent que vous n'êtes encore qu'une pousse.
+Vuelve cuando hayas caído y te hayas levantado. Entonces hablaremos.	Revenez quand vous serez tombé et que vous vous serez relevé. Alors nous parlerons.
+Asentir	Acquiescer
+El bosque recuerda a quienes regresan.	La forêt se souvient de ceux qui reviennent.
+Hueles a ceniza y a promesa. Eso es raro por aquí.	Vous sentez la cendre et la promesse. C'est rare par ici.
+La Vida fue la creencia de mi dueña: que todo lo que cae vuelve a ser semilla. Incluso la luna.	La Vie était la croyance de ma maîtresse : tout ce qui tombe redevient graine. Même la lune.
+Bebe de mi savia si quieres. Pero la savia también recuerda.	Buvez de ma sève si vous le voulez. Mais la sève se souvient aussi.
+Beber la savia	Boire la sève
+Que las raíces te sostengan. Y que no olvides lo que viste.	Que les racines vous soutiennent. Et n'oubliez pas ce que vous avez vu.
+Cautela. Tu espada es más sabia que tú... por ahora.	Prudence. Votre épée est plus sage que vous... pour l'instant.
+Mejoras	Améliorations
+Clases	Classes
+Desbloqueos	Déblocages
+SANTUARIO	SANCTUAIRE
+Reliquias {}/8	Reliques {}/8
+MÁX	MAX
+Enemigos derrotados: {}	Ennemis vaincus : {}
+Derrota {} enemigos en total	Vainquez {} ennemis au total
+Toca una mejora para comprarla con almas.	Touchez une amélioration pour l'acheter avec des âmes.
+Las almas se obtienen al derrotar enemigos y jefes.	Les âmes s'obtiennent en vainquant des ennemis et des boss.
+Cada 50 enemigos derrotados desbloqueas armas y habilidades.	Tous les 50 ennemis vaincus, vous débloquez des armes et des compétences.
+??? (bloqueado)	??? (verrouillé)
+Diálogos	Dialogues
+DIÁLOGOS	DIALOGUES
+HISTORIA	HISTOIRE
+Las Siete Espadas del Fin	Les Sept Épées de la Fin
+Algunas escenas se desbloquean al avanzar.	Certaines scènes se débloquent en progressant.
+Aún no has hablado con nadie.	Vous n'avez parlé à personne pour l'instant.
+Toca para avanzar	Touchez pour continuer
+Honor	Honneur
+Silencio	Silence
+Voluntad	Volonté
+Libertad	Liberté
+Paciencia	Patience
+Sacrificio	Sacrifice
+Reliquia	Relique
+¡Segunda oportunidad!	Seconde chance !
+¡Reliquia obtenida!	Relique obtenue !
+¡Roto!	Brisé !
+¡PARRY!	PARADE !
+Infinito · piso {}	Infini · étage {}
+Combate	Combat
+Mini-jefe	Mini-boss
+Altar de bendición	Autel de bénédiction
+Forja	Forge
+Mercader	Marchand
+Tesoro	Trésor
+Tienda general	Boutique générale
+Jefe	Boss
+Sala	Salle
+{} (secretos: {})	{} (secrets : {})
+{} gemas	{} gemmes
+Bonificación total: +{}% de puntaje {}	Bonus total : +{} % de score {}
+Elige el idioma del juego	Choisissez la langue du jeu
+SWORDSMANMAGIC	SWORDSMANMAGIC
+[DEV] Tinte violeta	[DEV] Teinte violette
+[DEV] Tinte brasa	[DEV] Teinte braise
+Articulo de prueba (no es una skin real).	Objet de test (pas une vraie apparence).
+dd/MM HH:mm	dd/MM HH:mm
+COMÚN	COMMUN
+POCO COMÚN	PEU COMMUN
+RARA	RARE
+ÉPICA	ÉPIQUE
+¡Furioso!	Enragé !
+cristal	cristal
+¡Guardia rota!	Garde brisée !
+bloqueado	bloqué

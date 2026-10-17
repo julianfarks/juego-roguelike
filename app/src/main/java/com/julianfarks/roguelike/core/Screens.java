@@ -124,6 +124,7 @@ final class Screens {
             add(x, y + st + 6, bw, bh, "Opciones", () -> game.go(new Options(game, false)));
             add(x, y + st * 2 + 6, bw, bh, "Códigos", () -> game.go(new CodesScreen(game)));
             add(x, y + st * 3 + 6, bw, bh, "Créditos", () -> game.go(new Credits(game, false)));
+            add(x, y + st * 4 + 6, bw, bh, "Idioma", () -> game.go(new LanguageScreen(game)));
             if (Save.S.devUnlocked) add(6, 26, 116, 17, "Modo Desarrollador", () -> game.go(new DevScreens.Menu(game)));
         }
 
@@ -145,7 +146,7 @@ final class Screens {
                 g.image(UI.logo, 0, 0, UI.logo.w, UI.logo.h, Math.round(w / 2f - UI.logo.w / 2f), Math.round(14 + bob), UI.logo.w, UI.logo.h, 0, 0, 1f);
             }
             // botones
-            g.rect(w / 2f - 90, 92, 180, 104, 0x55000000, false);
+            g.rect(w / 2f - 90, 92, 180, 126, 0x55000000, false);
             drawButtons(g);
             if (UI.small != null) {
                 UI.small.center(g, "Creador: JulianFarKs", w / 2f, 252, 0xFF9A8890, 1f);

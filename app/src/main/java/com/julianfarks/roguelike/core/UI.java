@@ -123,8 +123,18 @@ public final class UI {
         if (label != null && small != null) {
             int c = disabled ? GREY : (state == 1 ? GOLD : WHITE);
             float ty = y + (h - small.ch) / 2f + (state == 2 ? 1 : 0);
-            small.center(g, label, x + w / 2f, ty, c, 1f);
+            small.center(g, fitLabel(small, label, w - 4), x + w / 2f, ty, c, 1f);
         }
+    }
+
+    /** Recorta con '.' un rotulo que no cabe (traducciones largas) para que nunca se salga del boton. */
+    public static String fitLabel(Font f, String label, float maxW) {
+        if (f.width(label) <= maxW) return label;
+        String s = I18n.tr(label);
+        while (s.length() > 1 && f.widthRaw(s + ".") > maxW) s = s.substring(0, s.length() - 1);
+        s = s + ".";
+        I18n.pin(s);
+        return s;
     }
 
     /** Boton redondo tactil: centro (cx,cy), radio r. state 0 normal, 1 pulsado, 2 deshabilitado. */

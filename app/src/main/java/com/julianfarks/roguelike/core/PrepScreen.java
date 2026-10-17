@@ -57,10 +57,10 @@ final class PrepScreen extends Screen {
         Hit cmpHit = add(156, 227, w - 162, 14, null, () -> cycleCompanion()); cmpHit.plain = true;
         add(6, 242, 44, 26, "Volver", () -> back());
         modeBtn = add(54, 242, 112, 26, modeLabel(), () -> toggleMode());
-        Hit retos = add(226, 242, 54, 26, retosLabel(), () -> { if (infiniteMode && Save.S.finalBeaten) game.go(new CodexScreens.Challenges(game)); else { Snd.sfx("ui_error", 0.7f); say("Los retos son del modo Infinito"); } });
+        Hit retos = add(226, 242, 74, 26, retosLabel(), () -> { if (infiniteMode && Save.S.finalBeaten) game.go(new CodexScreens.Challenges(game)); else { Snd.sfx("ui_error", 0.7f); say("Los retos son del modo Infinito"); } });
         retos.noSound = false;
         diffBtn = add(170, 242, 52, 26, diffLabel(), () -> { Save.S.diffSel = (Save.S.diffSel + 1) % 3; Save.S.write(); diffBtn.label = diffLabel(); });
-        startBtn = add(w - 196, 239, 190, 30, "COMENZAR EXPEDICIÓN", () -> launch());
+        startBtn = add(w - 176, 239, 170, 30, "COMENZAR EXPEDICIÓN", () -> launch());
     }
 
     private String retosLabel() { int n = Integer.bitCount(Save.S.infMods); return n > 0 && infiniteMode ? "Retos " + n : "Retos"; }

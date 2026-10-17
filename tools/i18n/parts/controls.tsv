@@ -1,0 +1,110 @@
+Izquierda	Left	Gauche	向左
+Derecha	Right	Droite	向右
+Abajo	Down	Bas	向下
+Saltar	Jump	Sauter	跳跃
+Atacar	Attack	Attaquer	攻击
+Rodar	Roll	Rouler	翻滚
+Habilidad 1	Skill 1	Compétence 1	技能1
+Habilidad 2	Skill 2	Compétence 2	技能2
+Habilidad 3	Skill 3	Compétence 3	技能3
+Definitiva	Ultimate	Ultime	终极技
+Interactuar	Interact	Interagir	互动
+Pausa	Pause	Pause	暂停
+Poción	Potion	Potion	药水
+Arma 2ª	2nd weapon	Arme 2	副武器
+Granada	Grenade	Grenade	手雷
+Escudo / Parry	Shield / Parry	Bouclier / Parade	盾牌 / 格挡
+Intercambiar	Swap	Échanger	交换
+Reemplazar	Replace	Remplacer	替换
+Cancelar	Cancel	Annuler	取消
+Guardar y salir	Save and exit	Enregistrer et quitter	保存并退出
+Descartar	Discard	Abandonner	放弃
+Seguir editando	Keep editing	Continuer l'édition	继续编辑
+Restaurar	Restore	Rétablir	恢复默认
+Guardar *	Save *	Enregistrer *	保存 *
+Guardar	Save	Enregistrer	保存
+Atrás	Back	Retour	返回
+Controles restaurados	Controls restored	Commandes rétablies	已恢复默认按键
+Guardado	Saved	Enregistré	已保存
+CONTROLES	CONTROLS	COMMANDES	操作设置
+{} conectado	{} connected	{} connecté	{}已连接
+Sin mando detectado	No gamepad detected	Aucune manette détectée	未检测到手柄
+Acción	Action	Action	操作
+Teclado	Keyboard	Clavier	键盘
+Toca una casilla o elige con el mando y pulsa {}. Se aplica al instante.	Tap a slot or pick with the gamepad and press {}. It applies instantly.	Touchez une case ou choisissez à la manette et appuyez sur {}. Appliqué immédiatement.	点击一个格子，或用手柄选择并按{}。立即生效。
+Flechas, Espacio y cruceta siguen activas si no las usas en otra acción.	Arrows, Space and D-pad stay active unless used elsewhere.	Flèches, Espace et croix restent actives si non utilisées ailleurs.	若未分配给其他操作，方向键、空格键和十字键仍然可用。
+CONFLICTO	CONFLICT	CONFLIT	冲突
+» ya lo usa «	» is already used by «	» est déjà utilisé par «	» 已被「
+Intercambiar: «{}» recibe el botón que tenía «{}»	Swap: «{}» receives the button «{}» had	Échanger : «{}» reçoit le bouton qu'avait «{}»	交换：「{}」获得「{}」原有的按键
+Reemplazar: «{}» se queda sin asignar.	Replace: «{}» is left unassigned.	Remplacer : «{}» reste sans affectation.	替换：「{}」将变为未分配。
+¿SALIR?	EXIT?	QUITTER ?	退出？
+Hay cambios sin guardar.	You have unsaved changes.	Des modifications ne sont pas enregistrées.	有尚未保存的更改。
+REASIGNAR	REASSIGN	RÉASSIGNER	重新分配
+Pulsa una tecla o botón para asignarlo	Press a key or button to assign it	Appuyez sur une touche ou un bouton pour l'affecter	按下一个键或按钮进行分配
+Esc o «Cancelar» para salir · {}	Esc or «Cancel» to exit · {}	Échap ou «Annuler» pour quitter · {}	按Esc或「取消」退出 · {}
+Menos	Less	Moins	缩小
+Más	More	Plus	放大
+Reiniciar	Reset	Réinitialiser	重置
+Listo	Done	Terminé	完成
+Arrastra los botones donde quieras (izq+der = centro del joystick)	Drag the buttons wherever you like (left+right = joystick center)	Faites glisser les boutons où vous voulez (gauche+droite = centre du joystick)	将按钮拖到任意位置（左+右 = 摇杆中心）
+Toca uno para elegirlo y cambia su tamaño	Tap one to select it and change its size	Touchez-en un pour le sélectionner et changer sa taille	点击一个按钮选中它并调整大小
+Cruz	Cross	Croix	叉
+Círculo	Circle	Rond	圆
+Cuadro	Square	Carré	方
+Triáng.	Triangle	Triangle	三角
+Menú	Menu	Menu	菜单
+LS clic	LS click	Clic LS	左摇杆按下
+RS clic	RS click	Clic RS	右摇杆按下
+Cruc. arr.	D-pad up	Croix haut	十字键上
+Cruc. abj.	D-pad down	Croix bas	十字键下
+Cruc. izq.	D-pad left	Croix gauche	十字键左
+Cruc. der.	D-pad right	Croix droite	十字键右
+LS izq.	LS left	LS gauche	左摇杆左
+LS der.	LS right	LS droite	左摇杆右
+LS arr.	LS up	LS haut	左摇杆上
+LS abj.	LS down	LS bas	左摇杆下
+RS izq.	RS left	RS gauche	右摇杆左
+RS der.	RS right	RS droite	右摇杆右
+RS arr.	RS up	RS haut	右摇杆上
+RS abj.	RS down	RS bas	右摇杆下
+Izq.	Left	Gauche	左
+Arr.	Up	Haut	上
+Der.	Right	Droite	右
+Abj.	Down	Bas	下
+Espacio	Space	Espace	空格
+Retroc.	Backspace	Retour	退格
+Tecla {}	Key {}	Touche {}	按键{}
+Mando genérico	Generic gamepad	Manette générique	通用手柄
+CARGAR PARTIDA	LOAD RUN	CHARGER UNE PARTIE	读取进度
+Ranura {}	Slot {}	Emplacement {}	栏位{}
+Toca una ranura para continuar donde la dejaste (empiezas al inicio de la sala).	Tap a slot to continue where you left off (you start at the beginning of the room).	Touchez un emplacement pour reprendre où vous vous êtes arrêté (vous commencez au début de la salle).	点击一个栏位，从上次离开的地方继续（从房间起点开始）。
+Escribe un código.	Enter a code.	Saisissez un code.	请输入兑换码。
+El Modo Desarrollador ya estaba activado.	Developer Mode was already enabled.	Le mode développeur était déjà activé.	开发者模式已启用。
+Modo Desarrollador desbloqueado.	Developer Mode unlocked.	Mode développeur débloqué.	开发者模式已解锁。
+Este código ya fue canjeado.	This code has already been redeemed.	Ce code a déjà été utilisé.	该兑换码已被使用。
+Código válido, pero tienes demasiadas almas para recibir la recompensa.	Valid code, but you have too many souls to receive the reward.	Code valide, mais vous avez trop d'âmes pour recevoir la récompense.	兑换码有效，但你的灵魂过多，无法领取奖励。
+Código válido, pero no se pudo registrar el canje. Inténtalo más tarde.	Valid code, but the redemption could not be recorded. Try again later.	Code valide, mais l'utilisation n'a pas pu être enregistrée. Réessayez plus tard.	兑换码有效，但无法记录兑换。请稍后再试。
+¡Canjeado! +{} almas.	Redeemed! +{} souls.	Utilisé ! +{} âmes.	兑换成功！+{}灵魂。
+Código válido, pero la recompensa no está disponible.	Valid code, but the reward is unavailable.	Code valide, mais la récompense n'est pas disponible.	兑换码有效，但奖励暂不可用。
+Código incorrecto.	Incorrect code.	Code incorrect.	兑换码无效。
+Borrar	Delete	Effacer	删除
+Canjear	Redeem	Utiliser	兑换
+CÓDIGOS	CODES	CODES	兑换码
+Escribe un código y pulsa Canjear	Enter a code and press Redeem	Saisissez un code et appuyez sur Utiliser	输入兑换码并点击兑换
+wireless controller	wireless controller	wireless controller	wireless controller
+LB	LB	LB	LB
+RB	RB	RB	RB
+LT	LT	LT	LT
+RT	RT	RT	RT
+Share	Share	Share	Share
+View	View	View	View
+Options	Options	Options	Options
+Enter	Enter	Enter	Enter
+Shift	Shift	Shift	Shift
+Ctrl	Ctrl	Ctrl	Ctrl
+Alt	Alt	Alt	Alt
+Tab	Tab	Tab	Tab
+Esc	Esc	Esc	Esc
+PlayStation	PlayStation	PlayStation	PlayStation
+Xbox	Xbox	Xbox	Xbox
+SHA-256	SHA-256	SHA-256	SHA-256

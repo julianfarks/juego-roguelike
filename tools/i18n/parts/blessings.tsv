@@ -1,0 +1,119 @@
+Filo Afilado	Keen Edge	Lame affûtée	锋利之刃
++15% de daño de arma por nivel.	+15% weapon damage per level.	+15 % de dégâts d'arme par niveau.	每级武器伤害提高15%。
+Corazón Robusto	Sturdy Heart	Cœur robuste	强健之心
++20 de vida máxima por nivel y te cura 20.	+20 max health per level and heals you for 20.	+20 de vie maximale par niveau et vous soigne de 20.	每级最大生命值提高20，并为你回复20点生命。
+Pies Alados	Winged Feet	Pieds ailés	飞翼之足
++8% de velocidad de movimiento por nivel.	+8% movement speed per level.	+8 % de vitesse de déplacement par niveau.	每级移动速度提高8%。
+Furia Creciente	Rising Fury	Fureur croissante	怒火渐盛
+Cada baja da +4% de daño (máx. 5 cargas +2 por nivel). Se pierde al recibir daño.	Each kill grants +4% damage (max 5 stacks, +2 per level). Lost when you take damage.	Chaque victoire donne +4 % de dégâts (5 charges max., +2 par niveau). Perdu en subissant des dégâts.	每次击杀使伤害提高4%（最多叠加5层，每级额外+2层）。受到伤害时失去所有层数。
+Sed de Sangre	Bloodthirst	Soif de sang	嗜血
+Robas el 3% del daño infligido como vida por nivel.	You steal 3% of damage dealt as health per level.	Vous volez 3 % des dégâts infligés sous forme de vie par niveau.	每级将造成伤害的3%转化为生命。
+Brasas Eternas	Eternal Embers	Braises éternelles	永燃余烬
+Tus golpes queman: 25% de probabilidad por nivel.	Your hits burn: 25% chance per level.	Vos coups brûlent : 25 % de chance par niveau.	你的攻击会点燃敌人：每级有25%几率。
+Contacto Glacial	Glacial Touch	Contact glacial	冰川之触
+Tus golpes ralentizan y a veces congelan: 20% por nivel.	Your hits slow and sometimes freeze: 20% per level.	Vos coups ralentissent et gèlent parfois : 20 % par niveau.	你的攻击会使敌人减速，有时还会冻结：每级有20%几率。
+Chispa Voltaica	Voltaic Spark	Étincelle voltaïque	电弧火花
+15% por nivel de soltar un rayo encadenado al golpear.	15% per level chance to unleash chain lightning on hit.	15 % de chance par niveau de libérer un éclair en chaîne en frappant.	每级有15%几率在命中时释放连锁闪电。
+Veneno de Espinas	Thorn Venom	Venin d'épines	荆棘剧毒
+Tus golpes envenenan: 25% de probabilidad por nivel.	Your hits poison: 25% chance per level.	Vos coups empoisonnent : 25 % de chance par niveau.	你的攻击会使敌人中毒：每级有25%几率。
+Piel de Piedra	Stone Skin	Peau de pierre	石肤术
+-8% de daño recibido por nivel.	-8% damage taken per level.	-8 % de dégâts subis par niveau.	每级受到的伤害降低8%。
+Esquive Fantasma	Phantom Dodge	Esquive fantôme	幽灵闪避
+Rodar dura más invulnerable y deja una estela que daña.	Rolling lasts longer while invulnerable and leaves a damaging trail.	La roulade dure plus longtemps, rend invulnérable et laisse une traînée qui blesse.	翻滚的无敌时间更长，并留下会造成伤害的轨迹。
+Triple Salto	Triple Jump	Triple saut	三段跳
+Ganas un salto extra en el aire (triple salto).	You gain an extra mid-air jump (triple jump).	Vous gagnez un saut supplémentaire en l'air (triple saut).	获得一次额外的空中跳跃（三段跳）。
+Maestría Crítica	Critical Mastery	Maîtrise critique	暴击精通
++8% de prob. crítica y +20% de daño crítico por nivel.	+8% crit chance and +20% crit damage per level.	+8 % de chance critique et +20 % de dégâts critiques par niveau.	每级暴击率提高8%，暴击伤害提高20%。
+Alma Voraz	Ravenous Soul	Âme vorace	贪婪之魂
++30% de almas por nivel.	+30% souls per level.	+30 % d'âmes par niveau.	每级灵魂获取量提高30%。
+Fortuna	Fortune	Fortune	财运
++30% de oro por nivel.	+30% gold per level.	+30 % d'or par niveau.	每级金币获取量提高30%。
+Escudo Estelar	Star Shield	Bouclier stellaire	星辰护盾
+Un escudo absorbe un golpe al entrar a cada sala (más fuerte por nivel).	A shield absorbs a hit when you enter each room (stronger per level).	Un bouclier absorbe un coup à l'entrée de chaque salle (plus fort à chaque niveau).	每次进入房间时，护盾会吸收一次伤害（每级更强）。
+Enfriamiento Rápido	Quick Cooldown	Récupération rapide	快速冷却
+-12% de enfriamiento de habilidades por nivel.	-12% skill cooldown per level.	-12 % de temps de recharge des compétences par niveau.	每级技能冷却时间缩短12%。
+Habilidad Potenciada	Empowered Skill	Compétence renforcée	技能强化
++20% de daño de habilidades por nivel.	+20% skill damage per level.	+20 % de dégâts des compétences par niveau.	每级技能伤害提高20%。
+Ejecutor	Executioner	Bourreau	处刑者
++40% de daño a enemigos con menos de 30% de vida por nivel.	+40% damage to enemies below 30% health per level.	+40 % de dégâts aux ennemis sous 30 % de vie par niveau.	每级对生命值低于30%的敌人伤害提高40%。
+Imán de Almas	Soul Magnet	Aimant d'âmes	灵魂磁石
+Atraes oro, almas y corazones desde más lejos.	You attract gold, souls and hearts from farther away.	Vous attirez l'or, les âmes et les cœurs de plus loin.	从更远的距离吸引金币、灵魂和心形生命。
+Espíritu Vengador	Vengeful Spirit	Esprit vengeur	复仇之灵
+Los enemigos explotan al morir y dañan a los cercanos.	Enemies explode on death and damage those nearby.	Les ennemis explosent à leur mort et blessent ceux qui sont proches.	敌人死亡时会爆炸，并伤害附近的敌人。
+Segunda Oportunidad	Second Chance	Seconde chance	第二次机会
+Revives una vez con 35% de vida.	You revive once with 35% health.	Vous ressuscitez une fois avec 35 % de vie.	你可以复活一次，并恢复35%的生命值。
+Hoja Fantasma	Phantom Blade	Lame fantôme	幽灵之刃
+Cada segundo golpe lanza una onda de energía.	Every second hit launches a wave of energy.	Un coup sur deux lance une onde d'énergie.	每第二次攻击会射出一道能量波。
+Barrera de Égida	Aegis Barrier	Barrière d'Égide	神盾屏障
+Tras rodar ganas un escudo breve.	After rolling you gain a brief shield.	Après une roulade, vous gagnez un bref bouclier.	翻滚后会获得一个短暂的护盾。
+Sabiduría	Wisdom	Sagesse	智慧
++20% de carga de definitiva por nivel y empiezas cada sala con 15%.	+20% ultimate charge per level, and you start each room with 15%.	+20 % de charge de l'ultime par niveau, et vous commencez chaque salle avec 15 %.	每级终极技充能速度提高20%，并且每个房间开始时已有15%的充能。
+Golpe Gigante	Giant Blow	Coup de géant	巨人重击
+El tercer golpe del combo hace +40% de daño y una onda de choque.	The third hit of the combo deals +40% damage and a shockwave.	Le troisième coup du combo inflige +40 % de dégâts et une onde de choc.	连击的第三下伤害提高40%，并产生冲击波。
+Paso de Sombra	Shadow Step	Pas de l'ombre	暗影之步
+Rodar atraviesa enemigos y los daña.	Rolling passes through enemies and damages them.	La roulade traverse les ennemis et les blesse.	翻滚时可穿过敌人并对其造成伤害。
+Eclipse	Eclipse	Éclipse	日蚀
+Cada 12 s, tu siguiente golpe hace daño x2.5 (más rápido por nivel).	Every 12 s, your next hit deals x2.5 damage (faster per level).	Toutes les 12 s, votre prochain coup inflige x2,5 de dégâts (plus rapide à chaque niveau).	每12秒，你的下一次攻击造成2.5倍伤害（每级间隔更短）。
+Filo Hambriento	Hungry Edge	Lame affamée	饥渴之刃
++12% de daño	+12% damage	+12 % dégâts	伤害提高12%
+-10% de vida máxima	-10% max health	-10 % de vie maximale	最大生命值降低10%
++12% daño	+12% dmg	+12 % dégâts	伤害+12%
+-10% vida	-10% health	-10 % vie	生命-10%
+Piel de Piedra	Stone Skin	Peau de pierre	石肤术
+-10% de daño recibido	-10% damage taken	-10 % de dégâts subis	受到的伤害降低10%
+-6% de velocidad	-6% speed	-6 % de vitesse	速度降低6%
+-10% daño recib.	-10% dmg in	-10 % dég. subis	受伤-10%
+-6% veloc.	-6% speed	-6 % vitesse	速度-6%
+Pies de Viento	Windfoot	Pieds de vent	疾风之足
++10% de velocidad	+10% speed	+10 % de vitesse	速度提高10%
++8% de daño recibido	+8% damage taken	+8 % de dégâts subis	受到的伤害提高8%
++10% veloc.	+10% speed	+10 % vitesse	速度+10%
++8% daño recib.	+8% dmg in	+8 % dég. subis	受伤+8%
+Bolsa Pesada	Heavy Purse	Bourse lourde	沉甸钱袋
++60 de oro inicial	+60 starting gold	+60 d'or de départ	初始金币+60
+1 poción menos	1 fewer potion	1 potion en moins	少1瓶药水
++60 oro	+60 gold	+60 or	金币+60
+-1 poción	-1 potion	-1 potion	药水-1
+Sed de Almas	Soul Thirst	Soif d'âmes	灵魂渴求
++25% de almas ganadas	+25% souls gained	+25 % d'âmes gagnées	获得的灵魂提高25%
+-8% de daño	-8% damage	-8 % dégâts	伤害降低8%
++25% almas	+25% souls	+25 % âmes	灵魂+25%
+-8% daño	-8% dmg	-8 % dégâts	伤害-8%
+Pacto Frágil	Fragile Pact	Pacte fragile	脆弱契约
++12% de golpe crítico	+12% critical hit chance	+12 % de coup critique	暴击率提高12%
+-15% de vida máxima	-15% max health	-15 % de vie maximale	最大生命值降低15%
++12% crítico	+12% crit	+12 % critique	暴击+12%
+-15% vida	-15% health	-15 % vie	生命-15%
+Reflejo Veloz	Quick Reflexes	Réflexes vifs	迅捷反射
+Habilidades 12% más rápidas	Skills 12% faster	Compétences 12 % plus rapides	技能冷却加快12%
+-10% de daño	-10% damage	-10 % dégâts	伤害降低10%
+Habil. +12%	Skills +12%	Compét. +12 %	技能+12%
+-10% daño	-10% dmg	-10 % dégâts	伤害-10%
+Provisiones	Provisions	Provisions	补给
++1 poción	+1 potion	+1 potion	药水+1
+-15% de oro ganado	-15% gold gained	-15 % d'or gagné	获得的金币降低15%
+-15% oro	-15% gold	-15 % or	金币-15%
+Cuchillos arrojadizos	Throwing knives	Couteaux de lancer	飞刀
+Granada incendiaria	Incendiary grenade	Grenade incendiaire	燃烧手雷
+Sed de sangre	Bloodthirst	Soif de sang	嗜血
+Ballesta rúnica	Runic crossbow	Arbalète runique	符文弩
+Granada de hielo	Ice grenade	Grenade de glace	冰霜手雷
+Pies ligeros	Light Feet	Pieds légers	轻盈之足
+Piel de piedra	Stone skin	Peau de pierre	石肤
+Orbe arcano	Arcane orb	Orbe arcanique	奥术宝珠
+Granada de tormenta	Storm grenade	Grenade de tempête	风暴手雷
+Maestría de combate	Combat Mastery	Maîtrise du combat	战斗精通
+Empiezas cada partida con cuchillos (botón de arma secundaria).	You start every run with knives (secondary weapon button).	Vous commencez chaque partie avec des couteaux (bouton d'arme secondaire).	每局开始时你都会获得飞刀（副武器按钮）。
+Empiezas con 3 granadas incendiarias.	You start with 3 incendiary grenades.	Vous commencez avec 3 grenades incendiaires.	开局携带3枚燃烧手雷。
+Habilidad pasiva: recuperas un poco de vida al golpear.	Passive skill: you recover a little health when you strike.	Compétence passive : vous récupérez un peu de vie en frappant.	被动技能：攻击时回复少量生命值。
+Arma secundaria inicial: ballesta que atraviesa enemigos.	Starting secondary weapon: a crossbow that pierces enemies.	Arme secondaire de départ : une arbalète qui transperce les ennemis.	初始副武器：可贯穿敌人的弩。
+Empiezas con 3 granadas de hielo que congelan.	You start with 3 ice grenades that freeze.	Vous commencez avec 3 grenades de glace qui gèlent.	开局携带3枚可冻结敌人的冰霜手雷。
+Habilidad pasiva: +6% de velocidad de movimiento.	Passive skill: +6% movement speed.	Compétence passive : +6 % de vitesse de déplacement.	被动技能：移动速度提高6%。
+Habilidad pasiva: recibes 7% menos de daño.	Passive skill: you take 7% less damage.	Compétence passive : vous subissez 7 % de dégâts en moins.	被动技能：受到的伤害降低7%。
+Arma secundaria inicial: orbe que persigue enemigos.	Starting secondary weapon: an orb that chases enemies.	Arme secondaire de départ : un orbe qui poursuit les ennemis.	初始副武器：会追踪敌人的宝珠。
+Empiezas con 3 granadas de tormenta que aturden.	You start with 3 storm grenades that stun.	Vous commencez avec 3 grenades de tempête qui étourdissent.	开局携带3枚可击晕敌人的风暴手雷。
+Habilidad pasiva: +8% de daño y +4% de crítico.	Passive skill: +8% damage and +4% crit chance.	Compétence passive : +8 % de dégâts et +4 % de critique.	被动技能：伤害提高8%，暴击率提高4%。
+Arma	Weapon	Arme	武器
+Granada	Grenade	Grenade	手雷
+Habilidad	Skill	Compétence	技能
+¡DESBLOQUEADO!	UNLOCKED!	DÉBLOQUÉ !	已解锁！

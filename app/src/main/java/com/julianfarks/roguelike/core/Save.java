@@ -136,6 +136,10 @@ public final class Save {
         } catch (RuntimeException e) {
             p.log("save load error " + e);
         }
+        if (!s.devUnlocked && !s.readOnly) {          // nada de pruebas sobrevive sin el Modo Desarrollador
+            s.owned.removeIf(id -> id.startsWith("dev_"));
+            for (int i = 0; i < s.equip.length; i++) if (s.equip[i] != null && s.equip[i].startsWith("dev_")) s.equip[i] = "";
+        }
         S = s;
     }
 

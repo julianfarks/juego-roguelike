@@ -46,11 +46,20 @@ public final class Cosmetics {
     public static Item find(String id) {
         if (id == null) return null;
         for (Item i : ALL) if (i.id.equals(id)) return i;
-        for (Item i : DEV) if (i.id.equals(id)) return i;
+        if (Save.S.devUnlocked) for (Item i : DEV) if (i.id.equals(id)) return i;   // los [DEV] solo existen con el Modo Desarrollador activo
         return null;
     }
 
-    public static boolean owns(String id) { return id != null && Save.S.owned.contains(id); }
+    public static boolean owns(String id) { return find(id) != null && Save.S.owned.contains(id); }
+
+    /** Quita del perfil todo lo [DEV] (articulos de prueba poseidos/equipados) y las gemas de prueba. */
+    public static void purgeDev() {
+        for (Item i : DEV) {
+            Save.S.owned.remove(i.id);
+            for (int k = 0; k < Save.S.equip.length; k++) if (i.id.equals(Save.S.equip[k])) Save.S.equip[k] = "";
+        }
+        Save.devGems = 0;
+    }
 
     /** Concede un articulo (idempotente). */
     public static boolean grant(String id) {

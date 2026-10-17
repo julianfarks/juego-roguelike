@@ -137,7 +137,7 @@ public final class Infinite {
     /** Resultado final de una run infinita (a partir del estado de la run). */
     public static Result resultOf(RunState rs) {
         Result r = new Result();
-        r.ruleset = rs.ruleset.id; r.cls = rs.cls.id; r.dev = rs.devAssisted;
+        r.ruleset = rs.ruleset.id; r.cls = rs.cls.id; r.dev = rs.devAssisted || rs.isTest();
         r.floors = rs.floorsDone; r.reached = rs.floor;
         r.kills = rs.kills - rs.infBaseKills; r.bosses = rs.bossKills - rs.infBaseBoss;
         r.rooms = rs.infRooms;

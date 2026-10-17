@@ -10,6 +10,13 @@ public final class DebugBot {
     private final java.util.HashSet<Object> done = new java.util.HashSet<>();
     private float lastX;
     public static int classId = System.getenv("BOT_CLASS") != null ? Integer.parseInt(System.getenv("BOT_CLASS")) : 0;
+    static int sbStep = 0, sbT = 0; static String sbBase = "";
+    static String sbSnap(Game g) {
+        Save.S.write();
+        StringBuilder b = new StringBuilder(g.P.store().get("save", ""));
+        for (String k : new String[]{"run_auto", "run_0", "run_1", "run_2"}) b.append('|').append(g.P.store().get(k, ""));
+        return b.toString();
+    }
     static int contStep = 0, contK0, contB0, contR0, contC0, contT;
     static int infStep = 0, infT = 0, infT0 = -1;
     static boolean enemyDone;
@@ -90,6 +97,17 @@ public final class DebugBot {
         }
         if (s instanceof Ops) {
             if (System.getenv("BOT_NOSTART") != null) { if (!unlockedAll) { unlockedAll = true; for (int i = 0; i < 10; i++) Save.S.classUnlocked[i] = true; Save.S.souls = Math.max(Save.S.souls, 5000); } return; }
+            if (System.getenv("BOT_SBTEST") != null) {
+                if (sbStep == 0 && frame - lastClassFrame > 120) { lastClassFrame = frame; Save.S.lastClass = classId; ((Ops) s).startGame(); }
+                else if (sbStep == 3 && frame - lastClassFrame > 60) {
+                    sbStep = 4;
+                    String now = sbSnap(g);
+                    RunScreen again = RunSave.load(g, 0);
+                    System.out.println("SBTEST tras salir: progreso igual=" + now.equals(sbBase) + " partida normal sigue en ranura 0=" + (again != null) + " RunSave.any=" + RunSave.any(g.P) + " pantalla=" + s.getClass().getSimpleName());
+                    if (again != null) g.go(again);
+                }
+                return;
+            }
             if (System.getenv("BOT_LOADRUN") != null && frame - lastClassFrame > 60) {
                 lastClassFrame = frame;
                 RunScreen lr = RunSave.load(g, RunSave.AUTO);
@@ -174,6 +192,42 @@ public final class DebugBot {
             int ok = 0;
             for (Enemy en : spikeEn) { if (en.hp < en.maxHp || !en.alive) ok++; else System.out.println("  sin dano: " + en.def.id + " y=" + Math.round(en.y)); }
             System.out.println("SPIKETEST frame " + frame + ": danados/muertos " + ok + "/" + spikeEn.size());
+        }
+        if (System.getenv("BOT_SBTEST") != null) {
+            if (!rs.sandbox && sbStep == 0 && frame > 700) {
+                sbStep = 1; sbT = frame;
+                boolean w0 = RunSave.write(g.P, rs, 0), wa = RunSave.write(g.P, rs, RunSave.AUTO);
+                System.out.println("SBTEST normal: guardar ranura0=" + w0 + " auto=" + wa + " cargable=" + (RunSave.load(g, 0) != null));
+                sbBase = sbSnap(g);
+                g.go(RunScreen.sandbox(g, rs.cls, 0, null, false, 0, () -> new Ops(g)));
+                return;
+            }
+            if (rs.sandbox && sbStep == 1 && frame > sbT + 150) {
+                sbStep = 2;
+                System.out.println("SBTEST arena: esTest=" + rs.isTestSession() + " session=" + rs.rs.session);
+                boolean a = RunSave.write(g.P, rs, 0), b = RunSave.write(g.P, rs, RunSave.AUTO), c = RunSave.write(g.P, rs, 2), d = RunSave.write(g.P, rs, 7);
+                System.out.println("SBTEST arena: write directo ranura0=" + a + " auto=" + b + " ranura2=" + c + " ranura7=" + d + " (todas deben ser false)");
+                rs.rs.sandbox = false;               // intento de evadir: quitar un solo indicador
+                boolean e1 = RunSave.write(g.P, rs, 0);
+                rs.rs.sandbox = true; rs.sandbox = false;
+                boolean e2 = RunSave.write(g.P, rs, 1);
+                rs.sandbox = true;
+                System.out.println("SBTEST arena: evasion quitando un indicador: rs.sandbox=false -> " + e1 + ", RunScreen.sandbox=false -> " + e2 + " (deben ser false)");
+                RunSave.clearRun(g.P, rs);
+                System.out.println("SBTEST arena: clearRun no borra la partida real: " + (RunSave.load(g, 0) != null));
+                rs.debugOpenPause();
+                System.out.println("SBTEST pausa (arena): " + rs.debugLabels());
+                rs.debugForceSaveMenu();
+                System.out.println("SBTEST pausa forzando menu de guardado: " + rs.debugLabels());
+                System.out.println("SBTEST tocar 'Guardar partida' por la via interna: " + rs.debugTap("Guardar partida") + " (debe ser false: no existe)");
+                rs.debugKillAll();
+                System.out.println("SBTEST arena: tras matar jefe y enemigos, progreso igual=" + sbSnap(g).equals(sbBase));
+                if (System.getenv("BOT_SBHOLD") != null) { rs.debugOpenPause(); sbStep = 9; return; }
+                rs.debugOpenPause();
+                System.out.println("SBTEST salir: tocar 'Salir del modo de prueba'=" + rs.debugTap("Salir del modo de prueba"));
+                sbStep = 3; lastClassFrame = frame;
+                return;
+            }
         }
         if (System.getenv("BOT_INFTEST") != null && rs.rs.infinite) {
             if (infT0 < 0) infT0 = frame;

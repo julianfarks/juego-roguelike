@@ -22,9 +22,11 @@ final class RunSave {
         } catch (RuntimeException e) { return null; }
     }
 
-    static void write(Platform p, RunScreen r, int slot) {
+    /** Guarda la partida. RECHAZA (devuelve false, sin tocar el almacen) cualquier sesion de prueba, venga de donde venga la llamada. */
+    static boolean write(Platform p, RunScreen r, int slot) {
         RunState rs = r.rs;
-        if (rs.sandbox) return;
+        if (r.sandbox || rs.isTest()) return false;
+        if (slot != AUTO && (slot < 0 || slot >= SLOTS)) return false;
         r.mySlots.add(slot);
         try {
             Map<String, Object> d = new LinkedHashMap<>();
@@ -53,8 +55,10 @@ final class RunSave {
             d.put("ts", (double) System.currentTimeMillis());
             p.store().put(key(slot), Json.write(d));
             p.store().commit();
+            return true;
         } catch (RuntimeException e) {
             p.log("run save error " + e);
+            return false;
         }
     }
 
@@ -104,6 +108,7 @@ final class RunSave {
 
     /** Al morir: borra las partidas guardadas de esta run (ranuras usadas/cargadas y el autoguardado). */
     static void clearRun(Platform p, RunScreen r) {
+        if (r.sandbox || r.rs.isTest()) return;      // una prueba nunca borra las partidas reales
         try {
             r.mySlots.add(AUTO);
             for (int sl : r.mySlots) p.store().put(key(sl), "");

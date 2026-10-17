@@ -119,7 +119,7 @@ final class DevScreens {
             add(x, y + st * 6, bw, bh, "Objetos y props", () -> game.go(new ListScr(game, "OBJETOS Y PROPS", objects())));
             add(x, y + st * 7, bw, bh, "Economía y recursos", () -> game.go(new Economy(game)));
             add(x - 0, y + st * 8 + 2, 92, bh, "Volver", () -> back());
-            add(x + 98, y + st * 8 + 2, 92, bh, "Desactivar", () -> { Save.devRevert(); Save.S.devUnlocked = false; Save.S.write(); back(); });
+            add(x + 98, y + st * 8 + 2, 92, bh, "Desactivar", () -> { Save.devRevert(); Save.S.devUnlocked = false; Cosmetics.purgeDev(); Save.S.write(); back(); });
         }
 
         @Override boolean back() { Save.devRevert(); game.go(new Screens.Title(game)); return true; }

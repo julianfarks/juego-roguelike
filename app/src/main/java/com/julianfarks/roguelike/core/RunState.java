@@ -42,7 +42,13 @@ public final class RunState {
     public float infT0;                                         // tiempo de run al empezar el infinito
     public int credKills, credBoss;                             // ya sumados al perfil por endRun (evita doble conteo)
     public long seed;
-    public boolean sandbox;     // laboratorio del Modo Desarrollador: no toca guardados ni progreso, jugador invulnerable
+    /** Tipo de sesion: NORMAL (progreso real) o TEST (arenas y tiendas del Modo Desarrollador: jamas se guarda ni toca el progreso). */
+    public enum Session { NORMAL, TEST }
+    public Session session = Session.NORMAL;
+    public boolean sandbox;     // (igual que session==TEST; se mantiene por compatibilidad)
+    /** Una sesion de prueba NO puede guardarse, ni dar resultados validos, ni tocar records, estadisticas o recompensas permanentes. */
+    public boolean isTest() { return sandbox || session == Session.TEST; }
+    public void markTest() { session = Session.TEST; sandbox = true; }
 
     public RunState(ClassDef cls, long seed, int asc) {
         this.cls = cls;

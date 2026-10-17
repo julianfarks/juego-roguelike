@@ -131,6 +131,22 @@ public class T8 {
         RunState rn = new RunState(paladin, 5, 0); rn.infinite = true; Save.S.gems = 50; Save.devGems = 0;
         ck("real: revivir con gemas reales NO marca la run", Infinite.consume(rn, Infinite.Method.GEMS, p) && !rn.devAssisted);
         Save.devGems = 0; Save.S.gems = 0; Save.S.devUnlocked = false;
+        // ---------------- sesiones de prueba y articulos [DEV]
+        disk.clear(); reload(p); Save.devGems = 0; Save.S.devUnlocked = true;
+        Wallet.devGrant(50); Cosmetics.buy("dev_tint_violet"); Cosmetics.grant("dev_tint_ember"); Cosmetics.equip(ClassDef.ALL[0], "dev_tint_violet");
+        ck("dev: articulos de prueba comprados y equipados", Cosmetics.owns("dev_tint_violet") && Cosmetics.equipped(ClassDef.ALL[0]) != null);
+        Save.S.devUnlocked = false;
+        ck("sin modo dev: los [DEV] no existen para el juego", !Cosmetics.owns("dev_tint_violet") && Cosmetics.equipped(ClassDef.ALL[0]) == null && Cosmetics.tintFor(ClassDef.ALL[0]) == 0 && Cosmetics.catalog().isEmpty());
+        Save.S.devUnlocked = true; Save.S.write(); Save.S.devUnlocked = false; Save.S.write(); reload(p);
+        ck("sin modo dev: al cargar se purgan los [DEV] del perfil", Save.S.owned.isEmpty() && Save.S.equip[0].isEmpty());
+        Save.S.devUnlocked = true; Cosmetics.grant("dev_tint_ember"); Cosmetics.equip(ClassDef.ALL[1], "dev_tint_ember"); Save.devGems = 30;
+        Cosmetics.purgeDev(); Save.S.devUnlocked = false;
+        ck("Desactivar modo dev: purgeDev limpia articulos, equipo y gemas de prueba", Save.S.owned.isEmpty() && Save.S.equip[1].isEmpty() && Save.devGems == 0);
+        RunState rt = new RunState(ClassDef.ALL[0], 3, 0); rt.markTest(); rt.infinite = true; rt.floorsDone = 7; rt.kills = 99;
+        ck("sesion de prueba: isTest y resultado marcado", rt.isTest() && rt.session == RunState.Session.TEST && Infinite.resultOf(rt).dev);
+        int br = Save.S.infBestFloor, fl0 = Save.S.infFloors;
+        ck("sesion de prueba: no toca records ni totales", !Infinite.record(Save.S, Infinite.resultOf(rt)) && Save.S.infBestFloor == br && Save.S.infFloors == fl0);
+        ck("estado inicial: sesion NORMAL", new RunState(ClassDef.ALL[0], 3, 0).session == RunState.Session.NORMAL && !new RunState(ClassDef.ALL[0], 3, 0).isTest());
         // ---------------- el campana no cambia
         RunState rcm = new RunState(paladin, 1, 0); rcm.stage = 2; rcm.roomNo = 3;
         ck("campana: dificultad igual que antes", rcm.power() == 2 * 6 + 3 && !rcm.infinite);

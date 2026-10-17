@@ -40,7 +40,7 @@ final class RunScreen extends Screen implements Level.Listener {
 
     static RunScreen sandbox(Game g, ClassDef c, int biome, String enemy, boolean elite, int boss, java.util.function.Supplier<Screen> back) {
         RunScreen r = new RunScreen(g, c, 0);
-        r.sandbox = true; r.rs.sandbox = true;
+        r.sandbox = true; r.rs.markTest();
         r.sbEnemy = enemy; r.sbElite = elite; r.sbBoss = boss; r.sbBiome = Math.max(0, Math.min(8, biome)); r.sbBack = back;
         r.rs.biome = Biome.ALL[r.sbBiome]; r.rs.stage = Biome.ALL[r.sbBiome].tier;
         r.rs.gold = Save.devGold;
@@ -737,10 +737,14 @@ final class RunScreen extends Screen implements Level.Listener {
                 float px = w / 2f - 220;
                 float bw = 150, bx = px + 12, by = 52;
                 Save s = Save.S;
-                if (saveMenu) {
+                if (saveMenu && !isTestSession()) {
                     for (int i = 0; i < RunSave.SLOTS; i++) {
                         final int slot = i;
-                        add(bx, by + i * 28, bw, 22, "Guardar en ranura " + (i + 1), () -> { RunSave.write(game.P, this, slot); toast = "Partida guardada en la ranura " + (slot + 1); toastT = 2.5f; Snd.sfx("ui_confirm", 0.9f); layoutOverlay(); });
+                        add(bx, by + i * 28, bw, 22, "Guardar en ranura " + (i + 1), () -> {
+                            if (RunSave.write(game.P, this, slot)) { toast = "Partida guardada en la ranura " + (slot + 1); Snd.sfx("ui_confirm", 0.9f); }
+                            else { toast = "No se pudo guardar"; Snd.sfx("ui_error", 0.7f); }
+                            toastT = 2.5f; layoutOverlay();
+                        });
                     }
                     add(bx, by + 3 * 28 + 6, bw, 22, "Volver", () -> { saveMenu = false; layoutOverlay(); });
                     break;
@@ -749,9 +753,13 @@ final class RunScreen extends Screen implements Level.Listener {
                 add(bx, by + 28, bw, 22, "Música: " + (s.musicOn ? "SÍ" : "NO"), () -> { s.musicOn = !s.musicOn; Snd.applyVolumes(); s.write(); layoutOverlay(); });
                 add(bx, by + 56, bw, 22, "Sonidos: " + (s.sfxOn ? "SÍ" : "NO"), () -> { s.sfxOn = !s.sfxOn; Snd.applyVolumes(); s.write(); layoutOverlay(); });
                 add(bx, by + 84, bw, 22, "Vibración: " + (s.vibOn ? "SÍ" : "NO"), () -> { s.vibOn = !s.vibOn; s.write(); layoutOverlay(); });
-                add(bx, by + 112, bw, 22, "Guardar partida", () -> { saveMenu = true; layoutOverlay(); });
+                if (isTestSession()) {      // prueba del Modo Desarrollador: sin "Guardar partida"; solo continuar o salir
+                    add(bx, by + 112, bw + 12, 22, "Salir del modo de prueba", () -> { exitTest(); });
+                    break;
+                }
+                add(bx, by + 112, bw, 22, "Guardar partida", () -> { if (isTestSession()) return; saveMenu = true; layoutOverlay(); });
                 add(bx, by + 140, bw, 22, quitConfirm ? "¿Seguro? Toca otra vez" : "Abandonar partida", () -> {
-                    if (sandbox) { game.go(sbBack != null ? sbBack.get() : new Screens.Title(game)); return; }
+                    if (isTestSession()) { exitTest(); return; }
                     if (quitConfirm) { endRun(false); game.go(new Ops(game)); }
                     else { quitConfirm = true; layoutOverlay(); }
                 });
@@ -842,8 +850,25 @@ final class RunScreen extends Screen implements Level.Listener {
         RunSave.write(game.P, this, RunSave.AUTO);
     }
 
+    /** Sesion de prueba del Modo Desarrollador (arena, laboratorio, tienda de prueba). */
+    boolean isTestSession() { return sandbox || rs.isTest(); }
+
+    /** Termina la sesion de prueba y vuelve al menu de origen sin guardar nada. */
+    private void exitTest() {
+        reviveWait = -1;
+        game.go(sbBack != null ? sbBack.get() : new Screens.Title(game));
+    }
+
     // ---- ganchos de prueba (solo los usa DebugBot)
     void debugNextFloor() { afterBoss(); }
+    void debugOpenPause() { openOv(OV_PAUSE); }
+    void debugForceSaveMenu() { saveMenu = true; layoutOverlay(); }
+    java.util.List<String> debugLabels() { java.util.List<String> l = new ArrayList<>(); for (Hit h : hits) if (h.label != null) l.add(h.label); return l; }
+    boolean debugTap(String label) { for (Hit h : new ArrayList<>(hits)) if (label.equals(h.label) && !h.disabled && h.act != null) { h.act.run(); return true; } return false; }
+    void debugKillAll() {
+        for (Enemy e : new ArrayList<>(lv.enemies)) if (e.alive) { e.hp = 0; e.die(lv); }
+        if (lv.boss != null) { lv.boss.die(lv); onBossDead(lv); }
+    }
     boolean debugRevive(Infinite.Method m) { int n = rs.revivesUsed; tryRevive(m); return rs.revivesUsed > n; }
     void debugWinCampaign() { rs.finalRun = true; Save.S.finalBeaten = true; endRun(true); openOv(OV_WIN); }
     void debugContinueInfinite() { continueInfinite(); }

@@ -109,7 +109,7 @@ public final class Input {
         set(B_POTION, 26, 62, 13, "potion", false);
         set(B_SEC, W - 198, 178, 15, "", false);
         set(B_GREN, W - 184, 140, 15, "", false);
-        set(B_GUARD, W - 168, 252, 16, "shield", true);
+        set(B_GUARD, W - 168, 252, 16, "parry", true);
         btn[B_INTERACT].visible = false;
         btn[B_LEFT].visible = btn[B_RIGHT].visible = btn[B_DOWN].visible = true;
         applyCustom();

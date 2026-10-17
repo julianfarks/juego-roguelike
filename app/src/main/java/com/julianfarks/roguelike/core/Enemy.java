@@ -19,19 +19,24 @@ public final class Enemy extends Ent {
     private Enemy healTgt;
     private boolean suicide, blocked;
     private float aimX, aimY;
+    private int atk, atkCount;
+    private final float[] eX = new float[3];
+    private int eN;
 
     public Enemy(EnemyDef d, boolean elite, float hpMul, float dmgMul) {
         this.def = d;
+        boolean uniq = d.elite;
+        elite = elite || uniq;
         this.elite = elite;
         sheet = Assets.sheet(d.sheet);
-        scale = elite ? 1.22f : 1f;
+        scale = (elite && !uniq) ? 1.22f : 1f;
         bw = sheet.bw * scale;
         bh = sheet.bh * scale;
-        maxHp = hp = d.hp * hpMul * (elite ? 2.6f : 1f);
-        dmg = d.dmg * dmgMul * (elite ? 1.3f : 1f);
-        speed = d.speed * (elite ? 1.15f : 1f);
-        cooldown = d.cooldown * (elite ? 0.8f : 1f);
-        flying = d.role == EnemyDef.FLY_SHOOT || d.role == EnemyDef.FLY_DIVE;
+        maxHp = hp = d.hp * hpMul * ((elite && !uniq) ? 2.6f : 1f);
+        dmg = d.dmg * dmgMul * ((elite && !uniq) ? 1.3f : 1f);
+        speed = d.speed * ((elite && !uniq) ? 1.15f : 1f);
+        cooldown = d.cooldown * ((elite && !uniq) ? 0.8f : 1f);
+        flying = d.role == EnemyDef.FLY_SHOOT || d.role == EnemyDef.FLY_DIVE || d.id.equals("ventisca");
         gravity = !flying;
         statusId = Status.parse(d.status);
         right = Math.random() < 0.5;
@@ -181,6 +186,7 @@ public final class Enemy extends Ent {
             case EnemyDef.POUNCER: pouncerAI(lv, dt, p, dx, dy, sp); break;
             case EnemyDef.SNIPER: sniperAI(lv, dt, p, dx, dy, dist, sp); break;
             case EnemyDef.BLINKER: blinkerAI(lv, dt, p, dx, dy, dist, sp); break;
+            case EnemyDef.ELITE: eliteAI(lv, dt, p, dx, dy, dist, sp); break;
             case EnemyDef.RANGED: case EnemyDef.CASTER: rangedAI(lv, dt, p, dx, dy, dist, sp); break;
             case EnemyDef.FLY_SHOOT: flyShootAI(lv, dt, p, dx, dy, dist, sp); break;
             case EnemyDef.FLY_DIVE: flyDiveAI(lv, dt, p, dx, dy, dist, sp); break;
@@ -813,7 +819,7 @@ public final class Enemy extends Ent {
                     if (lv.solidAtPx(bx, p.y - 8) || !groundBehind(lv, bx, p.y)) bx = p.x;
                     tx = bx; ty = p.y;
                     lv.fxAdd("fx_ring", "pulse", tx, ty - 3, 0.8f, def.color);
-                    lv.fxAdd("fx_tele", "a", tx, ty - 14, 0.8f, def.color);
+                    lv.fxAdd("fx_tele", "in", tx, ty - 14, 0.8f, def.color);
                     Snd.sfxAt("en_alert", x, lv.camX + lv.viewW / 2, 0.5f);
                     lv.ps.burst(lv.rng, x, y - bh / 2, def.color, 10, 80, 0.4f, 2, 0, true);
                 }
@@ -834,6 +840,285 @@ public final class Enemy extends Ent {
                 return;
         }
         gravityMove(lv, dt);
+    }
+
+
+    // ------------------------------------------------------------------ elites unicos (dos ataques propios cada uno)
+    private boolean is(String id) { return def.id.equals(id); }
+
+    private float eliteWant() {
+        switch (def.id) {
+            case "caballero_osario": return 40; case "herrero_infernal": return 46; case "ventisca": return 150; case "segador_vacio": return 70;
+            case "druida_podrido": return 130; case "capitan_trueno": return 90; case "sacerdote_carmesi": return 140; default: return 80;
+        }
+    }
+
+    private int chooseAtk(Level lv, float ad) {
+        atkCount++;
+        switch (def.id) {
+            case "caballero_osario": return ad < 80 && lv.rng.chance(0.7f) ? 1 : 2;
+            case "herrero_infernal": return ad < 64 ? 2 : 1;
+            case "centurion_eclipse": return ad < 80 ? 2 : 1;
+            case "segador_vacio": return lv.rng.chance(0.5f) ? 1 : 2;
+            default: return atkCount % 2 == 1 ? 1 : 2;
+        }
+    }
+
+    private boolean eliteDash() {
+        return atk == 2 && (is("caballero_osario") || is("capitan_trueno") || is("ventisca"));
+    }
+
+    private float groundY(Level lv, float px, float py) { return lv.groundBelow(px, py - 24); }
+
+    private void marker(Level lv, float mx, float my, int color) {
+        lv.fxAdd("fx_ring", "pulse", mx, my - 2, 0.9f, color);
+        lv.fxAdd("fx_tele", "in", mx, my - 12, 0.8f, color);
+    }
+
+    private void startElite(Level lv, Player p) {
+        if (is("segador_vacio") && atk == 1) {          // se desvanece y reaparece junto al jugador
+            startState(VANISH, "idle");
+            float bx = p.x - p.dir() * 34;
+            if (lv.solidAtPx(bx, p.y - 8) || !groundBehind(lv, bx, p.y)) bx = p.x + p.dir() * 34;
+            if (lv.solidAtPx(bx, p.y - 8) || !groundBehind(lv, bx, p.y)) bx = p.x;
+            tx = bx; ty = p.y;
+            marker(lv, tx, ty, def.color);
+            Snd.sfxAt("en_alert", x, lv.camX + lv.viewW / 2, 0.7f);
+            lv.ps.burst(lv.rng, x, y - bh / 2, def.color, 14, 90, 0.4f, 2, 0, true);
+            return;
+        }
+        startState(WINDUP, atk == 2 ? "windup2" : "windup");
+        vx = 0;
+        if (flying) vy = 0;
+        aimX = p.x; aimY = p.cy();
+        Snd.sfxAt("en_alert", x, lv.camX + lv.viewW / 2, 0.8f);
+        // avisos en el suelo ANTES del golpe
+        if ((is("druida_podrido") && atk == 1) || (is("capitan_trueno") && atk == 1)) {
+            eN = 3;
+            for (int k = 0; k < 3; k++) {
+                eX[k] = p.x + (k - 1) * (is("capitan_trueno") ? 52 : 44);
+                marker(lv, eX[k], groundY(lv, eX[k], p.y), def.color);
+            }
+        } else if (is("sacerdote_carmesi") && atk == 2) {
+            eN = 1; eX[0] = p.x;
+            marker(lv, eX[0], groundY(lv, eX[0], p.y), def.color);
+        }
+    }
+
+    private void enterAttack(Level lv, Player p) {
+        startState(ATTACK, atk == 2 ? "attack2" : "attack");
+        shot = false; hitDone = false;
+        float dir = right ? 1 : -1;
+        if (is("caballero_osario") && atk == 2) { vx = dir * 300f; Snd.sfxAt("en_dash", x, lv.camX + lv.viewW / 2, 0.8f); }
+        else if (is("capitan_trueno") && atk == 2) { vx = dir * 270f; Snd.sfxAt("en_dash", x, lv.camX + lv.viewW / 2, 0.8f); }
+        else if (is("ventisca") && atk == 2) {
+            float ddx = aimX - x, ddy = aimY - cy(), d = (float) Math.sqrt(ddx * ddx + ddy * ddy) + 0.01f;
+            vx = ddx / d * 300f; vy = ddy / d * 300f; right = vx >= 0;
+            Snd.sfxAt("en_dash", x, lv.camX + lv.viewW / 2, 0.8f);
+        }
+    }
+
+    /** Se lanza una vez, en el fotograma de liberacion del ataque. */
+    private void eliteRelease(Level lv, Player p) {
+        float dir = right ? 1 : -1;
+        float mx = x + dir * 16, my = y - bh * 0.6f;
+        float cx0 = lv.camX + lv.viewW / 2;
+        switch (def.id) {
+            case "caballero_osario":
+                if (atk == 1) {
+                    Proj w = lv.proj(x + dir * 22, y - 6, dir * 210f, 0, dmgNow() * 0.9f, false, "crescent", def.color);
+                    w.special = 1; w.life = 1.7f; w.radius = 8; w.scale = 1.4f;
+                    lv.shake(3f, 0.2f); Snd.sfxAt("en_step_heavy", x, cx0, 0.9f);
+                }
+                break;
+            case "herrero_infernal":
+                if (atk == 1) {
+                    for (int k = -1; k <= 1; k++) {
+                        float T = 0.95f, g = 700f, tgx = p.x + k * 42f;
+                        Proj pr = lv.proj(mx, my, (tgx - mx) / T, ((p.y - 6) - my - 0.5f * g * T * T) / T, dmgNow(), false, "magma", def.color);
+                        pr.grav = g; pr.life = T + 0.4f; pr.explode = 34; pr.status = Ent.BURN; pr.statusDur = 3f; pr.statusPow = 5f; pr.radius = 6; pr.trail = true;
+                    }
+                    Snd.sfxAt("en_cast", x, cx0, 0.8f);
+                } else {
+                    for (int s = -1; s <= 1; s += 2) {
+                        Proj w = lv.proj(x + s * 18, y - 6, s * 190f, 0, dmgNow() * 0.8f, false, "magma", def.color);
+                        w.special = 1; w.life = 1.4f; w.radius = 8; w.scale = 1.3f;
+                    }
+                    lv.shake(4f, 0.25f); Snd.sfxAt("explosion_small", x, cx0, 0.9f);
+                    lv.fx("fx_dust", "land", x + dir * 20, y - 2, 1.4f, 0, 0);
+                }
+                break;
+            case "ventisca":
+                if (atk == 1) {
+                    for (int k = 0; k < 10; k++) {
+                        float ang = k * 0.6283f + 0.3f;
+                        Proj pr = lv.proj(x, y - bh / 2, (float) Math.cos(ang) * 125f, (float) Math.sin(ang) * 125f, dmgNow() * 0.8f, false, "iceshard", def.color);
+                        pr.status = Ent.SLOW; pr.statusDur = 2.5f; pr.life = 3.4f; pr.radius = 5;
+                    }
+                    lv.fxAdd("fx_ring", "pulse", x, y - bh / 2, 1.2f, def.color);
+                    Snd.sfxAt("hit_ice", x, cx0, 0.9f);
+                }
+                break;
+            case "segador_vacio":
+                if (atk == 2) {
+                    for (int k = -1; k <= 1; k++) {
+                        Proj pr = lv.proj(x, y - bh * 0.9f, k * 70f, -85f, dmgNow() * 0.8f, false, "voidorb", def.color);
+                        pr.homing = 90f; pr.life = 5f; pr.radius = 6;
+                    }
+                    Snd.sfxAt("en_cast", x, cx0, 0.9f);
+                    lv.fxAdd("fx_ring", "pulse", x, y - bh, 0.9f, def.color);
+                }
+                break;
+            case "druida_podrido":
+                if (atk == 1) {
+                    for (int k = 0; k < eN; k++) {
+                        final float rx = eX[k];
+                        lv.later(0.30f + 0.2f * k, () -> {
+                            float gy = groundY(lv, rx, y);
+                            lv.fx("fx_thorn", "vine", rx, gy, 1.1f, 0, 0);
+                            lv.explosion(rx, gy - 8, 18, dmgNow() * 1.1f, 150, Ent.POISON, 3f, 4f, false);
+                            lv.ps.burst(lv.rng, rx, gy - 6, 0x6AA040, 10, 90, 0.4f, 2, 200, false);
+                            Snd.sfxAt("hit_flesh_1", rx, cx0, 0.6f);
+                        });
+                    }
+                } else {
+                    float T = 1.0f, g = 650f;
+                    Proj pr = lv.proj(mx, my, (p.x - mx) / T, ((p.y - 6) - my - 0.5f * g * T * T) / T, dmgNow(), false, "poison", def.color);
+                    pr.grav = g; pr.life = T + 0.4f; pr.explode = 40; pr.status = Ent.POISON; pr.statusDur = 4f; pr.statusPow = 5f; pr.radius = 6;
+                    float base = (float) Math.atan2(p.cy() - my, p.x - mx);
+                    for (int k = -2; k <= 2; k++) {
+                        Proj lf = lv.proj(mx, my, (float) Math.cos(base + k * 0.24f) * 150f, (float) Math.sin(base + k * 0.24f) * 150f, dmgNow() * 0.6f, false, "leaf", def.color);
+                        lf.life = 3f; lf.radius = 4;
+                    }
+                    Snd.sfxAt("en_cast", x, cx0, 0.8f);
+                }
+                break;
+            case "capitan_trueno":
+                if (atk == 1) {
+                    for (int k = 0; k < eN; k++) {
+                        final float rx = eX[k];
+                        lv.later(0.12f + 0.28f * k, () -> {
+                            float gy = groundY(lv, rx, y);
+                            lv.lightning(rx, gy - 170, rx, gy);
+                            lv.fx("fx_lightning", "ground", rx, gy, 1f, 0, 0);
+                            lv.explosion(rx, gy - 12, 22, dmgNow() * 1.2f, 160, Ent.SHOCK, 1.5f, 0, false);
+                            Snd.sfxAt("hit_shock", rx, cx0, 0.8f);
+                            lv.shake(2.5f, 0.15f);
+                        });
+                    }
+                }
+                break;
+            case "sacerdote_carmesi":
+                if (atk == 1) {
+                    float base = (float) Math.atan2(p.cy() - my, p.x - mx);
+                    for (int k = -1; k <= 1; k++) {
+                        Proj pr = lv.proj(mx, my, (float) Math.cos(base + k * 0.4f) * 120f, (float) Math.sin(base + k * 0.4f) * 120f, dmgNow(), false, "bloodorb", def.color);
+                        pr.homing = 110f; pr.life = 4.5f; pr.radius = 6; pr.status = Ent.BLEED; pr.statusDur = 3f; pr.statusPow = 4f;
+                    }
+                    Snd.sfxAt("en_cast", x, cx0, 0.8f);
+                } else {
+                    final float rx = eX[0];
+                    lv.later(0.40f, () -> {
+                        float gy = groundY(lv, rx, y);
+                        lv.fx("fx_blood", "splat", rx, gy - 6, 1.4f, 0, 0);
+                        lv.fx("fx_fire", "pillar", rx, gy, 0.9f, 0xD0203A, Platform.ADD | Platform.TINT);
+                        int n = lv.explosion(rx, gy - 14, 28, dmgNow() * 1.3f, 160, Ent.BLEED, 3f, 4f, false);
+                        if (n > 0 && alive) { hp = Math.min(maxHp, hp + maxHp * 0.12f); lv.text(x, y - bh - 8, "+" + Math.round(maxHp * 0.12f), 0xFF6A7C, false); }
+                        Snd.sfxAt("hit_blood", rx, cx0, 0.8f);
+                    });
+                }
+                break;
+            case "centurion_eclipse":
+                if (atk == 1) {
+                    Proj bm = lv.proj(mx, my, dir * 620f, 0, dmgNow() * 1.3f, false, "holy", def.color);
+                    bm.life = 0.9f; bm.radius = 9; bm.scale = 1.6f;
+                    lv.fx("fx_holy", "beam", mx + dir * 30, my, 1.2f, def.color, Platform.ADD | Platform.TINT);
+                    lv.shake(2f, 0.2f); Snd.sfxAt("en_cast", x, cx0, 0.9f);
+                } else {
+                    lv.explosion(x, y - 14, 56, dmgNow() * 0.9f, 220, -1, 0, 0, false);
+                    lv.fxAdd("fx_ring", "pulse", x, y - 14, 1.3f, def.color);
+                    lv.ps.burst(lv.rng, x, y - 14, 0xFFE8A0, 18, 150, 0.5f, 2, 0, true);
+                    Snd.sfxAt("hit_metal_2", x, cx0, 0.9f);
+                }
+                break;
+            default: break;
+        }
+    }
+
+    private void eliteAI(Level lv, float dt, Player p, float dx, float dy, float dist, float sp) {
+        boolean moved = false;
+        switch (state) {
+            case PATROL: patrol(lv, dt, sp); return;
+            case CHASE: {
+                face(dx);
+                float want = eliteWant(), ad = Math.abs(dx);
+                if (flying) {
+                    bob += dt * 2.4f;
+                    flyMove(lv, dt, p.x + (dx > 0 ? -1 : 1) * want, p.y - 78 + (float) Math.sin(bob) * 9, sp, 480);
+                    animName = "walk"; moved = true;
+                } else if (ad > want && groundAhead(lv, Mth.sign(dx))) { vx = Mth.approach(vx, Mth.sign(dx) * sp, 900 * dt); animName = "walk"; }
+                else { vx = Mth.approach(vx, 0, 900 * dt); animName = "idle"; }
+                if (!flying && hitWall && p.y < y - 24 && onGround) vy = -300;
+                if (atkCd <= 0 && dist < def.range && (flying || Math.abs(dy) < 120)) { atk = chooseAtk(lv, ad); startElite(lv, p); }
+                break;
+            }
+            case VANISH:
+                vx = 0; vy = 0;
+                if (stateT >= 0.8f) {
+                    x = tx; y = ty; vx = vy = 0; right = p.x >= x;
+                    startState(WINDUP, "windup");
+                    lv.ps.burst(lv.rng, x, y - bh / 2, def.color, 18, 120, 0.4f, 2, 0, true);
+                    lv.fxAdd("fx_ring", "pulse", x, y - bh / 2, 0.8f, def.color);
+                }
+                return;
+            case WINDUP: {
+                vx = Mth.approach(vx, 0, 900 * dt);
+                if (flying) { vy = Mth.approach(vy, 0, 700 * dt); }
+                if (stateT < 0.35f) { face(dx); aimX = p.x; aimY = p.cy(); }
+                if (is("centurion_eclipse") && atk == 1) {   // rayo solar: la linea avisa antes
+                    float dir = right ? 1 : -1, my = y - bh * 0.6f;
+                    lv.lines.add(new float[]{x + dir * 16, my, x + dir * 420, my, 0.05f, stateT > 0.55f ? 0xFFFFFF : 0xFFD25A});
+                }
+                if (finishedAnim() && stateT > 0.6f) enterAttack(lv, p);
+                if (flying) { lv.move(this, dt); moved = true; }
+                break;
+            }
+            case ATTACK: {
+                Anim a = sheet.anim(animName);
+                float dir = right ? 1 : -1;
+                boolean dashing = eliteDash();
+                if (dashing) {
+                    if (is("ventisca")) { /* mantiene el vector del picado */ }
+                    else vx = dir * (is("caballero_osario") ? 300f : 270f);
+                    if ((int) (stateT * 30) % 2 == 0) lv.ps.spawn(x - dir * 8, y - (flying ? bh / 2 : 3), 0, -8, 0.3f, 3, 0, def.color, true);
+                    if (!hitDone && p.alive && overlaps(p.x - p.bw / 2, p.y - p.bh, p.bw, p.bh)) { hitDone = true; lv.hurtPlayer(dmgNow() * 1.15f, x, statusId, 3f); }
+                    if (!flying && !groundAhead(lv, dir)) vx = 0;
+                }
+                int rel = a.rel >= 0 ? a.rel : (a.h0 >= 0 ? a.h0 : a.n / 2);
+                if (!shot && a.frameAt(animT) >= rel) { shot = true; eliteRelease(lv, p); }
+                if (!hitDone && !dashing && a.hitActive(animT)) {
+                    float[] b = new float[4];
+                    if (a.worldBox(x, y, right, b) && p.overlaps(b[0], b[1], b[2], b[3])) { hitDone = true; lv.hurtPlayer(dmgNow(), x, statusId, 3f); }
+                }
+                if (!dashing) { vx = Mth.approach(vx, 0, 900 * dt); if (flying) vy = Mth.approach(vy, 0, 700 * dt); }
+                boolean over = dashing ? (stateT > 0.5f || hitWall) : a.done(animT);
+                if (over) { state = RECOVER; stateT = 0; animName = "idle"; atkCd = cooldown * (0.85f + lv.rng.f() * 0.4f); vx *= 0.2f; if (flying) vy *= 0.2f; }
+                if (flying) { lv.move(this, dt); moved = true; }
+                break;
+            }
+            case RECOVER:
+                vx = Mth.approach(vx, 0, 1000 * dt);
+                if (flying) { vy = Mth.approach(vy, -20, 600 * dt); lv.move(this, dt); moved = true; }
+                if (stateT > 0.55f) state = CHASE;
+                break;
+            case HURT:
+                vx = Mth.approach(vx, 0, 500 * dt);
+                if (flying) { vy = Mth.approach(vy, 0, 400 * dt); lv.move(this, dt); moved = true; }
+                if (stateT > 0.24f) { state = CHASE; animName = "idle"; }
+                break;
+            default: state = CHASE; break;
+        }
+        if (!moved) gravityMove(lv, dt);
     }
 
     // ------------------------------------------------------------------ dibujo

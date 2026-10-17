@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
 
 MODULES = ['en_catacumbas', 'en_forja', 'en_helado', 'en_vacio', 'en_bosque', 'en_tormenta', 'en_sangre',
-           'en_eclipse', 'en_nuevos_a', 'en_nuevos_b', 'props']
+           'en_eclipse', 'en_nuevos_a', 'en_nuevos_b', 'en_elites_a', 'en_elites_b', 'props']
 
 
 def main(argv):

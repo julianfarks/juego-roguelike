@@ -6,7 +6,7 @@ import java.util.Map;
 /** Definicion de enemigos normales. */
 public final class EnemyDef {
     public static final int MELEE = 0, RANGED = 1, FLY_SHOOT = 2, FLY_DIVE = 3, CHARGER = 4, JUMPER = 5, CASTER = 6, HEAVY = 7,
-            SHIELD = 8, SUPPORT = 9, EXPLODER = 10, TURRET = 11, POUNCER = 12, SNIPER = 13, BUFFER = 14, BLINKER = 15;
+            SHIELD = 8, SUPPORT = 9, EXPLODER = 10, TURRET = 11, POUNCER = 12, SNIPER = 13, BUFFER = 14, BLINKER = 15, ELITE = 16;
 
     public final String id, sheet, dieSfx, proj;
     public final int role;
@@ -15,7 +15,7 @@ public final class EnemyDef {
     public final int souls, color;
     public final float contact;      // daño por contacto (0 = no)
     public final String status;      // estado que aplica al jugador: "", "burn","poison","slow","shock","bleed"
-    public final boolean elite;
+    public boolean elite;
 
     EnemyDef(String id, int role, float hp, float dmg, float speed, float range, float cooldown, String proj, String dieSfx, int souls, int color, float contact, String status) {
         this.id = id; this.sheet = "sprites/en_" + id; this.role = role; this.hp = hp; this.dmg = dmg; this.speed = speed; this.range = range;
@@ -26,6 +26,27 @@ public final class EnemyDef {
     private static final Map<String, EnemyDef> M = new HashMap<>();
 
     private static void add(EnemyDef d) { M.put(d.id, d); }
+
+    private static void eliteDef(String id, float hp, float dmg, float speed, float range, float cd, String die, int color, String status) {
+        EnemyDef d = new EnemyDef(id, ELITE, hp, dmg, speed, range, cd, null, die, 6, color, 0, status);
+        d.elite = true; d.detect = 300;
+        M.put(id, d);
+    }
+
+    /** Elite unico de cada bioma (null si no tiene). */
+    public static String eliteFor(String biomeKey) {
+        switch (biomeKey) {
+            case "catacumbas": return "caballero_osario";
+            case "forja": return "herrero_infernal";
+            case "helado": return "ventisca";
+            case "vacio": return "segador_vacio";
+            case "bosque": return "druida_podrido";
+            case "tormenta": return "capitan_trueno";
+            case "sangre": case "cazador": return "sacerdote_carmesi";
+            case "eclipse": return "centurion_eclipse";
+            default: return null;
+        }
+    }
 
     public static EnemyDef get(String id) { return M.get(id); }
 
@@ -63,6 +84,15 @@ public final class EnemyDef {
         add(new EnemyDef("asesino_eclipse", BLINKER, 46, 17, 82, 36, 3.4f, null, "en_die_flesh", 3, 0xF2E6B8, 0, "bleed"));
         M.get("tirador_rayo").detect = 290;
         M.get("clerigo_osario").detect = 290;
+        // ---- elites unicos (aparecen en las salas de elite; id, rol, hp, dmg, vel, alcance de ataque, enfriamiento...)
+        eliteDef("caballero_osario", 260, 17, 52, 170, 2.4f, "en_die_bone", 0x5CFF9A, "bleed");
+        eliteDef("herrero_infernal", 340, 20, 40, 230, 2.8f, "en_die_flesh", 0xFF7A1A, "burn");
+        eliteDef("ventisca", 190, 15, 60, 280, 2.6f, "en_die_ghost", 0x7AF0FF, "slow");
+        eliteDef("segador_vacio", 230, 19, 56, 230, 2.6f, "en_die_ghost", 0xB04CFF, "");
+        eliteDef("druida_podrido", 260, 16, 38, 250, 2.7f, "en_die_flesh", 0x6AA040, "poison");
+        eliteDef("capitan_trueno", 280, 18, 50, 270, 2.5f, "en_die_flesh", 0x4FA8FF, "shock");
+        eliteDef("sacerdote_carmesi", 240, 17, 38, 260, 2.6f, "en_die_flesh", 0xD0203A, "bleed");
+        eliteDef("centurion_eclipse", 320, 21, 46, 270, 2.8f, "en_die_flesh", 0xFFD25A, "");
         add(new EnemyDef("piglin_dorado", HEAVY, 145, 24, 34, 40, 1.8f, null, "en_die_flesh", 4, 0xF2E6B8, 0, ""));
         add(new EnemyDef("espectro", CASTER, 40, 12, 40, 170, 2.3f, "holy", "en_die_ghost", 3, 0xF2E6B8, 0, ""));
         add(new EnemyDef("llama_solar", FLY_SHOOT, 34, 11, 50, 180, 2.1f, "holy", "en_die_magic", 3, 0xF2E6B8, 0, "burn"));

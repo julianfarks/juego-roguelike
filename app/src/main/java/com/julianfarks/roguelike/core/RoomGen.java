@@ -344,7 +344,11 @@ public final class RoomGen {
                     if (p[0] > 12 && p[1] < W - 12) { sx = (p[0] + p[1]) / 2f * Room.TS + 8; sy = p[2] * Room.TS; }
                 }
             }
-            rm.spawns.add(new Room.Spawn(id, sx, sy, elite && i == 0));
+            boolean isElite = elite && i == 0;
+            String eid = EnemyDef.eliteFor(rm.biome.key);
+            if (isElite && eid != null && !flyer && r.chance(0.75f)) { id = eid; }   // elite unico del bioma
+            else if (isElite && eid != null && flyer && eid.equals("ventisca")) { id = eid; }
+            rm.spawns.add(new Room.Spawn(id, sx, sy, isElite));
         }
     }
 

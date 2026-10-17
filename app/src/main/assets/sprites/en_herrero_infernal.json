@@ -1,0 +1,76 @@
+{
+ "cell": [
+  80,
+  72
+ ],
+ "pivot": [
+  40,
+  70
+ ],
+ "body": [
+  24,
+  54
+ ],
+ "anims": {
+  "idle": {
+   "row": 0,
+   "n": 6,
+   "fps": 6,
+   "loop": true
+  },
+  "walk": {
+   "row": 1,
+   "n": 8,
+   "fps": 7,
+   "loop": true
+  },
+  "windup": {
+   "row": 2,
+   "n": 4,
+   "fps": 10,
+   "loop": false
+  },
+  "attack": {
+   "row": 3,
+   "n": 5,
+   "fps": 11,
+   "loop": false,
+   "rel": 2
+  },
+  "windup2": {
+   "row": 4,
+   "n": 4,
+   "fps": 10,
+   "loop": false
+  },
+  "attack2": {
+   "row": 5,
+   "n": 5,
+   "fps": 11,
+   "loop": false,
+   "hit": [
+    2,
+    3
+   ],
+   "box": [
+    6,
+    -50,
+    44,
+    50
+   ],
+   "rel": 2
+  },
+  "hurt": {
+   "row": 6,
+   "n": 2,
+   "fps": 10,
+   "loop": false
+  },
+  "death": {
+   "row": 7,
+   "n": 9,
+   "fps": 10,
+   "loop": false
+  }
+ }
+}

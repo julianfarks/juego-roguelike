@@ -15,7 +15,7 @@ final class Cinematic extends Screen {
     private int fadeDir = -1;         // -1 abriendo, 1 cerrando
     private int pendingSlide = -1;
     private boolean finished, skipping;
-    private final boolean[] starInit = new boolean[1];
+    private int transType;           // 0 negro, 1 destello, 2 rojo en diagonal, 3 persianas, 4 iris
     private float[] sx = new float[70], sy = new float[70], sp = new float[70];
 
     Cinematic(Game g, Story.Cine cine, Runnable done) {
@@ -55,6 +55,8 @@ final class Cinematic extends Screen {
         if (slide + 1 >= cine.slides.length) { end(); return; }
         pendingSlide = slide + 1;
         fadeDir = 1;
+        int nb = cine.slides[pendingSlide].bg;
+        transType = nb == cine.slides[slide].bg ? 0 : transFor(nb);
         // dentro de una misma escena el fundido es corto (solo el texto cambia)
     }
 
@@ -82,7 +84,7 @@ final class Cinematic extends Screen {
         dlg.update(dt);
         ps.update(dt);
         int bg = cine.slides[slide].bg;
-        if (rng.chance(dt * 14)) spawnAmbient(bg);
+        CineArt.update(dt, ps, rng, w(), bg, sceneT, subIndex(), slideT);
         // avance automatico: texto completo + tiempo de lectura segun longitud
         if (fadeDir == -1 && dlg.full()) {
             holdT += dt;
@@ -97,6 +99,7 @@ final class Cinematic extends Screen {
                 int old = slide;
                 slide = pendingSlide; pendingSlide = -1;
                 if (cine.slides[slide].bg != cine.slides[old].bg) { sceneT = 0; ps.clear(); }
+                else if (fadeBlack > 0.55f) fadeBlack = 0.55f;
                 loadSlide();
                 fadeDir = -1;
             }
@@ -105,26 +108,41 @@ final class Cinematic extends Screen {
         }
     }
 
-    private void spawnAmbient(int bg) {
-        int w = W();
-        switch (bg) {
-            case Story.BG_ABYSS: case Story.BG_HUNTER:
-                ps.spawn(rng.f(0, w), -4, rng.f(-8, 14), rng.f(10, 28), rng.f(5, 9), 1, 0, rng.chance(0.5f) ? 0xAA8890 : 0xD04050, false); break;
-            case Story.BG_DESCENT: case Story.BG_TRUTH:
-                ps.spawn(rng.f(0, w), Platform.VIEW_H + 3, rng.f(-10, 10), -rng.f(14, 40), rng.f(4, 8), rng.chance(0.3f) ? 2 : 1, 0, rng.chance(0.5f) ? 0xFF8A3A : 0xFFD070, true); break;
-            case Story.BG_SEVEN: case Story.BG_RELICS:
-                ps.spawn(rng.f(0, w), rng.f(40, 220), rng.f(-6, 6), -rng.f(6, 18), rng.f(3, 6), 1, 0, 0xFFE8A0, true); break;
-            case Story.BG_SHATTER:
-                if (sceneT > 3.2f) ps.spawn(w / 2f + rng.f(-60, 60), rng.f(30, 120), rng.f(-30, 30), rng.f(10, 60), rng.f(3, 6), rng.chance(0.4f) ? 3 : 2, 90, 0xE04050, false); break;
-            default:
-                ps.spawn(rng.f(0, w), Platform.VIEW_H + 3, rng.f(-6, 6), -rng.f(8, 24), rng.f(5, 9), 1, 0, 0xFFE8A0, true); break;
+    private static int transFor(int bg) {
+        switch (bg) { case Story.BG_HUNTER: return 2; case Story.BG_SEVEN: return 3; case Story.BG_SHATTER: return 1; case Story.BG_DESCENT: return 4; case Story.BG_TRUTH: return 4; default: return 0; }
+    }
+
+    private int w() { return W(); }
+
+    /** Indice de la diapositiva dentro de su escena (para sincronizar eventos visuales con el texto). */
+    private int subIndex() { int k = 0, bg = cine.slides[slide].bg; for (int i = slide - 1; i >= 0 && cine.slides[i].bg == bg; i--) k++; return k; }
+
+    private void transition(Platform.Gfx g, int w, float p) {
+        int H = Platform.VIEW_H;
+        p = Mth.clamp(p, 0, 1);
+        switch (transType) {
+            case 1: g.rect(0, 0, w, H, Mth.withAlpha(0xFFFFFF, (int) (p * 255)), false); break;                         // destello blanco
+            case 2: {                                                                                                   // tajo rojo
+                float edge = (w + 80) * p - 40;
+                for (int y = 0; y < H; y += 3) { float xx = edge + (y - H / 2f) * 0.35f; g.rect(0, y, Math.max(0, xx), 3, 0xFF050206, false); g.rect(Math.max(0, xx), y, 3, 3, 0xFFE02040, true); }
+                break;
+            }
+            case 3: { int n = 12; float sw = w / (float) n; for (int i = 0; i < n; i++) { float hh = H * Mth.clamp(p * 1.5f - (i % 4) * 0.08f, 0, 1); g.rect(i * sw, (i % 2 == 0) ? 0 : H - hh, sw + 1, hh, 0xFF000000, false); } break; }   // persianas
+            case 4: {                                                                                                   // iris
+                float r = (1 - p) * (w * 0.62f);
+                g.clipBegin(0, 0, w, H);
+                for (int y = 0; y < H; y += 2) { float dy = y - H / 2f; float hw = r * r - dy * dy; float half = hw > 0 ? (float) Math.sqrt(hw) : 0; g.rect(0, y, w / 2f - half, 2, 0xFF000000, false); g.rect(w / 2f + half, y, w / 2f - half + 1, 2, 0xFF000000, false); }
+                g.clipEnd();
+                break;
+            }
+            default: g.rect(0, 0, w, H, Mth.withAlpha(0x000000, (int) (p * 255)), false);
         }
     }
 
     @Override void render(Platform.Gfx g) {
         int w = W();
         int bg = cine.slides[slide].bg;
-        CineArt.draw(g, w, bg, sceneT, sx, sy, sp);
+        CineArt.draw(g, w, bg, sceneT, subIndex(), slideT, sx, sy, sp);
         ps.render(g, 0, 0);
         // bandas de cine
         g.rect(0, 0, w, 26, 0xFF000000, false);
@@ -142,7 +160,7 @@ final class Cinematic extends Screen {
         // indicador de pagina y saltar
         for (Hit h : hits) if (!h.plain) drawButton(g, h);
         UI.small.center(g, "Toca para avanzar", w / 2f, 255, UI.GREY, 0.55f);
-        if (fadeBlack > 0.001f) g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0x000000, (int) (Mth.clamp(fadeBlack, 0, 1) * 255)), false);
+        if (fadeBlack > 0.001f) transition(g, w, fadeBlack);
     }
 
     private float time() { return t; }

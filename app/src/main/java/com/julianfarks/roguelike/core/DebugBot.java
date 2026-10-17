@@ -33,6 +33,24 @@ public final class DebugBot {
 
     private boolean compDone, screenDone;
 
+    // ---- prueba de animaciones de personalidad: el bot se queda quieto y registra que hace el personaje (BOT_PERSONA=idle|react)
+    private int pStart = -1;
+    private void personaStep(RunScreen rs, Level lv, Player p, int frame) {
+        if (rs.fadeA > 0.05f) return;
+        if (pStart < 0) pStart = frame;
+        int t = frame - pStart;
+        if (t <= 5) { lv.enemies.clear(); lv.toKill = 0; lv.cleared = true; lv.pl.invuln = 99f; }
+        if (t % 10 == 0) System.out.println("PERSONA t=" + t + " f=" + frame + " cls=" + p.cls.key + " estado=" + p.state + " anim=" + p.animName + " act=" + p.actName + " frame=" + p.anim().frameAt(p.animT) + " hp=" + Math.round(rs.rs.hp));
+        if ("react".equals(System.getenv("BOT_PERSONA"))) {
+            if (t == 30) p.react("chest", 0f);
+            if (t == 120) p.react("awe", 0f);
+            if (t == 200) p.react("touch", 0f);
+            if (t == 280) p.react("victory", 0f);
+            if (t == 520) rs.rs.hp = rs.rs.stats.maxHp * 0.2f;     // poca vida -> postura cansada
+            if (t == 700) rs.rs.hp = rs.rs.stats.maxHp;
+        }
+    }
+
     public void tick(Game g, int frame) {
         Screen s = g.cur;
         if (s == null || g.fadeDir == 1) return;
@@ -217,6 +235,7 @@ public final class DebugBot {
         if (rs.lv == null) return;
         Level lv = rs.lv;
         Player p = lv.pl;
+        if (System.getenv("BOT_PERSONA") != null) { personaStep(rs, lv, p, frame); return; }
         String warp = System.getenv("BOT_WARP");
         if (warp != null && !warped && rs.fadeA < 0.05f && frame > 150) {
             warped = true; warpFrame = frame;

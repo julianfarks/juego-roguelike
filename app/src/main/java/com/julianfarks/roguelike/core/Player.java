@@ -30,10 +30,23 @@ public final class Player extends Ent {
     private final float[] box = new float[4];
     private float prevVy;
 
+    // ---- vida propia (animaciones de personalidad: solo cosmeticas, no tocan estadisticas ni colisiones)
+    /** Hoja de personalidad (plx_<clase>); null si el skin equipado usa otra hoja o no existe. */
+    public Sheet sheetX;
+    /** Animacion de personalidad en curso (idle1..idle4, chest, awe, touch, victory) o null. */
+    public String actName;
+    private float idleT, stillT, idleNext = 4f, holdT, actHold, impAt = 14f;
+    private String pendReact; private float pendT;
+    private int lastIdle = -1, idlePicks, cosSeed = 0x2F6E2B1;
+    public static final String[] IDLES = {"idle1", "idle2", "idle3", "idle4"};
+
     public Player(RunState rs) {
         this.cls = rs.cls;
         sheet = Cosmetics.sheetFor(cls);
         skinTint = Cosmetics.tintFor(cls);
+        if (sheet == Assets.spr("pl_" + cls.key)) { Sheet x = Assets.spr("plx_" + cls.key); if (x != Sheet.EMPTY) sheetX = x; }
+        cosSeed ^= cls.id * 7919 + 17;
+        idleNext = 3.5f + cosF() * 3.5f;
         bw = Math.min(sheet.bw, 14);
         bh = sheet.bh;
         alive = true;
@@ -56,6 +69,8 @@ public final class Player extends Ent {
         int b = lv.rs.bless[Blessing.SABIO];
         if (b > 0) lv.rs.ult = Math.max(lv.rs.ult, 15f);
         invuln = 1f;
+        int rt = lv.room.type;   // entrada a una sala especial: gesto breve (cosmetico)
+        if (rt == Room.SHOP || rt == Room.BLESSING || rt == Room.FORGE || rt == Room.FOUNTAIN || rt == Room.TREASURE || rt == Room.REST || rt == Room.EVENT) react("touch", 0.8f);
     }
 
     public void cancelAction() {
@@ -66,6 +81,7 @@ public final class Player extends Ent {
     }
 
     public void die() {
+        actName = null; pendReact = null;
         alive = false;
         state = DEAD;
         animName = "death";
@@ -78,6 +94,7 @@ public final class Player extends Ent {
     /** Vuelve a la vida (revivida del modo infinito). */
     public void revive() {
         alive = true; deathSent = false;
+        actName = null; pendReact = null; idleT = stillT = 0;
         state = IDLE; animName = "idle"; animT = 0;
         vx = 0; vy = 0; invuln = 3.5f; hurtT = 0;
     }
@@ -277,8 +294,10 @@ public final class Player extends Ent {
         prevVy = vy;
 
         // ---- animacion segun estado (los estados con animacion propia la gestionan ellos mismos)
+        if (pendT > 0) { pendT -= dt; if (pendT <= 0) pendReact = null; }
+        if (state != IDLE) { actName = null; idleT = 0; stillT = 0; holdT = 0; impAt = 14f; }   // cualquier accion importante corta al instante la animacion decorativa
         switch (state) {
-            case IDLE: setAnim("idle"); animT += dt; break;
+            case IDLE: updateIdleLife(lv, dt, mx); break;
             case RUN: setAnim("run"); animT += dt * Mth.clamp(Math.abs(vx) / 120f, 0.7f, 1.4f); footsteps(lv); runDust(lv, dt); break;
             case AIR: setAnim(vy < 0 ? "jump" : "fall"); animT += dt; break;
             default: break;
@@ -289,6 +308,66 @@ public final class Player extends Ent {
         // ---- guardia de acero
         if (guardT > 0) updateGuard(lv, dt);
         // ---- bloqueo de vasijas al caminar no aplica
+    }
+
+    // ------------------------------------------------------------------ vida propia: reposos con personalidad y reacciones
+    private float cosF() { cosSeed ^= cosSeed << 13; cosSeed ^= cosSeed >>> 17; cosSeed ^= cosSeed << 5; return (cosSeed & 0xFFFFFF) / (float) 0x1000000; }
+
+    /** Hoja con la que se dibuja la animacion actual. */
+    public Sheet curSheet() { return sheetX != null && sheetX.has(animName) ? sheetX : sheet; }
+
+    @Override public Anim anim() { return curSheet().anim(animName); }
+
+    /**
+     * Reaccion a un suceso (chest, awe, touch, victory). Solo cosmetica: si el personaje esta ocupado y queueSecs > 0 se
+     * guarda unos segundos y se reproduce cuando quede quieto; cualquier movimiento o accion la corta al instante.
+     */
+    public void react(String name, float queueSecs) {
+        if (!alive || sheetX == null || !sheetX.has(name)) return;
+        if (state == IDLE && onGround) startAct(name);
+        else if (queueSecs > 0) { pendReact = name; pendT = queueSecs; }
+    }
+
+    private void startAct(String name) {
+        actName = name; animName = name; animT = 0; holdT = 0; pendReact = null;
+        actHold = name.equals("victory") ? 2.6f : name.equals("awe") ? 0.35f : name.equals("chest") ? 0.25f : 0f;
+    }
+
+    private void updateIdleLife(Level lv, float dt, float mx) {
+        boolean pressedAny = false;
+        for (int b = 0; b < Input.B_COUNT; b++) if (b != Input.B_PAUSE && lv.in.pressed(b)) { pressedAny = true; break; }
+        boolean still = mx == 0 && !guarding && !frozen() && onGround && Math.abs(vx) < 12 && alive && !pressedAny;
+        if (!still) {          // se mueve, guarda o queda congelado: vuelve al reposo normal de inmediato
+            actName = null; idleT = 0; stillT = 0; impAt = 14f;
+            setAnim("idle"); animT += dt;
+            return;
+        }
+        if (actName == null && pendReact != null && pendT > 0) startAct(pendReact);
+        if (actName != null) {
+            animName = actName; animT += dt;
+            Anim a = sheetX.anim(actName);
+            if (a.done(animT)) {
+                holdT += dt;
+                if (holdT >= actHold) { actName = null; idleT = 0; idleNext = 3.5f + cosF() * 5f; setAnim("idle"); animT = 0; }
+            }
+            return;
+        }
+        boolean weary = lv.rs.hp > 0 && lv.rs.hp / Math.max(1f, lv.rs.stats.maxHp) < 0.3f;
+        boolean hasWeary = sheetX != null && sheetX.has("weary");
+        if (weary && hasWeary) { setAnim("weary"); actName = null; animT += dt; idleT = 0; return; }
+        setAnim("idle"); animT += dt;
+        if (sheetX == null) return;
+        boolean calm = !lv.cinematic && !lv.bossFight && lv.nearestEnemy(x, y, 150, true) == null && hurtT <= 0;
+        if (!calm) { idleT = 0; stillT = 0; return; }
+        idleT += dt; stillT += dt;
+        if (idleT < idleNext) return;
+        Anim ia = sheet.anim("idle");
+        if (ia.frameAt(animT) != 0 && idleT < idleNext + 1.2f) return;      // empieza al comienzo del ciclo de respiracion: sin saltos
+        int pick;
+        if (stillT > impAt) { pick = 3; impAt = stillT + 11f + cosF() * 8f; }      // mucho rato quieto: impaciencia, de vez en cuando
+        else { pick = (int) (cosF() * 3f); if (pick == lastIdle) pick = (pick + 1) % 3; }
+        lastIdle = pick; idlePicks++;
+        startAct(IDLES[pick]);
     }
 
     // ------------------------------------------------------------------ salto, rodar, pocion
@@ -660,7 +739,8 @@ public final class Player extends Ent {
 
     // ------------------------------------------------------------------ dibujo
     public void render(Platform.Gfx g, Level lv) {
-        Anim a = sheet.anim(animName);
+        Sheet cs = curSheet();
+        Anim a = cs.anim(animName);
         int frame = a.frameAt(animT);
         int flags = 0, tint = Status.tint(this);
         if (tint == 0 && skinTint != 0) tint = skinTint;
@@ -674,8 +754,8 @@ public final class Player extends Ent {
         if (onGround) g.rect(Math.round(x - 7), Math.round(y - 1), 14, 2, 0x55000000, false);
         if (guardT > 0) drawGuard(g, lv, false);
         if (dashT > 0) {   // estela
-            sheet.draw(g, a, frame, x - dashDir * 14, y, right, 1f, Platform.ADD | Platform.TINT, cls.color1, 0.4f);
-            sheet.draw(g, a, frame, x - dashDir * 7, y, right, 1f, Platform.ADD | Platform.TINT, cls.color1, 0.55f);
+            cs.draw(g, a, frame, x - dashDir * 14, y, right, 1f, Platform.ADD | Platform.TINT, cls.color1, 0.4f);
+            cs.draw(g, a, frame, x - dashDir * 7, y, right, 1f, Platform.ADD | Platform.TINT, cls.color1, 0.55f);
         }
         // imagenes residuales al rodar / esprintar / saltar en el aire
         if (alive && (state == ROLL || dashT > 0) && lv.time - lastGhost > 0.04f) {
@@ -692,7 +772,7 @@ public final class Player extends Ent {
         float runB = (state == RUN && onGround) ? 0.035f * (float) Math.abs(Math.sin(animT * 13f)) : 0f;
         float ssx = 1f + sq * 0.9f + runB, ssy = 1f - sq * 0.9f - runB;
         if (!alive) { ssx = 1f; ssy = 1f; }
-        sheet.drawSq(g, a, frame, x, y, right, ssx, ssy, flags, tint, alpha);
+        cs.drawSq(g, a, frame, x, y, right, ssx, ssy, flags, tint, alpha);
         if (guarding) {
             int sc = Items.SH_COL[lv.rs.shield];
             float sx0 = x + dir() * 11, ph = parryT > 0 ? 1f : 0f;

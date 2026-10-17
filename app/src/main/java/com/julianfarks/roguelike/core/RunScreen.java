@@ -365,6 +365,7 @@ final class RunScreen extends Screen implements Level.Listener {
         BossDef d = l.boss.def;
         l.bossFight = false;
         l.cleared = true;
+        if (!(d.idx == 8 && d.form < 2)) l.pl.react("victory", 5f);
         rs.roomsDone++;
         if (rs.infinite) rs.infRooms++;
         if (d.idx == 8 && d.form < 2) {
@@ -445,6 +446,7 @@ final class RunScreen extends Screen implements Level.Listener {
         rs.blessingTaken = false;
         if (rs.stage >= 3 && !Save.S.sealForged()) {
             endRun(true);
+            lv.pl.react("victory", 1f);
             openOv(OV_WIN);
             return;
         }
@@ -456,6 +458,12 @@ final class RunScreen extends Screen implements Level.Listener {
     private void interact() {
         Prop p = lv.nearestInteractable();
         if (p == null || !lv.pl.alive || lv.cinematic) return;
+        switch (p.kind) {
+            case "door": case "portal": case "altar": case "shrine": case "spirit": case "cage": case "fountain": case "forge":
+                lv.pl.react("touch", 0f);   // gesto al activar (solo cosmetico: la logica de abajo no cambia)
+                break;
+            default: break;
+        }
         switch (p.kind) {
             case "door":
                 Snd.sfx("door_open", 0.7f);
@@ -576,6 +584,7 @@ final class RunScreen extends Screen implements Level.Listener {
         p.used = true; p.anim = "open"; p.animT = 0;
         if (!sandbox) { Save.S.chestsOpened++; if (p.arg == 3) Save.S.secretChests++; Save.S.write(); announceTrophies(); }
         Snd.sfx("chest_open", 1f);
+        lv.pl.react("chest", 0f);
         lv.ps.burst(lv.rng, p.x, p.y - 10, 0xFFD25A, 16, 110, 0.7f, 2, 100, true);
         if (p.arg == 3) {
             rs.secretsFound++;
@@ -611,6 +620,8 @@ final class RunScreen extends Screen implements Level.Listener {
         lv.ps.burst(lv.rng, lv.pl.x, lv.pl.y - 16, col, 22, 120, 0.8f, 3, 60, true);
         lv.fx("fx_star", "burst", lv.pl.x, lv.pl.y - 18, 1f, col, Platform.ADD | Platform.TINT);
         Snd.sfx("secret", 0.9f);
+        // reliquia, cofre secreto u objeto raro: reaccion de asombro (solo cosmetica, la recompensa ya se aplico arriba)
+        if (x.rar >= 2 || (ovProp != null && (ovProp.arg == 3 || ovProp.kind.equals("relic")))) lv.pl.react("awe", 1.5f);
     }
 
     // =============================================================== overlays

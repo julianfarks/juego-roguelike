@@ -18,6 +18,8 @@ ENEMIES = ['esqueleto', 'arquero_hueso', 'zombi', 'cubo_magma', 'llama', 'bruto_
            'piglin_dorado', 'espectro', 'llama_solar']
 BOSSES = ['rey_exanime', 'coloso_magma', 'reina_escarcha', 'devorador_vacio', 'ent_ancestral', 'titan_tormenta',
           'matriarca_sangre', 'guardian_eclipse', 'cazador1', 'cazador2', 'cazador3']
+PLAYER_X_ANIMS = [('idle1', 16), ('idle2', 16), ('idle3', 16), ('idle4', 16), ('chest', 8), ('awe', 10), ('touch', 6),
+                  ('victory', 14), ('weary', 6)]
 PLAYER_ANIMS = [('idle', 6), ('run', 8), ('jump', 3), ('fall', 2), ('roll', 7), ('attack1', 6), ('attack2', 6),
                 ('attack3', 7), ('airatk', 5), ('skill', 7), ('ult', 10), ('hurt', 2), ('death', 9), ('block', 2)]
 ENEMY_ANIMS = ['idle', 'walk', 'windup', 'attack', 'hurt', 'death']
@@ -43,6 +45,24 @@ miss = []
 
 def err(m):
     errs.append(m)
+
+
+def check_noclip(rel):
+    """Las animaciones de personalidad no pueden tocar el borde de la celda (seria un recorte: arma o brazo cortados)."""
+    png = os.path.join(A, rel + '.png')
+    js = os.path.join(A, rel + '.json')
+    if not os.path.exists(png) or not os.path.exists(js):
+        return
+    im = Image.open(png).convert('RGBA')
+    d = json.load(open(js))
+    W, H = d['cell']
+    for name, a in d['anims'].items():
+        for i in range(a['n']):
+            fr = im.crop((i * W, a['row'] * H, (i + 1) * W, (a['row'] + 1) * H)).getchannel('A')
+            edge = [fr.crop((0, 0, W, 1)), fr.crop((0, H - 1, W, H)), fr.crop((0, 0, 1, H)), fr.crop((W - 1, 0, W, H))]
+            if any(e.getbbox() for e in edge):
+                err(f'{rel}: anim {name} fotograma {i} toca el borde de la celda (recortado)')
+                break
 
 
 def check_sheet(rel, anims_req, cell=None, must_hit=(), exact_n=None):
@@ -100,6 +120,8 @@ def check_sheet(rel, anims_req, cell=None, must_hit=(), exact_n=None):
 
 def players():
     for c in CLASSES:
+        check_sheet(f'sprites/plx_{c}', [a for a, _ in PLAYER_X_ANIMS], cell=(96, 96), exact_n=dict(PLAYER_X_ANIMS))
+        check_noclip(f'sprites/plx_{c}')
         check_sheet(f'sprites/pl_{c}', [a for a, _ in PLAYER_ANIMS], cell=(64, 48),
                     must_hit=('attack1', 'attack2', 'attack3', 'airatk'), exact_n=dict(PLAYER_ANIMS))
         for nm, sz in ((f'sprites/portrait_{c}', (32, 32)), (f'sprites/splash_{c}', (128, 176))):

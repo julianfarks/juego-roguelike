@@ -3,12 +3,18 @@ import math
 from rig import Seq, DEF
 
 N = dict(idle=6, run=8, jump=3, fall=2, roll=7, attack1=6, attack2=6, attack3=7, airatk=5, skill=7, ult=10, hurt=2,
-         death=9, block=2)
+         death=9, block=2,
+         idle1=16, idle2=16, idle3=16, idle4=16, chest=8, awe=10, touch=6, victory=14, weary=6)
 FPS = dict(idle=8, run=14, jump=10, fall=8, roll=20, attack1=16, attack2=16, attack3=15, airatk=16, skill=14, ult=12,
-           hurt=10, death=9, block=8)
-LOOP = dict(idle=True, run=True, fall=True)
+           hurt=10, death=9, block=8,
+           idle1=8, idle2=8, idle3=8, idle4=8, chest=12, awe=12, touch=14, victory=9, weary=6)
+LOOP = dict(idle=True, run=True, fall=True, weary=True)
 ORDER = ['idle', 'run', 'jump', 'fall', 'roll', 'attack1', 'attack2', 'attack3', 'airatk', 'skill', 'ult', 'hurt',
          'death', 'block']
+# personalidad: hoja aparte (pl_x_<clase>.png) con celda mas alta para que quepan armas en alto
+XCELL = (96, 96)
+XPIVOT = [48, 78]
+EXT = ['idle1', 'idle2', 'idle3', 'idle4', 'chest', 'awe', 'touch', 'victory', 'weary']
 
 
 def ft(hx, f=4.2, b=-4.2, y=-1.2, **kw):

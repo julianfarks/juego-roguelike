@@ -37,6 +37,9 @@ class PClass:
 
     # ------------------------------------------------------------------ anim
     def keys(self, name):
+        if name in AN.EXT:
+            import personality
+            return personality.keys(self, name)
         if name in self.over:
             return self.over[name]
         if name in self.attacks:

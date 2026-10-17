@@ -1,0 +1,70 @@
+{
+ "cell": [
+  96,
+  96
+ ],
+ "pivot": [
+  48,
+  78
+ ],
+ "body": [
+  12,
+  28
+ ],
+ "anims": {
+  "idle1": {
+   "row": 0,
+   "n": 16,
+   "fps": 8,
+   "loop": false
+  },
+  "idle2": {
+   "row": 1,
+   "n": 16,
+   "fps": 8,
+   "loop": false
+  },
+  "idle3": {
+   "row": 2,
+   "n": 16,
+   "fps": 8,
+   "loop": false
+  },
+  "idle4": {
+   "row": 3,
+   "n": 16,
+   "fps": 8,
+   "loop": false
+  },
+  "chest": {
+   "row": 4,
+   "n": 8,
+   "fps": 12,
+   "loop": false
+  },
+  "awe": {
+   "row": 5,
+   "n": 10,
+   "fps": 12,
+   "loop": false
+  },
+  "touch": {
+   "row": 6,
+   "n": 6,
+   "fps": 14,
+   "loop": false
+  },
+  "victory": {
+   "row": 7,
+   "n": 14,
+   "fps": 9,
+   "loop": false
+  },
+  "weary": {
+   "row": 8,
+   "n": 6,
+   "fps": 6,
+   "loop": true
+  }
+ }
+}

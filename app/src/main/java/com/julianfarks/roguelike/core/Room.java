@@ -100,8 +100,12 @@ public final class Room {
         if (tsImg == null) { baked = null; return; }
         int[] ts = p.pixels(tsImg);
         int[] out = new int[pixW * pixH];
-        // 1) pared de fondo
-        for (int y = 0; y < h; y++)
+        // 1) pared de fondo (arte procedural por bioma; sin estilo, el dibujo antiguo por baldosas)
+        TerrainArt.Style art = TerrainArt.style(biome);
+        TerrainArt.t0 = System.nanoTime();
+        TerrainArt.Ctx ctx = art != null ? new TerrainArt.Ctx(this, ts, art) : null;
+        if (ctx != null) TerrainArt.background(ctx, out);
+        else for (int y = 0; y < h; y++)
             for (int x = 0; x < w; x++) {
                 int i = y * w + x;
                 if (t[i] == SOLID || vista[i]) continue;
@@ -120,14 +124,17 @@ public final class Room {
                 else if (kind == 3) blit(out, ts, (8 + (idx & 7)) * TS, 4 * TS, x * TS, y * TS);
             }
         // 3) terreno
+        if (ctx != null) { TerrainArt.terrain(ctx, out); TerrainArt.lap("repisas"); TerrainArt.lights(ctx, out); TerrainArt.lap("luces"); }
         for (int y = 0; y < h; y++)
             for (int x = 0; x < w; x++) {
                 int v = t[y * w + x];
                 if (v == SOLID) {
+                    if (ctx != null) continue;
                     int mask = (solidN(x, y - 1) ? 1 : 0) | (solidN(x + 1, y) ? 2 : 0) | (solidN(x, y + 1) ? 4 : 0) | (solidN(x - 1, y) ? 8 : 0);
                     int hv = ((x * 73856093) ^ (y * 19349663)) >>> 6;
                     blit(out, ts, mask * TS, (hv % 3) * TS, x * TS, y * TS);
                 } else if (v == ONEWAY) {
+                    if (ctx != null) continue;
                     boolean l = tile(x - 1, y) == ONEWAY, r = tile(x + 1, y) == ONEWAY;
                     int col = (!l && !r) ? 0 : (!l ? 1 : (!r ? 3 : 2));
                     blit(out, ts, col * TS, 3 * TS, x * TS, y * TS);

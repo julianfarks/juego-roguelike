@@ -37,6 +37,7 @@ public final class RunState {
     public boolean infinite, infFromCampaign;
     public Infinite.Ruleset ruleset = Infinite.NORMAL;
     public int floor = 1, floorsDone, revivesUsed, infRooms;   // piso actual (1..), pisos completados, revividas usadas (0..3), salas superadas en infinito
+    public boolean devAssisted;                                 // uso gemas de prueba del Modo Desarrollador (resultado NO valido para clasificacion)
     public int infBaseKills, infBaseBoss;                       // bajas/jefes ya contabilizados en la campana (evita contarlos dos veces)
     public float infT0;                                         // tiempo de run al empezar el infinito
     public int credKills, credBoss;                             // ya sumados al perfil por endRun (evita doble conteo)

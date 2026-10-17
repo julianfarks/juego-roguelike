@@ -90,6 +90,13 @@ public final class DebugBot {
         }
         if (s instanceof Ops) {
             if (System.getenv("BOT_NOSTART") != null) { if (!unlockedAll) { unlockedAll = true; for (int i = 0; i < 10; i++) Save.S.classUnlocked[i] = true; Save.S.souls = Math.max(Save.S.souls, 5000); } return; }
+            if (System.getenv("BOT_LOADRUN") != null && frame - lastClassFrame > 60) {
+                lastClassFrame = frame;
+                RunScreen lr = RunSave.load(g, RunSave.AUTO);
+                System.out.println("LOADRUN resultado=" + (lr == null ? "null" : "ok"));
+                if (lr != null) g.go(lr);
+                return;
+            }
             if (System.getenv("BOT_INF") != null && frame - lastClassFrame > 120) {
                 lastClassFrame = frame;
                 Save.S.finalBeaten = true;
@@ -124,7 +131,7 @@ public final class DebugBot {
         if (!(s instanceof RunScreen)) return;
         RunScreen rs = (RunScreen) s;
         seenRun = true;
-        if (!classPrinted && System.getenv("BOT_PRINTCLASS") != null) { classPrinted = true; System.out.println("RUN clase=" + rs.cls.name + " bioma=" + (rs.rs.biome == null ? "?" : rs.rs.biome.name)); }
+        if (!classPrinted && System.getenv("BOT_PRINTCLASS") != null) { classPrinted = true; System.out.println("RUN clase=" + rs.cls.name + " bioma=" + (rs.rs.biome == null ? "?" : rs.rs.biome.name) + " stage=" + rs.rs.stage + " roomNo=" + rs.rs.roomNo + " kills=" + rs.rs.kills + " oro=" + rs.rs.gold + " infinite=" + rs.rs.infinite + " revividas=" + rs.rs.revivesUsed + " streak=" + rs.rs.streak); }
         if (rs.lv == null) return;
         Level lv = rs.lv;
         Player p = lv.pl;

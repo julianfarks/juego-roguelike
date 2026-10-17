@@ -107,6 +107,33 @@ public class T8 {
         ck("producto ya poseido no se entrega de nuevo (recibo)", !Services.fulfill(skinR));
         PurchaseReceipt skinR2 = new PurchaseReceipt("ORD-S2", "dev_tint_ember", 0, true); Save.S.owned.remove("dev_tint_ember");
         ck("recibo verificado entrega el articulo una sola vez", Services.fulfill(skinR2) && Cosmetics.owns("dev_tint_ember") && !Services.fulfill(skinR2));
+        // ---------------- gemas de prueba: nunca se vuelven saldo valido
+        Save.S.devUnlocked = true; Save.S.gems = 0; Save.devGems = 0; Save.S.owned.clear(); Save.S.write();
+        Wallet.devGrant(100);
+        ck("dev: las gemas de prueba cuentan para el saldo mostrado", Wallet.gems() == 100 && Wallet.realGems() == 0);
+        Cosmetics.ALL.add(new Cosmetics.Item("oficial_x", "Oficial X", "x", Cosmetics.Kind.SKIN, Cosmetics.Source.PREMIUM, -1, 10, null, 0));
+        ck("dev: NO compran articulos oficiales", !Cosmetics.buy("oficial_x") && !Cosmetics.owns("oficial_x") && Save.devGems == 100);
+        ck("dev: si compran articulos [DEV]", Cosmetics.buy("dev_tint_violet") && Save.devGems == 95 && Save.S.gems == 0);
+        Save.S.write(); reload(p);
+        ck("dev: tras reiniciar no queda saldo real", Save.S.gems == 0 && Wallet.realGems() == 0);
+        Save.S.gems = 20; Save.devGems = 100;
+        ck("dev: articulo oficial usa solo gemas reales", Cosmetics.buy("oficial_x") && Save.S.gems == 10 && Save.devGems == 100);
+        Cosmetics.ALL.clear();
+        Save.S.gems = 0; Save.devGems = 100;
+        RunState rd = new RunState(paladin, 5, 0); rd.infinite = true;
+        ck("dev: revivir con gemas de prueba marca la run", Infinite.consume(rd, Infinite.Method.GEMS, p) && rd.devAssisted && Save.devGems == 95);
+        Infinite.Result rr = Infinite.resultOf(rd); rr.floors = 9; rr.score = 99999;
+        int best0 = Save.S.infBestFloor;
+        ck("dev: el resultado marcado no toca records", rr.dev && !Infinite.record(Save.S, rr) && Save.S.infBestFloor == best0 && Save.S.infFloors == 0);
+        Infinite.Result rb = Infinite.Result.parse(Save.S.infLog.get(Save.S.infLog.size() - 1));
+        ck("dev: queda en el historial marcado", rb != null && rb.dev);
+        ck("dev: la marca no se puede quitar editando el registro", Infinite.Result.parse(Save.S.infLog.get(Save.S.infLog.size() - 1).replace("\"dev\":true", "\"dev\":false")) == null);
+        RunState rn = new RunState(paladin, 5, 0); rn.infinite = true; Save.S.gems = 50; Save.devGems = 0;
+        ck("real: revivir con gemas reales NO marca la run", Infinite.consume(rn, Infinite.Method.GEMS, p) && !rn.devAssisted);
+        Save.devGems = 0; Save.S.gems = 0; Save.S.devUnlocked = false;
+        // ---------------- el campana no cambia
+        RunState rcm = new RunState(paladin, 1, 0); rcm.stage = 2; rcm.roomNo = 3;
+        ck("campana: dificultad igual que antes", rcm.power() == 2 * 6 + 3 && !rcm.infinite);
         // ---------------- anuncios (una sola recompensa)
         FakeAds ads = new FakeAds(); Services.ads = ads;
         int[] granted = {0};

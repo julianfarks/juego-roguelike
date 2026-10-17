@@ -46,7 +46,7 @@ final class RunSave {
             d.put("bless", rs.bless);
             d.put("sec", rs.sec); d.put("secAmmo", rs.secAmmo); d.put("gren", rs.gren); d.put("grenCount", rs.grenCount);
             d.put("special", rs.special); d.put("shield", rs.shield); d.put("secrets", rs.secretsFound);
-            d.put("inf", rs.infinite); d.put("infCamp", rs.infFromCampaign); d.put("floor", rs.floor); d.put("floorsDone", rs.floorsDone); d.put("revs", rs.revivesUsed);
+            d.put("devAsst", rs.devAssisted); d.put("inf", rs.infinite); d.put("infCamp", rs.infFromCampaign); d.put("floor", rs.floor); d.put("floorsDone", rs.floorsDone); d.put("revs", rs.revivesUsed);
             d.put("infRooms", rs.infRooms); d.put("infBK", rs.infBaseKills); d.put("infBB", rs.infBaseBoss); d.put("infT0", (int) rs.infT0);
             d.put("credK", rs.credKills); d.put("credB", rs.credBoss); d.put("seed", (double) rs.seed); d.put("streak", rs.streak); d.put("pstreak", rs.perfectStreak);
             d.put("cb", rs.cb); d.put("grenLvl", rs.grenLvl); d.put("secLvl", rs.secLvl);
@@ -84,7 +84,7 @@ final class RunSave {
             rs.special = Json.i(d, "special", 0); rs.shield = Json.i(d, "shield", 0); rs.secretsFound = Json.i(d, "secrets", 0);
             int[] cbv = Json.ints(d, "cb"); if (cbv != null) for (int i = 0; i < Math.min(cbv.length, rs.cb.length); i++) rs.cb[i] = cbv[i];
             rs.grenLvl = Json.i(d, "grenLvl", 0); rs.secLvl = Json.i(d, "secLvl", 0);
-            rs.infinite = Json.bool(d, "inf", false); rs.infFromCampaign = Json.bool(d, "infCamp", false);
+            rs.devAssisted = Json.bool(d, "devAsst", false); rs.infinite = Json.bool(d, "inf", false); rs.infFromCampaign = Json.bool(d, "infCamp", false);
             rs.floor = Math.max(1, Json.i(d, "floor", 1)); rs.floorsDone = Json.i(d, "floorsDone", 0);
             rs.revivesUsed = Math.max(0, Math.min(rs.ruleset.maxRevives, Json.i(d, "revs", 0)));
             rs.infRooms = Json.i(d, "infRooms", 0); rs.infBaseKills = Json.i(d, "infBK", 0); rs.infBaseBoss = Json.i(d, "infBB", 0); rs.infT0 = Json.i(d, "infT0", 0);

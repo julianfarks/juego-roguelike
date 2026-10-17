@@ -61,7 +61,7 @@ final class OpsScreens {
             for (int i = s.infLog.size() - 1; i >= 0 && n < 5; i--) {
                 Infinite.Result r = Infinite.Result.parse(s.infLog.get(i));
                 if (r == null) continue;
-                l.add(new String[]{"  " + ClassDef.ALL[Math.max(0, Math.min(9, r.cls))].name + " · piso " + r.reached, r.floors + " completados · " + r.score + " pts"});
+                l.add(new String[]{"  " + ClassDef.ALL[Math.max(0, Math.min(9, r.cls))].name + " · piso " + r.reached + (r.dev ? " [prueba]" : ""), r.floors + " completados · " + r.score + " pts"});
                 n++;
             }
             if (n == 0) l.add(new String[]{"  (aún no has jugado el modo infinito)", ""});

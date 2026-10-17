@@ -17,14 +17,28 @@ public final class Wallet {
     /** Saldo disponible (real + de prueba de la sesion). */
     public static int gems() { return Save.S.gems + Save.devGems; }
     public static boolean canSpend(int n) { return n > 0 && gems() >= n; }
+    /** Saldo REAL (el que se guarda y el unico valido para articulos oficiales y competiciones). */
+    public static int realGems() { return Save.S.gems; }
+
+    /** Gasta SOLO gemas reales (nunca las de prueba). Usar para articulos oficiales. */
+    public static boolean spendReal(int n, boolean commit) {
+        if (n <= 0 || Save.S.gems < n) return false;
+        Save.S.gems -= n;
+        Save.S.write(commit);
+        return true;
+    }
 
     /** Gasta n gemas. Devuelve false (sin cambiar nada) si n<=0 o no alcanza. */
     public static boolean spend(int n) { return spend(n, true); }
 
     /** commit=false: modifica el saldo y deja la escritura a medias para que el que llama la complete junto con otros datos. */
-    public static boolean spend(int n, boolean commit) {
+    public static boolean spend(int n, boolean commit) { return spend(n, commit, null); }
+
+    /** usedDev (opcional, [0]) se pone a true si parte del gasto salio de gemas de prueba. */
+    public static boolean spend(int n, boolean commit, boolean[] usedDev) {
         if (n <= 0 || gems() < n) return false;
         int fromDev = Math.min(Save.devGems, n);
+        if (usedDev != null && fromDev > 0) usedDev[0] = true;
         Save.devGems -= fromDev;
         Save.S.gems -= n - fromDev;
         if (Save.S.gems < 0) Save.S.gems = 0;   // defensa: jamas negativo

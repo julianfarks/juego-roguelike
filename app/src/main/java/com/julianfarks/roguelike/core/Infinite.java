@@ -83,7 +83,9 @@ public final class Infinite {
         int n = rs.revivesUsed;
         if (m == Method.GEMS) {
             if (!rs.ruleset.gemRevives) return false;
-            if (!Wallet.spend(GEM_COST[Math.min(n, GEM_COST.length - 1)], false)) return false;
+            boolean[] dev = {false};
+            if (!Wallet.spend(GEM_COST[Math.min(n, GEM_COST.length - 1)], false, dev)) return false;
+            if (dev[0]) rs.devAssisted = true;     // la run uso gemas de prueba: su resultado queda marcado y no es valido para clasificacion
         } else {
             if (!rs.ruleset.adRevives || n >= 2) return false;
             if ((m == Method.AD_STANDARD) != (n == 0)) return false;     // el formato debe corresponder a la revivida
@@ -94,7 +96,7 @@ public final class Infinite {
 
     // ------------------------------------------------------------------ resultados
     public static final class Result {
-        public String ruleset = "normal"; public int cls, floors, reached, kills, bosses, rooms, timeS, revives, score, ver = SCORE_VERSION;
+        public String ruleset = "normal"; public boolean dev; public int cls, floors, reached, kills, bosses, rooms, timeS, revives, score, ver = SCORE_VERSION;
         public long seed, ts;
         /** Comparacion de clasificacion: pisos, puntaje, enemigos, menos tiempo. >0 si a es mejor que b. */
         public static int compare(Result a, Result b) {
@@ -108,13 +110,13 @@ public final class Infinite {
             d.put("v", ver); d.put("rules", ruleset); d.put("cls", cls); d.put("fl", floors); d.put("hi", reached); d.put("k", kills);
             d.put("b", bosses); d.put("r", rooms); d.put("t", timeS); d.put("rev", revives); d.put("sc", score);
             d.put("seed", (double) seed); d.put("ts", (double) ts);
-            d.put("chk", check());
+            d.put("dev", dev); d.put("chk", check());
             return Json.write(d);
         }
         /** Suma de control para detectar ediciones torpes del registro local. NO es seguridad: una clasificacion con premios necesita validacion en servidor. */
         int check() {
             long h = 1125899906842597L;
-            for (long v : new long[]{ver, cls, floors, reached, kills, bosses, rooms, timeS, revives, score, seed, ts}) h = 31 * h + v;
+            for (long v : new long[]{dev ? 1 : 0, ver, cls, floors, reached, kills, bosses, rooms, timeS, revives, score, seed, ts}) h = 31 * h + v;
             for (char c : ruleset.toCharArray()) h = 31 * h + c;
             return (int) (h ^ (h >>> 32));
         }
@@ -125,7 +127,7 @@ public final class Infinite {
                 Result r = new Result();
                 r.ver = Json.i(d, "v", 1); r.ruleset = Json.str(d, "rules", "normal"); r.cls = Json.i(d, "cls", 0); r.floors = Json.i(d, "fl", 0);
                 r.reached = Json.i(d, "hi", 0); r.kills = Json.i(d, "k", 0); r.bosses = Json.i(d, "b", 0); r.rooms = Json.i(d, "r", 0);
-                r.timeS = Json.i(d, "t", 0); r.revives = Json.i(d, "rev", 0); r.score = Json.i(d, "sc", 0);
+                r.dev = Json.bool(d, "dev", false); r.timeS = Json.i(d, "t", 0); r.revives = Json.i(d, "rev", 0); r.score = Json.i(d, "sc", 0);
                 r.seed = (long) Json.num(d, "seed", 0); r.ts = (long) Json.num(d, "ts", 0);
                 return Json.i(d, "chk", 0) == r.check() ? r : null;
             } catch (RuntimeException e) { return null; }
@@ -135,7 +137,7 @@ public final class Infinite {
     /** Resultado final de una run infinita (a partir del estado de la run). */
     public static Result resultOf(RunState rs) {
         Result r = new Result();
-        r.ruleset = rs.ruleset.id; r.cls = rs.cls.id;
+        r.ruleset = rs.ruleset.id; r.cls = rs.cls.id; r.dev = rs.devAssisted;
         r.floors = rs.floorsDone; r.reached = rs.floor;
         r.kills = rs.kills - rs.infBaseKills; r.bosses = rs.bossKills - rs.infBaseBoss;
         r.rooms = rs.infRooms;
@@ -148,6 +150,11 @@ public final class Infinite {
     /** Guarda el resultado en el perfil (una sola vez por run; el que llama controla 'ended'). Devuelve true si es un record de pisos. */
     public static boolean record(Save s, Result r) {
         s.infRuns++;
+        if (r.dev) {                                   // run con gemas de prueba: queda en el historial marcada, pero no cuenta para records ni totales
+            s.infLog.add(r.toJson());
+            while (s.infLog.size() > LOG_KEEP) s.infLog.remove(0);
+            return false;
+        }
         s.infFloors += r.floors; s.infKills += r.kills; s.infBosses += r.bosses;
         boolean rec = r.floors > s.infBestFloor || (r.floors == s.infBestFloor && r.score > s.infBestScore);
         s.infBestFloor = Math.max(s.infBestFloor, r.floors);

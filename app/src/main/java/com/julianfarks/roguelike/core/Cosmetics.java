@@ -64,7 +64,9 @@ public final class Cosmetics {
     public static boolean buy(String id) {
         Item it = find(id);
         if (it == null || it.source != Source.PREMIUM || it.priceGems <= 0 || owns(id)) return false;
-        if (!Wallet.spend(it.priceGems, false)) return false;
+        // Articulos oficiales: SOLO con gemas reales. Las gemas de prueba solo sirven para los articulos [DEV].
+        boolean ok = DEV.contains(it) ? Wallet.spend(it.priceGems, false) : Wallet.spendReal(it.priceGems, false);
+        if (!ok) return false;
         Save.S.owned.add(id);
         Save.S.write(true);
         return true;

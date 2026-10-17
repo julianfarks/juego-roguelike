@@ -148,7 +148,9 @@ public final class Save {
             Map<String, Object> d = new LinkedHashMap<>();
             d.put("ver", VERSION);
             d.put("gems", gems); d.put("gemTx", new ArrayList<Object>(gemTx)); d.put("owned", new ArrayList<Object>(owned));
-            d.put("equip", String.join("|", equip));
+            StringBuilder eqs = new StringBuilder();
+            for (int i = 0; i < equip.length; i++) { if (i > 0) eqs.append('|'); eqs.append(equip[i] == null ? "" : equip[i]); }
+            d.put("equip", eqs.toString());
             d.put("inf_runs", infRuns); d.put("inf_bestFloor", infBestFloor); d.put("inf_bestScore", infBestScore); d.put("inf_floors", infFloors);
             d.put("inf_kills", infKills); d.put("inf_bosses", infBosses); d.put("inf_bestTime", infBestTimeS); d.put("inf_log", new ArrayList<Object>(infLog));
             d.put("souls", devSoulsBackup >= 0 ? devSoulsBackup : souls); d.put("totalSouls", totalSouls);

@@ -19,6 +19,7 @@ public final class Enemy extends Ent {
     private Enemy healTgt;
     private boolean suicide, blocked;
     private float aimX, aimY;
+    float trapCd, prevY = Float.NaN;
     private int atk, atkCount;
     private final float[] eX = new float[3];
     private int eN;

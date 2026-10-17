@@ -43,13 +43,20 @@ final class RunScreen extends Screen implements Level.Listener {
         r.sandbox = true; r.rs.sandbox = true;
         r.sbEnemy = enemy; r.sbElite = elite; r.sbBoss = boss; r.sbBiome = Math.max(0, Math.min(8, biome)); r.sbBack = back;
         r.rs.biome = Biome.ALL[r.sbBiome]; r.rs.stage = Biome.ALL[r.sbBiome].tier;
-        r.rs.gold = 999;
+        r.rs.gold = Save.devGold;
         r.resumeType = boss >= 0 ? Room.BOSS : Room.COMBAT;
+        return r;
+    }
+
+    static RunScreen sandboxShop(Game g, ClassDef c, java.util.function.Supplier<Screen> back) {
+        RunScreen r = sandbox(g, c, 0, null, false, -1, back);
+        r.resumeType = Room.REST;
         return r;
     }
 
     private void sandboxSetup() {
         if (!sandbox) return;
+        if (lv.room.type == Room.REST) { lv.tutorial = null; bannerTitle = "TIENDA DE PRUEBA"; bannerSub = "Oro de prueba: no afecta al perfil"; bannerT = 3f; return; }
         bannerTitle = "LABORATORIO"; bannerSub = "Invulnerable · no se guarda nada"; bannerT = 3f; lv.tutorial = null;
         if (sbBoss >= 0 && lv.room.type == Room.BOSS) { setupBoss(BossDef.ALL[Math.min(sbBoss, BossDef.ALL.length - 1)]); return; }
         lv.enemies.clear(); lv.toKill = 0; lv.cleared = false;

@@ -109,7 +109,7 @@ final class DevScreens {
         @Override void layout() {
             hits.clear();
             int w = W();
-            float bw = 190, bh = 20, x = w / 2f - bw / 2f, y = 48, st = 23;
+            float bw = 190, bh = 19, x = w / 2f - bw / 2f, y = 44, st = 21;
             add(x, y, bw, bh, "Enemigos normales", () -> game.go(new ListScr(game, "ENEMIGOS NORMALES", enemies(false))));
             add(x, y + st, bw, bh, "Enemigos élite", () -> game.go(new ListScr(game, "ENEMIGOS ÉLITE", enemies(true))));
             add(x, y + st * 2, bw, bh, "Espadachines y armas", () -> game.go(new ListScr(game, "ESPADACHINES", classes())));
@@ -117,11 +117,12 @@ final class DevScreens {
             add(x, y + st * 4, bw, bh, "Cinemáticas y narrativa", () -> game.go(new StoryScreens.Historia(game, true)));
             add(x, y + st * 5, bw, bh, "Escenarios", () -> game.go(new ListScr(game, "ESCENARIOS", biomes())));
             add(x, y + st * 6, bw, bh, "Objetos y props", () -> game.go(new ListScr(game, "OBJETOS Y PROPS", objects())));
-            add(x - 0, y + st * 7 + 4, 92, bh, "Volver", () -> back());
-            add(x + 98, y + st * 7 + 4, 92, bh, "Desactivar", () -> { Save.S.devUnlocked = false; Save.S.write(); back(); });
+            add(x, y + st * 7, bw, bh, "Economía y recursos", () -> game.go(new Economy(game)));
+            add(x - 0, y + st * 8 + 2, 92, bh, "Volver", () -> back());
+            add(x + 98, y + st * 8 + 2, 92, bh, "Desactivar", () -> { Save.devRevert(); Save.S.devUnlocked = false; Save.S.write(); back(); });
         }
 
-        @Override boolean back() { game.go(new Screens.Title(game)); return true; }
+        @Override boolean back() { Save.devRevert(); game.go(new Screens.Title(game)); return true; }
         @Override void update(float dt) { bg.update(dt, W()); }
 
         @Override void render(Platform.Gfx g) {
@@ -402,6 +403,123 @@ final class DevScreens {
                     g.image(im, 0, 0, im.w, im.h, Math.round(xx), Math.round(y + 4), Math.round(im.w * s), Math.round(im.h * s), 0, 0, 1f);
             }
             g.clipEnd();
+        }
+    }
+
+    // =================================================================== economia y recursos
+    /**
+     * Herramienta de dinero. Dos saldos reales del juego (no hay moneda nueva):
+     *  - Almas del perfil (Save.S.souls): se modifican de forma TEMPORAL (en disco sigue el valor real hasta pulsar "Guardar en perfil").
+     *  - Oro de prueba (Save.devGold): oro inicial de la arena y de la tienda de prueba (el oro solo existe dentro de una partida).
+     */
+    static final class Economy extends Screen {
+        private final Screens.TitleBg bg = new Screens.TitleBg();
+        private final StringBuilder num = new StringBuilder();
+        private int target;            // 0 almas, 1 oro de prueba
+        private String msg = "";
+        private int msgColor = 0xFFE8E0E0;
+        private boolean confirmSet, confirmCommit;
+        static final long CAP = 99_999_999L;
+
+        Economy(Game g) { super(g); }
+
+        static String fmt(long v) {
+            String s = String.valueOf(Math.abs(v)), out = "";
+            for (int i = 0; i < s.length(); i++) { if (i > 0 && (s.length() - i) % 3 == 0) out += "."; out += s.charAt(i); }
+            return (v < 0 ? "-" : "") + out;
+        }
+
+        long balance() { return target == 0 ? Save.S.souls : Save.devGold; }
+
+        void setBalance(long v) {
+            v = Math.max(0, Math.min(CAP, v));
+            if (target == 0) {
+                if (Save.devSoulsBackup < 0) Save.devSoulsBackup = Save.S.souls;   // primer cambio: recuerda el valor real
+                Save.S.souls = (int) v;
+            } else Save.devGold = (int) v;
+        }
+
+        long amount() { if (num.length() == 0) return 0; try { return Long.parseLong(num.toString()); } catch (NumberFormatException e) { return CAP; } }
+
+        @Override void layout() {
+            hits.clear();
+            int w = W();
+            float kw = 34, kh = 19, gap = 3, x0 = 16, y0 = 78;
+            String[] keys = {"7", "8", "9", "4", "5", "6", "1", "2", "3", "0", "00", "000"};
+            for (int i = 0; i < keys.length; i++) {
+                final String k = keys[i];
+                Hit h = add(x0 + (i % 3) * (kw + gap), y0 + (i / 3) * (kh + gap), kw, kh, k, () -> { if (num.length() + k.length() <= 9) num.append(k); confirmSet = false; });
+                h.noSound = true;
+            }
+            add(x0, y0 + 4 * (kh + gap), kw * 1.5f + gap / 2, kh, "Borrar", () -> { if (num.length() > 0) num.setLength(num.length() - 1); confirmSet = false; });
+            add(x0 + kw * 1.5f + gap * 1.5f, y0 + 4 * (kh + gap), kw * 1.5f + gap / 2, kh, "Limpiar", () -> { num.setLength(0); confirmSet = false; });
+            float rx = w / 2f + 10, rw = w - rx - 12;
+            add(rx, 52, rw / 2 - 2, 19, target == 0 ? "[Almas]" : "Almas", () -> { target = 0; confirmSet = false; layout(); });
+            add(rx + rw / 2 + 2, 52, rw / 2 - 2, 19, target == 1 ? "[Oro prueba]" : "Oro prueba", () -> { target = 1; confirmSet = false; layout(); });
+            long[] quick = {1000, 10000, 100000};
+            for (int i = 0; i < 3; i++) {
+                final long q = quick[i];
+                add(rx + i * (rw / 3), 76, rw / 3 - 2, 17, "+" + fmt(q), () -> { num.setLength(0); num.append(q); confirmSet = false; });
+            }
+            add(rx, 98, rw, 22, "AGREGAR dinero (suma)", this::doAdd);
+            add(rx, 124, rw, 22, confirmSet ? "¿Seguro? Toca otra vez" : "ESTABLECER saldo exacto", this::doSet);
+            add(rx, 150, rw / 2 - 2, 19, "Restaurar real", () -> { Save.devRevert(); Save.devGold = 5000; msg = "Saldos restaurados a los reales."; msgColor = 0xFF7AF0A0; confirmSet = false; });
+            add(rx + rw / 2 + 2, 150, rw / 2 - 2, 19, confirmCommit ? "¿Seguro?" : "Guardar perfil", this::doCommit);
+            add(rx, 172, rw, 19, "Probar en tienda de prueba", () -> game.go(RunScreen.sandboxShop(game, ClassDef.ALL[Math.max(0, Math.min(ClassDef.ALL.length - 1, Save.S.lastClass))], () -> new Economy(game))));
+            add(w / 2f - 50, 236, 100, 20, "Volver", () -> back());
+        }
+
+        private void doAdd() {
+            long a = amount();
+            if (a <= 0) { msg = "Escribe una cantidad mayor que 0."; msgColor = 0xFFFF6A6A; return; }
+            long before = balance();
+            long after = Math.min(CAP, before + a);
+            setBalance(after);
+            msg = "Agregado +" + fmt(after - before) + "  ·  Nuevo saldo: " + fmt(balance());
+            msgColor = 0xFF7AF0A0; Snd.sfx("coin", 0.9f); confirmSet = false;
+        }
+
+        private void doSet() {
+            if (num.length() == 0) { msg = "Escribe la cantidad exacta."; msgColor = 0xFFFF6A6A; return; }
+            if (!confirmSet) { confirmSet = true; layout(); return; }
+            confirmSet = false;
+            long before = balance();
+            setBalance(amount());
+            msg = "Saldo establecido: " + fmt(before) + " > " + fmt(balance());
+            msgColor = 0xFFFFD25A; Snd.sfx("coin", 0.9f); layout();
+        }
+
+        private void doCommit() {
+            if (Save.devSoulsBackup < 0) { msg = "No hay cambios temporales de almas que guardar."; msgColor = 0xFFFFD25A; return; }
+            if (!confirmCommit) { confirmCommit = true; layout(); return; }
+            confirmCommit = false;
+            Save.devCommit();
+            msg = "Almas guardadas en el perfil: " + fmt(Save.S.souls);
+            msgColor = 0xFFFF9A5A; layout();
+        }
+
+        @Override boolean back() { game.go(new Menu(game)); return true; }
+
+        @Override void key(int code, boolean down) {
+            if (!down) return;
+            if (code >= '0' && code <= '9') { if (num.length() < 9) num.append((char) code); confirmSet = false; return; }
+            if (code == 8 || code == 127) { if (num.length() > 0) num.setLength(num.length() - 1); return; }
+            super.key(code, down);
+        }
+
+        @Override void update(float dt) { bg.update(dt, W()); }
+
+        @Override void render(Platform.Gfx g) {
+            int w = W();
+            bg.render(g, w, 0.65f);
+            UI.big.center(g, "ECONOMÍA Y RECURSOS", w / 2f, 8, UI.GOLD, 1f);
+            UI.small.center(g, "Almas: " + fmt(Save.S.souls) + (Save.devSoulsBackup >= 0 ? " (temporal, real: " + fmt(Save.devSoulsBackup) + ")" : "") + "    Oro de prueba: " + fmt(Save.devGold), w / 2f, 30, 0xFFE8E0E0, 1f);
+            UI.small.center(g, "Editando: " + (target == 0 ? "ALMAS del perfil (temporal)" : "ORO de la arena y tienda de prueba"), w / 2f, 42, UI.GREY, 1f);
+            UI.panel(g, 1, 16, 56, 112, 18, 1f);
+            UI.small.center(g, num.length() == 0 ? "0" : fmt(amount()), 72, 61, 0xFFF0E8E0, 1f);
+            drawButtons(g);
+            if (!msg.isEmpty()) UI.small.center(g, msg, w / 2f, 214, msgColor, 1f);
+            UI.small.center(g, "Nada se guarda en el perfil salvo que pulses Guardar perfil.", w / 2f, 226, UI.GREY, 0.8f);
         }
     }
 }

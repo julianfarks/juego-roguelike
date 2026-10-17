@@ -8,6 +8,15 @@ import java.util.Map;
 /** Progreso permanente (Santuario) y opciones. Se guarda como JSON en Platform.Store. */
 public final class Save {
     public static Save S = new Save();
+    /** Modo Desarrollador: si >= 0, las almas actuales son TEMPORALES y en disco se guarda este valor (el perfil real no cambia). */
+    public static int devSoulsBackup = -1;
+    /** Oro inicial de la arena/tienda de prueba del Modo Desarrollador (no existe en partidas normales). */
+    public static int devGold = 5000;
+
+    /** Devuelve las almas reales del perfil (descarta el saldo de prueba). */
+    public static void devRevert() { if (devSoulsBackup >= 0) { S.souls = devSoulsBackup; devSoulsBackup = -1; } }
+    /** Convierte el saldo de prueba en saldo real del perfil. */
+    public static void devCommit() { devSoulsBackup = -1; S.write(); }
     static Platform P;
 
     public int souls = 0;
@@ -92,7 +101,7 @@ public final class Save {
         if (P == null) return;
         try {
             Map<String, Object> d = new LinkedHashMap<>();
-            d.put("souls", souls); d.put("totalSouls", totalSouls);
+            d.put("souls", devSoulsBackup >= 0 ? devSoulsBackup : souls); d.put("totalSouls", totalSouls);
             int[] cu = new int[10]; for (int i = 0; i < 10; i++) cu[i] = classUnlocked[i] ? 1 : 0;
             d.put("cu", cu); d.put("meta", meta);
             int[] rl = new int[8]; for (int i = 0; i < 8; i++) rl[i] = relics[i] ? 1 : 0;

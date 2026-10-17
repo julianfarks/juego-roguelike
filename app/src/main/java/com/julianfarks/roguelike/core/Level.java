@@ -254,6 +254,35 @@ public final class Level {
 
     // ------------------------------------------------------------------ daño
     /** Daño base a enemigo/jefe. Devuelve el daño aplicado. */
+    /** Los pinchos tambien danan a los enemigos: 30% de su vida maxima (minimo 20) cada 0.6 s mientras sigan en contacto. */
+    static final float SPIKE_CD = 0.6f;
+    void trapDamage(Enemy e, float dt) {
+        if (!e.alive || e.untargetable()) { e.prevY = e.y; return; }
+        if (e.trapCd > 0) e.trapCd -= dt;
+        if (Float.isNaN(e.prevY)) e.prevY = e.y;
+        float y0 = Math.min(e.prevY, e.y), y1 = Math.max(e.prevY, e.y);
+        e.prevY = e.y;
+        if (e.trapCd > 0) return;
+        boolean hit = false;
+        float hw = Math.max(2, e.bw * 0.4f);
+        // recorrido vertical completo desde el fotograma anterior (evita atravesar los pinchos al caer rapido)
+        for (float yy = y0; yy <= y1 + 0.01f && !hit; yy += 4f) {
+            for (int k = -1; k <= 1 && !hit; k++) {
+                float xx = e.x + k * hw;
+                if (room.hazardAt(xx, yy - 4) || room.hazardAt(xx, yy - e.bh * 0.5f)) hit = true;
+            }
+        }
+        if (!hit && (room.hazardAt(e.x, y1 - 4) || room.hazardAt(e.x, y1 - e.bh + 3))) hit = true;
+        if (!hit) return;
+        e.trapCd = SPIKE_CD;
+        float dmg = Math.max(20f, e.maxHp * 0.30f);
+        Snd.sfxAt("spikes", e.x, camX + viewW / 2, 0.8f);
+        ps.burst(rng, e.x, e.y - 6, 0xC03040, 8, 90, 0.4f, 2, 200, false);
+        damageEnemy(e, dmg, false, 0, -120);
+        if (e.alive && !e.flying) e.vy = Math.min(e.vy, -160f);   // rebote de dolor, para que no se quede clavado
+        if (DebugBot.trace) System.out.println("PINCHOS: " + ((Enemy) e).def.id + " -" + Math.round(dmg) + " hp=" + Math.round(e.hp) + "/" + Math.round(e.maxHp));
+    }
+
     public float damageEnemy(Ent e, float dmg, boolean crit, float kx, float ky) {
         if (e == null || !e.alive) return 0;
         if (e instanceof Boss) {
@@ -469,6 +498,7 @@ public final class Level {
         if (freezeEnemies > 0) freezeEnemies -= dt;
         if (freezeEnemies <= 0) {
             for (Enemy e : enemies) e.update(this, dt);
+            for (Enemy e : enemies) trapDamage(e, dt);
             if (boss != null) boss.update(this, dt);
         } else {
             for (Enemy e : enemies) e.animFrozen(dt);

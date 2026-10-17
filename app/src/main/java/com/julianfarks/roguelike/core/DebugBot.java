@@ -11,6 +11,7 @@ public final class DebugBot {
     private float lastX;
     public static int classId = System.getenv("BOT_CLASS") != null ? Integer.parseInt(System.getenv("BOT_CLASS")) : 0;
     static boolean enemyDone;
+    public static boolean trace = System.getenv("BOT_TRACE") != null;
     public static boolean godMode = System.getenv("BOT_GOD") != null;
 
     private void hold(Game g, int code, boolean down) {
@@ -42,6 +43,7 @@ public final class DebugBot {
             String[] q = System.getenv("BOT_DEV").split(":");
             java.util.List<DevScreens.Entry> list = q[0].equals("enemies") ? DevScreens.enemies(false) : q[0].equals("elites") ? DevScreens.enemies(true) : q[0].equals("bosses") ? DevScreens.bosses()
                     : q[0].equals("classes") ? DevScreens.classes() : q[0].equals("biomes") ? DevScreens.biomes() : q[0].equals("objects") ? DevScreens.objects() : null;
+            if (q[0].equals("eco")) { Save.S.souls = 1000; g.swap(new DevScreens.Economy(g)); return; }
             if (list == null) { g.swap(new DevScreens.Menu(g)); return; }
             int ix = q.length > 1 ? Integer.parseInt(q[1]) : 0;
             DevScreens.Inspector ins = new DevScreens.Inspector(g, list, ix, q[0]);
@@ -85,6 +87,33 @@ public final class DebugBot {
             rs.rs.gold = 400;
             rs.loadRoom(type);
             return;
+        }
+        if (System.getenv("BOT_SPIKETEST") != null && !spikeDone && frame > 260) {
+            spikeDone = true;
+            Room rm = lv.room;
+            int gy = (int) (p.y / Room.TS);
+            int bx = (int) (p.x / Room.TS) + 8;
+            for (int i = 0; i < 40; i++) for (int j = 1; j <= 25; j++) if (rm.tile(bx + i, gy - j) != Room.AIR) rm.set(bx + i, gy - j, Room.AIR);
+            for (int i = 0; i < 40; i++) { rm.set(bx + i, gy, Room.SOLID); rm.set(bx + i, gy - 1, Room.AIR); }
+            String[] ids = {"esqueleto", "zombi", "lobo_musgo", "escudero_hueso", "carbonero_forja", "caballero_osario", "esqueleto", "zombi", "escudero_hueso"};
+            float[] hs = {20, 20, 60, 100, 140, 40, 80, 120, 150};
+            lv.enemies.clear(); lv.toKill = 0;
+            for (int i = 0; i < ids.length; i++) {
+                // fila de pinchos individual bajo cada enemigo
+                int tx = bx + 2 + i * 4;
+                rm.set(tx, gy - 1, Room.SPIKE); rm.set(tx + 1, gy - 1, Room.SPIKE);
+                EnemyDef ed = EnemyDef.get(ids[i]);
+                Enemy en = new Enemy(ed, false, 1f, 1f);
+                en.x = (tx + 1) * Room.TS; en.y = gy * Room.TS - 16 - hs[i]; en.home = en.x;
+                lv.enemies.add(en); lv.toKill++;
+                spikeEn.add(en);
+            }
+            System.out.println("SPIKETEST: " + ids.length + " enemigos sobre pinchos, suelo fila " + gy);
+        }
+        if (!spikeEn.isEmpty() && frame % 120 == 0 && frame > 300) {
+            int ok = 0;
+            for (Enemy en : spikeEn) { if (en.hp < en.maxHp || !en.alive) ok++; else System.out.println("  sin dano: " + en.def.id + " y=" + Math.round(en.y)); }
+            System.out.println("SPIKETEST frame " + frame + ": danados/muertos " + ok + "/" + spikeEn.size());
         }
         String npcEnv = System.getenv("BOT_NPC");
         if (npcEnv != null && !npcDone && warped && frame > warpFrame + 60) {
@@ -214,7 +243,8 @@ public final class DebugBot {
         if (stuck > 60) { tap(g, 'W'); if (stuck > 90) { tap(g, 'K'); stuck = 0; } }
     }
 
-    private boolean npcDone, devOnce;
+    private boolean npcDone, devOnce, spikeDone;
+    private final java.util.List<Enemy> spikeEn = new java.util.ArrayList<>();
     private int cf;
 
     private void game_start(Game g, ClassScreen cs) {

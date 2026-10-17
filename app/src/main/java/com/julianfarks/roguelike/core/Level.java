@@ -599,9 +599,13 @@ public final class Level {
     // ------------------------------------------------------------------ proyectiles
     private void updateProjs(float dt) {
         // por indice sobre el tamano inicial: los proyectiles nuevos (divisiones, explosiones) se anaden sin romper la iteracion
-        for (int pi = 0, pn = projs.size(); pi < pn; pi++) {
-            Proj p = projs.get(pi);
+        // (se itera sobre una copia: matar a un jefe en mitad del bucle borra los proyectiles hostiles y rompia el indice)
+        final Proj[] snap = projs.toArray(new Proj[0]);
+        final int before = snap.length;
+        for (int pi = 0; pi < before; pi++) {
+            Proj p = snap[pi];
             if (p.dead) continue;
+            if (projs.size() != before && !projs.contains(p)) continue;   // ya retirado durante este mismo cuadro
             p.t += dt;
             p.life -= dt;
             if (p.life <= 0) { projDie(p, false); continue; }

@@ -30,6 +30,39 @@ final class RunScreen extends Screen implements Level.Listener {
     ChestLoot.Reward[] cOffer;      // las 3 opciones del cofre abierto
     int cMode;
     Prop ovProp;
+    // ---- laboratorio (Modo Desarrollador)
+    boolean sandbox;
+    private String sbEnemy;
+    private boolean sbElite;
+    private int sbBoss = -1, sbBiome;
+    private float sbRespawnT = -1;
+    private java.util.function.Supplier<Screen> sbBack;
+
+    static RunScreen sandbox(Game g, ClassDef c, int biome, String enemy, boolean elite, int boss, java.util.function.Supplier<Screen> back) {
+        RunScreen r = new RunScreen(g, c, 0);
+        r.sandbox = true; r.rs.sandbox = true;
+        r.sbEnemy = enemy; r.sbElite = elite; r.sbBoss = boss; r.sbBiome = Math.max(0, Math.min(8, biome)); r.sbBack = back;
+        r.rs.biome = Biome.ALL[r.sbBiome]; r.rs.stage = Biome.ALL[r.sbBiome].tier;
+        r.rs.gold = 999;
+        r.resumeType = boss >= 0 ? Room.BOSS : Room.COMBAT;
+        return r;
+    }
+
+    private void sandboxSetup() {
+        if (!sandbox) return;
+        bannerTitle = "LABORATORIO"; bannerSub = "Invulnerable · no se guarda nada"; bannerT = 3f; lv.tutorial = null;
+        if (sbBoss >= 0 && lv.room.type == Room.BOSS) { setupBoss(BossDef.ALL[Math.min(sbBoss, BossDef.ALL.length - 1)]); return; }
+        lv.enemies.clear(); lv.toKill = 0; lv.cleared = false;
+        if (sbEnemy != null) {
+            EnemyDef ed = EnemyDef.get(sbEnemy);
+            if (ed != null) {
+                Enemy en = new Enemy(ed, sbElite, 1f, 1f);
+                en.x = lv.pl.x + 120; en.y = lv.pl.y; en.home = en.x;
+                lv.enemies.add(en); lv.toKill = 1;
+            }
+        }
+    }
+
     private Story.Dialog talk;
     private Dlg tdlg;
     private int tphase;   // 0 lineas, 1 opciones, 2 resultado
@@ -110,7 +143,8 @@ final class RunScreen extends Screen implements Level.Listener {
         // contenido especial
         if (type == Room.HUB) setupHub();
         if (type == Room.BOSS) setupBoss(null);
-        if (lv.cleared && type != Room.BOSS) spawnDoors();
+        sandboxSetup();
+        if (lv.cleared && type != Room.BOSS && !sandbox) spawnDoors();
         // banner
         if (type == Room.HUB) {
             bannerTitle = rs.stage >= 3 ? "El Sello está completo" : "Santuario del Viajero";
@@ -186,6 +220,7 @@ final class RunScreen extends Screen implements Level.Listener {
 
     // =============================================================== Level.Listener
     @Override public void onCleared(Level l) {
+        if (sandbox) { sbRespawnT = 1.6f; l.text(l.pl.x, l.pl.y - 50, "Reiniciando prueba...", 0xFFD25A, true); return; }
         Snd.sfx("room_clear", 0.9f);
         l.text(l.pl.x, l.pl.y - 50, "¡Sala despejada!", 0xFFD25A, true);
         if (l.room.type == Room.ELITE) {
@@ -205,6 +240,7 @@ final class RunScreen extends Screen implements Level.Listener {
     }
 
     @Override public void onBossDead(Level l) {
+        if (sandbox) { l.bossFight = false; sbRespawnT = 3.5f; return; }
         BossDef d = l.boss.def;
         l.bossFight = false;
         l.cleared = true;
@@ -249,6 +285,7 @@ final class RunScreen extends Screen implements Level.Listener {
 
     // =============================================================== fin de partida
     private void endRun(boolean win) {
+        if (sandbox) return;
         if (ended) return;
         ended = true;
         Save s = Save.S;
@@ -616,6 +653,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 add(bx, by + 84, bw, 22, "Vibración: " + (s.vibOn ? "SÍ" : "NO"), () -> { s.vibOn = !s.vibOn; s.write(); layoutOverlay(); });
                 add(bx, by + 112, bw, 22, "Guardar partida", () -> { saveMenu = true; layoutOverlay(); });
                 add(bx, by + 140, bw, 22, quitConfirm ? "¿Seguro? Toca otra vez" : "Abandonar partida", () -> {
+                    if (sandbox) { game.go(sbBack != null ? sbBack.get() : new Screens.Title(game)); return; }
                     if (quitConfirm) { endRun(false); game.go(new Screens.Title(game)); }
                     else { quitConfirm = true; layoutOverlay(); }
                 });
@@ -667,6 +705,7 @@ final class RunScreen extends Screen implements Level.Listener {
         }
         if (lv == null) return;
         ovT += dt;
+        if (sandbox && sbRespawnT > 0) { sbRespawnT -= dt; if (sbRespawnT <= 0) { sbRespawnT = -1; loadRoom(sbBoss >= 0 ? Room.BOSS : Room.COMBAT); } }
         if (ov == OV_TALK && tdlg != null) tdlg.update(dt);
         if (bannerT > 0) bannerT -= dt;
         if (lv.unlockTitle != null) { bannerTitle = lv.unlockTitle; bannerSub = lv.unlockSub; bannerT = 3f; lv.unlockTitle = null; }

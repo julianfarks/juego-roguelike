@@ -357,6 +357,7 @@ public final class Level {
 
     /** El jugador recibe daño. src_x = origen para el empuje. */
     public boolean hurtPlayer(float dmg, float srcX, int status, float sDur) {
+        if (rs.sandbox) return false;
         Player p = pl;
         if (p == null || !p.alive || cinematic) return false;
         if (p.invuln > 0 || p.rolling()) return false;
@@ -693,7 +694,7 @@ public final class Level {
             case Pickup.RELIC:
                 Snd.sfx("relic_get", 1f);
                 flash(0xFFE8A0, 0.4f);
-                if (p.relic >= 0 && p.relic < 8) { rs.relicsThisRun[p.relic] = true; Save.S.relics[p.relic] = true; Save.S.write(); }
+                if (p.relic >= 0 && p.relic < 8 && !rs.sandbox) { rs.relicsThisRun[p.relic] = true; Save.S.relics[p.relic] = true; Save.S.write(); }
                 text(pl.x, pl.y - 50, "¡Reliquia obtenida!", 0xFFD25A, true);
                 ps.burst(rng, p.x, p.y, 0xFFE8A0, 40, 160, 1f, 3, 0, true);
                 if (relicListener != null) relicListener.run();

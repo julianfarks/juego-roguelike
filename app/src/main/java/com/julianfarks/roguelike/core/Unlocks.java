@@ -48,6 +48,7 @@ final class Unlocks {
 
     /** Se llama al derrotar un enemigo: comprueba nuevos desbloqueos. */
     static void check(Level lv) {
+        if (lv.rs.sandbox) return;
         Save s = Save.S;
         int total = s.kills + lv.rs.kills;
         boolean any = false;

@@ -24,6 +24,7 @@ final class RunSave {
 
     static void write(Platform p, RunScreen r, int slot) {
         RunState rs = r.rs;
+        if (rs.sandbox) return;
         r.mySlots.add(slot);
         try {
             Map<String, Object> d = new LinkedHashMap<>();

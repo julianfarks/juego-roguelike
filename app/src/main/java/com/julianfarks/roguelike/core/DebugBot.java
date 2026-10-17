@@ -23,6 +23,31 @@ public final class DebugBot {
         Screen s = g.cur;
         if (s == null || g.fadeDir == 1) return;
         if (s instanceof Screens.Title && System.getenv("BOT_EDITOR") != null) { g.go(new ControlsEditor(g, false)); return; }
+        if (s instanceof Screens.Title && System.getenv("BOT_CODE") != null && !devOnce) {
+            devOnce = true; cf = frame;
+            String code = System.getenv("BOT_CODE");
+            Save.S.devUnlocked = false;
+            g.swap(new CodesScreen(g));
+            return;
+        }
+        if (s instanceof CodesScreen && System.getenv("BOT_CODE") != null) {
+            String code = System.getenv("BOT_CODE");
+            if (frame == cf + 10) { for (char ch : code.toCharArray()) g.key(Character.toUpperCase(ch), true); }
+            if (frame == cf + 20) { g.lastDevice = 1; g.key(10, true); System.out.println("DEV desbloqueado=" + Save.S.devUnlocked); }
+            return;
+        }
+        if (s instanceof Screens.Title && System.getenv("BOT_DEV") != null && !devOnce) {
+            devOnce = true;
+            Save.S.devUnlocked = true;
+            String[] q = System.getenv("BOT_DEV").split(":");
+            java.util.List<DevScreens.Entry> list = q[0].equals("enemies") ? DevScreens.enemies(false) : q[0].equals("elites") ? DevScreens.enemies(true) : q[0].equals("bosses") ? DevScreens.bosses()
+                    : q[0].equals("classes") ? DevScreens.classes() : q[0].equals("biomes") ? DevScreens.biomes() : q[0].equals("objects") ? DevScreens.objects() : null;
+            if (list == null) { g.swap(new DevScreens.Menu(g)); return; }
+            int ix = q.length > 1 ? Integer.parseInt(q[1]) : 0;
+            DevScreens.Inspector ins = new DevScreens.Inspector(g, list, ix, q[0]);
+            if (q.length > 2 && q[2].equals("arena")) ins.arena(); else g.swap(ins);
+            return;
+        }
         if (s instanceof Screens.Title && System.getenv("BOT_CINE") != null) { g.go(new Cinematic(g, Story.cine(System.getenv("BOT_CINE")), null)); return; }
         if (s instanceof Screens.Title) {
             if (System.getenv("BOT_INTRO") == null) Save.S.story[Story.S_INTRO] = 1;
@@ -189,7 +214,8 @@ public final class DebugBot {
         if (stuck > 60) { tap(g, 'W'); if (stuck > 90) { tap(g, 'K'); stuck = 0; } }
     }
 
-    private boolean npcDone;
+    private boolean npcDone, devOnce;
+    private int cf;
 
     private void game_start(Game g, ClassScreen cs) {
         cs.layout();

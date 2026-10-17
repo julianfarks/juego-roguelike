@@ -32,6 +32,7 @@ public final class RunState {
     public int damageTaken;
     public final boolean[] relicsThisRun = new boolean[8];
     public boolean won, finalRun;
+    public boolean sandbox;     // laboratorio del Modo Desarrollador: no toca guardados ni progreso, jugador invulnerable
 
     public RunState(ClassDef cls, long seed, int asc) {
         this.cls = cls;

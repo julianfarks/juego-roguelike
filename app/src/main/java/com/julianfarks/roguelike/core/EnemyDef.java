@@ -49,6 +49,7 @@ public final class EnemyDef {
     }
 
     public static EnemyDef get(String id) { return M.get(id); }
+    public static java.util.Collection<EnemyDef> all() { return M.values(); }
 
     static {
         // id, role, hp, dmg, speed, range, cooldown, proj, dieSfx, souls, color, contact, status

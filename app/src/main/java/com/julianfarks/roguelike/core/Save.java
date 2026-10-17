@@ -19,7 +19,7 @@ public final class Save {
     public static void devCommit() { devSoulsBackup = -1; S.write(); }
     static Platform P;
     /** Version del formato de guardado. 1 = original (sin campo "ver"); 2 = gemas, inventario, modo infinito. Solo se AÑADEN claves: nunca se borran ni se renombran. */
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;
     /** true si el guardado en disco es de una version MAS NUEVA que esta app: no se sobrescribe (se conserva intacto). */
     public boolean readOnly = false;
     /** Gemas de prueba del Modo Desarrollador: solo existen en memoria durante la sesion, jamas se guardan. */
@@ -45,6 +45,9 @@ public final class Save {
     // ---- estadisticas de la cuenta (persistentes)
     public int started = 0, rounds = 0, losses = 0, bestStreak = 0, maxKillsRound = 0, perfectRounds = 0, bestPerfectStreak = 0, chestsOpened = 0, secretChests = 0, trophyMask = 0;
     public int[] classRuns = new int[10];
+    public int compMask = 0, compSel = -1;            // companeros desbloqueados / elegido (v3)
+    public int[] garden = new int[Garden.PLOTS];     // etapa de cada cristal del jardin (v3)
+    public java.util.Set<String> dex = new java.util.LinkedHashSet<>();   // bestiario: e:id, b:idx, v:k (v3)
     public int[] events = new int[Events.COUNT];     // sucesos especiales completados (por tipo)
     public long playMs = 0;                          // tiempo total jugado (ms)
     // ---- moneda premium (independiente de almas/oro) e inventario cosmetico
@@ -124,6 +127,12 @@ public final class Save {
                 if (cru != null) for (int i = 0; i < Math.min(10, cru.length); i++) s.classRuns[i] = cru[i];
                 int[] evs = Json.ints(d, "st_events");
                 if (evs != null) for (int i = 0; i < Math.min(Events.COUNT, evs.length); i++) s.events[i] = Math.max(0, evs[i]);
+                s.compMask = Json.i(d, "cmp_mask", 0) & ((1 << Companions.COUNT) - 1);
+                s.compSel = Json.i(d, "cmp_sel", -1);
+                if (!Companions.unlocked(s, s.compSel)) s.compSel = -1;
+                int[] gd = Json.ints(d, "garden");
+                if (gd != null) for (int i = 0; i < Math.min(Garden.PLOTS, gd.length); i++) s.garden[i] = Math.max(0, Math.min(Garden.MAX, gd[i]));
+                for (Object o : arrOf(d, "dex")) if (o instanceof String) s.dex.add((String) o);
                 int[] cdu = Json.ints(d, "codes");
                 if (cdu != null) for (int i = 0; i < Math.min(s.codesUsed.length, cdu.length); i++) s.codesUsed[i] = cdu[i];
                 int[] sty = Json.ints(d, "story");
@@ -179,6 +188,7 @@ public final class Save {
             d.put("st_started", started); d.put("st_rounds", rounds); d.put("st_losses", losses); d.put("st_streak", bestStreak); d.put("st_killsRound", maxKillsRound);
             d.put("st_perfect", perfectRounds); d.put("st_perfStreak", bestPerfectStreak); d.put("st_chests", chestsOpened); d.put("st_secret", secretChests);
             d.put("st_trophies", trophyMask); d.put("st_playS", (int) (playMs / 1000L)); d.put("st_classRuns", classRuns); d.put("st_events", events);
+            d.put("cmp_mask", compMask); d.put("cmp_sel", compSel); d.put("garden", garden); d.put("dex", new ArrayList<Object>(dex));
             d.put("imode", inputMode); d.put("kb", kb); d.put("pb", pb);
             P.store().put("save", Json.write(d));
             if (commit) P.store().commit();

@@ -298,6 +298,7 @@ final class RunScreen extends Screen implements Level.Listener {
         Snd.sfx("room_clear", 0.9f);
         l.text(l.pl.x, l.pl.y - 50, "¡Sala despejada!", 0xFFD25A, true);
         if (l.room.type == Room.COMBAT || l.room.type == Room.ELITE) completeRound(l);
+        if (rs.curEvent > 0 && (l.room.type == Room.EVENT || l.room.type == Room.ELITE)) Codex.see(rs, "v:" + rs.curEvent, Events.NAME[rs.curEvent]);
         if (l.room.type == Room.ELITE && rs.curEvent == Events.TRIAL) trialReward(l);
         if (l.room.type == Room.EVENT && rs.curEvent == Events.CAPTIVE) l.text(l.pl.x, l.pl.y - 66, "Guardias derrotados: libera al prisionero", 0xB8A0D0, true);
         rs.roomsDone++;
@@ -1071,6 +1072,7 @@ final class RunScreen extends Screen implements Level.Listener {
         if (relicBannerT > 0) relicBannerT -= dt;
         if (hintT > 0) hintT -= dt;
         if (toastT > 0) toastT -= dt;
+        if (Codex.toast != null) { toast = Codex.toast; toastT = 2.6f; Codex.toast = null; }
         if (ov == OV_NONE && deadT < 0 && winT < 0 && lv.pl.alive) {
             autoT += dt;
             if (autoT >= 300f) { autoT = 0; RunSave.write(game.P, this, RunSave.AUTO); toast = "Autoguardado"; toastT = 2f; }
@@ -1198,7 +1200,7 @@ final class RunScreen extends Screen implements Level.Listener {
     private void renderHud(Platform.Gfx g, int w) {
         Player pl = lv.pl;
         Stats s = rs.stats;
-        if (toastT > 0 && ov == OV_NONE) UI.small.center(g, toast, w / 2f, 8, UI.GOLD, Math.min(1f, toastT));
+        if (toastT > 0 && ov == OV_NONE) { float tw = UI.small.width(toast) + 10; g.rect(w / 2f - tw / 2, 20, tw, 12, Mth.withAlpha(0x000010, (int) (150 * Math.min(1f, toastT))), false); UI.small.center(g, toast, w / 2f, 22, UI.GOLD, Math.min(1f, toastT)); }
         float ratio = s.maxHp > 0 ? rs.hp / s.maxHp : 0;
         UI.hpBar(g, 8, 8, ratio);
         UI.small.draw(g, Math.max(0, Math.round(rs.hp)) + "/" + Math.round(s.maxHp), 114, 11, ratio < 0.3f ? UI.RED : UI.WHITE, 1f);

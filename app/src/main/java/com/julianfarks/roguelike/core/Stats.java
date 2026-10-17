@@ -50,5 +50,7 @@ public final class Stats {
         ChestLoot.applyStats(rs, this);
         StartBlessing.applyStats(rs, this);
         Events.applyStats(rs, this);
+        Garden.applyStats(this, s);
+        Companions.applyStats(rs, this);
     }
 }

@@ -504,6 +504,7 @@ public final class Level {
             ps.spawn(camX + rng.f(0, viewW), camY + rng.f(0, Platform.VIEW_H), rng.f(-6, 6), -rng.f(4, 18), rng.f(2.2f, 4f), 1, 0, biome.color, true);
         }
         if (pl.alive || timeScale < 1f) pl.update(this, dt);
+        updateCompanion(dt);
         if (!pl.alive && timeScale < 1f) timeScale = Math.min(1f, timeScale + rawDt * 0.0f);
         if (freezeEnemies > 0) freezeEnemies -= dt;
         if (freezeEnemies <= 0) {
@@ -679,6 +680,60 @@ public final class Level {
         else {
             ps.burst(rng, p.x, p.y, p.color, 6, 60, 0.25f, 2, 0, true);
             fx("fx_hit", "spark", p.x, p.y, 0.8f, p.color, Platform.ADD | Platform.TINT);
+        }
+    }
+
+    // ------------------------------------------------------------------ companero y bestiario
+    private float cmpX, cmpY, cmpCd = 3f, cmpT, scanT, cmpFlash;
+    private boolean cmpInit;
+
+    private void updateCompanion(float dt) {
+        scanT -= dt;
+        if (scanT <= 0) {                                   // bestiario: enemigos y jefes vistos
+            scanT = 0.5f;
+            for (Enemy e : enemies) Codex.see(rs, "e:" + e.def.id, Codex.pretty(e.def.id));
+            if (boss != null) Codex.see(rs, "b:" + boss.def.idx, boss.def.name);
+        }
+        int c = rs.companion;
+        if (c < 0 || pl == null) return;
+        if (!cmpInit) { cmpX = pl.x - 20; cmpY = pl.y - 40; cmpInit = true; }
+        cmpT += dt; if (cmpFlash > 0) cmpFlash -= dt;
+        float tx = pl.x - pl.dir() * 24, ty = pl.y - 38 + (float) Math.sin(cmpT * 2.2f) * 4;
+        float k = Math.min(1f, dt * 5f);
+        cmpX += (tx - cmpX) * k; cmpY += (ty - cmpY) * k;
+        if (Math.abs(cmpX - pl.x) > 260) { cmpX = tx; cmpY = ty; }   // teletransporte si se queda atras
+        if (c == Companions.FIRE && pl.alive && !cinematic) {
+            cmpCd -= dt;
+            if (cmpCd <= 0) {
+                Ent t = nearestEnemy(cmpX, cmpY, 150, true);
+                if (t == null) { cmpCd = 0.5f; return; }
+                cmpCd = 6f; cmpFlash = 0.25f;
+                float tyc = t.y - 10;
+                for (int i = 0; i < 8; i++) { float f = i / 7f; ps.spawn(cmpX + (t.x - cmpX) * f, cmpY + (tyc - cmpY) * f, rng.f(-8, 8), rng.f(-8, 8), 0.3f, 2, 0, 0xFFB43A, true); }
+                fx("fx_hit", "spark", t.x, tyc, 0.9f, 0xFF8A30, Platform.ADD | Platform.TINT);
+                damageEnemy(t, pl.baseDmg(this) * (t instanceof Boss ? 0.10f : 0.25f), false, 0, 0);
+            }
+        }
+    }
+
+    private void drawCompanion(Platform.Gfx g) {
+        int c = rs.companion;
+        if (c < 0 || !cmpInit) return;
+        UI.light(g, cmpX, cmpY - 4, 22 + (cmpFlash > 0 ? 12 : 0), Companions.COLOR[c] | 0xFF000000, 0.30f);
+        Sheet sh = Assets.spr(Companions.SHEET[c]);
+        if (sh != null && sh != Sheet.EMPTY) sh.drawAt(g, "idle", cmpT, Math.round(cmpX), Math.round(cmpY + 16), pl.dir() > 0, 1f, 0, 0, 1f);
+    }
+
+    /** Umbra (sombra) marca lo oculto de la sala: cofres secretos y puertas de suceso. */
+    private void drawSecretMarks(Platform.Gfx g) {
+        if (rs.companion != Companions.SHADOW) return;
+        for (Prop p : props) {
+            boolean sec = p.kind.equals("chest") && p.arg == 3 && !p.used;
+            boolean door = p.kind.equals("door") && p.event > 0 && !p.done;
+            if (!sec && !door) continue;
+            float a = 0.5f + 0.4f * (float) Math.sin(time * 4);
+            UI.light(g, p.x, p.y - 12, 20, 0xAA6EFF, 0.35f * a);
+            if (UI.arrow != null) g.imageRot(UI.arrow, 0, 0, 8, 8, p.x - 5, p.y - 46 + (float) Math.sin(time * 5) * 2, 10, 10, 1.5708f, Platform.TINT, 0xAA6EFF, a);
         }
     }
 
@@ -887,7 +942,9 @@ public final class Level {
         for (Pickup p : pickups) drawPickup(g, p);
         for (Enemy e : enemies) e.render(g, this);
         if (boss != null) boss.render(g, this);
+        drawCompanion(g);
         pl.render(g, this);
+        drawSecretMarks(g);
         for (Proj p : projs) drawProj(g, p);
         for (FxObj f : fxs) if (!f.behind) drawFx(g, f);
         for (float[] l : lines) g.line(l[0], l[1], l[2], l[3], 2f, Mth.withAlpha((int) l[5], 255), true);

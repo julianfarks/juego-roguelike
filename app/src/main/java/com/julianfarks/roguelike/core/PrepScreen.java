@@ -54,6 +54,7 @@ final class PrepScreen extends Screen {
         for (int i = 0; i < 4; i++) { final int id = i; skillHit[i] = add(x0 + i * 30, 88, 26, 26, null, () -> selS = id); skillHit[i].plain = true; }
         float cw = (wR - 8) / 3f;
         for (int i = 0; i < 3; i++) { final int id = i; cardHit[i] = add(x0 + i * (cw + 4), 148, cw, 56, null, () -> pick(id)); cardHit[i].plain = true; cardHit[i].noSound = true; }
+        Hit cmpHit = add(156, 227, w - 162, 14, null, () -> cycleCompanion()); cmpHit.plain = true;
         add(6, 242, 56, 26, "Volver", () -> back());
         modeBtn = add(66, 242, 118, 26, modeLabel(), () -> toggleMode());
         diffBtn = add(188, 242, 88, 26, diffLabel(), () -> { Save.S.diffSel = (Save.S.diffSel + 1) % 3; Save.S.write(); diffBtn.label = diffLabel(); });
@@ -277,6 +278,16 @@ final class PrepScreen extends Screen {
         }
     }
 
+    /** Alterna entre ninguno y los companeros realmente desbloqueados. */
+    private void cycleCompanion() {
+        Companions.refresh(Save.S);
+        java.util.List<Integer> opts = new java.util.ArrayList<>();
+        opts.add(-1);
+        for (int i = 0; i < Companions.COUNT; i++) if (Companions.unlocked(Save.S, i)) opts.add(i);
+        int at = opts.indexOf(Companions.active(Save.S));
+        Companions.select(Save.S, opts.get((Math.max(0, at) + 1) % opts.size()));
+    }
+
     private void drawSummary(Platform.Gfx g, ClassDef c, int w) {
         StartBlessing b = StartBlessing.get(shown());
         Cosmetics.Item sk = Cosmetics.equipped(c);
@@ -287,7 +298,9 @@ final class PrepScreen extends Screen {
             UI.small.draw(g, "- " + b.con, px + UI.small.width("+ " + b.pro) + 10, 209, 0xFFFF7A7A, 1f);
         } else UI.small.draw(g, "Sin bendición inicial", x, 209, UI.GREY, 1f);
         UI.small.draw(g, "Equipo: " + c.weapon + (sk != null ? " · " + sk.name : ""), x, 220, UI.WHITE, 1f);
-        UI.small.draw(g, "Compañeros: ninguno (aún sin implementar)", x, 230, UI.GREY, 1f);
+        int ca = Companions.active(Save.S);
+        if (ca < 0) UI.small.draw(g, "Compañero: ninguno (toca para elegir)", x, 231, UI.GREY, 1f);
+        else UI.small.draw(g, "Compañero: " + Companions.NAME[ca] + " · " + Companions.PASSIVE[ca].split("\\.")[0].replaceAll("\\(.*\\)", "").trim(), x, 231, Companions.COLOR[ca], 1f);
     }
 
     private void drawLaunch(Platform.Gfx g, int w, ClassDef c) {

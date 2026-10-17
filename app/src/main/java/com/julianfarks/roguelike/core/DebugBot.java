@@ -29,9 +29,20 @@ public final class DebugBot {
 
     private void tap(Game g, int code) { g.key(code, true); g.key(code, false); }
 
+    private boolean compDone, screenDone;
+
     public void tick(Game g, int frame) {
         Screen s = g.cur;
         if (s == null || g.fadeDir == 1) return;
+        if (System.getenv("BOT_COMP") != null && !compDone) {      // prueba: companero desbloqueado y elegido
+            compDone = true; int n = Integer.parseInt(System.getenv("BOT_COMP"));
+            Save.S.compMask = 7; Save.S.compSel = n;
+            if (System.getenv("BOT_DEXFILL") != null) { int k = 0; for (EnemyDef d : Codex.enemies()) if (k++ % 3 != 2) Save.S.dex.add("e:" + d.id); Save.S.dex.add("b:0"); Save.S.dex.add("b:2"); Save.S.dex.add("v:1"); Save.S.dex.add("v:4"); Save.S.garden[0] = 2; Save.S.garden[1] = 4; Save.S.garden[2] = 1; }
+        }
+        if (s instanceof Ops && System.getenv("BOT_SCREEN") != null && !screenDone) {
+            screenDone = true; String q = System.getenv("BOT_SCREEN");
+            g.go(q.equals("comp") ? new CodexScreens.Comp(g) : q.equals("garden") ? new CodexScreens.GardenScr(g) : new CodexScreens.CodexScr(g)); return;
+        }
         if (s instanceof Screens.Title && System.getenv("BOT_EDITOR") != null) { g.go(new ControlsEditor(g, false)); return; }
         if (s instanceof Screens.Title && System.getenv("BOT_CODE") != null && !devOnce) {
             devOnce = true; cf = frame;
@@ -203,6 +214,8 @@ public final class DebugBot {
                 sbStep = 1; sbT = frame;
                 boolean w0 = RunSave.write(g.P, rs, 0), wa = RunSave.write(g.P, rs, RunSave.AUTO);
                 System.out.println("SBTEST normal: guardar ranura0=" + w0 + " auto=" + wa + " cargable=" + (RunSave.load(g, 0) != null));
+                RunScreen ld = RunSave.load(g, 0);
+                if (ld != null) System.out.println("SBTEST ronda: companero " + rs.rs.companion + "->" + ld.rs.companion + " pactos " + rs.rs.pactCount() + "->" + ld.rs.pactCount() + " curEvent " + rs.rs.curEvent + "->" + ld.rs.curEvent + " inicio " + rs.rs.startBless + "->" + ld.rs.startBless + " vidaMax " + Math.round(rs.rs.stats.maxHp) + "->" + Math.round(ld.rs.stats.maxHp));
                 sbBase = sbSnap(g);
                 g.go(RunScreen.sandbox(g, rs.cls, 0, null, false, 0, () -> new Ops(g)));
                 return;

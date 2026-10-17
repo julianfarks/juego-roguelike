@@ -170,9 +170,9 @@ final class Ops extends Screen {
             case CONTINUE: game.go(new LoadScreen(game)); break;
             case SANCT: game.go(new SanctuaryScreen(game)); break;
             case SHOP: game.go(new ShopScreen(game)); break;
-            case CODEX: game.go(new OpsScreens.Pending(game, "COLECCIÓN Y BESTIARIO", "Se activa en la etapa 4.", "Aún no registra descubrimientos.")); break;
-            case GARDEN: game.go(new OpsScreens.Pending(game, "JARDÍN MÁGICO", "Se activa en la etapa 4.", "Los cristales todavía están en semilla.")); break;
-            case COMP: game.go(new OpsScreens.Pending(game, "COMPAÑEROS", "Se activa en la etapa 4.", "Aún no hay espíritus disponibles.")); break;
+            case CODEX: game.go(new CodexScreens.CodexScr(game)); break;
+            case GARDEN: game.go(new CodexScreens.GardenScr(game)); break;
+            case COMP: game.go(new CodexScreens.Comp(game)); break;
             case RECORDS: game.go(new OpsScreens.Stats(game)); break;
             default: game.go(new PrepScreen(game));   // el portal NO empieza el combate: abre la preparacion
         }
@@ -343,9 +343,9 @@ final class Ops extends Screen {
             case PORTAL: sub = "Desciende al Abismo como " + c.name; break;
             case SANCT: sub = "Mejoras permanentes, clases y desbloqueos"; break;
             case SHOP: sub = "Apariencias · almas y gemas por separado"; break;
-            case CODEX: sub = "Enemigos, jefes, espadas y secretos"; break;
-            case GARDEN: sub = "Cristales que crecen con tus runs"; break;
-            case COMP: sub = "Espíritus que te acompañan"; break;
+            case CODEX: sub = "Bestiario: " + Codex.foundEntries() + " / " + Codex.totalEntries() + " descubiertos"; break;
+            case GARDEN: sub = "Cristales que crecen con tus almas"; break;
+            case COMP: { int a = Companions.active(Save.S); sub = a < 0 ? "Espíritus aliados · ninguno equipado" : "Equipado: " + Companions.NAME[a]; break; }
             default: sub = "Estadísticas, logros y récords"; break;
         }
         float tw = Math.min(w - 40, 330);
@@ -378,9 +378,9 @@ final class Ops extends Screen {
                 case PORTAL: drawPortal(g, x, a, sel); break;
                 case SANCT: spr(g, "prop_sanctuary", "idle", x, fy, 1.4f, a, 0, 0); UI.light(g, x, fy - 56, sel ? 52 : 38, 0x9A7AFF, 0.22f * a); break;
                 case SHOP: drawShop(g, x, fy, a, sel); break;
-                case CODEX: spr(g, "ops_codex", "idle", x, fy + lift, 1f, a, 0, 0); UI.light(g, x - 6, fy - 62, sel ? 40 : 28, 0x7AF0FF, 0.2f * a); break;
-                case GARDEN: drawGarden(g, x, fy, a, sel); break;
-                case COMP: spr(g, "ops_nook", "idle", x, fy + lift, 1f, a, 0, 0); UI.light(g, x, fy - 62, sel ? 48 : 34, 0xB080FF, 0.2f * a); break;
+            case CODEX: game.go(new CodexScreens.CodexScr(game)); break;
+            case GARDEN: game.go(new CodexScreens.GardenScr(game)); break;
+            case COMP: game.go(new CodexScreens.Comp(game)); break;
                 default: spr(g, "ops_board", "idle", x, fy + lift, 1f, a, 0, 0); UI.light(g, x, fy - 56, sel ? 46 : 32, 0xFFD25A, 0.12f * a); break;
             }
             if (i == PREP) drawNpc(g, "prop_npc_0", SX[i] + 62 - Math.round(cam), fy, a);
@@ -487,5 +487,5 @@ final class Ops extends Screen {
     }
 
     /** Etapa visible (0..4) de cada cristal del jardin. Hasta la etapa 4 del proyecto el jardin aun no tiene datos guardados. */
-    static int gardenStage(int plot) { return 0; }
+    static int gardenStage(int plot) { return Save.S == null || plot < 0 || plot >= Garden.PLOTS ? 0 : Garden.level(Save.S, plot); }
 }

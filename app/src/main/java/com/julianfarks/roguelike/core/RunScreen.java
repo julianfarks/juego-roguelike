@@ -184,7 +184,9 @@ final class RunScreen extends Screen implements Level.Listener {
         Platform P = game.P;
         Biome b = type == Room.HUB || rs.biome == null ? hubBiome() : rs.biome;
         if (type != Room.EVENT && !(type == Room.ELITE && rs.curEvent == Events.TRIAL)) rs.curEvent = 0;
+        RoomGen.extraTraps = Infinite.has(rs, Infinite.M_TRAPS) ? 3 : 0;
         Room rm = RoomGen.generate(type, b, rs.rng, rs.stage, rs.roomNo, type == Room.EVENT ? rs.curEvent : 0);
+        RoomGen.extraTraps = 0;
         rm.bake(P);
         lv = new Level(P, rs, rm, in);
         lv.viewW = game.viewW;
@@ -1647,7 +1649,7 @@ final class RunScreen extends Screen implements Level.Listener {
                     float px = w / 2f - 150;
                     UI.panel(g, 2, px, 14, 300, 232, fadeIn);
                     UI.big.center(g, "RUN INFINITA", w / 2f, 22, UI.PURPLE, fadeIn);
-                    UI.small.center(g, rs.biome == null ? "" : "Caíste en " + rs.biome.name + " · piso " + r.reached, w / 2f, 44, UI.GREY, fadeIn);
+                    UI.small.center(g, rs.biome == null ? "" : "Caíste en " + rs.biome.name + " · piso " + r.reached + (r.mods != 0 ? " · Retos +" + Infinite.bonusPct(r.mods) + "%" : ""), w / 2f, 44, UI.GREY, fadeIn);
                     String[][] rows = {{"Pisos completados", String.valueOf(r.floors)}, {"Piso alcanzado", String.valueOf(r.reached)}, {"Enemigos derrotados", String.valueOf(r.kills)},
                             {"Jefes derrotados", String.valueOf(r.bosses)}, {"Tiempo de supervivencia", time(r.timeS)}, {"Revividas usadas", r.revives + "/" + rs.ruleset.maxRevives}};
                     float y = 60;

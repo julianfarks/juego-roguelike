@@ -157,7 +157,7 @@ public final class Player extends Ent {
         if (regenT > 0) {
             regenT -= dt;
             lv.healPlayer(0);
-            float add = regenRate * dt;
+            float add = regenRate * dt * Infinite.healMul(rs);
             rs.hp = Math.min(s.maxHp, rs.hp + add);
         }
         if (cls.id == 5 && rs.hp < s.maxHp && !lv.cinematic) rs.hp = Math.min(s.maxHp, rs.hp + 0.4f * dt);   // Savia: regeneracion lenta

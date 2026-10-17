@@ -77,10 +77,11 @@ public final class Level {
         for (Room.Spawn s : room.spawns) {
             EnemyDef d = EnemyDef.get(s.enemy);
             if (d == null) continue;
-            boolean el = s.elite || (rs.infinite && rng.chance(Infinite.eliteChance(rs.floor)));
+            boolean el = s.elite || (rs.infinite && rng.chance(Infinite.eliteChance(rs.floor) + (Infinite.has(rs, Infinite.M_ELITE) ? 0.15f : 0f)));
             Enemy e = new Enemy(d, el, hpMul, dmgMul);
             e.x = s.x; e.y = s.y;
             e.home = s.x;
+            if (Infinite.has(rs, Infinite.M_FAST)) e.modSpeed = 1.2f;
             enemies.add(e);
         }
         toKill = enemies.size();
@@ -366,6 +367,7 @@ public final class Level {
 
     public void healPlayer(float amt) {
         if (amt <= 0 || pl == null || !pl.alive) return;
+        amt *= Infinite.healMul(rs);
         float before = rs.hp;
         rs.hp = Math.min(rs.stats.maxHp, rs.hp + amt);
         float got = rs.hp - before;

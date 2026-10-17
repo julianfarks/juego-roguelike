@@ -6,6 +6,9 @@ import java.util.List;
 
 /** Generador procedural de salas. */
 public final class RoomGen {
+    /** Pinchos extra en el piso superior (reto 'mas trampas'); lo fija RunScreen justo antes de generar. */
+    static int extraTraps = 0;
+
     private RoomGen() {}
 
     /** Genera una sala y, en las de combate, la valida (entrada -> salida y enemigos alcanzables); si falla reintenta con otra disposicion. */
@@ -86,7 +89,7 @@ public final class RoomGen {
             int secretKind = sroll < 0.55f ? 0 : (sroll < 0.75f ? 1 : (sroll < 0.92f ? 2 : 3));
             if (secretKind == 1 || secretKind == 2) buildSecrets(rm, W, fy, mf, ground, blocked, slab, r, stage, secretKind);
             // pinchos en el piso superior
-            for (int k = 0; k < r.range(1, 3); k++) {
+            for (int k = 0; k < r.range(1, 3) + extraTraps; k++) {
                 int x = r.range(16, W - 20), n = r.range(2, 3);
                 boolean ok = true;
                 for (int i = -3; i < n + 3; i++) if (x + i < 0 || x + i >= W || !slab[x + i] || rm.tile(x + i, mf - 1) != Room.AIR || rm.tile(x + i, mf - 5) == Room.SOLID) ok = false;

@@ -220,4 +220,43 @@ final class CodexScreens {
             sh.drawAt(g, "idle", t, Math.round(x), Math.round(feet), true, sc, lock ? Platform.FLASH : 0, lock ? 0x1C1A2A : 0, 1f);
         }
     }
+
+    // =================================================================== retos del modo infinito
+    static final class Challenges extends Screen {
+        private final Screens.TitleBg bg = new Screens.TitleBg();
+        Challenges(Game g) { super(g); }
+        @Override void layout() {
+            hits.clear();
+            int w = W();
+            for (int i = 0; i < Infinite.MOD_COUNT; i++) {
+                final int k = i;
+                Hit h = add(20, 52 + i * 38, w - 40, 34, null, () -> { Save.S.infMods ^= 1 << k; Save.S.write(); }); h.plain = true;
+            }
+            add(w / 2f - 70, 244, 60, 22, "Volver", () -> back());
+            add(w / 2f + 10, 244, 90, 22, "Quitar todos", () -> { Save.S.infMods = 0; Save.S.write(); });
+        }
+        @Override boolean back() { game.go(new PrepScreen(game)); return true; }
+        @Override void update(float dt) { bg.update(dt, W()); t += dt; }
+        @Override void render(Platform.Gfx g) {
+            int w = W();
+            bg.render(g, w, 0.7f);
+            UI.big.center(g, "RETOS DEL INFINITO", w / 2f, 12, UI.GOLD, 1f);
+            UI.small.center(g, "Opcionales. Cada reto suma puntaje; el récord sigue siendo por pisos.", w / 2f, 34, UI.GREY, 1f);
+            for (int i = 0; i < Infinite.MOD_COUNT; i++) {
+                boolean on = (Save.S.infMods & (1 << i)) != 0;
+                float y = 52 + i * 38;
+                UI.panel(g, on ? 1 : 0, 20, y, w - 40, 34, 0.95f);
+                g.rect(30, y + 11, 12, 12, on ? 0xFF6AE08A : 0xFF2A2838, false);
+                if (on) { g.rect(33, y + 14, 6, 6, 0xFF10301A, false); }
+                UI.small.draw(g, Infinite.MOD_NAME[i], 52, y + 6, on ? UI.GOLD : UI.WHITE, 1f);
+                UI.small.draw(g, Infinite.MOD_DESC[i], 52, y + 19, UI.GREY, 1f);
+                UI.small.right(g, "+" + Infinite.MOD_BONUS[i] + "% puntaje", w - 30, y + 6, UI.GREEN, 1f);
+            }
+            int p = Infinite.bonusPct(Save.S.infMods);
+            UI.small.center(g, "Bonificación total: +" + p + "% de puntaje" + (p == 0 ? " (sin retos)" : ""), w / 2f, 216, p > 0 ? UI.GREEN : UI.GREY, 1f);
+            UI.small.center(g, "No cambian las gemas ni el precio de las revividas.", w / 2f, 228, UI.GREY, 1f);
+            UI.small.center(g, "No valen en pruebas del Modo Desarrollador.", w / 2f, 238 - 0, UI.GREY, 0f);
+            drawButtons(g);
+        }
+    }
 }

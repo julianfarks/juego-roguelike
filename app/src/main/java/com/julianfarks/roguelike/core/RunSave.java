@@ -41,7 +41,7 @@ final class RunSave {
             d.put("hp", (int) Math.ceil(rs.hp)); d.put("ult", (int) rs.ult);
             d.put("revive", rs.reviveUsed); d.put("time", (int) rs.time);
             d.put("asc", rs.asc); d.put("diff", rs.diff);
-            d.put("blessTaken", rs.blessingTaken); d.put("sbl", rs.startBless); d.put("cmp", rs.companion); d.put("pacts", rs.pacts); d.put("evBiome", rs.eventBiomeDone); d.put("evCur", rs.curEvent); d.put("evRun", rs.eventsThisRun); d.put("dmgTaken", rs.damageTaken);
+            d.put("blessTaken", rs.blessingTaken); d.put("sbl", rs.startBless); d.put("cmp", rs.companion); d.put("mods", rs.mods); d.put("pacts", rs.pacts); d.put("evBiome", rs.eventBiomeDone); d.put("evCur", rs.curEvent); d.put("evRun", rs.eventsThisRun); d.put("dmgTaken", rs.damageTaken);
             int[] rl = new int[8]; for (int i = 0; i < 8; i++) rl[i] = rs.relicsThisRun[i] ? 1 : 0;
             d.put("relics", rl);
             d.put("finalRun", rs.finalRun);
@@ -94,6 +94,7 @@ final class RunSave {
             int[] cbv = Json.ints(d, "cb"); if (cbv != null) for (int i = 0; i < Math.min(cbv.length, rs.cb.length); i++) rs.cb[i] = cbv[i];
             rs.grenLvl = Json.i(d, "grenLvl", 0); rs.secLvl = Json.i(d, "secLvl", 0);
             rs.devAssisted = Json.bool(d, "devAsst", false); rs.infinite = Json.bool(d, "inf", false); rs.infFromCampaign = Json.bool(d, "infCamp", false);
+            rs.mods = rs.infinite && !rs.isTest() ? Json.i(d, "mods", 0) & Infinite.MOD_ALL : 0;
             rs.floor = Math.max(1, Json.i(d, "floor", 1)); rs.floorsDone = Json.i(d, "floorsDone", 0);
             rs.revivesUsed = Math.max(0, Math.min(rs.ruleset.maxRevives, Json.i(d, "revs", 0)));
             rs.infRooms = Json.i(d, "infRooms", 0); rs.infBaseKills = Json.i(d, "infBK", 0); rs.infBaseBoss = Json.i(d, "infBB", 0); rs.infT0 = Json.i(d, "infT0", 0);

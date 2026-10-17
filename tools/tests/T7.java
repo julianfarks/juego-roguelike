@@ -49,6 +49,7 @@ public class T7 {
     static int gRow(Room r, float px, float py) { return (int) Math.round(py / Room.TS); }
 
     public static void main(String[] a) {
+        RoomGen.extraTraps = Integer.getInteger("traps", 0);
         int fails = 0, rooms = 0, platTotal = 0, platBad = 0;
         long seed0 = a.length > 0 ? Long.parseLong(a[0]) : 1;
         int N = a.length > 1 ? Integer.parseInt(a[1]) : 40;

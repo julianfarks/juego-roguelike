@@ -18,12 +18,12 @@ public final class Infinite {
 
     /** Conjunto de reglas de una run. NORMAL: 3 revividas (anuncio o gemas). COMPETITIVE: reservado para el futuro (sin gemas ni ventajas de pago). */
     public static final class Ruleset {
-        public final String id; public final int maxRevives; public final boolean gemRevives, adRevives;
-        Ruleset(String id, int maxRevives, boolean gemRevives, boolean adRevives) { this.id = id; this.maxRevives = maxRevives; this.gemRevives = gemRevives; this.adRevives = adRevives; }
+        public final String id; public final int maxRevives; public final boolean gemRevives, adRevives, allowMods;
+        Ruleset(String id, int maxRevives, boolean gemRevives, boolean adRevives, boolean allowMods) { this.id = id; this.maxRevives = maxRevives; this.gemRevives = gemRevives; this.adRevives = adRevives; this.allowMods = allowMods; }
     }
-    public static final Ruleset NORMAL = new Ruleset("normal", 3, true, true);
+    public static final Ruleset NORMAL = new Ruleset("normal", 3, true, true, true);
     /** Reglas uniformes para una futura clasificacion con premios: sin revividas compradas. NO esta activo ni es seleccionable todavia. */
-    public static final Ruleset COMPETITIVE = new Ruleset("competitive_v1", 0, false, false);
+    public static final Ruleset COMPETITIVE = new Ruleset("competitive_v1", 0, false, false, false);   // sin retos: reglas uniformes para todos
 
     // ------------------------------------------------------------------ dificultad
     /** "power" de enemigos: el piso 1 equivale al final de la campana (~18) y sube 5 por piso. */
@@ -32,6 +32,29 @@ public final class Infinite {
     public static float bossDmgMul(int floor) { return 1f + 0.08f * (Math.max(1, floor) - 1); }
     /** Probabilidad de que un enemigo normal aparezca como elite (desde el piso 3). */
     public static float eliteChance(int floor) { return floor < 3 ? 0f : Math.min(0.5f, 0.08f * (floor - 2)); }
+
+    // ------------------------------------------------------------------ retos opcionales
+    public static final int M_FAST = 1, M_TRAPS = 2, M_HEAL = 4, M_ELITE = 8, MOD_COUNT = 4, MOD_ALL = 15;
+    public static final String[] MOD_NAME = {"Enemigos veloces", "Más trampas", "Curación reducida", "Más élites"};
+    public static final String[] MOD_DESC = {"Los enemigos se mueven un 20% más rápido.", "Aparecen más tiras de pinchos en las salas.",
+            "Curación -40% (frascos, corazones, robo de vida).", "+15% de probabilidad de que un enemigo sea élite."};
+    /** Bonificacion de puntaje por reto (porcentaje). Con los cuatro: +50%. */
+    public static final int[] MOD_BONUS = {10, 10, 15, 15};
+
+    public static int bonusPct(int mods) { int p = 0; for (int i = 0; i < MOD_COUNT; i++) if ((mods & (1 << i)) != 0) p += MOD_BONUS[i]; return p; }
+    public static boolean has(RunState rs, int m) { return rs != null && (rs.mods & m) != 0; }
+    /** Multiplicador de curacion (1 = normal). */
+    public static float healMul(RunState rs) { return has(rs, M_HEAL) ? 0.6f : 1f; }
+    /** Solo valen las runs infinitas normales (nunca pruebas del Modo Desarrollador) y las reglas deben admitirlos. */
+    public static int validMods(RunState rs, int wanted) {
+        if (rs == null || !rs.infinite || rs.isTest() || rs.devAssisted || !rs.ruleset.allowMods) return 0;
+        return wanted & MOD_ALL;
+    }
+    public static String modsLabel(int mods) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < MOD_COUNT; i++) if ((mods & (1 << i)) != 0) { if (sb.length() > 0) sb.append(", "); sb.append(MOD_NAME[i]); }
+        return sb.length() == 0 ? "Ninguno" : sb.toString();
+    }
 
     // ------------------------------------------------------------------ puntuacion
     public static int score(int floorsDone, int kills, int bosses, int rooms) {
@@ -96,7 +119,7 @@ public final class Infinite {
 
     // ------------------------------------------------------------------ resultados
     public static final class Result {
-        public String ruleset = "normal"; public boolean dev; public int cls, floors, reached, kills, bosses, rooms, timeS, revives, score, ver = SCORE_VERSION;
+        public String ruleset = "normal"; public boolean dev; public int mods, cls, floors, reached, kills, bosses, rooms, timeS, revives, score, ver = SCORE_VERSION;
         public long seed, ts;
         /** Comparacion de clasificacion: pisos, puntaje, enemigos, menos tiempo. >0 si a es mejor que b. */
         public static int compare(Result a, Result b) {
@@ -110,13 +133,14 @@ public final class Infinite {
             d.put("v", ver); d.put("rules", ruleset); d.put("cls", cls); d.put("fl", floors); d.put("hi", reached); d.put("k", kills);
             d.put("b", bosses); d.put("r", rooms); d.put("t", timeS); d.put("rev", revives); d.put("sc", score);
             d.put("seed", (double) seed); d.put("ts", (double) ts);
-            d.put("dev", dev); d.put("chk", check());
+            d.put("dev", dev); if (mods != 0) d.put("mods", mods); d.put("chk", check());
             return Json.write(d);
         }
         /** Suma de control para detectar ediciones torpes del registro local. NO es seguridad: una clasificacion con premios necesita validacion en servidor. */
         int check() {
             long h = 1125899906842597L;
             for (long v : new long[]{dev ? 1 : 0, ver, cls, floors, reached, kills, bosses, rooms, timeS, revives, score, seed, ts}) h = 31 * h + v;
+            if (mods != 0) h = 31 * h + mods;      // sin retos el calculo es identico al de los registros antiguos
             for (char c : ruleset.toCharArray()) h = 31 * h + c;
             return (int) (h ^ (h >>> 32));
         }
@@ -127,7 +151,7 @@ public final class Infinite {
                 Result r = new Result();
                 r.ver = Json.i(d, "v", 1); r.ruleset = Json.str(d, "rules", "normal"); r.cls = Json.i(d, "cls", 0); r.floors = Json.i(d, "fl", 0);
                 r.reached = Json.i(d, "hi", 0); r.kills = Json.i(d, "k", 0); r.bosses = Json.i(d, "b", 0); r.rooms = Json.i(d, "r", 0);
-                r.dev = Json.bool(d, "dev", false); r.timeS = Json.i(d, "t", 0); r.revives = Json.i(d, "rev", 0); r.score = Json.i(d, "sc", 0);
+                r.dev = Json.bool(d, "dev", false); r.timeS = Json.i(d, "t", 0); r.revives = Json.i(d, "rev", 0); r.score = Json.i(d, "sc", 0); r.mods = Json.i(d, "mods", 0);
                 r.seed = (long) Json.num(d, "seed", 0); r.ts = (long) Json.num(d, "ts", 0);
                 return Json.i(d, "chk", 0) == r.check() ? r : null;
             } catch (RuntimeException e) { return null; }
@@ -143,7 +167,8 @@ public final class Infinite {
         r.rooms = rs.infRooms;
         r.timeS = Math.max(0, (int) (rs.time - rs.infT0));
         r.revives = rs.revivesUsed; r.seed = rs.seed; r.ts = System.currentTimeMillis();
-        r.score = score(r.floors, r.kills, r.bosses, r.rooms);
+        r.mods = validMods(rs, rs.mods);
+        r.score = Math.round(score(r.floors, r.kills, r.bosses, r.rooms) * (100 + bonusPct(r.mods)) / 100f);
         return r;
     }
 

@@ -41,6 +41,8 @@ public final class DebugBot {
         }
         if (s instanceof Ops && System.getenv("BOT_SCREEN") != null && !screenDone) {
             screenDone = true; String q = System.getenv("BOT_SCREEN");
+            if (q.equals("retos")) { PrepScreen.infiniteMode = true; Save.S.infMods = 5; g.go(new CodexScreens.Challenges(g)); return; }
+            if (q.equals("prepinf")) { Save.S.finalBeaten = true; PrepScreen.infiniteMode = true; Save.S.infMods = 5; g.go(new PrepScreen(g)); return; }
             g.go(q.equals("comp") ? new CodexScreens.Comp(g) : q.equals("garden") ? new CodexScreens.GardenScr(g) : new CodexScreens.CodexScr(g)); return;
         }
         if (s instanceof Screens.Title && System.getenv("BOT_EDITOR") != null) { g.go(new ControlsEditor(g, false)); return; }
@@ -133,6 +135,7 @@ public final class DebugBot {
             if (System.getenv("BOT_INF") != null && frame - lastClassFrame > 120) {
                 lastClassFrame = frame;
                 Save.S.finalBeaten = true;
+                if (System.getenv("BOT_MODS") != null) Save.S.infMods = Integer.parseInt(System.getenv("BOT_MODS"));
                 if (System.getenv("BOT_GEMS") != null) Save.S.gems = Integer.parseInt(System.getenv("BOT_GEMS"));
                 if (System.getenv("BOT_KEEPCLASS") == null) Save.S.lastClass = classId;
                 for (int i = 0; i < 10; i++) Save.S.classUnlocked[i] = true;
@@ -164,7 +167,7 @@ public final class DebugBot {
         if (!(s instanceof RunScreen)) return;
         RunScreen rs = (RunScreen) s;
         seenRun = true;
-        if (!classPrinted && System.getenv("BOT_PRINTCLASS") != null) { classPrinted = true; System.out.println("RUN clase=" + rs.cls.name + " bioma=" + (rs.rs.biome == null ? "?" : rs.rs.biome.name) + " stage=" + rs.rs.stage + " roomNo=" + rs.rs.roomNo + " kills=" + rs.rs.kills + " oro=" + rs.rs.gold + " infinite=" + rs.rs.infinite + " revividas=" + rs.rs.revivesUsed + " streak=" + rs.rs.streak); }
+        if (!classPrinted && System.getenv("BOT_PRINTCLASS") != null) { classPrinted = true; System.out.println("RUN clase=" + rs.cls.name + " bioma=" + (rs.rs.biome == null ? "?" : rs.rs.biome.name) + " stage=" + rs.rs.stage + " roomNo=" + rs.rs.roomNo + " kills=" + rs.rs.kills + " oro=" + rs.rs.gold + " infinite=" + rs.rs.infinite + " retos=" + rs.rs.mods + " revividas=" + rs.rs.revivesUsed + " streak=" + rs.rs.streak); }
         if (rs.lv == null) return;
         Level lv = rs.lv;
         Player p = lv.pl;

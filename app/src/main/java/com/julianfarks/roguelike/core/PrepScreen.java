@@ -55,18 +55,21 @@ final class PrepScreen extends Screen {
         float cw = (wR - 8) / 3f;
         for (int i = 0; i < 3; i++) { final int id = i; cardHit[i] = add(x0 + i * (cw + 4), 148, cw, 56, null, () -> pick(id)); cardHit[i].plain = true; cardHit[i].noSound = true; }
         Hit cmpHit = add(156, 227, w - 162, 14, null, () -> cycleCompanion()); cmpHit.plain = true;
-        add(6, 242, 56, 26, "Volver", () -> back());
-        modeBtn = add(66, 242, 118, 26, modeLabel(), () -> toggleMode());
-        diffBtn = add(188, 242, 88, 26, diffLabel(), () -> { Save.S.diffSel = (Save.S.diffSel + 1) % 3; Save.S.write(); diffBtn.label = diffLabel(); });
+        add(6, 242, 44, 26, "Volver", () -> back());
+        modeBtn = add(54, 242, 112, 26, modeLabel(), () -> toggleMode());
+        Hit retos = add(226, 242, 54, 26, retosLabel(), () -> { if (infiniteMode && Save.S.finalBeaten) game.go(new CodexScreens.Challenges(game)); else { Snd.sfx("ui_error", 0.7f); say("Los retos son del modo Infinito"); } });
+        retos.noSound = false;
+        diffBtn = add(170, 242, 52, 26, diffLabel(), () -> { Save.S.diffSel = (Save.S.diffSel + 1) % 3; Save.S.write(); diffBtn.label = diffLabel(); });
         startBtn = add(w - 196, 239, 190, 30, "COMENZAR EXPEDICIÓN", () -> launch());
     }
 
+    private String retosLabel() { int n = Integer.bitCount(Save.S.infMods); return n > 0 && infiniteMode ? "Retos " + n : "Retos"; }
     private String modeLabel() { return infiniteMode ? "Modo: Infinito" : "Modo: Campaña"; }
     private String diffLabel() { int d = Save.S.diffSel; return d == 0 ? "Fácil" : (d == 2 ? "Difícil" : "Normal"); }
 
     private void toggleMode() {
         if (!Save.S.finalBeaten) { Snd.sfx("ui_error", 0.7f); say("Infinito: se desbloquea al vencer al Cazador"); return; }
-        infiniteMode = !infiniteMode; modeBtn.label = modeLabel(); Snd.sfx("ui_click", 0.8f);
+        infiniteMode = !infiniteMode; modeBtn.label = modeLabel(); layout(); Snd.sfx("ui_click", 0.8f);
     }
 
     private void say(String s) { toast = s; toastT = 2.5f; }
@@ -139,6 +142,7 @@ final class PrepScreen extends Screen {
         final boolean inf = infiniteMode && s.finalBeaten;
         final RunScreen r = inf ? RunScreen.infinite(game, c, asc) : new RunScreen(game, c, asc);
         r.rs.applyStartBlessing(bl);
+        if (inf) r.rs.mods = Infinite.validMods(r.rs, s.infMods);
         if (!inf && !Story.introSeen()) game.go(new Cinematic(game, Story.INTRO, () -> game.go(r)));
         else game.go(r);
     }

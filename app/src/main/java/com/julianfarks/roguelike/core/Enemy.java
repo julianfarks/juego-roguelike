@@ -15,6 +15,7 @@ public final class Enemy extends Ent {
     private final int statusId;
     private float tx, ty;           // objetivo de embestida / picada
     private final float cooldown;
+    float modSpeed = 1f;            // reto 'enemigos veloces'
     float buffT;                    // aura de furia (cultista): +35% daño, +20% velocidad
     private Enemy healTgt;
     private boolean suicide, blocked;
@@ -178,7 +179,7 @@ public final class Enemy extends Ent {
             return;
         }
 
-        float sp = speed * speedMul() * (buffT > 0 ? 1.2f : 1f);
+        float sp = speed * modSpeed * speedMul() * (buffT > 0 ? 1.2f : 1f);
         switch (def.role) {
             case EnemyDef.MELEE: case EnemyDef.HEAVY: case EnemyDef.SHIELD: meleeAI(lv, dt, p, dx, dy, sp); break;
             case EnemyDef.SUPPORT: case EnemyDef.BUFFER: supportAI(lv, dt, p, dx, dy, dist, sp); break;
@@ -462,7 +463,7 @@ public final class Enemy extends Ent {
                 if (finishedAnim() && stateT > 0.5f) { startState(CHARGE, "attack"); Snd.sfxAt("en_dash", x, lv.camX + lv.viewW / 2, 0.7f); }
                 break;
             case CHARGE: {
-                vx = (right ? 1 : -1) * speed * 4.6f * speedMul();
+                vx = (right ? 1 : -1) * speed * modSpeed * 4.6f * speedMul();
                 Anim a = sheet.anim("attack");
                 if (animT * a.fps >= a.n) animT = a.n * 0.5f / a.fps;   // mantiene la pose de carga
                 if ((int) (stateT * 20) % 2 == 0) lv.ps.spawn(x - (right ? 8 : -8), y - 3, 0, -10, 0.3f, 3, 0, 0xB0A090, false);

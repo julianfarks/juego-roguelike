@@ -50,6 +50,7 @@ public final class RunState {
     /** Tipo de sesion: NORMAL (progreso real) o TEST (arenas y tiendas del Modo Desarrollador: jamas se guarda ni toca el progreso). */
     public enum Session { NORMAL, TEST }
     public Session session = Session.NORMAL;
+    public int mods;            // retos del modo infinito activos (Infinite.M_*)
     public int companion = -1;  // companero activo de esta run (-1 ninguno)
     public boolean sandbox;     // (igual que session==TEST; se mantiene por compatibilidad)
     /** Una sesion de prueba NO puede guardarse, ni dar resultados validos, ni tocar records, estadisticas o recompensas permanentes. */

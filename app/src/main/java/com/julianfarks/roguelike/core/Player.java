@@ -38,7 +38,8 @@ public final class Player extends Ent {
     private float idleT, stillT, idleNext = 4f, holdT, actHold, impAt = 14f;
     private String pendReact; private float pendT;
     private int lastIdle = -1, idlePicks, cosSeed = 0x2F6E2B1;
-    public static final String[] IDLES = {"idle1", "idle2", "idle3", "idle4"};
+    public static final String[] IDLES = {"idle1", "idle2", "idle3", "idle4", "idle5", "idle6", "idle7", "idle8", "idle9", "idle10"};
+    private static final int IMP = 3;      // idle4 = impaciencia: solo tras mucho rato quieto
 
     public Player(RunState rs) {
         this.cls = rs.cls;
@@ -329,6 +330,12 @@ public final class Player extends Ent {
         else if (queueSecs > 0) { pendReact = name; pendT = queueSecs; }
     }
 
+    /** Solo para pruebas (DebugBot): lanza una animacion decorativa concreta; false si la hoja no la tiene. */
+    public boolean debugAct(String name) {
+        if (sheetX == null || !sheetX.has(name)) return false;
+        startAct(name); return true;
+    }
+
     private void startAct(String name) {
         actName = name; animName = name; animT = 0; holdT = 0; pendReact = null;
         actHold = name.equals("victory") ? 2.6f : name.equals("awe") ? 0.35f : name.equals("chest") ? 0.25f : 0f;
@@ -365,8 +372,13 @@ public final class Player extends Ent {
         Anim ia = sheet.anim("idle");
         if (ia.frameAt(animT) != 0 && idleT < idleNext + 1.2f) return;      // empieza al comienzo del ciclo de respiracion: sin saltos
         int pick;
-        if (stillT > impAt) { pick = 3; impAt = stillT + 11f + cosF() * 8f; }      // mucho rato quieto: impaciencia, de vez en cuando
-        else { pick = (int) (cosF() * 3f); if (pick == lastIdle) pick = (pick + 1) % 3; }
+        if (stillT > impAt) { pick = IMP; impAt = stillT + 11f + cosF() * 8f; }      // mucho rato quieto: impaciencia, de vez en cuando
+        else {      // las otras 9 (todas menos la de impaciencia), sin repetir la ultima
+            int pool = IDLES.length - 1;
+            int r = Math.min(pool - 1, (int) (cosF() * pool));
+            pick = r >= IMP ? r + 1 : r;
+            if (pick == lastIdle) { r = (r + 1) % pool; pick = r >= IMP ? r + 1 : r; }
+        }
         lastIdle = pick; idlePicks++;
         startAct(IDLES[pick]);
     }

@@ -18,7 +18,7 @@ ENEMIES = ['esqueleto', 'arquero_hueso', 'zombi', 'cubo_magma', 'llama', 'bruto_
            'piglin_dorado', 'espectro', 'llama_solar']
 BOSSES = ['rey_exanime', 'coloso_magma', 'reina_escarcha', 'devorador_vacio', 'ent_ancestral', 'titan_tormenta',
           'matriarca_sangre', 'guardian_eclipse', 'cazador1', 'cazador2', 'cazador3']
-PLAYER_X_ANIMS = [('idle1', 16), ('idle2', 16), ('idle3', 16), ('idle4', 16), ('chest', 8), ('awe', 10), ('touch', 6),
+PLAYER_X_ANIMS = [('idle1', 16), ('idle2', 16), ('idle3', 16), ('idle4', 16), ('idle5', 16), ('idle6', 16), ('idle7', 16), ('idle8', 16), ('idle9', 16), ('idle10', 16), ('chest', 8), ('awe', 10), ('touch', 6),
                   ('victory', 14), ('weary', 6)]
 PLAYER_ANIMS = [('idle', 6), ('run', 8), ('jump', 3), ('fall', 2), ('roll', 7), ('attack1', 6), ('attack2', 6),
                 ('attack3', 7), ('airatk', 5), ('skill', 7), ('ult', 10), ('hurt', 2), ('death', 9), ('block', 2)]

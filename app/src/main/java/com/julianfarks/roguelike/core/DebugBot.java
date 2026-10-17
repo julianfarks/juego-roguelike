@@ -60,6 +60,10 @@ public final class DebugBot {
         int t = frame - pStart;
         if (t <= 5) { lv.enemies.clear(); lv.toKill = 0; lv.cleared = true; lv.pl.invuln = 99f; }
         if (t % 10 == 0) System.out.println("PERSONA t=" + t + " f=" + frame + " cls=" + p.cls.key + " estado=" + p.state + " anim=" + p.animName + " act=" + p.actName + " frame=" + p.anim().frameAt(p.animT) + " hp=" + Math.round(rs.rs.hp));
+        if ("all".equals(System.getenv("BOT_PERSONA"))) {      // lanza idle1..idle10 uno tras otro (170 fotogramas cada uno)
+            int k = (t - 30) / 170;
+            if (t >= 30 && (t - 30) % 170 == 0 && k < Player.IDLES.length) System.out.println("PERSONA_ALL k=" + k + " " + Player.IDLES[k] + " ok=" + p.debugAct(Player.IDLES[k]));
+        }
         if ("react".equals(System.getenv("BOT_PERSONA"))) {
             if (t == 30) p.react("chest", 0f);
             if (t == 120) p.react("awe", 0f);

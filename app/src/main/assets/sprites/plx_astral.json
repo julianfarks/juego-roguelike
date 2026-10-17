@@ -36,32 +36,68 @@
    "fps": 8,
    "loop": false
   },
-  "chest": {
+  "idle5": {
    "row": 4,
+   "n": 16,
+   "fps": 8,
+   "loop": false
+  },
+  "idle6": {
+   "row": 5,
+   "n": 16,
+   "fps": 8,
+   "loop": false
+  },
+  "idle7": {
+   "row": 6,
+   "n": 16,
+   "fps": 8,
+   "loop": false
+  },
+  "idle8": {
+   "row": 7,
+   "n": 16,
+   "fps": 8,
+   "loop": false
+  },
+  "idle9": {
+   "row": 8,
+   "n": 16,
+   "fps": 8,
+   "loop": false
+  },
+  "idle10": {
+   "row": 9,
+   "n": 16,
+   "fps": 8,
+   "loop": false
+  },
+  "chest": {
+   "row": 10,
    "n": 8,
    "fps": 12,
    "loop": false
   },
   "awe": {
-   "row": 5,
+   "row": 11,
    "n": 10,
    "fps": 12,
    "loop": false
   },
   "touch": {
-   "row": 6,
+   "row": 12,
    "n": 6,
    "fps": 14,
    "loop": false
   },
   "victory": {
-   "row": 7,
+   "row": 13,
    "n": 14,
    "fps": 9,
    "loop": false
   },
   "weary": {
-   "row": 8,
+   "row": 14,
    "n": 6,
    "fps": 6,
    "loop": true

@@ -433,6 +433,9 @@ def keys(cls, name):
     C = cls.carry
     n = AN.N[name]
     if name.startswith('idle'):
+        if int(name[4:]) >= 5:
+            import personality2
+            return personality2.IDLES2[cid](C, name, n)
         return IDLES[cid](C, name, n)
     if name == 'chest':
         return chest_keys(cls, C, n, CHEST_V[cid])

@@ -621,8 +621,13 @@ def generic(c, name):
 def post(cls, name, i, n, f, seq):
     c = C()
     c.cls, c.i, c.n, c.f = cls, i, n, f.copy()
+    c.seq = seq
     c.p = seq.at(i)
     c.sk = skeleton(c.p, cls.D)
-    FN[cls.id](c, name)
-    generic(c, name)
+    if name.startswith('idle') and int(name[4:]) >= 5:
+        import pfx2
+        pfx2.FN2[cls.id](c, name)
+    else:
+        FN[cls.id](c, name)
+        generic(c, name)
     return c.f

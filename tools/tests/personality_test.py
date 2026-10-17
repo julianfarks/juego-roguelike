@@ -9,7 +9,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 os.chdir(ROOT)
 RUN = '/tmp/run2.sh' if os.path.exists('/tmp/run2.sh') else 'tools/desktop/run.sh'
 CLASSES = ['paladin', 'shadow', 'flame', 'storm', 'frost', 'verdant', 'blood', 'earth', 'astral', 'steel']
-IDLES = ['idle1', 'idle2', 'idle3', 'idle4']
+IDLES = [f'idle{i}' for i in range(1, 11)]
 fails = 0
 
 
@@ -53,7 +53,7 @@ for a in IDLES + ['awe', 'victory']:
     ck(f'{a}: cada espadachin tiene una silueta/animacion propia (no es el mismo movimiento recoloreado)', len(set(hs)) == len(hs))
 for c in CLASSES:
     hs = [sig[(c, a)] for a in IDLES if (c, a) in sig]
-    ck(f'{c}: sus 4 reposos son distintos entre si', len(set(hs)) == 4)
+    ck(f'{c}: sus 10 reposos son distintos entre si', len(hs) == 10 and len(set(hs)) == 10)
 r = subprocess.run([sys.executable, 'tools/validate_assets.py'], capture_output=True, text=True)
 ck('validate_assets sin errores (celdas, filas, sin recortes en el borde)', '0 errores' in r.stdout, r.stdout[-300:])
 
@@ -65,13 +65,25 @@ for i, c in enumerate(CLASSES):
     acts = [(x['f'], x['act']) for k, x in enumerate(rows) if x['act'] != 'null' and (k == 0 or rows[k - 1]['act'] == 'null')]
     names = [a for _, a in acts]
     ck(f'{c}: reproduce al menos 2 reposos distintos en 55 s quieto ({names})', len(set(names)) >= 2)
-    ck(f'{c}: solo anima idle1-4', all(n in IDLES for n in names))
+    ck(f'{c}: solo anima idle1-10', all(n in IDLES for n in names))
+    ck(f'{c}: nunca repite el mismo reposo dos veces seguidas', all(a != b for a, b in zip(names, names[1:])))
     if acts:
         ck(f'{c}: no empieza antes de 3 s quieto', acts[0][0] - rows[0]['f'] >= 170)
         intervals.add(acts[0][0] - rows[0]['f'])
     moving = [x for x in rows if x['act'] != 'null' and x['st'] != 0]
     ck(f'{c}: la animacion decorativa solo existe en estado de reposo', not moving)
 ck('el primer reposo empieza en momentos distintos segun el personaje (intervalo variable)', len(intervals) >= 5)
+
+# ---- 2b) los 10 reposos de cada espadachin se reproducen de verdad en el juego (hoja cargada, fotogramas recorridos, vuelta a idle)
+for i, c in enumerate(CLASSES):
+    rows, bad = run(i, 'all', 30 + 170 * 10 + 60)
+    ck(f'{c}: sin excepciones (10 reposos)', not bad, str(bad[:2]))
+    for k, a in enumerate(IDLES):
+        seg = [x for x in rows if x['act'] == a]
+        frs = {x['fr'] for x in seg}
+        after = [x for x in rows if 30 + 170 * k + 140 <= x['t'] <= 30 + 170 * k + 169]
+        ck(f'{c}: {a} se reproduce en juego (fotogramas {min(frs) if frs else "-"}..{max(frs) if frs else "-"}) y vuelve a idle',
+           len(seg) >= 8 and max(frs, default=0) >= 12 and after and all(x['act'] == 'null' for x in after) and all(x['st'] == 0 for x in seg))
 
 # ---- 3) interrupcion inmediata: mover / atacar / saltar / esquivar cortan el reposo en el mismo fotograma
 rows, _ = run(1, 'idle', 1500)
@@ -94,7 +106,7 @@ seen = [x['act'] for k, x in enumerate(rows) if x['act'] != 'null' and (k == 0 o
 for a in ('chest', 'awe', 'touch', 'victory'):
     ck(f'reaccion {a} se reproduce', a in seen)
 ck('poca vida: postura cansada (weary) y vuelve a idle al curarse',
-   any(x['anim'] == 'weary' and x['hp'] < 40 for x in rows) and rows[-1]['anim'] in ('idle', 'idle1', 'idle2', 'idle3', 'idle4'))
+   any(x['anim'] == 'weary' and x['hp'] < 40 for x in rows) and rows[-1]['anim'] == 'idle' or rows[-1]['anim'] in IDLES)
 ck('weary solo con poca vida', all(x['hp'] < 40 for x in rows if x['anim'] == 'weary'))
 ck('tras cada reaccion vuelve al reposo', rows[-1]['act'] == 'null' or rows[-1]['act'] in IDLES)
 

@@ -76,7 +76,7 @@ ck('el primer reposo empieza en momentos distintos segun el personaje (intervalo
 
 # ---- 2b) los 10 reposos de cada espadachin se reproducen de verdad en el juego (hoja cargada, fotogramas recorridos, vuelta a idle)
 for i, c in enumerate(CLASSES):
-    rows, bad = run(i, 'all', 30 + 170 * 10 + 60)
+    rows, bad = run(i, 'all', 1300 + 30 + 170 * 10 + 60)
     ck(f'{c}: sin excepciones (10 reposos)', not bad, str(bad[:2]))
     for k, a in enumerate(IDLES):
         seg = [x for x in rows if x['act'] == a]

@@ -177,8 +177,8 @@ def ui():
         d = json.load(open(ij))
         im = Image.open(ip)
         names = d['names']
-        if len(names) != 127:
-            err(f'icons.json: {len(names)} nombres != 127')
+        if len(names) != 128:
+            err(f'icons.json: {len(names)} nombres != 128')
         if im.width != 256 or im.height < ((len(names) + 15) // 16) * 16:
             err(f'icons.png: tamano {im.size} no cabe')
         for i, n in enumerate(names):

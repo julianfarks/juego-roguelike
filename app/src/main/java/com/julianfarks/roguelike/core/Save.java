@@ -18,6 +18,12 @@ public final class Save {
     /** Convierte el saldo de prueba en saldo real del perfil. */
     public static void devCommit() { devSoulsBackup = -1; S.write(); }
     static Platform P;
+    /** Version del formato de guardado. 1 = original (sin campo "ver"); 2 = gemas, inventario, modo infinito. Solo se AÑADEN claves: nunca se borran ni se renombran. */
+    public static final int VERSION = 2;
+    /** true si el guardado en disco es de una version MAS NUEVA que esta app: no se sobrescribe (se conserva intacto). */
+    public boolean readOnly = false;
+    /** Gemas de prueba del Modo Desarrollador: solo existen en memoria durante la sesion, jamas se guardan. */
+    public static int devGems = 0;
 
     public int souls = 0;
     public int totalSouls = 0;
@@ -40,6 +46,14 @@ public final class Save {
     public int started = 0, rounds = 0, losses = 0, bestStreak = 0, maxKillsRound = 0, perfectRounds = 0, bestPerfectStreak = 0, chestsOpened = 0, secretChests = 0, trophyMask = 0;
     public int[] classRuns = new int[10];
     public long playMs = 0;                          // tiempo total jugado (ms)
+    // ---- moneda premium (independiente de almas/oro) e inventario cosmetico
+    public int gems = 0;                             // saldo premium (solo via Wallet)
+    public final List<String> gemTx = new ArrayList<>();   // ids de transacciones ya acreditadas (anti-duplicado)
+    public final List<String> owned = new ArrayList<>();   // ids de articulos cosmeticos poseidos
+    public final String[] equip = new String[10];    // skin equipada por espadachin ("" = aspecto original)
+    // ---- modo infinito (registro local de resultados)
+    public int infRuns = 0, infBestFloor = 0, infBestScore = 0, infFloors = 0, infKills = 0, infBosses = 0, infBestTimeS = 0;
+    public final List<String> infLog = new ArrayList<>();  // ultimos resultados (JSON compacto por entrada)
     public int[] codesUsed = new int[16];            // codigos de un solo uso ya canjeados (indice en Codes.ALL)
     public int[] eqSec = {0};                        // (reservado)
     public int inputMode = 0;                        // 0 automatico, 1 tactil, 2 mando
@@ -48,6 +62,7 @@ public final class Save {
     public float[] ctl = new float[Input.B_COUNT * 3]; // dx, dy, escala por boton (0 = por defecto)
 
     public Save() {
+        java.util.Arrays.fill(equip, "");
         classUnlocked[0] = true; // paladin
         classUnlocked[1] = true; // shadow
         classUnlocked[2] = true; // flame
@@ -60,8 +75,25 @@ public final class Save {
         P = p;
         Save s = new Save();
         try {
-            Map<String, Object> d = Json.parseObj(p.store().get("save", ""));
+            String raw = p.store().get("save", "");
+            Map<String, Object> d = Json.parseObj(raw);
             if (d != null) {
+                int ver = Json.i(d, "ver", 1);
+                if (ver > VERSION) {                      // guardado de una app mas nueva: no lo tocamos
+                    s.readOnly = true;
+                    if (p.store().get("save_bak_v" + ver, "").isEmpty()) { p.store().put("save_bak_v" + ver, raw); p.store().commit(); }
+                } else if (ver < VERSION && p.store().get("save_bak_v" + ver, "").isEmpty()) {   // copia de seguridad antes de migrar
+                    p.store().put("save_bak_v" + ver, raw); p.store().commit();
+                }
+                s.gems = Math.max(0, Json.i(d, "gems", 0));
+                for (Object o : arrOf(d, "gemTx")) if (o instanceof String) s.gemTx.add((String) o);
+                for (Object o : arrOf(d, "owned")) if (o instanceof String && !s.owned.contains(o)) s.owned.add((String) o);
+                String[] eq = Json.str(d, "equip", "").split("\\|", -1);
+                for (int i = 0; i < Math.min(eq.length, s.equip.length); i++) s.equip[i] = eq[i];
+                s.infRuns = Json.i(d, "inf_runs", 0); s.infBestFloor = Json.i(d, "inf_bestFloor", 0); s.infBestScore = Json.i(d, "inf_bestScore", 0);
+                s.infFloors = Json.i(d, "inf_floors", 0); s.infKills = Json.i(d, "inf_kills", 0); s.infBosses = Json.i(d, "inf_bosses", 0);
+                s.infBestTimeS = Json.i(d, "inf_bestTime", 0);
+                for (Object o : arrOf(d, "inf_log")) if (o instanceof String) s.infLog.add((String) o);
                 s.souls = Json.i(d, "souls", 0);
                 s.totalSouls = Json.i(d, "totalSouls", 0);
                 int[] cu = Json.ints(d, "cu");
@@ -107,10 +139,18 @@ public final class Save {
         S = s;
     }
 
-    public void write() {
-        if (P == null) return;
+    public void write() { write(true); }
+
+    /** commit=false deja los datos en el almacen sin vaciarlos al disco (para escribir varias claves de forma atomica: el que llama hace commit). */
+    public void write(boolean commit) {
+        if (P == null || readOnly) return;
         try {
             Map<String, Object> d = new LinkedHashMap<>();
+            d.put("ver", VERSION);
+            d.put("gems", gems); d.put("gemTx", new ArrayList<Object>(gemTx)); d.put("owned", new ArrayList<Object>(owned));
+            d.put("equip", String.join("|", equip));
+            d.put("inf_runs", infRuns); d.put("inf_bestFloor", infBestFloor); d.put("inf_bestScore", infBestScore); d.put("inf_floors", infFloors);
+            d.put("inf_kills", infKills); d.put("inf_bosses", infBosses); d.put("inf_bestTime", infBestTimeS); d.put("inf_log", new ArrayList<Object>(infLog));
             d.put("souls", devSoulsBackup >= 0 ? devSoulsBackup : souls); d.put("totalSouls", totalSouls);
             int[] cu = new int[10]; for (int i = 0; i < 10; i++) cu[i] = classUnlocked[i] ? 1 : 0;
             d.put("cu", cu); d.put("meta", meta);
@@ -132,7 +172,7 @@ public final class Save {
             d.put("st_trophies", trophyMask); d.put("st_playS", (int) (playMs / 1000L)); d.put("st_classRuns", classRuns);
             d.put("imode", inputMode); d.put("kb", kb); d.put("pb", pb);
             P.store().put("save", Json.write(d));
-            P.store().commit();
+            if (commit) P.store().commit();
         } catch (RuntimeException e) {
             P.log("save error " + e);
         }
@@ -143,9 +183,15 @@ public final class Save {
         n.musicOn = musicOn; n.sfxOn = sfxOn; n.vibOn = vibOn; n.ctl = ctl; n.kb = kb; n.pb = pb; n.inputMode = inputMode;
         n.story[Story.S_INTRO] = story[Story.S_INTRO];
         n.devUnlocked = devUnlocked; n.codesUsed = codesUsed;
+        // la moneda premium, lo comprado y los registros competitivos NO se borran al reiniciar el progreso del juego
+        n.gems = gems; n.gemTx.addAll(gemTx); n.owned.addAll(owned); System.arraycopy(equip, 0, n.equip, 0, equip.length);
+        n.infRuns = infRuns; n.infBestFloor = infBestFloor; n.infBestScore = infBestScore; n.infFloors = infFloors; n.infKills = infKills;
+        n.infBosses = infBosses; n.infBestTimeS = infBestTimeS; n.infLog.addAll(infLog);
         S = n;
         n.write();
     }
+
+    static List<Object> arrOf(Map<String, Object> d, String k) { List<Object> l = Json.arr(d, k); return l == null ? new ArrayList<>() : l; }
 
     static List<Object> list(int[] a) { List<Object> l = new ArrayList<>(); for (int v : a) l.add((double) v); return l; }
 }

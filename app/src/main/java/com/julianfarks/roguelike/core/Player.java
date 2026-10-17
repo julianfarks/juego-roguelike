@@ -9,6 +9,7 @@ public final class Player extends Ent {
 
     public final ClassDef cls;
     public int state = IDLE;
+    public int skinTint;
     public float secCd, grenCd, safeX, safeY, invuln, shield, skinT, hurtT, furia;
     public float extVx;                       // empuje externo (atraccion de jefes)
     public float guardT;                      // guardia de acero
@@ -31,7 +32,8 @@ public final class Player extends Ent {
 
     public Player(RunState rs) {
         this.cls = rs.cls;
-        sheet = Assets.spr("pl_" + cls.key);
+        sheet = Cosmetics.sheetFor(cls);
+        skinTint = Cosmetics.tintFor(cls);
         bw = Math.min(sheet.bw, 14);
         bh = sheet.bh;
         alive = true;
@@ -71,6 +73,13 @@ public final class Player extends Ent {
         vx = 0;
         dashT = 0;
         lastFrame = -1;
+    }
+
+    /** Vuelve a la vida (revivida del modo infinito). */
+    public void revive() {
+        alive = true; deathSent = false;
+        state = IDLE; animName = "idle"; animT = 0;
+        vx = 0; vy = 0; invuln = 3.5f; hurtT = 0;
     }
 
     /** Daño base de arma/habilidad antes de multiplicadores propios. */
@@ -654,6 +663,7 @@ public final class Player extends Ent {
         Anim a = sheet.anim(animName);
         int frame = a.frameAt(animT);
         int flags = 0, tint = Status.tint(this);
+        if (tint == 0 && skinTint != 0) tint = skinTint;
         if (tint != 0) flags |= Platform.TINT;
         float alpha = 1f;
         if (skinT > 0) { flags |= Platform.TINT; tint = 0xFFC090; }

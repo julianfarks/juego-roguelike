@@ -5,7 +5,7 @@ import java.util.List;
 
 /** La partida: salas, HUD, controles tactiles, altares, tienda, forja, jefes, muerte y victoria. */
 final class RunScreen extends Screen implements Level.Listener {
-    static final int OV_NONE = 0, OV_PAUSE = 1, OV_BLESS = 2, OV_SHOP = 3, OV_FORGE = 4, OV_DEAD = 5, OV_WIN = 6, OV_CHEST = 7, OV_TALK = 8;
+    static final int OV_NONE = 0, OV_PAUSE = 1, OV_BLESS = 2, OV_SHOP = 3, OV_FORGE = 4, OV_DEAD = 5, OV_WIN = 6, OV_CHEST = 7, OV_TALK = 8, OV_REVIVE = 9;
     static final String[] RELIC_NAMES = {"Corona Exánime", "Corazón de Magma", "Lágrima de Escarcha", "Ojo del Vacío", "Savia Ancestral", "Chispa del Titán", "Cáliz de Sangre", "Disco del Eclipse"};
 
     static final class ShopItem {
@@ -48,6 +48,14 @@ final class RunScreen extends Screen implements Level.Listener {
         return r;
     }
 
+    /** Nueva run del modo infinito (solo se ofrece tras completar la campana). */
+    static RunScreen infinite(Game g, ClassDef c, int asc) {
+        RunScreen r = new RunScreen(g, c, asc);
+        RunState rs = r.rs;
+        rs.infinite = true; rs.stage = 2; rs.floor = 1; rs.ruleset = Infinite.NORMAL;
+        return r;
+    }
+
     static RunScreen sandboxShop(Game g, ClassDef c, java.util.function.Supplier<Screen> back) {
         RunScreen r = sandbox(g, c, 0, null, false, -1, back);
         r.resumeType = Room.REST;
@@ -77,6 +85,10 @@ final class RunScreen extends Screen implements Level.Listener {
     boolean ended, quitConfirm;
     float deadT = -1;
     float winT = -1;
+    float reviveWait = -1;            // modo infinito: espera antes de ofrecer revivir
+    Infinite.Result infResult;        // resultado final de la run infinita (al terminar)
+    boolean infRecord;                // fue record de pisos
+    String reviveMsg = "";
     boolean winPending;
     int sumSouls;
     boolean sumWin;
@@ -130,6 +142,17 @@ final class RunScreen extends Screen implements Level.Listener {
     /** Elige el siguiente bioma del tramo actual (aleatorio entre los no visitados; el Cazador al final) y lo prepara. */
     private int autoBiome() {
         int id;
+        if (rs.infinite) {
+            java.util.List<Integer> ids = new ArrayList<>();
+            for (int k = 0; k < 8; k++) if (!rs.visited.contains(k)) ids.add(k);
+            if (ids.isEmpty()) { int last = rs.biome == null ? -1 : rs.biome.id; rs.visited.clear(); for (int k = 0; k < 8; k++) if (k != last) ids.add(k); }
+            id = ids.get(rs.rng.i(ids.size()));
+            rs.biome = Biome.ALL[id];
+            rs.visited.add(id);
+            rs.roomNo = 0;
+            rs.blessingTaken = false;
+            return id;
+        }
         if (rs.stage >= 3) id = 8;
         else {
             java.util.List<Integer> ids = new ArrayList<>();
@@ -295,6 +318,7 @@ final class RunScreen extends Screen implements Level.Listener {
     }
 
     @Override public void onPlayerDead(Level l) {
+        if (rs.infinite && !sandbox && reviveWait < 0 && Infinite.hasRevivesLeft(rs) && Infinite.anyAvailable(rs)) { reviveWait = 0; return; }
         if (deadT < 0) { deadT = 0; endRun(false); }
     }
 
@@ -304,6 +328,7 @@ final class RunScreen extends Screen implements Level.Listener {
         l.bossFight = false;
         l.cleared = true;
         rs.roomsDone++;
+        if (rs.infinite) rs.infRooms++;
         if (d.idx == 8 && d.form < 2) {
             // siguiente forma del Cazador
             final BossDef nd = BossDef.ALL[9 + d.form];
@@ -353,11 +378,12 @@ final class RunScreen extends Screen implements Level.Listener {
         sumSouls = gain;
         sumWin = win;
         s.souls += gain; s.totalSouls += gain;
-        s.runs++;
-        if (!win) s.losses++;
-        s.classRuns[cls.id]++;
-        s.kills += rs.kills; s.bossKills += rs.bossKills;
+        if (!(rs.infinite && rs.infFromCampaign)) { s.runs++; s.classRuns[cls.id]++; }   // la continuacion de la campana ya conto esta partida
+        if (!win && !rs.infinite) s.losses++;                                            // morir en el infinito es un resultado, no una derrota de campana
+        s.kills += rs.kills - rs.credKills; s.bossKills += rs.bossKills - rs.credBoss;   // solo lo no contado antes
+        rs.credKills = rs.kills; rs.credBoss = rs.bossKills;
         s.bestRooms = Math.max(s.bestRooms, rs.roomsDone);
+        if (rs.infinite) { infResult = Infinite.resultOf(rs); infRecord = Infinite.record(s, infResult); }
         s.lastClass = cls.id;
         s.tutorialDone = true;
         if (win) {
@@ -368,6 +394,15 @@ final class RunScreen extends Screen implements Level.Listener {
     }
 
     private void afterBoss() {
+        if (rs.infinite) {
+            rs.floorsDone++; rs.floor++;
+            rs.blessingTaken = false;
+            int nid = autoBiome();
+            RunSave.write(game.P, this, RunSave.AUTO);
+            toast = "Piso " + rs.floor + " · " + rs.floorsDone + (rs.floorsDone == 1 ? " completado" : " completados"); toastT = 3f;
+            goRoom(Room.COMBAT);
+            return;
+        }
         rs.stage++;
         rs.blessingTaken = false;
         if (rs.stage >= 3 && !Save.S.sealForged()) {
@@ -389,6 +424,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 if (p.nextType == -2) { afterBoss(); break; }
                 rs.roomNo++;
                 rs.roomsDone = Math.max(rs.roomsDone, rs.roomNo);
+                if (rs.infinite) rs.infRooms++;
                 goRoom(p.nextType);
                 break;
             case "portal": {
@@ -721,13 +757,39 @@ final class RunScreen extends Screen implements Level.Listener {
                 });
                 break;
             }
+            case OV_REVIVE: {
+                java.util.List<Infinite.Offer> offs = Infinite.offers(rs);
+                float by = 126;
+                for (final Infinite.Offer o : offs) {
+                    String lab = o.method != Infinite.Method.GEMS && !o.available ? "Anuncio no disponible" : o.method == Infinite.Method.GEMS ? "Revivir · " + o.cost + " gemas" : (o.method == Infinite.Method.AD_LONG ? "Revivir · anuncio largo" : "Revivir · ver anuncio");
+                    Hit hb = add(w / 2f - 100, by, 200, 26, lab, () -> tryRevive(o.method));
+                    hb.disabled = !o.available;
+                    by += 32;
+                }
+                add(w / 2f - 100, by + 4, 200, 24, "Terminar la run", () -> { reviveWait = -1; ov = OV_NONE; deadT = 0; endRun(false); });
+                break;
+            }
             case OV_DEAD: {
+                if (rs.infinite) {
+                    add(w / 2f - 130, 212, 124, 24, "Reintentar", () -> { Save.S.started++; Save.S.write(); game.go(RunScreen.infinite(game, cls, Math.min(Save.S.ascensionSel, Save.S.ascension))); });
+                    add(w / 2f + 6, 212, 124, 24, "Menú principal", () -> game.go(new Ops(game)));
+                    break;
+                }
                 add(w / 2f - 130, 206, 124, 24, "Reintentar", () -> game.go(new ClassScreen(game)));
                 add(w / 2f + 6, 206, 124, 24, "Menú principal", () -> game.go(new Ops(game)));
                 break;
             }
             case OV_WIN: {
                 final boolean fin = rs.finalRun;
+                if (fin && Save.S.finalBeaten) {
+                    add(w / 2f - 130, 206, 124, 24, "Modo infinito", this::continueInfinite);
+                    add(w / 2f + 6, 206, 124, 24, "Ver créditos", () -> {
+                        if (Story.tryUnlockFinal() && Story.cine("final") != null)
+                            game.go(new Cinematic(game, Story.FINAL, () -> game.go(new Screens.Credits(game, true))));
+                        else game.go(new Screens.Credits(game, true));
+                    });
+                    break;
+                }
                 add(w / 2f - 62, 206, 124, 24, fin ? "Ver créditos" : "Continuar", () -> {
                     if (fin && Story.tryUnlockFinal() && Story.cine("final") != null)
                         game.go(new Cinematic(game, Story.FINAL, () -> game.go(new Screens.Credits(game, true))));
@@ -739,6 +801,56 @@ final class RunScreen extends Screen implements Level.Listener {
         }
     }
 
+    /** Intenta la revivida con el metodo elegido (gemas: cobra y marca la revivida en una sola escritura; anuncio: solo si se completa). */
+    private void tryRevive(final Infinite.Method m) {
+        if (reviveWait < 0 || ov != OV_REVIVE || Services.adInFlight()) return;
+        if (m == Infinite.Method.GEMS) {
+            if (Infinite.consume(rs, m, game.P)) doRevive();
+            else { reviveMsg = "No se pudo revivir"; Snd.sfx("ui_error", 0.7f); }
+        } else {
+            Services.AdPlacement pl = m == Infinite.Method.AD_LONG ? Services.AdPlacement.REVIVE_LONG : Services.AdPlacement.REVIVE_STANDARD;
+            boolean started = Services.requestRewardedAd(pl, () -> { if (reviveWait >= 0 && Infinite.consume(rs, m, game.P)) doRevive(); });
+            if (!started) { reviveMsg = "Anuncio no disponible"; Snd.sfx("ui_error", 0.7f); }
+        }
+    }
+
+    private void doRevive() {
+        reviveWait = -1; deadT = -1;
+        rs.hp = Math.max(1, rs.stats.maxHp * 0.5f);
+        lv.pl.revive();
+        lv.timeScale = 1f;
+        lv.text(lv.pl.x, lv.pl.y - 40, "¡Revivida " + rs.revivesUsed + "/" + rs.ruleset.maxRevives + "!", 0xC08CFF, true);
+        Snd.sfx("heal", 1f);
+        lv.flash(0xC08CFF, 0.3f);
+        Snd.music(rs.biome.music, true);
+        ov = OV_NONE; ovT = 0; hits.clear(); in.reset();
+        RunSave.write(game.P, this, RunSave.AUTO);      // un solo commit: saldo de gemas + contador de revividas + sala
+    }
+
+    /** Tras vencer al Cazador: sigue la MISMA run en el modo infinito (conserva el equipo; las bajas ya contadas no se cuentan dos veces). */
+    private void continueInfinite() {
+        if (!rs.finalRun || rs.infinite) return;
+        ended = false; deadT = -1; winT = -1; winPending = false; sumNote = "";
+        rs.infinite = true; rs.infFromCampaign = true; rs.ruleset = Infinite.NORMAL;
+        rs.stage = 2; rs.floor = 1; rs.floorsDone = 0; rs.revivesUsed = 0; rs.infRooms = 0;
+        rs.infBaseKills = rs.kills; rs.infBaseBoss = rs.bossKills; rs.infT0 = rs.time;
+        rs.finalRun = false; rs.visited.clear();
+        rs.hp = rs.stats.maxHp;
+        int nid = autoBiome();
+        closeOv();
+        goRoom(Room.COMBAT);
+        RunSave.write(game.P, this, RunSave.AUTO);
+    }
+
+    // ---- ganchos de prueba (solo los usa DebugBot)
+    void debugNextFloor() { afterBoss(); }
+    boolean debugRevive(Infinite.Method m) { int n = rs.revivesUsed; tryRevive(m); return rs.revivesUsed > n; }
+    void debugWinCampaign() { rs.finalRun = true; Save.S.finalBeaten = true; endRun(true); openOv(OV_WIN); }
+    void debugContinueInfinite() { continueInfinite(); }
+    void debugEnd() { endRun(false); }
+    int debugOv() { return ov; }
+    boolean debugReviveWaiting() { return reviveWait >= 0; }
+
     @Override void resize() { layoutOverlay(); if (lv != null) lv.viewW = game.viewW; }
 
     @Override boolean back() {
@@ -746,6 +858,7 @@ final class RunScreen extends Screen implements Level.Listener {
         if (ov == OV_NONE) { openOv(OV_PAUSE); return true; }
         if (ov == OV_PAUSE && saveMenu) { saveMenu = false; layoutOverlay(); return true; }
         if (ov == OV_TALK) { talk = null; closeOv(); return true; }
+        if (ov == OV_REVIVE) return true;
         if (ov == OV_PAUSE || ov == OV_SHOP || ov == OV_FORGE) { closeOv(); return true; }
         return true;
     }
@@ -778,6 +891,10 @@ final class RunScreen extends Screen implements Level.Listener {
         if (ov == OV_NONE && deadT < 0 && winT < 0 && lv.pl.alive) {
             autoT += dt;
             if (autoT >= 300f) { autoT = 0; RunSave.write(game.P, this, RunSave.AUTO); toast = "Autoguardado"; toastT = 2f; }
+        }
+        if (reviveWait >= 0 && ov == OV_NONE) {
+            reviveWait += dt;
+            if (reviveWait > 1.0f) { reviveMsg = ""; openOv(OV_REVIVE); }
         }
         if (comboFlash > 0) comboFlash -= dt;
         if (bossCardT >= 0) bossCardT += dt;
@@ -1290,9 +1407,52 @@ final class RunScreen extends Screen implements Level.Listener {
                 if (n == 0) UI.small.draw(g, "Aún no tienes ninguna.", ix, 182, UI.GREY, 1f);
                 break;
             }
+            case OV_REVIVE: {
+                dim(g, w, 0.72f * fadeIn);
+                float px = w / 2f - 130;
+                UI.panel(g, 2, px, 34, 260, 200, fadeIn);
+                UI.big.center(g, "HAS CAÍDO", w / 2f, 44, UI.RED, fadeIn);
+                UI.small.center(g, "Piso " + rs.floor + " · " + rs.floorsDone + " completados", w / 2f, 66, UI.GREY, fadeIn);
+                int left = rs.ruleset.maxRevives - rs.revivesUsed;
+                UI.small.center(g, "Revividas: " + rs.revivesUsed + "/" + rs.ruleset.maxRevives + " usadas", w / 2f, 82, UI.PURPLE, fadeIn);
+                UI.iconC(g, "gem", px + 22, 100, 1f, fadeIn);
+                UI.small.draw(g, "Tus gemas: " + Wallet.gems(), px + 34, 96, UI.PURPLE, fadeIn);
+                if (rs.revivesUsed == 2) UI.small.center(g, "Última revivida: solo con gemas", w / 2f, 110, UI.GREY, fadeIn);
+                if (!reviveMsg.isEmpty()) UI.small.center(g, reviveMsg, w / 2f, 228, UI.RED, fadeIn);
+                drawButtons(g);
+                break;
+            }
             case OV_DEAD: case OV_WIN: {
                 boolean win = ov == OV_WIN;
                 dim(g, w, 0.7f * fadeIn);
+                if (rs.infinite && ov == OV_DEAD && infResult != null) {
+                    Infinite.Result r = infResult;
+                    float px = w / 2f - 150;
+                    UI.panel(g, 2, px, 14, 300, 232, fadeIn);
+                    UI.big.center(g, "RUN INFINITA", w / 2f, 22, UI.PURPLE, fadeIn);
+                    UI.small.center(g, rs.biome == null ? "" : "Caíste en " + rs.biome.name + " · piso " + r.reached, w / 2f, 44, UI.GREY, fadeIn);
+                    String[][] rows = {{"Pisos completados", String.valueOf(r.floors)}, {"Piso alcanzado", String.valueOf(r.reached)}, {"Enemigos derrotados", String.valueOf(r.kills)},
+                            {"Jefes derrotados", String.valueOf(r.bosses)}, {"Tiempo de supervivencia", time(r.timeS)}, {"Revividas usadas", r.revives + "/" + rs.ruleset.maxRevives}};
+                    float y = 60;
+                    for (String[] rw : rows) {
+                        UI.small.draw(g, rw[0], px + 24, y, UI.WHITE, fadeIn);
+                        UI.small.right(g, rw[1], px + 276, y, UI.GOLD, fadeIn);
+                        y += 13;
+                    }
+                    y += 4;
+                    g.rect(px + 20, y, 260, 1, Mth.withAlpha(0x6A5A8A, (int) (255 * fadeIn)), false);
+                    y += 6;
+                    UI.big.center(g, "PUNTAJE " + r.score, w / 2f, y, UI.GOLD, fadeIn);
+                    y += 20;
+                    if (infRecord) UI.small.center(g, "¡NUEVO RÉCORD DE PISOS!", w / 2f, y, UI.GREEN, fadeIn);
+                    else UI.small.center(g, "Mejor: " + Save.S.infBestFloor + " pisos · " + Save.S.infBestScore + " pts", w / 2f, y, UI.GREY, fadeIn);
+                    y += 14;
+                    UI.icon(g, "soul", px + 24, y - 3, 1f);
+                    UI.small.draw(g, "Almas conservadas", px + 44, y, UI.SOUL, fadeIn);
+                    UI.small.right(g, "+" + sumSouls, px + 276, y, UI.SOUL, fadeIn);
+                    drawButtons(g);
+                    break;
+                }
                 float px = w / 2f - 150;
                 UI.panel(g, win ? 1 : 2, px, 30, 300, 210, fadeIn);
                 UI.big.center(g, win ? "¡VICTORIA!" : "HAS CAÍDO", w / 2f, 40, win ? UI.GOLD : UI.RED, fadeIn);

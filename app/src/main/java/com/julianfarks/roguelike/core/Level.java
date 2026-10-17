@@ -77,7 +77,8 @@ public final class Level {
         for (Room.Spawn s : room.spawns) {
             EnemyDef d = EnemyDef.get(s.enemy);
             if (d == null) continue;
-            Enemy e = new Enemy(d, s.elite, hpMul, dmgMul);
+            boolean el = s.elite || (rs.infinite && rng.chance(Infinite.eliteChance(rs.floor)));
+            Enemy e = new Enemy(d, el, hpMul, dmgMul);
             e.x = s.x; e.y = s.y;
             e.home = s.x;
             enemies.add(e);

@@ -24,8 +24,8 @@ public final class Boss extends Ent {
         sheet = Assets.sheet(d.sheet);
         bw = sheet.bw;
         bh = sheet.bh;
-        maxHp = hp = d.hp * (1f + 0.08f * rs.stage + 0.10f * rs.asc) * rs.diffHp();
-        dmgBase = d.dmg * (1f + 0.05f * rs.stage + 0.06f * rs.asc) * rs.diffDmg();
+        maxHp = hp = d.hp * (1f + 0.08f * rs.stage + 0.10f * rs.asc) * rs.diffHp() * (rs.infinite ? Infinite.bossHpMul(rs.floor) : 1f);
+        dmgBase = d.dmg * (1f + 0.05f * rs.stage + 0.06f * rs.asc) * rs.diffDmg() * (rs.infinite ? Infinite.bossDmgMul(rs.floor) : 1f);
         flying = d.hover;
         gravity = !d.hover;
         right = false;

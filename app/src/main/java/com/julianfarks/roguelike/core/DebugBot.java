@@ -10,6 +10,8 @@ public final class DebugBot {
     private final java.util.HashSet<Object> done = new java.util.HashSet<>();
     private float lastX;
     public static int classId = System.getenv("BOT_CLASS") != null ? Integer.parseInt(System.getenv("BOT_CLASS")) : 0;
+    static int contStep = 0, contK0, contB0, contR0, contC0, contT;
+    static int infStep = 0, infT = 0, infT0 = -1;
     static boolean enemyDone;
     public static boolean trace = System.getenv("BOT_TRACE") != null;
     public static boolean godMode = System.getenv("BOT_GOD") != null;
@@ -88,6 +90,15 @@ public final class DebugBot {
         }
         if (s instanceof Ops) {
             if (System.getenv("BOT_NOSTART") != null) { if (!unlockedAll) { unlockedAll = true; for (int i = 0; i < 10; i++) Save.S.classUnlocked[i] = true; Save.S.souls = Math.max(Save.S.souls, 5000); } return; }
+            if (System.getenv("BOT_INF") != null && frame - lastClassFrame > 120) {
+                lastClassFrame = frame;
+                Save.S.finalBeaten = true;
+                if (System.getenv("BOT_GEMS") != null) Save.S.gems = Integer.parseInt(System.getenv("BOT_GEMS"));
+                if (System.getenv("BOT_KEEPCLASS") == null) Save.S.lastClass = classId;
+                for (int i = 0; i < 10; i++) Save.S.classUnlocked[i] = true;
+                ((Ops) s).startInfinite();
+                return;
+            }
             if (frame - lastClassFrame > 120) {
                 lastClassFrame = frame;
                 Save.S.souls = Math.max(Save.S.souls, 5000);
@@ -156,6 +167,53 @@ public final class DebugBot {
             int ok = 0;
             for (Enemy en : spikeEn) { if (en.hp < en.maxHp || !en.alive) ok++; else System.out.println("  sin dano: " + en.def.id + " y=" + Math.round(en.y)); }
             System.out.println("SPIKETEST frame " + frame + ": danados/muertos " + ok + "/" + spikeEn.size());
+        }
+        if (System.getenv("BOT_INFTEST") != null && rs.rs.infinite) {
+            if (infT0 < 0) infT0 = frame;
+            int dt = frame - infT0;
+            if (infStep == 0 && dt > 150) {
+                infStep = 1; infT = frame;
+                System.out.println("INFT f" + frame + " inicio: floor=" + rs.rs.floor + " power=" + rs.rs.power() + " bioma=" + rs.rs.biome.name + " stage=" + rs.rs.stage + " hpMul=" + rs.rs.enemyHpMul());
+                rs.debugNextFloor();
+            } else if (infStep == 1 && frame > infT + 200) {
+                infStep = 2; infT = frame;
+                System.out.println("INFT f" + frame + " tras subir de piso: floor=" + rs.rs.floor + " hecho=" + rs.rs.floorsDone + " power=" + rs.rs.power() + " bioma=" + rs.rs.biome.name + " hpMul=" + rs.rs.enemyHpMul() + " enemigos=" + lv.enemies.size());
+            } else if (infStep >= 2 && infStep < 12 && infStep % 2 == 0 && frame > infT + 120) {
+                infStep++; infT = frame;
+                rs.rs.hp = 0; lv.playerDeath();
+                System.out.println("INFT f" + frame + " muerte #" + (infStep / 2) + " (revividas usadas=" + rs.rs.revivesUsed + ", gemas=" + Save.S.gems + ")");
+            } else if (infStep >= 3 && infStep < 12 && infStep % 2 == 1 && frame > infT + 240) {
+                infStep++; infT = frame;
+                boolean ovRev = rs.debugOv() == 9;
+                System.out.println("INFT f" + frame + " tras morir: overlayRevivir=" + ovRev + " ov=" + rs.debugOv() + " esperando=" + rs.debugReviveWaiting());
+                if (ovRev) {
+                    boolean ok = rs.debugRevive(Infinite.Method.GEMS);
+                    java.util.Map<String, Object> d = RunSave.read(rs.game.P, RunSave.AUTO);
+                    System.out.println("INFT f" + frame + " revivir con gemas ok=" + ok + " revividas=" + rs.rs.revivesUsed + " gemas=" + Save.S.gems + " vivo=" + rs.lv.pl.alive + " hp=" + (int) rs.rs.hp + " guardado.revs=" + Json.i(d, "revs", -1) + " guardado.inf=" + Json.bool(d, "inf", false));
+                } else {
+                    System.out.println("INFT f" + frame + " FIN: infResult=" + (rs.infResult == null ? "null" : "pisos=" + rs.infResult.floors + " alcanzado=" + rs.infResult.reached + " puntaje=" + rs.infResult.score + " revividas=" + rs.infResult.revives) + " bestFloor=" + Save.S.infBestFloor + " infRuns=" + Save.S.infRuns + " runs=" + Save.S.runs + " losses=" + Save.S.losses);
+                    infStep = 99;
+                }
+            }
+        }
+        if (System.getenv("BOT_CONTTEST") != null && !rs.rs.infinite && rs.sandbox == false && frame > 700 && contStep == 0) {
+            contStep = 1;
+            Save q = Save.S; int k0 = q.kills, b0 = q.bossKills, r0 = q.runs, c0 = q.classRuns[rs.cls.id];
+            rs.rs.kills = 50; rs.rs.bossKills = 2;
+            rs.debugWinCampaign();
+            System.out.println("CONT tras victoria: kills +" + (q.kills - k0) + " (esperado 50) jefes +" + (q.bossKills - b0) + " (2) runs +" + (q.runs - r0) + " (1) wins=" + q.wins);
+            rs.debugContinueInfinite();
+            rs.rs.kills += 30; rs.rs.time += 100;
+            System.out.println("CONT infinito iniciado: infinite=" + rs.rs.infinite + " floor=" + rs.rs.floor + " fromCampaign=" + rs.rs.infFromCampaign + " revives=" + rs.rs.revivesUsed + " ov=" + rs.debugOv());
+            contK0 = k0; contB0 = b0; contR0 = r0; contC0 = c0; contT = frame;
+        } else if (contStep == 1 && frame > contT + 150) {
+            contStep = 2;
+            rs.debugEnd();
+            Save q = Save.S; Infinite.Result ir = rs.infResult;
+            System.out.println("CONT fin infinito: kills perfil +" + (q.kills - contK0) + " (esperado 80) jefes +" + (q.bossKills - contB0) + " (2) runs +" + (q.runs - contR0) + " (1) classRuns +" + (q.classRuns[rs.cls.id] - contC0) + " (1) losses=" + q.losses + " infRuns=" + q.infRuns
+                    + " resultado.kills=" + (ir == null ? -1 : ir.kills) + " (30) resultado.pisos=" + (ir == null ? -1 : ir.floors));
+            rs.debugEnd();
+            System.out.println("CONT endRun repetido: kills perfil +" + (q.kills - contK0) + " infRuns=" + q.infRuns + " (no debe cambiar)");
         }
         if (System.getenv("BOT_ROUNDTEST") != null && warped && frame > warpFrame + 90) {
             if (roundStep == 0) {         // ronda perfecta

@@ -24,7 +24,7 @@ final class Ops extends Screen {
     private float pulse;
     private float enterT;
     private float flash;
-    private Hit diffBtn, backBtn;
+    private Hit diffBtn, backBtn, infBtn;
     private final java.util.List<Hit> extras = new java.util.ArrayList<>();
     private String toast = ""; private float toastT;
 
@@ -91,6 +91,10 @@ final class Ops extends Screen {
         }
         backBtn = add(6, 242, 58, 22, "Volver", () -> back());
         extras.add(backBtn);
+        Hit shopBtn = add(70, 242, 58, 22, "Tienda", () -> game.go(new ShopScreen(game)));
+        extras.add(shopBtn);
+        infBtn = add(134, 242, 84, 22, "Infinito", this::startInfinite);
+        extras.add(infBtn);
         diffBtn = add(w - 126, 242, 120, 22, diffLabel(), () -> { Save.S.diffSel = (Save.S.diffSel + 1) % 3; Save.S.write(); diffBtn.label = diffLabel(); });
         extras.add(diffBtn);
         float bx = w - 6;
@@ -128,6 +132,17 @@ final class Ops extends Screen {
         final ClassDef cc = c; final int a = asc;
         if (Story.introSeen()) game.go(new RunScreen(game, cc, a));
         else game.go(new Cinematic(game, Story.INTRO, () -> game.go(new RunScreen(game, cc, a))));
+    }
+
+    /** Modo infinito: solo tras vencer al Cazador. Nueva run con el espadachin elegido. */
+    void startInfinite() {
+        if (!Save.S.finalBeaten) { Snd.sfx("ui_error", 0.7f); toast = "Modo infinito: se desbloquea al vencer al Cazador"; toastT = 3f; return; }
+        ClassDef c = hero();
+        Save s = Save.S;
+        s.lastClass = c.id;
+        s.started++;
+        s.write();
+        game.go(RunScreen.infinite(game, c, Math.min(s.ascensionSel, s.ascension)));
     }
 
     @Override boolean back() { game.go(new Screens.Title(game)); return true; }
@@ -208,9 +223,12 @@ final class Ops extends Screen {
         g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0x120408, 40), false);
         if (UI.vignette != null) g.image(UI.vignette, 0, 0, UI.vignette.w, UI.vignette.h, 0, 0, w, Platform.VIEW_H, 0, 0, 0.7f);
         drawButtons(g);
+        if (!Save.S.finalBeaten && infBtn != null) UI.icon(g, "lock", infBtn.x + infBtn.w - 15, infBtn.y + 3, 1f);
         // ficha: recursos
         UI.iconC(g, "soul", 14, Save.S.devUnlocked ? 40 : 16, 1f, 1f);
         UI.small.draw(g, String.valueOf(Save.S.souls), 26, Save.S.devUnlocked ? 35 : 11, UI.SOUL, 1f);
+        UI.iconC(g, "gem", 14 + 112, Save.S.devUnlocked ? 40 : 16, 1f, 1f);
+        UI.small.draw(g, String.valueOf(Wallet.gems()), 26 + 112, Save.S.devUnlocked ? 35 : 11, UI.PURPLE, 1f);
         UI.iconC(g, "relic", 14 + 56, Save.S.devUnlocked ? 40 : 16, 1f, 1f);
         UI.small.draw(g, Save.S.relicCount() + "/8", 26 + 56, Save.S.devUnlocked ? 35 : 11, UI.GOLD, 1f);
         // tooltip del objeto seleccionado
@@ -225,8 +243,8 @@ final class Ops extends Screen {
             g.rect(h.x - 2, h.y - 2, 1, h.h + 4, Mth.withAlpha(0xFFD25A, (int) (a * 255)), false);
             g.rect(h.x + h.w + 1, h.y - 2, 1, h.h + 4, Mth.withAlpha(0xFFD25A, (int) (a * 255)), false);
         }
-        UI.small.center(g, game.keyboardUsed ? "Flechas: elegir   Enter: abrir   Esc: volver" : "Toca un lugar del santuario", w / 2f, 252, UI.GREY, 0.7f);
-        if (toastT > 0) { UI.panel(g, 0, w / 2f - 100, 72, 200, 18, 0.95f); UI.small.center(g, toast, w / 2f, 76, UI.GOLD, Mth.clamp(toastT, 0, 1)); }
+        UI.small.center(g, game.keyboardUsed ? "Flechas · Enter · Esc" : "Toca un lugar", (214 + w - 130) / 2f, 252, UI.GREY, 0.7f);
+        if (toastT > 0) { UI.panel(g, 0, w / 2f - 160, 72, 320, 18, 0.95f); UI.small.center(g, toast, w / 2f, 76, UI.GOLD, Mth.clamp(toastT, 0, 1)); }
         // fundido de entrada
         if (k < 1) g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0x000000, (int) ((1 - k) * 255)), false);
         if (flash > 0) g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0xFFE8C0, (int) (Mth.clamp(flash * 4, 0, 1) * 70)), true);
@@ -300,7 +318,7 @@ final class Ops extends Screen {
         g.rect(x - 22, fy - 14, 44, 14, Mth.withAlpha(0x3A3646, (int) (255 * a)), false);
         g.rect(x - 22, fy - 14, 44, 2, Mth.withAlpha(0x7A7490, (int) (255 * a)), false);
         g.rect(x - 22, fy - 2, 44, 2, Mth.withAlpha(0x1A1620, (int) (255 * a)), false);
-        Sheet sh = Assets.spr("pl_" + c.key);
+        Sheet sh = Cosmetics.sheetFor(c);
         if (sh != null && sh != Sheet.EMPTY) {
             String an = sel ? (((int) (t * 0.7f)) % 2 == 0 ? "attack1" : "idle") : "idle";
             if (!sh.has(an)) an = "idle";

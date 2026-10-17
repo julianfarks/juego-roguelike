@@ -33,11 +33,20 @@ public final class RunState {
     public int streak, perfectStreak, roundsThisRun;   // rondas seguidas / perfectas seguidas (estadisticas)
     public final boolean[] relicsThisRun = new boolean[8];
     public boolean won, finalRun;
+    // ---- modo infinito
+    public boolean infinite, infFromCampaign;
+    public Infinite.Ruleset ruleset = Infinite.NORMAL;
+    public int floor = 1, floorsDone, revivesUsed, infRooms;   // piso actual (1..), pisos completados, revividas usadas (0..3), salas superadas en infinito
+    public int infBaseKills, infBaseBoss;                       // bajas/jefes ya contabilizados en la campana (evita contarlos dos veces)
+    public float infT0;                                         // tiempo de run al empezar el infinito
+    public int credKills, credBoss;                             // ya sumados al perfil por endRun (evita doble conteo)
+    public long seed;
     public boolean sandbox;     // laboratorio del Modo Desarrollador: no toca guardados ni progreso, jugador invulnerable
 
     public RunState(ClassDef cls, long seed, int asc) {
         this.cls = cls;
         this.rng = new Rng(seed);
+        this.seed = seed;
         this.asc = asc;
         this.diff = Save.S.diffSel;
         stats.recalc(this);
@@ -54,7 +63,7 @@ public final class RunState {
         hp = Math.min(stats.maxHp, Math.max(hp, ratio * stats.maxHp * 0 + hp));
     }
 
-    public int power() { return stage * 6 + roomNo + asc * 3; }
+    public int power() { return infinite ? Infinite.power(floor, roomNo) + asc * 3 : stage * 6 + roomNo + asc * 3; }
     public float diffHp() { return diff == 0 ? 0.72f : (diff == 2 ? 1.35f : 1f); }
     public float diffDmg() { return diff == 0 ? 0.6f : (diff == 2 ? 1.4f : 1f); }
     public float diffSouls() { return diff == 0 ? 0.7f : (diff == 2 ? 1.4f : 1f); }

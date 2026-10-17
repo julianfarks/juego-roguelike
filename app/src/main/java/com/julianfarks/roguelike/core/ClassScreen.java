@@ -167,7 +167,7 @@ final class ClassScreen extends Screen {
 
     /** Sprite real del juego, recorriendo sus animaciones (espera, carrera, ataques, habilidad). */
     private void drawLive(Platform.Gfx g, ClassDef c, float sx, float sy, boolean unlocked) {
-        Sheet sh = Assets.spr("pl_" + c.key);
+        Sheet sh = Cosmetics.sheetFor(c);
         if (sh == null || sh == Sheet.EMPTY) return;
         float seg = 1.6f;
         int idx = ((int) (t / seg)) % LIVE_ANIMS.length;

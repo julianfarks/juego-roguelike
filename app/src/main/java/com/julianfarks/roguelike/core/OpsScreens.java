@@ -14,7 +14,12 @@ final class OpsScreens {
         private final Screens.TitleBg bg = new Screens.TitleBg();
         Stats(Game g) { super(g); }
 
-        @Override void layout() { hits.clear(); add(W() / 2f - 40, 244, 80, 22, "Volver", () -> back()); }
+        private int page;
+        @Override void layout() {
+            hits.clear();
+            add(W() / 2f - 90, 244, 80, 22, "Volver", () -> back());
+            add(W() / 2f + 10, 244, 90, 22, page == 0 ? "Infinito" : "Cuenta", () -> { page = 1 - page; layout(); });
+        }
         @Override boolean back() { game.go(new Ops(game)); return true; }
         @Override void update(float dt) { bg.update(dt, W()); t += dt; }
 
@@ -41,12 +46,34 @@ final class OpsScreens {
             };
         }
 
+        /** Pagina del modo infinito: acumulados y ultimos resultados guardados (los registros alterados se ignoran). */
+        static String[][] infRows(Save s) {
+            java.util.List<String[]> l = new java.util.ArrayList<>();
+            l.add(new String[]{"Runs infinitas", String.valueOf(s.infRuns)});
+            l.add(new String[]{"Récord de pisos completados", String.valueOf(s.infBestFloor)});
+            l.add(new String[]{"Mejor puntaje", String.valueOf(s.infBestScore)});
+            l.add(new String[]{"Pisos completados (total)", String.valueOf(s.infFloors)});
+            l.add(new String[]{"Enemigos derrotados (infinito)", String.valueOf(s.infKills)});
+            l.add(new String[]{"Jefes derrotados (infinito)", String.valueOf(s.infBosses)});
+            l.add(new String[]{"Mayor tiempo de supervivencia", String.format("%d:%02d", s.infBestTimeS / 60, s.infBestTimeS % 60)});
+            l.add(new String[]{"Últimas runs:", ""});
+            int n = 0;
+            for (int i = s.infLog.size() - 1; i >= 0 && n < 5; i--) {
+                Infinite.Result r = Infinite.Result.parse(s.infLog.get(i));
+                if (r == null) continue;
+                l.add(new String[]{"  " + ClassDef.ALL[Math.max(0, Math.min(9, r.cls))].name + " · piso " + r.reached, r.floors + " completados · " + r.score + " pts"});
+                n++;
+            }
+            if (n == 0) l.add(new String[]{"  (aún no has jugado el modo infinito)", ""});
+            return l.toArray(new String[0][]);
+        }
+
         @Override void render(Platform.Gfx g) {
             int w = W();
             bg.render(g, w, 0.65f);
-            UI.big.center(g, "ESTADISTICAS", w / 2f, 6, UI.GOLD, 1f);
-            UI.small.center(g, "Datos reales de tu cuenta", w / 2f, 24, UI.GREY, 1f);
-            String[][] r = rows(Save.S);
+            UI.big.center(g, page == 0 ? "ESTADISTICAS" : "MODO INFINITO", w / 2f, 6, page == 0 ? UI.GOLD : UI.PURPLE, 1f);
+            UI.small.center(g, page == 0 ? "Datos reales de tu cuenta" : "Registro local de tus runs (criterio principal: pisos completados)", w / 2f, 24, UI.GREY, 1f);
+            String[][] r = page == 0 ? rows(Save.S) : infRows(Save.S);
             float pw = Math.min(w - 24, 460), px = w / 2f - pw / 2f;
             UI.panel(g, 0, px, 36, pw, 204, 0.94f);
             for (int i = 0; i < r.length; i++) {

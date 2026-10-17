@@ -64,6 +64,9 @@ final class Secrets {
                         else if (s.progress == need - 1) lv.text(px, b[1] - 8, "...", 0xC8C0B0, false);
                     }
                 }
+                case Secret.E_FLOOR -> {
+                    if (overlap(rx, ry, rw, rh, b[0], b[1] - 2, b[2] - b[0], b[3] - b[1] + 2) && lv.time - s.hitT > 0.15f) { s.hitT = lv.time; s.progress = Math.min(3, s.progress + 1); }
+                }
                 case Secret.E_LEVER -> {
                     float[] w = s.sw.get(0);
                     if (overlap(rx, ry, rw, rh, w[0] - 11, w[1] - 28, 22, 30) && lv.time - s.hitT > 0.3f) {
@@ -79,6 +82,15 @@ final class Secrets {
                 default -> { }
             }
         }
+    }
+
+    /** La baldosa es parte de una entrada de suelo aun sin descubrir: se dibuja como roca normal con grietas (no como losa rompible). */
+    boolean hides(int tx, int ty) {
+        for (Secret s : list) {
+            if (s.open || s.revealing || s.entrance != Secret.E_FLOOR) continue;
+            for (int[] d : s.door) if (d[0] == tx && d[1] == ty) return true;
+        }
+        return false;
     }
 
     /** Se ha roto una baldosa rompible: si era la entrada de una camara, se descubre. */
@@ -285,7 +297,7 @@ final class Secrets {
                 case Secret.E_STATUE -> { if (fade > 0) drawStatue(g, mx, b[3], s.progress, fade); }
                 case Secret.E_CURTAIN -> { if (fade > 0) drawCurtain(g, b, fade); }
                 case Secret.E_WATERFALL -> drawWaterfall(g, b, closed ? 1f : 0.55f);
-                case Secret.E_FLOOR -> { }
+                case Secret.E_FLOOR -> { if (closed) drawFloorCracks(g, b, s.progress); }
                 default -> { }
             }
             if (s.entrance == Secret.E_LEVER) drawLever(g, s);
@@ -307,6 +319,20 @@ final class Secrets {
             g.line(x + 5, y + 15, x + 1, y + 20 + k * 3, 1f, dark, false);
         }
         if (lv.rng.chance(0.012f)) lv.ps.spawn(x + lv.rng.f(2, 14), y + lv.rng.f(4, 28), lv.rng.f(-3, 3), lv.rng.f(6, 14), 0.9f, 1, 60, 0xA09880, false);
+    }
+
+    private void drawFloorCracks(Platform.Gfx g, int[] b, int hits) {
+        float x = b[0], y = b[1];
+        int dark = 0x99000000, light = 0x36FFFFFF;
+        float[][] a = {{4, 0}, {8, 6}, {6, 12}, {11, 19}};
+        float[][] c = {{22, 0}, {18, 8}, {24, 15}, {20, 23}};
+        for (float[][] pts : new float[][][]{a, c}) for (int k = 0; k + 1 < pts.length; k++) {
+            g.line(x + pts[k][0], y + pts[k][1], x + pts[k + 1][0], y + pts[k + 1][1], 1f, dark, false);
+            g.line(x + pts[k][0] + 1, y + pts[k][1], x + pts[k + 1][0] + 1, y + pts[k + 1][1], 1f, light, false);
+        }
+        g.line(x + 8, y + 6, x + 18, y + 8, 1f, dark, false);
+        for (int k = 0; k < hits; k++) { g.line(x + 11, y + 19 - k * 2, x + 14 + k * 3, y + 27, 1f, dark, false); g.line(x + 18, y + 8, x + 16 - k * 2, y + 14 + k * 4, 1f, dark, false); }
+        if (lv.rng.chance(0.01f)) lv.ps.spawn(x + lv.rng.f(2, 30), y + 1, lv.rng.f(-3, 3), lv.rng.f(6, 14), 0.9f, 1, 60, 0xA09880, false);
     }
 
     private void shimmer(Platform.Gfx g, int[] b) {

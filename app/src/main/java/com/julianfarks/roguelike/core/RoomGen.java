@@ -92,8 +92,7 @@ public final class RoomGen {
                 int fam = secretKind == 1 ? 0 : 1;
                 Secret sc = SecretGen.build(rm, W, fy, mf, ground, blocked, slab, r, stage, fam);
                 if (sc == null) sc = SecretGen.build(rm, W, fy, mf, ground, blocked, slab, r, stage, 1 - fam);
-                if (sc == null) buildSecrets(rm, W, fy, mf, ground, blocked, slab, r, stage, secretKind);   // ultimo recurso: la camara clasica
-                else if (sc.family == 1) rm.vaultA = sc.rx0;
+                if (sc != null && sc.family == 1) rm.vaultA = sc.rx0;   // sin hueco valido: la sala se queda sin camara (nunca una camara visible)
             }
             // pinchos en el piso superior
             for (int k = 0; k < r.range(1, 3) + extraTraps; k++) {

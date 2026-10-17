@@ -595,13 +595,17 @@ public final class DebugBot {
         if (e == Secret.E_RUNES || e == Secret.E_SYMBOLS || e == Secret.E_LEVER) { float[] w = s.sw.get(e == Secret.E_RUNES ? 1 : 0); hx = w[0] - 30; hy = w[1]; }
         if (e == Secret.E_SKILL) { hx = s.crX - 34; hy = s.crY; }
         boolean hold = !s.open && !s.revealing;
-        if (sf < SEC_R + 2 || hold && sf < SEC_R + 60) { p.x = hx; p.y = hy; p.vx = p.vy = 0; p.safeX = p.x; p.safeY = p.y; if (sf == 0) lv.snapCamera(); }
+        if (System.getenv("BOT_SECREAL") != null && (e == Secret.E_WALL || e == Secret.E_FLOOR || e == Secret.E_STATUE)) { /* posicion controlada abajo */ } else if (sf < SEC_R + 2 || hold && sf < SEC_R + 60) { p.x = hx; p.y = hy; p.vx = p.vy = 0; p.safeX = p.x; p.safeY = p.y; if (sf == 0) lv.snapCamera(); }
         // accion que descubre la camara, siempre terminando en el fotograma SEC_R
         java.util.function.BiConsumer<Float, Float> hit = (cx, cy) -> lv.breakRect(cx - 12, cy - 12, 24, 24, 1);
         switch (e) {
             case Secret.E_WALL, Secret.E_FLOOR, Secret.E_STATUE -> {
                 int n = e == Secret.E_STATUE ? 4 : 3;
-                for (int i = 0; i < n; i++) if (sf == SEC_R - 14 * i) hit.accept(mx, my);
+                if (System.getenv("BOT_SECREAL") != null) {   // ataques reales del jugador (sin llamar a breakRect a mano)
+                    boolean fromLeft = s.family == 0 || leftDoor;
+                    if (hold) { p.x = fromLeft ? mx - 24 : mx + 24; p.y = outY; p.right = fromLeft; p.vx = p.vy = 0; if (sf >= 30 && sf % 16 == 0) tap(g, 'J'); }
+                    if (sf == SEC_R + 1) System.out.println("SECTEST real: abierto=" + (s.open || s.revealing) + " frame=" + sf);
+                } else for (int i = 0; i < n; i++) if (sf == SEC_R - 14 * i) hit.accept(mx, my);
             }
             case Secret.E_ILLUSION, Secret.E_WATERFALL, Secret.E_CURTAIN -> { if (sf == SEC_R) { p.x = s.family == 0 ? mx - 20 : mx - 6; p.y = s.family == 0 ? s.ry0 * 16 : outY; } }
             case Secret.E_LEVER -> { if (sf == SEC_R) { float[] w = s.sw.get(0); hit.accept(w[0], w[1] - 12); } }

@@ -862,6 +862,7 @@ public final class Level {
         for (int ty = ty0; ty <= ty1; ty++) for (int tx = tx0; tx <= tx1; tx++) {
             int i = ty * room.w + tx;
             if (room.t[i] != Room.BREAK && room.t[i] != Room.DOOR) continue;
+            if (secrets.hides(tx, ty)) continue;
             float off = (breakHp != null && breakHp[i] > 0 && breakHp[i] < 3) ? (float) Math.sin(time * 60f) * 0.6f : 0f;
             g.image(room.t[i] == Room.DOOR ? room.doorImg : room.breakImg, 0, 0, 16, 16, tx * 16 + off, ty * 16, 16, 16, 0, 0, 1f);
             if (breakHp != null && breakHp[i] > 0 && breakHp[i] < 3) g.rect(tx * 16 + 3, ty * 16 + 3, 10, 1, 0xFF000000, false);

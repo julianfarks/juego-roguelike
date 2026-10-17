@@ -95,6 +95,10 @@ public final class DebugBot {
             if (frame % 20 == 0) { Screen.Hit h = ((Screens.Title) s).hits.get(0); s.touch(0, 0, h.x + 5, h.y + 5); s.touch(0, 2, h.x + 5, h.y + 5); }
             return;
         }
+        if (s instanceof PrepScreen) {
+            if (System.getenv("BOT_NOSTART") == null && System.getenv("BOT_PREPHOLD") == null && frame - lastClassFrame > 20) { lastClassFrame = frame; ((PrepScreen) s).botStart(); }
+            return;
+        }
         if (s instanceof Ops) {
             if (System.getenv("BOT_NOSTART") != null) { if (!unlockedAll) { unlockedAll = true; for (int i = 0; i < 10; i++) Save.S.classUnlocked[i] = true; Save.S.souls = Math.max(Save.S.souls, 5000); String rl = System.getenv("BOT_RELICS"); if (rl != null) { int n = Integer.parseInt(rl); for (int i = 0; i < 8; i++) Save.S.relics[i] = i < n; Save.S.finalBeaten = n >= 9; } } return; }
             if (System.getenv("BOT_SBTEST") != null) {

@@ -166,7 +166,7 @@ final class Ops extends Screen {
         switch (id) {
             case ARMORY: game.go(new ClassScreen(game)); break;
             case TROPHY: trophyGlow = 1f; game.go(new OpsScreens.Trophy(game)); break;
-            case PREP: game.go(new OpsScreens.Pending(game, "PREPARACIÓN", "La mesa de preparación se activa en la etapa 2.", "Por ahora el portal inicia la expedición directamente.")); break;
+            case PREP: game.go(new PrepScreen(game)); break;
             case CONTINUE: game.go(new LoadScreen(game)); break;
             case SANCT: game.go(new SanctuaryScreen(game)); break;
             case SHOP: game.go(new ShopScreen(game)); break;
@@ -174,32 +174,19 @@ final class Ops extends Screen {
             case GARDEN: game.go(new OpsScreens.Pending(game, "JARDÍN MÁGICO", "Se activa en la etapa 4.", "Los cristales todavía están en semilla.")); break;
             case COMP: game.go(new OpsScreens.Pending(game, "COMPAÑEROS", "Se activa en la etapa 4.", "Aún no hay espíritus disponibles.")); break;
             case RECORDS: game.go(new OpsScreens.Stats(game)); break;
-            default: startGame();
+            default: game.go(new PrepScreen(game));   // el portal NO empieza el combate: abre la preparacion
         }
     }
 
-    /** Nueva partida con el espadachin elegido. */
-    void startGame() {
-        ClassDef c = hero();
-        Save s = Save.S;
-        int asc = Math.min(s.ascensionSel, s.ascension);
-        s.lastClass = c.id;
-        s.started++;
-        s.write();
-        final ClassDef cc = c; final int a = asc;
-        if (Story.introSeen()) game.go(new RunScreen(game, cc, a));
-        else game.go(new Cinematic(game, Story.INTRO, () -> game.go(new RunScreen(game, cc, a))));
-    }
+    /** Abre la preparacion de expedicion (usado por el portal y por el banco de pruebas automatico). */
+    void startGame() { game.go(new PrepScreen(game)); }
 
-    /** Modo infinito: solo tras vencer al Cazador. Nueva run con el espadachin elegido. */
+    /** Modo infinito (atajo de la barra inferior): solo tras vencer al Cazador. Abre la preparacion en modo infinito. */
     void startInfinite() {
         if (!Save.S.finalBeaten) { Snd.sfx("ui_error", 0.7f); toast = "Modo infinito: se desbloquea al vencer al Cazador"; toastT = 3f; return; }
-        ClassDef c = hero();
-        Save s = Save.S;
-        s.lastClass = c.id;
-        s.started++;
-        s.write();
-        game.go(RunScreen.infinite(game, c, Math.min(s.ascensionSel, s.ascension)));
+        PrepScreen.infiniteMode = true;
+        sCur = PORTAL;
+        game.go(new PrepScreen(game));
     }
 
     @Override boolean back() { sCur = cur; sCam = cam; sHeroX = heroX; game.go(new Screens.Title(game)); return true; }

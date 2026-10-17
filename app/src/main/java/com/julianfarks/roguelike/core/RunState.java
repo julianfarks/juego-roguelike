@@ -29,6 +29,7 @@ public final class RunState {
     public final int[] cb = new int[ChestLoot.N];     // mejoras de cofres (ver ChestLoot)
     public int grenLvl, secLvl;                      // niveles de mejora de granada y arma secundaria
     public boolean blessingTaken;
+    public int startBless = -1;          // bendicion inicial elegida en la preparacion (-1 = ninguna)
     public int damageTaken;
     public int streak, perfectStreak, roundsThisRun;   // rondas seguidas / perfectas seguidas (estadisticas)
     public final boolean[] relicsThisRun = new boolean[8];
@@ -62,6 +63,16 @@ public final class RunState {
         hp = stats.maxHp;
         potions = stats.potionsMax;
         gold = 25 * Save.S.meta[2];
+    }
+
+    /** Aplica la bendicion inicial elegida en la preparacion (solo al empezar la run, antes de la primera sala). */
+    public void applyStartBlessing(int id) {
+        if (StartBlessing.get(id) == null) return;
+        startBless = id;
+        StartBlessing.applyStart(this);
+        stats.recalc(this);
+        hp = stats.maxHp;
+        potions = stats.potionsMax;
     }
 
     public void recalc() {

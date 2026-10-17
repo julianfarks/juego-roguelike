@@ -5,11 +5,13 @@ import java.util.Map;
 
 /** Definicion de enemigos normales. */
 public final class EnemyDef {
-    public static final int MELEE = 0, RANGED = 1, FLY_SHOOT = 2, FLY_DIVE = 3, CHARGER = 4, JUMPER = 5, CASTER = 6, HEAVY = 7;
+    public static final int MELEE = 0, RANGED = 1, FLY_SHOOT = 2, FLY_DIVE = 3, CHARGER = 4, JUMPER = 5, CASTER = 6, HEAVY = 7,
+            SHIELD = 8, SUPPORT = 9, EXPLODER = 10, TURRET = 11, POUNCER = 12, SNIPER = 13, BUFFER = 14, BLINKER = 15;
 
     public final String id, sheet, dieSfx, proj;
     public final int role;
-    public final float hp, dmg, speed, detect, cooldown, range;
+    public final float hp, dmg, speed, cooldown, range;
+    public float detect;
     public final int souls, color;
     public final float contact;      // daño por contacto (0 = no)
     public final String status;      // estado que aplica al jugador: "", "burn","poison","slow","shock","bleed"
@@ -50,6 +52,17 @@ public final class EnemyDef {
         add(new EnemyDef("vindicador", MELEE, 54, 14, 62, 34, 1.3f, null, "en_die_flesh", 3, 0xD0203A, 0, "bleed"));
         add(new EnemyDef("bruja_sangre", CASTER, 36, 10, 38, 160, 2.3f, "bloodorb", "en_die_magic", 3, 0xD0203A, 0, "bleed"));
         add(new EnemyDef("murcielago", FLY_DIVE, 22, 8, 100, 120, 1.8f, null, "en_die_flesh", 2, 0xD0203A, 8, "bleed"));
+        // ---- arquetipos nuevos
+        add(new EnemyDef("escudero_hueso", SHIELD, 78, 13, 40, 34, 1.7f, null, "en_die_bone", 3, 0xC8D0C0, 0, ""));
+        add(new EnemyDef("clerigo_osario", SUPPORT, 36, 8, 38, 150, 3.4f, "holy", "en_die_bone", 3, 0x5CFF9A, 0, ""));
+        add(new EnemyDef("carbonero_forja", EXPLODER, 30, 20, 72, 40, 2.2f, null, "en_die_flesh", 2, 0xFF7A1A, 0, "burn"));
+        add(new EnemyDef("centinela_cristal", TURRET, 72, 10, 0, 215, 2.8f, "iceshard", "en_die_magic", 3, 0x7AF0FF, 0, "slow"));
+        add(new EnemyDef("lobo_musgo", POUNCER, 38, 12, 78, 40, 1.9f, null, "en_die_flesh", 2, 0x8AA04E, 0, "bleed"));
+        add(new EnemyDef("tirador_rayo", SNIPER, 30, 14, 38, 270, 3.2f, "bolt", "en_die_flesh", 3, 0x4FA8FF, 0, "shock"));
+        add(new EnemyDef("cultista_sangre", BUFFER, 36, 9, 40, 150, 5.5f, "bloodorb", "en_die_flesh", 3, 0xD0203A, 0, "bleed"));
+        add(new EnemyDef("asesino_eclipse", BLINKER, 46, 17, 82, 36, 3.4f, null, "en_die_flesh", 3, 0xF2E6B8, 0, "bleed"));
+        M.get("tirador_rayo").detect = 290;
+        M.get("clerigo_osario").detect = 290;
         add(new EnemyDef("piglin_dorado", HEAVY, 145, 24, 34, 40, 1.8f, null, "en_die_flesh", 4, 0xF2E6B8, 0, ""));
         add(new EnemyDef("espectro", CASTER, 40, 12, 40, 170, 2.3f, "holy", "en_die_ghost", 3, 0xF2E6B8, 0, ""));
         add(new EnemyDef("llama_solar", FLY_SHOOT, 34, 11, 50, 180, 2.1f, "holy", "en_die_magic", 3, 0xF2E6B8, 0, "burn"));

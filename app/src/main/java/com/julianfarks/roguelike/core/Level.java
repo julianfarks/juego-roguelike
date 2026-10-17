@@ -179,7 +179,7 @@ public final class Level {
     public Ent nearestEnemy(float x, float y, float range, boolean aliveOnly) {
         Ent best = null; float bd = range;
         for (Enemy e : enemies) {
-            if (!e.alive) continue;
+            if (!e.alive || e.untargetable()) continue;
             float d = Mth.dist(x, y, e.cx(), e.cy());
             if (d < bd) { bd = d; best = e; }
         }
@@ -192,14 +192,14 @@ public final class Level {
 
     public List<Ent> enemiesIn(float x, float y, float r) {
         List<Ent> l = new ArrayList<>();
-        for (Enemy e : enemies) if (e.alive && Mth.dist(x, y, e.cx(), e.cy()) <= r + Math.max(e.bw, e.bh) / 3f) l.add(e);
+        for (Enemy e : enemies) if (e.alive && !e.untargetable() && Mth.dist(x, y, e.cx(), e.cy()) <= r + Math.max(e.bw, e.bh) / 3f) l.add(e);
         if (boss != null && boss.alive && Mth.dist(x, y, boss.cx(), boss.cy()) <= r + boss.bw / 2f) l.add(boss);
         return l;
     }
 
     public List<Ent> enemiesInBox(float rx, float ry, float rw, float rh) {
         List<Ent> l = new ArrayList<>();
-        for (Enemy e : enemies) if (e.alive && e.overlaps(rx, ry, rw, rh)) l.add(e);
+        for (Enemy e : enemies) if (e.alive && !e.untargetable() && e.overlaps(rx, ry, rw, rh)) l.add(e);
         if (boss != null && boss.alive && boss.overlaps(rx, ry, rw, rh)) l.add(boss);
         return l;
     }
@@ -258,6 +258,11 @@ public final class Level {
         if (e instanceof Boss) {
             Boss b = (Boss) e;
             if (b.invuln()) return 0;
+        }
+        if (e instanceof Enemy) {
+            Enemy en = (Enemy) e;
+            if (en.untargetable()) return 0;
+            dmg = en.filterDamage(this, dmg, kx, ky);
         }
         if (rs.stats.exec > 0 && e.hp / e.maxHp < 0.3f) dmg *= 1 + rs.stats.exec;
         if (e.st[Ent.FREEZE] > 0) dmg *= 1.25f;

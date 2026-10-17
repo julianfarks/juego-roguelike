@@ -305,7 +305,7 @@ public final class RoomGen {
         String[] full = rm.biome.enemies;
         String[] pool = full;
         if (!elite && full.length >= 3) {   // cada sala usa otra combinacion de mobs
-            int skip = roomNo % 3 == 0 ? 2 : (roomNo % 3 == 1 ? 0 : 1);
+            int skip = full.length == 3 ? (roomNo % 3 == 0 ? 2 : (roomNo % 3 == 1 ? 0 : 1)) : roomNo % full.length;
             pool = new String[full.length - 1];
             int k = 0;
             for (int i = 0; i < full.length; i++) if (i != skip) pool[k++] = full[i];
@@ -318,8 +318,8 @@ public final class RoomGen {
             String id = pool[r.i(pool.length)];
             EnemyDef d = EnemyDef.get(id);
             if (d == null) continue;
-            if ((d.role == EnemyDef.HEAVY || d.role == EnemyDef.CHARGER) && heavies >= (stage >= 1 ? 2 : 1)) { id = pool[r.i(2)]; d = EnemyDef.get(id); if (d == null) continue; }
-            if (d.role == EnemyDef.HEAVY || d.role == EnemyDef.CHARGER) heavies++;
+            if ((d.role == EnemyDef.HEAVY || d.role == EnemyDef.CHARGER || d.role == EnemyDef.SHIELD) && heavies >= (stage >= 1 ? 2 : 1)) { id = pool[r.i(2)]; d = EnemyDef.get(id); if (d == null) continue; }
+            if (d.role == EnemyDef.HEAVY || d.role == EnemyDef.CHARGER || d.role == EnemyDef.SHIELD) heavies++;
             float sx, sy;
             boolean flyer = d.role == EnemyDef.FLY_SHOOT || d.role == EnemyDef.FLY_DIVE;
             if (flyer) {
@@ -339,7 +339,7 @@ public final class RoomGen {
                 sx = x * Room.TS + 8; sy = ground[x] * Room.TS;
                 if (!upCand.isEmpty() && System.getenv("BOT_NOUP") == null && r.chance(0.3f)) { int[] u = upCand.get(r.i(upCand.size())); sx = u[0] * Room.TS + 8; sy = mf * Room.TS; }
                 // los de rango a veces en plataformas
-                if ((d.role == EnemyDef.RANGED || d.role == EnemyDef.CASTER) && !plat.isEmpty() && r.chance(0.5f)) {
+                if ((d.role == EnemyDef.RANGED || d.role == EnemyDef.CASTER || d.role == EnemyDef.SNIPER || d.role == EnemyDef.SUPPORT || d.role == EnemyDef.BUFFER) && !plat.isEmpty() && r.chance(0.5f)) {
                     int[] p = plat.get(r.i(plat.size()));
                     if (p[0] > 12 && p[1] < W - 12) { sx = (p[0] + p[1]) / 2f * Room.TS + 8; sy = p[2] * Room.TS; }
                 }

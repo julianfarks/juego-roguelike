@@ -10,6 +10,7 @@ public final class DebugBot {
     private final java.util.HashSet<Object> done = new java.util.HashSet<>();
     private float lastX;
     public static int classId = System.getenv("BOT_CLASS") != null ? Integer.parseInt(System.getenv("BOT_CLASS")) : 0;
+    static boolean enemyDone;
     public static boolean godMode = System.getenv("BOT_GOD") != null;
 
     private void hold(Game g, int code, boolean down) {
@@ -75,6 +76,18 @@ public final class DebugBot {
             else { p.x = Float.parseFloat(q[0]) * 16 + 8; p.y = Float.parseFloat(q[1]) * 16; }
             p.vx = p.vy = 0; p.safeX = p.x; p.safeY = p.y;
             lv.snapCamera();
+        }
+        String be = System.getenv("BOT_ENEMY");   // banco de pruebas: aparecen estos enemigos junto al jugador
+        if (be != null && !enemyDone && frame > 260 && (warp == null || (warped && frame > warpFrame + 100))) {
+            enemyDone = true;
+            int k = 0;
+            for (String id : be.split(",")) {
+                EnemyDef ed = EnemyDef.get(id.trim());
+                if (ed == null) { System.out.println("BOT_ENEMY desconocido: " + id); continue; }
+                Enemy en = new Enemy(ed, false, 1f, 1f);
+                en.x = p.x + 90 + 45 * k; en.y = p.y; en.home = en.x;
+                lv.enemies.add(en); lv.toKill++; k++;
+            }
         }
         if (System.getenv("BOT_ITEMS") != null) {
             if (frame % 500 == 210) { int k = (frame / 500) % 4; rs.rs.sec = 1 + k; rs.rs.secAmmo = 9; rs.rs.gren = 1 + k; rs.rs.grenCount = 9; rs.rs.shield = k; rs.rs.special = 1 + k; rs.rs.recalc(); }

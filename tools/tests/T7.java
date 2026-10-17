@@ -7,13 +7,13 @@ public class T7 {
     static int up1 = 3, upDbl = 5;
 
     static boolean clear(Room r, int x, int y) { return r.tile(x, y) != Room.SOLID && r.tile(x, y) != Room.BREAK && r.tile(x, y) != Room.DOOR && !(x < 0 || x >= r.w); }
-    static boolean support(Room r, int x, int g) { int t = r.tile(x, g); return t == Room.SOLID || t == Room.ONEWAY || t == Room.BREAK; }
+    static boolean support(Room r, int x, int g) { int t = r.tile(x, g); return t == Room.SOLID || t == Room.ONEWAY || t == Room.BREAK || t == Room.HWALL || t == Room.FAKE; }
     static boolean node(Room r, int x, int g) {
         if (x < 1 || x >= r.w - 1 || g < 2 || g >= r.h) return false;
         if (!support(r, x, g)) return false;
         int a = r.tile(x, g - 1), b = r.tile(x, g - 2);
-        if (a == Room.SOLID || a == Room.BREAK || a == Room.DOOR || a == Room.SPIKE || a == Room.SPIKE_DOWN) return false;
-        if (b == Room.SOLID || b == Room.BREAK || b == Room.DOOR) return false;
+        if (a == Room.SOLID || a == Room.BREAK || a == Room.DOOR || a == Room.HWALL || a == Room.SPIKE || a == Room.SPIKE_DOWN) return false;
+        if (b == Room.SOLID || b == Room.BREAK || b == Room.DOOR || b == Room.HWALL) return false;
         return true;
     }
 

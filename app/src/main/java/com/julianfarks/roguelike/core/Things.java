@@ -54,6 +54,7 @@ final class Prop {
     Sheet sheet; String anim = "idle"; float animT;
     // puertas de salida
     int doorIdx = -1; int nextType = -1; int nextBiome = -1; boolean locked;
+    boolean hidden;       // recompensa de camara secreta aun sin descubrir
     boolean roundChest;   // cofre de recompensa de ronda (no secreto)
     int event;            // puerta lateral hacia un suceso (Events.*), 0 = puerta normal
     String icon;          // icono propio sobre la puerta (sustituye al del tipo de sala)

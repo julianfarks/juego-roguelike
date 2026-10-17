@@ -275,6 +275,7 @@ public final class DebugBot {
             rs.loadRoom(type);
             return;
         }
+        if (System.getenv("BOT_SECTEST") != null && (warp == null || (warped && frame > warpFrame + 20))) { secretStep(g, rs, lv, p, frame); return; }
         if (System.getenv("BOT_SPIKETEST") != null && !spikeDone && frame > 260) {
             spikeDone = true;
             Room rm = lv.room;
@@ -558,6 +559,69 @@ public final class DebugBot {
         if (Math.abs(p.x - lastX) < 0.5f && !near) stuck++; else stuck = 0;
         lastX = p.x;
         if (stuck > 60) { tap(g, 'W'); if (stuck > 90) { tap(g, 'K'); stuck = 0; } }
+    }
+
+    // ---- banco de pruebas de camaras secretas (BOT_SECTEST=indice de camara): secuencia fija para capturar con --script
+    private int secT0 = -1;
+    private static final int SEC_START = 400, SEC_R = 200;
+
+    private void secretStep(Game g, RunScreen rs, Level lv, Player p, int frame) {
+        java.util.List<Secret> all = lv.room.secrets;
+        if (secT0 < 0) {
+            if (frame < SEC_START) return;
+            secT0 = frame;
+            if (all.isEmpty()) { System.out.println("SECTEST: la sala no tiene camaras"); return; }
+        }
+        if (all.isEmpty()) return;
+        int sf = frame - secT0;
+        Secret s = all.get(Math.min(all.size() - 1, Integer.parseInt(System.getenv("BOT_SECTEST"))));
+        int x0 = 1 << 20, y0 = 1 << 20, x1 = -1, y1 = -1;
+        for (int[] d : s.door) { x0 = Math.min(x0, d[0]); y0 = Math.min(y0, d[1]); x1 = Math.max(x1, d[0]); y1 = Math.max(y1, d[1]); }
+        float bx0 = x0 * 16, by0 = y0 * 16, bx1 = (x1 + 1) * 16, by1 = (y1 + 1) * 16, mx = (bx0 + bx1) / 2f, my = (by0 + by1) / 2f;
+        boolean leftDoor = s.cx < (s.rx0 + s.rx1 + 1) * 8f;
+        float outX = s.family == 0 ? mx - 70 : (leftDoor ? mx - 70 : mx + 70), outY = s.family == 0 ? s.ry0 * 16 : (s.ry1 + 1) * 16;
+        int e = s.entrance;
+        if (sf == 1) {   // nada de la camara debe verse mientras esta cerrada
+            int vp = 0, tc = 0, en = 0;
+            for (Prop q : lv.props) if (!q.hidden && s.contains((int) (q.x / 16), (int) ((q.y - 1) / 16))) vp++;
+            for (int[] d : lv.animDeco) if (s.contains(d[0] / 16, d[1] / 16)) tc++;
+            for (Enemy q : lv.enemies) if (s.contains((int) (q.x / 16), (int) ((q.y - 1) / 16))) en++;
+            System.out.println("SECTEST oculto: props visibles dentro=" + vp + " antorchas dentro=" + tc + " enemigos dentro=" + en + " pickups=" + lv.pickups.size());
+        }
+        if (sf == 0) {
+            System.out.println("SECTEST: entrada=" + Secret.E_NAME[e] + " recompensa=" + Secret.R_NAME[s.reward] + " reto=" + s.challenge + " familia=" + s.family + " rect=" + s.rx0 + "," + s.ry0 + ".." + s.rx1 + "," + s.ry1 + " bioma=" + lv.biome.key);
+        }
+        float hx = outX, hy = outY;
+        if (e == Secret.E_RUNES || e == Secret.E_SYMBOLS || e == Secret.E_LEVER) { float[] w = s.sw.get(e == Secret.E_RUNES ? 1 : 0); hx = w[0] - 30; hy = w[1]; }
+        if (e == Secret.E_SKILL) { hx = s.crX - 34; hy = s.crY; }
+        boolean hold = !s.open && !s.revealing;
+        if (sf < SEC_R + 2 || hold && sf < SEC_R + 60) { p.x = hx; p.y = hy; p.vx = p.vy = 0; p.safeX = p.x; p.safeY = p.y; if (sf == 0) lv.snapCamera(); }
+        // accion que descubre la camara, siempre terminando en el fotograma SEC_R
+        java.util.function.BiConsumer<Float, Float> hit = (cx, cy) -> lv.breakRect(cx - 12, cy - 12, 24, 24, 1);
+        switch (e) {
+            case Secret.E_WALL, Secret.E_FLOOR, Secret.E_STATUE -> {
+                int n = e == Secret.E_STATUE ? 4 : 3;
+                for (int i = 0; i < n; i++) if (sf == SEC_R - 14 * i) hit.accept(mx, my);
+            }
+            case Secret.E_ILLUSION, Secret.E_WATERFALL, Secret.E_CURTAIN -> { if (sf == SEC_R) { p.x = s.family == 0 ? mx - 20 : mx - 6; p.y = s.family == 0 ? s.ry0 * 16 : outY; } }
+            case Secret.E_LEVER -> { if (sf == SEC_R) { float[] w = s.sw.get(0); hit.accept(w[0], w[1] - 12); } }
+            case Secret.E_SYMBOLS, Secret.E_RUNES -> {
+                int base = e == Secret.E_RUNES ? SEC_R - 40 : SEC_R - 40;
+                for (int k = 0; k < 3; k++) if (sf == base + k * 20) { float[] w = s.sw.get(s.order[k]); hit.accept(w[0], w[1] - 12); }
+                if (e == Secret.E_SYMBOLS && sf == base - 30) { float[] w = s.sw.get((s.order[0] + 1) % 3); hit.accept(w[0], w[1] - 12); }   // error previo
+            }
+            case Secret.E_SKILL -> { if (sf == SEC_R - 1) p.state = Player.SKILL; if (sf == SEC_R) p.state = Player.SKILL; }
+            default -> { }
+        }
+        if (sf == SEC_R + 1 || sf == SEC_R + 40 || sf == SEC_R + 100) System.out.println("SECTEST sf=" + sf + " open=" + s.open + " revealing=" + s.revealing + " rewardHidden=" + (s.rewardProp == null ? "n/a" : String.valueOf(s.rewardProp.hidden)) + " guardian=" + (s.guardian != null));
+        // entrar a la camara
+        if (sf == SEC_R + 110) { p.x = s.rwX - (s.family == 0 ? 0 : 30); p.y = s.rwY; p.vx = p.vy = 0; p.safeX = p.x; p.safeY = p.y; lv.snapCamera(); }
+        if (sf > SEC_R + 110 && sf < SEC_R + 330) { p.vx = 0; }
+        if (sf == SEC_R + 230 && s.guardian != null && s.guardian.alive) { s.guardian.die(lv); }
+        if (sf >= SEC_R + 270 && sf < SEC_R + 470) { p.x = s.rwX + (s.family == 0 ? 14 : 12); p.y = s.rwY; p.vx = p.vy = 0; }
+        if (sf == SEC_R + 280) System.out.println("SECTEST fin: open=" + s.open + " rewardOut=" + s.rewardOut + " rewardHidden=" + (s.rewardProp == null ? "n/a" : String.valueOf(s.rewardProp.hidden)) + " oro=" + lv.rs.gold + " pickups=" + lv.pickups.size());
+        if (sf >= SEC_R + 280 && sf % 15 == 0 && sf < SEC_R + 420) { Prop n = lv.nearestInteractable(); if (n != null) tap(g, 'E'); }
+        if (sf == SEC_R + 440) System.out.println("SECTEST abierto: usado=" + (s.rewardProp != null && s.rewardProp.used) + " ov=" + rs.ov);
     }
 
     private boolean npcDone, devOnce, spikeDone; private int roundStep, roundT; private boolean classPrinted, unlockedAll;

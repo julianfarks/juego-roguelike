@@ -11,16 +11,16 @@ import java.util.*;
 final class RoomCheck {
     private RoomCheck() {}
 
-    static boolean clear(Room r, int x, int y) { int t = r.tile(x, y); return !(x < 0 || x >= r.w) && t != Room.SOLID && t != Room.BREAK && t != Room.DOOR; }
-    static boolean support(Room r, int x, int g) { int t = r.tile(x, g); return t == Room.SOLID || t == Room.ONEWAY || t == Room.BREAK; }
+    static boolean clear(Room r, int x, int y) { int t = r.tile(x, y); return !(x < 0 || x >= r.w) && t != Room.SOLID && t != Room.BREAK && t != Room.DOOR && t != Room.HWALL; }
+    static boolean support(Room r, int x, int g) { int t = r.tile(x, g); return t == Room.SOLID || t == Room.ONEWAY || t == Room.BREAK || t == Room.HWALL || t == Room.FAKE; }
 
     /** Casilla donde un jugador puede estar de pie: apoyo debajo, dos baldosas libres encima y sin pinchos en los pies. */
     static boolean node(Room r, int x, int g) {
         if (x < 1 || x >= r.w - 1 || g < 2 || g >= r.h) return false;
         if (!support(r, x, g)) return false;
         int a = r.tile(x, g - 1), b = r.tile(x, g - 2);
-        if (a == Room.SOLID || a == Room.BREAK || a == Room.DOOR || a == Room.SPIKE || a == Room.SPIKE_DOWN) return false;
-        if (b == Room.SOLID || b == Room.BREAK || b == Room.DOOR) return false;
+        if (a == Room.SOLID || a == Room.BREAK || a == Room.DOOR || a == Room.HWALL || a == Room.SPIKE || a == Room.SPIKE_DOWN) return false;
+        if (b == Room.SOLID || b == Room.BREAK || b == Room.DOOR || b == Room.HWALL) return false;
         return true;
     }
 
@@ -51,6 +51,8 @@ final class RoomCheck {
         return seen;
     }
 
+    static boolean inSecret(Room r, int x, int y) { for (Secret s : r.secrets) if (s.contains(x, y)) return true; return false; }
+
     static boolean isFlyer(String enemy) {
         EnemyDef d = EnemyDef.get(enemy);
         if (d != null && (d.role == EnemyDef.FLY_SHOOT || d.role == EnemyDef.FLY_DIVE)) return true;
@@ -71,12 +73,12 @@ final class RoomCheck {
                 if (r.tile(x, y) != Room.ONEWAY) { x++; continue; }
                 int x0 = x; boolean any = false;
                 while (x < r.w - 2 && r.tile(x, y) == Room.ONEWAY) { if (rs.contains(y * 1000 + x)) any = true; x++; }
-                if (!any) for (int k = x0; k < x; k++) r.set(k, y, Room.AIR);
+                if (!any && !inSecret(r, x0, y)) for (int k = x0; k < x; k++) r.set(k, y, Room.AIR);   // las de una camara secreta cerrada se conservan
             }
         }
         // candidatos alcanzables para recolocar enemigos terrestres
         List<int[]> spots = new ArrayList<>();
-        for (int key : rs) { int g = key / 1000, x = key % 1000; if (x > sx + 9 && x < r.w - 10 && node(r, x, g) && r.tile(x, g) == Room.SOLID && r.tile(x + 1, g) != Room.SPIKE) spots.add(new int[]{x, g}); }
+        for (int key : rs) { int g = key / 1000, x = key % 1000; if (x > sx + 9 && x < r.w - 10 && !inSecret(r, x, g - 1) && node(r, x, g) && r.tile(x, g) == Room.SOLID && r.tile(x + 1, g) != Room.SPIKE) spots.add(new int[]{x, g}); }
         List<Room.Spawn> out = new ArrayList<>();
         for (Room.Spawn sp : r.spawns) {
             int tx = (int) (sp.x / Room.TS), ty = (int) (sp.y / Room.TS);

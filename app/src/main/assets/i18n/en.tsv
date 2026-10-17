@@ -728,9 +728,9 @@ Escudo de acero	Steel shield
 Escudo rúnico	Runic shield
 Escudo de espinas	Thorn shield
 Parry 0.20s · bloquea 55%	Parry 0.20s · blocks 55%
-Parry 0.28s · bloquea 70%	Parry 0.28s · blocks 70%
-Parry 0.36s · explosión al parry · bloquea 70%	Parry 0.36s · explodes on parry · blocks 70%
-Parry 0.33s · devuelve daño al bloquear	Parry 0.33s · reflects damage when blocking
+Parry 0.17s · bloquea 70%	Parry 0.17s · blocks 70%
+Parry 0.15s · explosión al parry · bloquea 70%	Parry 0.15s · explodes on parry · blocks 70%
+Parry 0.17s · devuelve daño al bloquear	Parry 0.17s · reflects damage when blocking
 3 cuchillos en abanico · daño 0.65x	3 knives in a fan · damage 0.65x
 Atraviesa 2 enemigos · daño 2.1x	Pierces 2 enemies · damage 2.1x
 Arco alto, atraviesa 3 · daño 2.4x	High arc, pierces 3 · damage 2.4x
@@ -1062,6 +1062,13 @@ Normal{}	Normal{}
 Difícil{}	Hard{}
  Asc {}	 Asc {}
 Gasta tus almas en el Santuario	Spend your souls in the Sanctuary
+¡Cofre superior!	Superior chest!
+¡Pasadizo secreto!	Secret passage!
+¡Guardián vencido!	Guardian defeated!
+¡Un guardián!	A guardian!
+¡Sala del tesoro!	Treasure room!
+¡Provisiones olvidadas!	Forgotten supplies!
+¿Reaccionará a una habilidad?	Will it react to a skill?
 Rueda con el botón de esquivar para ser invulnerable un instante.	Roll with the dodge button to be invulnerable for a moment.
 Las reliquias de los jefes se conservan entre partidas.	Boss relics are kept between runs.
 Gasta almas en el Santuario para mejorar a tu personaje.	Spend souls in the Sanctuary to upgrade your character.

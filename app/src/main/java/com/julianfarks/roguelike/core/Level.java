@@ -49,8 +49,9 @@ public final class Level {
     public int roomHits, roomEnemies;
     public boolean rewarded;
     public Biome biome;
+    public Secrets secrets;
     public float darkness;
-    private final List<int[]> animDeco;
+    final List<int[]> animDeco;
     private final Platform.Img[] bg = new Platform.Img[3];
     public String tutorial;
     final List<Runnable> delayed = new ArrayList<>();
@@ -64,6 +65,7 @@ public final class Level {
         this.biome = room.biome;
         this.darkness = biome.dark;
         animDeco = room.animated();
+        secrets = new Secrets(this);
         for (int i = 0; i < 3; i++) bg[i] = Assets.img("bg/bg_" + biome.key + "_" + i + ".png");
     }
 
@@ -87,6 +89,7 @@ public final class Level {
         toKill = enemies.size();
         roomEnemies = toKill; roomHits = 0; rewarded = false;
         for (Room.PropSpec ps : room.props) addProp(ps);
+        secrets.init();
         // salidas
         cleared = toKill == 0 && room.type != Room.BOSS;
         camX = Mth.clamp(pl.x - viewW / 2, 0, Math.max(0, room.pixW - viewW));
@@ -506,6 +509,7 @@ public final class Level {
             ps.spawn(camX + rng.f(0, viewW), camY + rng.f(0, Platform.VIEW_H), rng.f(-6, 6), -rng.f(4, 18), rng.f(2.2f, 4f), 1, 0, biome.color, true);
         }
         if (pl.alive || timeScale < 1f) pl.update(this, dt);
+        secrets.update(dt);
         updateCompanion(dt);
         if (!pl.alive && timeScale < 1f) timeScale = Math.min(1f, timeScale + rawDt * 0.0f);
         if (freezeEnemies > 0) freezeEnemies -= dt;
@@ -734,7 +738,7 @@ public final class Level {
     private void drawSecretMarks(Platform.Gfx g) {
         if (rs.companion != Companions.SHADOW) return;
         for (Prop p : props) {
-            boolean sec = p.kind.equals("chest") && p.arg == 3 && !p.used;
+            boolean sec = p.kind.equals("chest") && p.arg >= 3 && !p.used;
             boolean door = p.kind.equals("door") && p.event > 0 && !p.done;
             if (!sec && !door) continue;
             float a = 0.5f + 0.4f * (float) Math.sin(time * 4);
@@ -811,12 +815,14 @@ public final class Level {
 
     // ------------------------------------------------------------------ muros y suelos rompibles
     private byte[] breakHp;
+    void clearBreakHp() { breakHp = null; }
     private float breakCd;
     public int brokenCount;
 
     /** Golpea las baldosas rompibles dentro de un rectangulo. Devuelve cuantas se rompieron. */
     public int breakRect(float rx, float ry, float rw, float rh, int dmg) {
         int n = 0;
+        secrets.hit(rx, ry, rw, rh, dmg);
         if (dmg <= 1) { if (time - breakCd < 0.16f) return 0; breakCd = time; }
         int tx0 = (int) Math.floor(rx / Room.TS), tx1 = (int) Math.floor((rx + rw) / Room.TS);
         int ty0 = (int) Math.floor(ry / Room.TS), ty1 = (int) Math.floor((ry + rh) / Room.TS);
@@ -830,6 +836,7 @@ public final class Level {
             float cx = tx * Room.TS + 8, cy = ty * Room.TS + 8;
             if (breakHp[i] <= 0) {
                 room.t[i] = Room.AIR; n++; brokenCount++;
+                secrets.onBreak(tx, ty);
                 ps.burst(rng, cx, cy, 0xB09A70, 14, 110, 0.6f, 3, 420, false);
                 ps.burst(rng, cx, cy, 0x6A5A48, 8, 70, 0.7f, 2, 380, false);
                 fx("fx_dust", "land", cx, cy + 6, 1f, 0, 0);
@@ -943,7 +950,9 @@ public final class Level {
             int vw = (int) Math.min(room.pixW - vx0, w / z + 3), vh = (int) Math.min(room.pixH - vy0, h / z + 3);
             if (vw > 0 && vh > 0) g.image(room.baked, vx0, vy0, vw, vh, vx0, vy0, vw, vh, 0, 0, 1f);
         }
+        secrets.renderBase(g);
         drawBreakTiles(g);
+        secrets.renderScenery(g);
         drawAnimatedDeco(g);
         if (room.glow != 0) { float gp = 0.12f + 0.04f * (float) Math.sin(time * 1.7f); UI.light(g, room.pixW / 2f, room.exitY - 70, 190, room.glow, gp); UI.light(g, room.pixW / 2f - 150, room.exitY - 40, 90, room.glow, gp * 0.7f); UI.light(g, room.pixW / 2f + 150, room.exitY - 40, 90, room.glow, gp * 0.7f); }
         for (Prop p : props) drawProp(g, p);
@@ -1044,8 +1053,9 @@ public final class Level {
     }
 
     private void drawProp(Platform.Gfx g, Prop p) {
+        if (p.hidden) return;
         if (p.kind.equals("chest") && p.roundChest && !p.used) { UI.light(g, p.x, p.y - 10, 26 + 3 * (float) Math.sin(time * 5), 0xFFD25A, 0.35f); if (rng.chance(0.05f)) ps.spawn(p.x + rng.f(-8, 8), p.y - 4, rng.f(-6, 6), -rng.f(15, 35), 0.8f, 2, 0, 0xFFE9A0, true); }
-        if (p.kind.equals("chest") && p.arg == 3 && !p.used) { UI.light(g, p.x, p.y - 8, 30 + 4 * (float) Math.sin(time * 4), 0xB070FF, 0.40f); if (rng.chance(0.06f)) ps.spawn(p.x + rng.f(-8, 8), p.y - 4, rng.f(-6, 6), -rng.f(15, 35), 0.8f, 2, 0, 0xD8B0FF, true); }
+        if (p.kind.equals("chest") && p.arg >= 3 && !p.used) { UI.light(g, p.x, p.y - 8, 30 + 4 * (float) Math.sin(time * 4), 0xB070FF, 0.40f); if (rng.chance(0.06f)) ps.spawn(p.x + rng.f(-8, 8), p.y - 4, rng.f(-6, 6), -rng.f(15, 35), 0.8f, 2, 0, 0xD8B0FF, true); }
         if (p.sheet == null) return;
         Anim a = p.sheet.anim(p.anim);
         int frame = a.frameAt(p.animT);
@@ -1080,7 +1090,7 @@ public final class Level {
     public Prop nearestInteractable() {
         Prop best = null; float bd = 34;
         for (Prop p : props) {
-            if (p.dead) continue;
+            if (p.dead || p.hidden) continue;
             boolean can = false;
             switch (p.kind) {
                 case "altar": case "forge": case "merchant": case "fountain": case "chest": case "portal": case "sanctuary": case "npc": can = !p.used || p.kind.equals("merchant"); break;

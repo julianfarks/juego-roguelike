@@ -20,7 +20,7 @@ public final class RoomGen {
         boolean big = type == Room.COMBAT || type == Room.ELITE;
         for (int attempt = 0; attempt < 12; attempt++) {
             rm = build(type, b, r, stage, roomNo, event);
-            if (!big || RoomCheck.fix(rm, r)) return rm;
+            if (!big || RoomCheck.fix(rm, r)) { SecretGen.clearSpawns(rm); return rm; }
         }
         return rm;
     }
@@ -87,12 +87,19 @@ public final class RoomGen {
         if (big) {
             float sroll = r.f();   // cofres secretos excepcionales: ~55% de las salas grandes no tiene ninguno; como mucho 1
             int secretKind = sroll < 0.55f ? 0 : (sroll < 0.75f ? 1 : (sroll < 0.92f ? 2 : 3));
-            if (secretKind == 1 || secretKind == 2) buildSecrets(rm, W, fy, mf, ground, blocked, slab, r, stage, secretKind);
+            if (SecretGen.dbgFamily >= 0) secretKind = SecretGen.dbgFamily == 0 ? 1 : 2;
+            if (secretKind == 1 || secretKind == 2) {
+                int fam = secretKind == 1 ? 0 : 1;
+                Secret sc = SecretGen.build(rm, W, fy, mf, ground, blocked, slab, r, stage, fam);
+                if (sc == null) sc = SecretGen.build(rm, W, fy, mf, ground, blocked, slab, r, stage, 1 - fam);
+                if (sc == null) buildSecrets(rm, W, fy, mf, ground, blocked, slab, r, stage, secretKind);   // ultimo recurso: la camara clasica
+                else if (sc.family == 1) rm.vaultA = sc.rx0;
+            }
             // pinchos en el piso superior
             for (int k = 0; k < r.range(1, 3) + extraTraps; k++) {
                 int x = r.range(16, W - 20), n = r.range(2, 3);
                 boolean ok = true;
-                for (int i = -3; i < n + 3; i++) if (x + i < 0 || x + i >= W || !slab[x + i] || rm.tile(x + i, mf - 1) != Room.AIR || rm.tile(x + i, mf - 5) == Room.SOLID) ok = false;
+                for (int i = -3; i < n + 3; i++) if (x + i < 0 || x + i >= W || SecretGen.reserved(rm, x + i) || !slab[x + i] || rm.tile(x + i, mf - 1) != Room.AIR || rm.tile(x + i, mf - 5) == Room.SOLID) ok = false;
                 if (ok) for (int i = 0; i < n; i++) rm.set(x + i, mf - 1, Room.SPIKE);
             }
             // cofre oculto en una plataforma alta del piso superior
@@ -153,12 +160,14 @@ public final class RoomGen {
         // la zona de entrada y de salida no tienen decoracion de suelo estorbosa
         for (int x = 2; x < 9; x++) rm.deco[(fy - 1) * W + x] = 0;
 
+        for (Secret sc : rm.secrets) upCand.removeIf(c -> sc.contains(c[0], mf) || sc.contains(c[0], mf - 1));
         if (type == Room.COMBAT || type == Room.ELITE) spawnEnemies(rm, ground, blocked, platforms, r, stage, roomNo, type == Room.ELITE, upCand, mf);
         if (boss) {
             rm.spawnX = 5 * Room.TS;
             rm.exitX = (W - 5) * Room.TS;
         }
         if (type == Room.EVENT && event == Events.CAPTIVE) spawnEnemies(rm, ground, blocked, platforms, r, stage, roomNo, false, upCand, mf, stage >= 1 ? 3 : 2);
+        SecretGen.clearSpawns(rm);
         placeProps(rm, type, fy, r);
         if (big) for (int[] sc : secrets) rm.props.add(new Room.PropSpec("chest", sc[0], sc[1], 3));
         return rm;

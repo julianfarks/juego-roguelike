@@ -728,9 +728,9 @@ Escudo de acero	Bouclier en acier
 Escudo rúnico	Bouclier runique
 Escudo de espinas	Bouclier d'épines
 Parry 0.20s · bloquea 55%	Parade 0,20 s · bloque 55 %
-Parry 0.28s · bloquea 70%	Parade 0,28 s · bloque 70 %
-Parry 0.36s · explosión al parry · bloquea 70%	Parade 0,36 s · explosion à la parade · bloque 70 %
-Parry 0.33s · devuelve daño al bloquear	Parade 0,33 s · renvoie les dégâts en bloquant
+Parry 0.17s · bloquea 70%	Parade 0,17 s · bloque 70 %
+Parry 0.15s · explosión al parry · bloquea 70%	Parade 0,15 s · explosion à la parade · bloque 70 %
+Parry 0.17s · devuelve daño al bloquear	Parade 0,17 s · renvoie les dégâts en bloquant
 3 cuchillos en abanico · daño 0.65x	3 couteaux en éventail · dégâts 0,65x
 Atraviesa 2 enemigos · daño 2.1x	Transperce 2 ennemis · dégâts 2,1x
 Arco alto, atraviesa 3 · daño 2.4x	Tir en cloche, transperce 3 · dégâts 2,4x
@@ -1062,6 +1062,13 @@ Normal{}	Normal{}
 Difícil{}	Difficile{}
  Asc {}	 Asc {}
 Gasta tus almas en el Santuario	Dépensez vos âmes au Sanctuaire
+¡Cofre superior!	Coffre supérieur !
+¡Pasadizo secreto!	Passage secret !
+¡Guardián vencido!	Gardien vaincu !
+¡Un guardián!	Un gardien !
+¡Sala del tesoro!	Salle au trésor !
+¡Provisiones olvidadas!	Provisions oubliées !
+¿Reaccionará a una habilidad?	Réagira-t-il à une compétence ?
 Rueda con el botón de esquivar para ser invulnerable un instante.	Roulez avec le bouton d'esquive pour être invulnérable un instant.
 Las reliquias de los jefes se conservan entre partidas.	Les reliques des boss sont conservées d'une partie à l'autre.
 Gasta almas en el Santuario para mejorar a tu personaje.	Dépensez des âmes au Sanctuaire pour améliorer votre personnage.

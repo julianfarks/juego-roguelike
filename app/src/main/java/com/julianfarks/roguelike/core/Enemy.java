@@ -8,6 +8,7 @@ public final class Enemy extends Ent {
     public final boolean elite;
     public float home;
     public boolean remove;
+    public boolean guardian;   // guardian opcional de una camara secreta: no cuenta para despejar la sala
     public int state = PATROL;
     private float stateT, atkCd, deadT, patrolDir = 1, patrolWait, contactCd, bob, spawnT;
     private boolean aggro, shot, hitDone;
@@ -113,7 +114,7 @@ public final class Enemy extends Ent {
         RunState rs = lv.rs;
         Stats s = rs.stats;
         Snd.sfxAt(def.dieSfx, x, lv.camX + lv.viewW / 2, 0.9f);
-        lv.toKill--;
+        if (!guardian) lv.toKill--;
         rs.kills++;
         if (def.role == EnemyDef.EXPLODER && !suicide) blast(lv, 0.7f, 36);   // volatil: abatirlo de cerca tambien duele
         Unlocks.check(lv);

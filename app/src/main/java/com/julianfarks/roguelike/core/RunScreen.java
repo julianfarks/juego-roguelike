@@ -582,13 +582,14 @@ final class RunScreen extends Screen implements Level.Listener {
     private void openChest(Prop p) {
         if (p.used) return;
         p.used = true; p.anim = "open"; p.animT = 0;
-        if (!sandbox) { Save.S.chestsOpened++; if (p.arg == 3) Save.S.secretChests++; Save.S.write(); announceTrophies(); }
+        if (!sandbox) { Save.S.chestsOpened++; if (p.arg >= 3) Save.S.secretChests++; Save.S.write(); announceTrophies(); }
         Snd.sfx("chest_open", 1f);
         lv.pl.react("chest", 0f);
         lv.ps.burst(lv.rng, p.x, p.y - 10, 0xFFD25A, 16, 110, 0.7f, 2, 100, true);
-        if (p.arg == 3) {
+        if (p.arg >= 3) {
             rs.secretsFound++;
             Items.secretChestDrops(lv, rs, p.x, p.y);
+            if (p.arg == 4) Items.secretChestDrops(lv, rs, p.x, p.y);   // cofre superior: doble botin
         } else if (p.arg == 0) {
             lv.dropGold(p.x, p.y - 14, Math.round((45 + 12 * rs.stage + lv.rng.i(30)) * rs.stats.goldMul));
             lv.dropSouls(p.x, p.y - 14, 6 + 2 * rs.stage);
@@ -621,7 +622,7 @@ final class RunScreen extends Screen implements Level.Listener {
         lv.fx("fx_star", "burst", lv.pl.x, lv.pl.y - 18, 1f, col, Platform.ADD | Platform.TINT);
         Snd.sfx("secret", 0.9f);
         // reliquia, cofre secreto u objeto raro: reaccion de asombro (solo cosmetica, la recompensa ya se aplico arriba)
-        if (x.rar >= 2 || (ovProp != null && (ovProp.arg == 3 || ovProp.kind.equals("relic")))) lv.pl.react("awe", 1.5f);
+        if (x.rar >= 2 || (ovProp != null && (ovProp.arg >= 3 || ovProp.kind.equals("relic")))) lv.pl.react("awe", 1.5f);
     }
 
     // =============================================================== overlays
@@ -1293,7 +1294,7 @@ final class RunScreen extends Screen implements Level.Listener {
             case "relic": return "Tomar";
             case "fountain": return "Beber";
             case "npc": return "Hablar";
-            case "chest": return p.arg == 3 ? "¡Cofre secreto!" : "Abrir";
+            case "chest": return p.arg == 4 ? "¡Cofre superior!" : p.arg == 3 ? "¡Cofre secreto!" : "Abrir";
             default: return "Usar";
         }
     }

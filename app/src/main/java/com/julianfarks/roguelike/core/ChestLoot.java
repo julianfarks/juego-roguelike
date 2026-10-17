@@ -356,10 +356,11 @@ final class ChestLoot {
         switch (chestArg) {
             case 1: return p < 0.30f ? MODE_WEAPONS : (p < 0.70f ? MODE_ARSENAL : MODE_STATS);
             case 2: return p < 0.25f ? MODE_WEAPONS : (p < 0.40f ? MODE_ARSENAL : MODE_STATS);
+            case 4: return p < 0.35f ? MODE_WEAPONS : (p < 0.70f ? MODE_ARSENAL : MODE_STATS);
             case 3: return p < 0.40f ? MODE_WEAPONS : (p < 0.80f ? MODE_ARSENAL : MODE_STATS);
             default: return p < 0.12f ? MODE_WEAPONS : (p < 0.25f ? MODE_ARSENAL : MODE_STATS);
         }
     }
 
-    static int luckBonusFor(int chestArg) { if (System.getenv("BOT_LUCK") != null) return Integer.parseInt(System.getenv("BOT_LUCK")); return chestArg == 2 ? 6 : (chestArg == 3 ? 5 : (chestArg == 1 ? 2 : 0)); }
+    static int luckBonusFor(int chestArg) { if (System.getenv("BOT_LUCK") != null) return Integer.parseInt(System.getenv("BOT_LUCK")); return chestArg == 2 ? 6 : (chestArg == 4 ? 9 : chestArg == 3 ? 5 : (chestArg == 1 ? 2 : 0)); }
 }

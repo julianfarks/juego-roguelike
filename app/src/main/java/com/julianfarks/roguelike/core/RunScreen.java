@@ -230,16 +230,48 @@ final class RunScreen extends Screen implements Level.Listener {
         if (sandbox) { sbRespawnT = 1.6f; l.text(l.pl.x, l.pl.y - 50, "Reiniciando prueba...", 0xFFD25A, true); return; }
         Snd.sfx("room_clear", 0.9f);
         l.text(l.pl.x, l.pl.y - 50, "¡Sala despejada!", 0xFFD25A, true);
-        if (l.room.type == Room.ELITE) {
-            Prop c = l.addProp(new Room.PropSpec("chest", l.room.exitX - 70, l.room.exitY, 2));
-            c.label = "Recompensa";
-            l.ps.burst(l.rng, c.x, c.y - 12, 0xFFD25A, 20, 100, 0.6f, 2, 0, true);
-        } else if (l.rng.chance(0.3f)) {
-            l.drop(Pickup.HEART, l.room.exitX - 70, l.room.exitY - 60, 1);
-        }
+        if (l.room.type == Room.COMBAT || l.room.type == Room.ELITE) completeRound(l);
         rs.roomsDone++;
         spawnDoors();
         comboFlash = 1f;
+    }
+
+    /**
+     * Recompensa de ronda (una sola vez por sala: Level.rewarded):
+     * sin ningun dano real -> 2 cofres de eleccion; con dano -> 1 cofre. Tambien registra las estadisticas de la cuenta.
+     */
+    void completeRound(Level l) {
+        if (l.rewarded) return;
+        l.rewarded = true;
+        boolean perfect = l.roomHits == 0;
+        int n = perfect ? 2 : 1;
+        for (int i = 0; i < n; i++) {
+            Prop c = l.addProp(new Room.PropSpec("chest", l.room.exitX - 70 - i * 38, l.room.exitY, 2));
+            c.label = perfect ? "Cofre perfecto" : "Recompensa";
+            c.roundChest = true;
+            l.ps.burst(l.rng, c.x, c.y - 12, perfect ? 0xFFE9A0 : 0xFFD25A, 20, 100, 0.6f, 2, 0, true);
+        }
+        l.text(l.pl.x, l.pl.y - 66, perfect ? "¡RONDA PERFECTA! 2 cofres" : "Ronda completada: 1 cofre", perfect ? 0xFFE9A0 : 0xFFD25A, true);
+        lastRoundChests = n;
+        Save s = Save.S;
+        if (!sandbox) {
+            rs.roundsThisRun++; rs.streak++;
+            if (perfect) { rs.perfectStreak++; s.perfectRounds++; } else rs.perfectStreak = 0;
+            s.rounds++;
+            s.bestStreak = Math.max(s.bestStreak, rs.streak);
+            s.bestPerfectStreak = Math.max(s.bestPerfectStreak, rs.perfectStreak);
+            s.maxKillsRound = Math.max(s.maxKillsRound, l.roomEnemies);
+            s.write();
+            announceTrophies();
+        }
+    }
+
+    float playSave;
+    int lastRoundChests;   // (pruebas) cofres entregados en la ultima ronda
+
+    private void announceTrophies() {
+        java.util.List<String> nw = Trophies.check(Save.S);
+        if (!nw.isEmpty()) { toast = "Trofeo: " + nw.get(0); toastT = 3.5f; }
     }
 
     @Override public void onPlayerDead(Level l) {
@@ -302,6 +334,8 @@ final class RunScreen extends Screen implements Level.Listener {
         sumWin = win;
         s.souls += gain; s.totalSouls += gain;
         s.runs++;
+        if (!win) s.losses++;
+        s.classRuns[cls.id]++;
         s.kills += rs.kills; s.bossKills += rs.bossKills;
         s.bestRooms = Math.max(s.bestRooms, rs.roomsDone);
         s.lastClass = cls.id;
@@ -435,6 +469,7 @@ final class RunScreen extends Screen implements Level.Listener {
     private void openChest(Prop p) {
         if (p.used) return;
         p.used = true; p.anim = "open"; p.animT = 0;
+        if (!sandbox) { Save.S.chestsOpened++; if (p.arg == 3) Save.S.secretChests++; Save.S.write(); announceTrophies(); }
         Snd.sfx("chest_open", 1f);
         lv.ps.burst(lv.rng, p.x, p.y - 10, 0xFFD25A, 16, 110, 0.7f, 2, 100, true);
         if (p.arg == 3) {
@@ -712,6 +747,7 @@ final class RunScreen extends Screen implements Level.Listener {
         }
         if (lv == null) return;
         ovT += dt;
+        if (!sandbox && ov != OV_PAUSE) { Save.S.playMs += (long) (dt * 1000f); playSave += dt; if (playSave > 30f) { playSave = 0; Save.S.write(); } }
         if (sandbox && sbRespawnT > 0) { sbRespawnT -= dt; if (sbRespawnT <= 0) { sbRespawnT = -1; loadRoom(sbBoss >= 0 ? Room.BOSS : Room.COMBAT); } }
         if (ov == OV_TALK && tdlg != null) tdlg.update(dt);
         if (bannerT > 0) bannerT -= dt;

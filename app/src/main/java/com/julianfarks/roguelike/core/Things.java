@@ -54,6 +54,7 @@ final class Prop {
     Sheet sheet; String anim = "idle"; float animT;
     // puertas de salida
     int doorIdx = -1; int nextType = -1; int nextBiome = -1; boolean locked;
+    boolean roundChest;   // cofre de recompensa de ronda (no secreto)
     String label;
     float hp = 1;       // vasijas
     float shakeT;

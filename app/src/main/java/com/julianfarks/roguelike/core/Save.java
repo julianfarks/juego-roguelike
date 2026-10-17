@@ -36,6 +36,10 @@ public final class Save {
     public boolean[] unlocked = new boolean[Unlocks.COUNT];   // desbloqueos por enemigos derrotados
     public int[] story = new int[8];                 // progreso narrativo (ver Story)
     public boolean devUnlocked = false;              // Modo Desarrollador (se activa con un codigo)
+    // ---- estadisticas de la cuenta (persistentes)
+    public int started = 0, rounds = 0, losses = 0, bestStreak = 0, maxKillsRound = 0, perfectRounds = 0, bestPerfectStreak = 0, chestsOpened = 0, secretChests = 0, trophyMask = 0;
+    public int[] classRuns = new int[10];
+    public long playMs = 0;                          // tiempo total jugado (ms)
     public int[] codesUsed = new int[16];            // codigos de un solo uso ya canjeados (indice en Codes.ALL)
     public int[] eqSec = {0};                        // (reservado)
     public int inputMode = 0;                        // 0 automatico, 1 tactil, 2 mando
@@ -79,6 +83,12 @@ public final class Save {
                 int[] un = Json.ints(d, "unl");
                 if (un != null) for (int i = 0; i < Math.min(Unlocks.COUNT, un.length); i++) s.unlocked[i] = un[i] != 0;
                 s.devUnlocked = Json.bool(d, "dev", false);
+                s.started = Json.i(d, "st_started", 0); s.rounds = Json.i(d, "st_rounds", 0); s.losses = Json.i(d, "st_losses", 0);
+                s.bestStreak = Json.i(d, "st_streak", 0); s.maxKillsRound = Json.i(d, "st_killsRound", 0); s.perfectRounds = Json.i(d, "st_perfect", 0);
+                s.bestPerfectStreak = Json.i(d, "st_perfStreak", 0); s.chestsOpened = Json.i(d, "st_chests", 0); s.secretChests = Json.i(d, "st_secret", 0);
+                s.trophyMask = Json.i(d, "st_trophies", 0); s.playMs = Json.i(d, "st_playS", 0) * 1000L;
+                int[] cru = Json.ints(d, "st_classRuns");
+                if (cru != null) for (int i = 0; i < Math.min(10, cru.length); i++) s.classRuns[i] = cru[i];
                 int[] cdu = Json.ints(d, "codes");
                 if (cdu != null) for (int i = 0; i < Math.min(s.codesUsed.length, cdu.length); i++) s.codesUsed[i] = cdu[i];
                 int[] sty = Json.ints(d, "story");
@@ -117,6 +127,9 @@ public final class Save {
             d.put("ctl", cl);
             d.put("story", story);
             d.put("dev", devUnlocked); d.put("codes", codesUsed);
+            d.put("st_started", started); d.put("st_rounds", rounds); d.put("st_losses", losses); d.put("st_streak", bestStreak); d.put("st_killsRound", maxKillsRound);
+            d.put("st_perfect", perfectRounds); d.put("st_perfStreak", bestPerfectStreak); d.put("st_chests", chestsOpened); d.put("st_secret", secretChests);
+            d.put("st_trophies", trophyMask); d.put("st_playS", (int) (playMs / 1000L)); d.put("st_classRuns", classRuns);
             d.put("imode", inputMode); d.put("kb", kb); d.put("pb", pb);
             P.store().put("save", Json.write(d));
             P.store().commit();

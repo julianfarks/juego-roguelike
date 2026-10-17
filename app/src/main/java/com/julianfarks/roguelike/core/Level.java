@@ -45,6 +45,9 @@ public final class Level {
     public float camTargetX = Float.NaN, camTargetY = Float.NaN, camTargetZoom = 1f;
     public boolean cleared, bossFight;
     public int toKill;
+    /** Rondas: golpes reales recibidos en esta sala, enemigos que habia y si ya se entrego la recompensa de ronda. */
+    public int roomHits, roomEnemies;
+    public boolean rewarded;
     public Biome biome;
     public float darkness;
     private final List<int[]> animDeco;
@@ -80,6 +83,7 @@ public final class Level {
             enemies.add(e);
         }
         toKill = enemies.size();
+        roomEnemies = toKill; roomHits = 0; rewarded = false;
         for (Room.PropSpec ps : room.props) addProp(ps);
         // salidas
         cleared = toKill == 0 && room.type != Room.BOSS;
@@ -410,6 +414,7 @@ public final class Level {
         }
         rs.hp -= dmg;
         rs.damageTaken += Math.round(dmg);
+        roomHits++;
         p.invuln = blocked ? 0.4f : 0.9f;
         p.hitFlash = 0.12f;
         float dir = p.x >= srcX ? 1 : -1;
@@ -953,6 +958,7 @@ public final class Level {
     }
 
     private void drawProp(Platform.Gfx g, Prop p) {
+        if (p.kind.equals("chest") && p.roundChest && !p.used) { UI.light(g, p.x, p.y - 10, 26 + 3 * (float) Math.sin(time * 5), 0xFFD25A, 0.35f); if (rng.chance(0.05f)) ps.spawn(p.x + rng.f(-8, 8), p.y - 4, rng.f(-6, 6), -rng.f(15, 35), 0.8f, 2, 0, 0xFFE9A0, true); }
         if (p.kind.equals("chest") && p.arg == 3 && !p.used) { UI.light(g, p.x, p.y - 8, 30 + 4 * (float) Math.sin(time * 4), 0xB070FF, 0.40f); if (rng.chance(0.06f)) ps.spawn(p.x + rng.f(-8, 8), p.y - 4, rng.f(-6, 6), -rng.f(15, 35), 0.8f, 2, 0, 0xD8B0FF, true); }
         if (p.sheet == null) return;
         Anim a = p.sheet.anim(p.anim);

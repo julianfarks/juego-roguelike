@@ -115,6 +115,30 @@ public final class DebugBot {
             for (Enemy en : spikeEn) { if (en.hp < en.maxHp || !en.alive) ok++; else System.out.println("  sin dano: " + en.def.id + " y=" + Math.round(en.y)); }
             System.out.println("SPIKETEST frame " + frame + ": danados/muertos " + ok + "/" + spikeEn.size());
         }
+        if (System.getenv("BOT_ROUNDTEST") != null && warped && frame > warpFrame + 90) {
+            if (roundStep == 0) {         // ronda perfecta
+                roundStep = 1; roundT = frame;
+                lv.roomHits = 0;
+                for (Enemy en : new java.util.ArrayList<>(lv.enemies)) en.die(lv);
+                System.out.println("ROUNDTEST perfecta: enemigos matados, rewarded=" + lv.rewarded);
+            } else if (roundStep == 1 && frame > roundT + 40) {
+                int n = 0; for (Prop q : lv.props) if (q.kind.equals("chest") && q.roundChest) n++;
+                int r0 = Save.S.rounds, pf0 = Save.S.perfectRounds;
+                rs.completeRound(lv); rs.completeRound(lv);   // intento de duplicar
+                int n2 = 0; for (Prop q : lv.props) if (q.kind.equals("chest") && q.roundChest) n2++;
+                System.out.println("ROUNDTEST perfecta: cofres=" + n + " (esperado 2); tras repetir evento=" + n2 + " (esperado 2); rondas=" + r0 + " perfectas=" + pf0);
+                roundStep = 2; roundT = frame; rs.loadRoom(Room.COMBAT);
+            } else if (roundStep == 2 && frame > roundT + 60) {
+                roundStep = 3; roundT = frame;
+                lv.pl.invuln = 0; lv.hurtPlayer(5, lv.pl.x + 10, -1, 0);
+                System.out.println("ROUNDTEST con dano: roomHits=" + lv.roomHits);
+                for (Enemy en : new java.util.ArrayList<>(lv.enemies)) en.die(lv);
+            } else if (roundStep == 3 && frame > roundT + 40) {
+                int n = 0; for (Prop q : lv.props) if (q.kind.equals("chest") && q.roundChest) n++;
+                System.out.println("ROUNDTEST con dano: cofres=" + n + " (esperado 1)  rondas=" + Save.S.rounds + " perfectas=" + Save.S.perfectRounds + " racha=" + rs.rs.streak);
+                roundStep = 4;
+            }
+        }
         String npcEnv = System.getenv("BOT_NPC");
         if (npcEnv != null && !npcDone && warped && frame > warpFrame + 60) {
             npcDone = true;
@@ -243,7 +267,7 @@ public final class DebugBot {
         if (stuck > 60) { tap(g, 'W'); if (stuck > 90) { tap(g, 'K'); stuck = 0; } }
     }
 
-    private boolean npcDone, devOnce, spikeDone;
+    private boolean npcDone, devOnce, spikeDone; private int roundStep, roundT;
     private final java.util.List<Enemy> spikeEn = new java.util.ArrayList<>();
     private int cf;
 

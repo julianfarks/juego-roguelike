@@ -63,6 +63,7 @@ final class ClassScreen extends Screen {
         }
         s.lastClass = c.id;
         s.ascensionSel = asc;
+        s.started++;
         s.write();
         Snd.sfx("ui_start_run", 1f);
         game.go(new RunScreen(game, c, asc));

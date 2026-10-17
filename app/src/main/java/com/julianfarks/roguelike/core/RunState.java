@@ -30,6 +30,7 @@ public final class RunState {
     public int grenLvl, secLvl;                      // niveles de mejora de granada y arma secundaria
     public boolean blessingTaken;
     public int damageTaken;
+    public int streak, perfectStreak, roundsThisRun;   // rondas seguidas / perfectas seguidas (estadisticas)
     public final boolean[] relicsThisRun = new boolean[8];
     public boolean won, finalRun;
     public boolean sandbox;     // laboratorio del Modo Desarrollador: no toca guardados ni progreso, jugador invulnerable

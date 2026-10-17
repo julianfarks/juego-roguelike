@@ -68,7 +68,9 @@ public final class RoomGen {
         }
         rm.ground = ground;
         if (big) {
-            buildSecrets(rm, W, fy, mf, ground, blocked, slab, r, stage);
+            float sroll = r.f();   // cofres secretos excepcionales: ~55% de las salas grandes no tiene ninguno; como mucho 1
+            int secretKind = sroll < 0.55f ? 0 : (sroll < 0.75f ? 1 : (sroll < 0.92f ? 2 : 3));
+            if (secretKind == 1 || secretKind == 2) buildSecrets(rm, W, fy, mf, ground, blocked, slab, r, stage, secretKind);
             // pinchos en el piso superior
             for (int k = 0; k < r.range(1, 3); k++) {
                 int x = r.range(16, W - 20), n = r.range(2, 3);
@@ -77,7 +79,7 @@ public final class RoomGen {
                 if (ok) for (int i = 0; i < n; i++) rm.set(x + i, mf - 1, Room.SPIKE);
             }
             // cofre oculto en una plataforma alta del piso superior
-            for (int[] pf : platforms) if (pf[2] == mf - 4 && r.chance(0.45f) && (pf[1] < rm.vaultA - 2 || pf[0] > rm.vaultA + 10)) { secrets.add(new int[]{(pf[0] + pf[1]) / 2 * Room.TS + 8, pf[2] * Room.TS}); break; }
+            if (secretKind == 3) for (int[] pf : platforms) if (pf[2] == mf - 4 && (pf[1] < rm.vaultA - 2 || pf[0] > rm.vaultA + 10)) { secrets.add(new int[]{(pf[0] + pf[1]) / 2 * Room.TS + 8, pf[2] * Room.TS}); break; }
             // candidatos para enemigos del piso superior
             for (int x = 14; x < W - 14; x++) {
                 boolean ok = true;
@@ -187,9 +189,9 @@ public final class RoomGen {
     }
 
     /** Camara oculta bajo el suelo (suelo agrietado) y camara tras un muro agrietado en el piso superior. */
-    private static void buildSecrets(Room rm, int W, int fy, int mf, int[] ground, boolean[] blocked, boolean[] slab, Rng r, int stage) {
+    private static void buildSecrets(Room rm, int W, int fy, int mf, int[] ground, boolean[] blocked, boolean[] slab, Rng r, int stage, int kind) {
         // ---- A) camara bajo el suelo
-        for (int tries = 0; tries < 40; tries++) {
+        for (int tries = 0; kind == 1 && tries < 40; tries++) {
             int x0 = r.range(16, W - 22);
             boolean ok = true;
             for (int i = -6; i <= 7 && ok; i++) { int xx = x0 + i; if (ground[xx] != fy || blocked[xx] || rm.tile(xx, fy - 1) != Room.AIR) ok = false; }
@@ -204,7 +206,7 @@ public final class RoomGen {
             break;
         }
         // ---- B) camara de piedra con muro agrietado sobre el piso superior
-        for (int tries = 0; tries < 40; tries++) {
+        for (int tries = 0; kind == 2 && tries < 40; tries++) {
             int a = r.range(16, W - 28);
             boolean ok = true;
             for (int i = -3; i <= 11 && ok; i++) { int xx = a + i; if (xx < 0 || xx >= W || !slab[xx] || rm.tile(xx, mf - 1) != Room.AIR) ok = false; }

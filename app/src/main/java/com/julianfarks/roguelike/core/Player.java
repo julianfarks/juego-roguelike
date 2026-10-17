@@ -140,7 +140,7 @@ public final class Player extends Ent {
             dotAcc += dps * dt * Math.max(0.5f, rs.enemyDmgMul()) * s.dmgTaken;
             if (dotAcc >= 1f) {
                 int d = (int) dotAcc; dotAcc -= d;
-                rs.hp -= d; hitFlash = 0.06f;
+                rs.hp -= d; hitFlash = 0.06f; lv.roomHits++;
                 lv.text(x, y - bh - 6, String.valueOf(d), 0xB0E070, false);
                 if (rs.hp <= 0) { lv.playerDeath(); return; }
             }

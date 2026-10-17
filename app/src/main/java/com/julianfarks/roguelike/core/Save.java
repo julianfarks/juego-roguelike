@@ -25,6 +25,7 @@ public final class Save {
     public int lastClass = 0;
     public int diffSel = 1;                          // 0 facil, 1 normal, 2 dificil
     public boolean[] unlocked = new boolean[Unlocks.COUNT];   // desbloqueos por enemigos derrotados
+    public int[] story = new int[8];                 // progreso narrativo (ver Story)
     public int[] eqSec = {0};                        // (reservado)
     public int inputMode = 0;                        // 0 automatico, 1 tactil, 2 mando
     public int[] kb = Input.defaultKeys();           // tecla de teclado por accion (0 = sin asignar)
@@ -66,6 +67,8 @@ public final class Save {
                 s.diffSel = Math.max(0, Math.min(2, Json.i(d, "diff", 1)));
                 int[] un = Json.ints(d, "unl");
                 if (un != null) for (int i = 0; i < Math.min(Unlocks.COUNT, un.length); i++) s.unlocked[i] = un[i] != 0;
+                int[] sty = Json.ints(d, "story");
+                if (sty != null) for (int i = 0; i < Math.min(s.story.length, sty.length); i++) s.story[i] = sty[i];
                 s.inputMode = Math.max(0, Math.min(2, Json.i(d, "imode", 0)));
                 int[] kk = Json.ints(d, "kb");
                 if (kk != null) for (int i = 0; i < Math.min(s.kb.length, kk.length); i++) s.kb[i] = kk[i];
@@ -98,6 +101,7 @@ public final class Save {
             d.put("unl", un);
             int[] cl = new int[ctl.length]; for (int i = 0; i < cl.length; i++) cl[i] = Math.round(ctl[i] * 10f);
             d.put("ctl", cl);
+            d.put("story", story);
             d.put("imode", inputMode); d.put("kb", kb); d.put("pb", pb);
             P.store().put("save", Json.write(d));
             P.store().commit();
@@ -109,6 +113,7 @@ public final class Save {
     public void reset() {
         Save n = new Save();
         n.musicOn = musicOn; n.sfxOn = sfxOn; n.vibOn = vibOn; n.ctl = ctl; n.kb = kb; n.pb = pb; n.inputMode = inputMode;
+        n.story[Story.S_INTRO] = story[Story.S_INTRO];
         S = n;
         n.write();
     }

@@ -23,7 +23,9 @@ public final class DebugBot {
         Screen s = g.cur;
         if (s == null || g.fadeDir == 1) return;
         if (s instanceof Screens.Title && System.getenv("BOT_EDITOR") != null) { g.go(new ControlsEditor(g, false)); return; }
+        if (s instanceof Screens.Title && System.getenv("BOT_CINE") != null) { g.go(new Cinematic(g, Story.cine(System.getenv("BOT_CINE")), null)); return; }
         if (s instanceof Screens.Title) {
+            if (System.getenv("BOT_INTRO") == null) Save.S.story[Story.S_INTRO] = 1;
             if (seenRun && System.getenv("BOT_STAYTITLE") != null) return;
             if (frame % 20 == 0) { Screen.Hit h = ((Screens.Title) s).hits.get(0); s.touch(0, 0, h.x + 5, h.y + 5); s.touch(0, 2, h.x + 5, h.y + 5); }
             return;
@@ -57,6 +59,20 @@ public final class DebugBot {
                     : w[0].equals("rest") ? Room.REST : w[0].equals("elite") ? Room.ELITE : w[0].equals("hub") ? Room.HUB : w[0].equals("treasure") ? Room.TREASURE : Room.COMBAT;
             rs.rs.gold = 400;
             rs.loadRoom(type);
+            return;
+        }
+        String npcEnv = System.getenv("BOT_NPC");
+        if (npcEnv != null && !npcDone && warped && frame > warpFrame + 60) {
+            npcDone = true;
+            rs.startTalk(lv.addProp(new Room.PropSpec("npc", p.x + 30, p.y, Integer.parseInt(npcEnv))));
+        }
+        if (rs.ov == RunScreen.OV_TALK) {
+            if (frame % 45 == 0) {
+                Screen.Hit pick = null;
+                for (Screen.Hit h : rs.hits) if (!h.plain && !h.disabled) { pick = h; break; }
+                if (pick != null) { rs.touch(0, 0, pick.x + 3, pick.y + 3); rs.touch(0, 2, pick.x + 3, pick.y + 3); }
+                else tap(g, ' ');
+            }
             return;
         }
         if (System.getenv("BOT_PIT") != null && !pitDone && frame > 200) {
@@ -172,6 +188,8 @@ public final class DebugBot {
         lastX = p.x;
         if (stuck > 60) { tap(g, 'W'); if (stuck > 90) { tap(g, 'K'); stuck = 0; } }
     }
+
+    private boolean npcDone;
 
     private void game_start(Game g, ClassScreen cs) {
         cs.layout();

@@ -95,6 +95,7 @@ public final class Level {
             case "forge": p.sheet = Assets.spr("prop_forge"); break;
             case "merchant": p.sheet = Assets.spr("prop_merchant"); break;
             case "fountain": p.sheet = Assets.spr("prop_fountain"); break;
+            case "npc": p.sheet = Assets.spr("prop_npc_" + Math.max(0, Math.min(2, ps.arg))); p.anim = "idle"; break;
             case "chest": p.sheet = Assets.spr("prop_chest"); p.anim = "closed"; break;
             case "pot": p.sheet = Assets.spr("prop_pot"); p.anim = "closed"; p.hp = 1; break;
             case "portal": p.sheet = Assets.spr("prop_portal"); break;
@@ -953,7 +954,7 @@ public final class Level {
             if (p.dead) continue;
             boolean can = false;
             switch (p.kind) {
-                case "altar": case "forge": case "merchant": case "fountain": case "chest": case "portal": case "sanctuary": can = !p.used || p.kind.equals("merchant"); break;
+                case "altar": case "forge": case "merchant": case "fountain": case "chest": case "portal": case "sanctuary": case "npc": can = !p.used || p.kind.equals("merchant"); break;
                 case "door": can = !p.locked; break;
                 default: break;
             }

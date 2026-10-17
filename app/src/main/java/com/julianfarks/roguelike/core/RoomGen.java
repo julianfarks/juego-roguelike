@@ -368,6 +368,7 @@ public final class RoomGen {
                 rm.props.add(new Room.PropSpec("altar", cx - 38, gy, 1));
                 rm.props.add(new Room.PropSpec("merchant", cx + 38, gy, 0));
                 rm.props.add(new Room.PropSpec("forge", cx + 110, gy, 0));
+                if (r.chance(0.55f)) rm.props.add(new Room.PropSpec("npc", cx - 165, gy, r.i(3)));   // encuentro narrativo
             }
             default -> { }
         }

@@ -115,13 +115,17 @@ final class Screens {
         @Override void layout() {
             hits.clear();
             int w = W();
-            float bw = 150, bh = 23, x = w / 2f - bw / 2f, y = 106;
-            add(x, y, bw, bh, "Nueva partida", () -> game.go(new ClassScreen(game)));
-            Hit ld = add(x, y + 26, bw, bh, "Cargar partida", () -> game.go(new LoadScreen(game)));
+            float bw = 150, bh = 20, x = w / 2f - bw / 2f, y = 98;
+            add(x, y, bw, bh, "Nueva partida", () -> {
+                if (Story.introSeen()) game.go(new ClassScreen(game));
+                else game.go(new Cinematic(game, Story.INTRO, () -> game.go(new ClassScreen(game))));
+            });
+            Hit ld = add(x, y + 22, bw, bh, "Cargar partida", () -> game.go(new LoadScreen(game)));
             ld.disabled = !RunSave.any(game.P);
-            add(x, y + 52, bw, bh, "Santuario", () -> game.go(new SanctuaryScreen(game)));
-            add(x, y + 78, bw, bh, "Opciones", () -> game.go(new Options(game, false)));
-            add(x, y + 104, bw, bh, "Créditos", () -> game.go(new Credits(game, false)));
+            add(x, y + 44, bw, bh, "Santuario", () -> game.go(new SanctuaryScreen(game)));
+            add(x, y + 66, bw, bh, "Historia", () -> game.go(new StoryScreens.Historia(game, false)));
+            add(x, y + 88, bw, bh, "Opciones", () -> game.go(new Options(game, false)));
+            add(x, y + 110, bw, bh, "Créditos", () -> game.go(new Credits(game, false)));
         }
 
         @Override void update(float dt) {
@@ -142,7 +146,7 @@ final class Screens {
                 g.image(UI.logo, 0, 0, UI.logo.w, UI.logo.h, Math.round(w / 2f - UI.logo.w / 2f), Math.round(14 + bob), UI.logo.w, UI.logo.h, 0, 0, 1f);
             }
             // botones
-            g.rect(w / 2f - 90, 106, 180, 118, 0x55000000, false);
+            g.rect(w / 2f - 90, 94, 180, 132, 0x55000000, false);
             drawButtons(g);
             if (UI.small != null) {
                 UI.small.center(g, "Creador: JulianFarKs", w / 2f, 252, 0xFF9A8890, 1f);

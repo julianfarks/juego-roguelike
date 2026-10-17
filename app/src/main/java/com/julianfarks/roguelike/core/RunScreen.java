@@ -5,7 +5,7 @@ import java.util.List;
 
 /** La partida: salas, HUD, controles tactiles, altares, tienda, forja, jefes, muerte y victoria. */
 final class RunScreen extends Screen implements Level.Listener {
-    static final int OV_NONE = 0, OV_PAUSE = 1, OV_BLESS = 2, OV_SHOP = 3, OV_FORGE = 4, OV_DEAD = 5, OV_WIN = 6, OV_CHEST = 7;
+    static final int OV_NONE = 0, OV_PAUSE = 1, OV_BLESS = 2, OV_SHOP = 3, OV_FORGE = 4, OV_DEAD = 5, OV_WIN = 6, OV_CHEST = 7, OV_TALK = 8;
     static final String[] RELIC_NAMES = {"Corona Exánime", "Corazón de Magma", "Lágrima de Escarcha", "Ojo del Vacío", "Savia Ancestral", "Chispa del Titán", "Cáliz de Sangre", "Disco del Eclipse"};
 
     static final class ShopItem {
@@ -30,6 +30,9 @@ final class RunScreen extends Screen implements Level.Listener {
     ChestLoot.Reward[] cOffer;      // las 3 opciones del cofre abierto
     int cMode;
     Prop ovProp;
+    private Story.Dialog talk;
+    private Dlg tdlg;
+    private int tphase;   // 0 lineas, 1 opciones, 2 resultado
     List<ShopItem> shop;
     boolean ended, quitConfirm;
     float deadT = -1;
@@ -316,6 +319,9 @@ final class RunScreen extends Screen implements Level.Listener {
                 if (shop == null) shop = genShop();
                 openOv(OV_SHOP);
                 break;
+            case "npc":
+                if (!p.used) startTalk(p);
+                break;
             case "fountain":
                 if (!p.used) {
                     p.used = true;
@@ -329,6 +335,57 @@ final class RunScreen extends Screen implements Level.Listener {
                 break;
             default: break;
         }
+    }
+
+    // =============================================================== encuentros narrativos (NPC)
+    void startTalk(Prop p) {
+        int npc = Math.max(0, Math.min(2, p.arg));
+        talk = Story.npcDialog(npc, Save.S.relicCount(), rs.bossKills, Save.S.story[Story.S_NPC0 + npc]);
+        tdlg = new Dlg(UI.small, 400, 3);
+        tdlg.set(talk.lines);
+        tphase = 0;
+        ovProp = p;
+        openOv(OV_TALK);
+        Snd.sfx("ui_open", 0.5f);
+    }
+
+    private void talkTap() {
+        if (talk == null || ovT < 0.25f) return;
+        if (tphase == 0) {
+            if (tdlg.advance()) {
+                if (talk.choices.isEmpty()) finishTalk(); else { tphase = 1; layoutOverlay(); }
+            }
+        } else if (tphase == 2) {
+            if (tdlg.advance()) finishTalk();
+        }
+    }
+
+    private boolean choiceOk(Story.Choice c) {
+        if (c.needPotion && rs.potions < 1) return false;
+        if (c.gold < 0 && rs.gold < -c.gold) return false;
+        return true;
+    }
+
+    private void chooseTalk(Story.Choice c) {
+        if (!choiceOk(c)) { Snd.sfx("ui_error", 0.8f); return; }
+        if (c.gold != 0) rs.gold = Math.max(0, rs.gold + c.gold);
+        if (c.souls != 0) rs.souls += c.souls;
+        if (c.potion != 0) rs.potions = Mth.clamp(rs.potions + c.potion, 0, rs.stats.potionsMax + 1);
+        if (c.heal > 0) {
+            lv.healPlayer(rs.stats.maxHp * c.heal);
+            lv.fx("fx_heal", "rise", lv.pl.x, lv.pl.y - 14, 1.2f, 0, 0);
+        }
+        if (c.gold > 0) Snd.sfx("coin", 0.9f);
+        tdlg.set(talk.who, c.res);
+        tphase = 2;
+        layoutOverlay();
+    }
+
+    private void finishTalk() {
+        if (talk != null && talk.npc >= 0) { Save.S.story[Story.S_NPC0 + talk.npc]++; Save.S.write(); }
+        if (ovProp != null) { ovProp.used = true; ovProp.label = null; }
+        talk = null;
+        closeOv();
     }
 
     private void openChest(Prop p) {
@@ -514,6 +571,18 @@ final class RunScreen extends Screen implements Level.Listener {
                 add(w / 2f - 50, 52 + 2 * (ch + 6) + 6, 100, 22, "Cerrar", this::closeOv);
                 break;
             }
+            case OV_TALK: {
+                float bw = Math.min(w - 40, 430), bx = w / 2f - bw / 2f;
+                add(0, 0, w, Platform.VIEW_H, null, this::talkTap).plain = true;
+                if (tphase == 1 && talk != null) {
+                    for (int i = 0; i < talk.choices.size(); i++) {
+                        final Story.Choice c = talk.choices.get(i);
+                        Hit h = add(bx, 120 + i * 24, bw, 20, c.label, () -> chooseTalk(c));
+                        h.disabled = !choiceOk(c);
+                    }
+                }
+                break;
+            }
             case OV_FORGE: {
                 Hit up = add(w / 2f - 112, 176, 108, 24, "Mejorar", () -> {
                     int cost = rs.forgeCost();
@@ -559,7 +628,11 @@ final class RunScreen extends Screen implements Level.Listener {
             }
             case OV_WIN: {
                 final boolean fin = rs.finalRun;
-                add(w / 2f - 62, 206, 124, 24, fin ? "Ver créditos" : "Continuar", () -> game.go(fin ? new Screens.Credits(game, true) : new Screens.Title(game)));
+                add(w / 2f - 62, 206, 124, 24, fin ? "Ver créditos" : "Continuar", () -> {
+                    if (fin && Story.tryUnlockFinal() && Story.cine("final") != null)
+                        game.go(new Cinematic(game, Story.FINAL, () -> game.go(new Screens.Credits(game, true))));
+                    else game.go(fin ? new Screens.Credits(game, true) : new Screens.Title(game));
+                });
                 break;
             }
             default: break;
@@ -572,6 +645,7 @@ final class RunScreen extends Screen implements Level.Listener {
         if (lv == null) return false;
         if (ov == OV_NONE) { openOv(OV_PAUSE); return true; }
         if (ov == OV_PAUSE && saveMenu) { saveMenu = false; layoutOverlay(); return true; }
+        if (ov == OV_TALK) { talk = null; closeOv(); return true; }
         if (ov == OV_PAUSE || ov == OV_SHOP || ov == OV_FORGE) { closeOv(); return true; }
         return true;
     }
@@ -593,6 +667,7 @@ final class RunScreen extends Screen implements Level.Listener {
         }
         if (lv == null) return;
         ovT += dt;
+        if (ov == OV_TALK && tdlg != null) tdlg.update(dt);
         if (bannerT > 0) bannerT -= dt;
         if (lv.unlockTitle != null) { bannerTitle = lv.unlockTitle; bannerSub = lv.unlockSub; bannerT = 3f; lv.unlockTitle = null; }
         if (relicBannerT > 0) relicBannerT -= dt;
@@ -655,6 +730,10 @@ final class RunScreen extends Screen implements Level.Listener {
                 else if (code == 39 || code == 'D') offerSel = (offerSel + 1) % 3;
                 else if ((code == 10 || code == 32 || code == 'J') && ovT > 0.35f) { for (Hit h : hits) if (h.tag == offerSel) { click(h); break; } }
                 return;
+            }
+            if (ov == OV_TALK && isDown) {
+                if (tphase != 1 && (code == 10 || code == 32 || code == 'J')) { talkTap(); return; }
+                if (code == 27) { back(); return; }
             }
             if (ov == OV_CHEST && isDown) {
                 if (code == 37 || code == 'A') offerSel = offerSel < 0 ? 0 : (offerSel + 2) % 3;
@@ -784,6 +863,7 @@ final class RunScreen extends Screen implements Level.Listener {
             case "forge": return "Forjar";
             case "merchant": return "Comerciar";
             case "fountain": return "Beber";
+            case "npc": return "Hablar";
             case "chest": return p.arg == 3 ? "¡Cofre secreto!" : "Abrir";
             default: return "Usar";
         }
@@ -1030,6 +1110,16 @@ final class RunScreen extends Screen implements Level.Listener {
                     }
                 }
                 drawButtons(g);
+                break;
+            }
+            case OV_TALK: {
+                dim(g, w, 0.35f * fadeIn);
+                if (talk != null) {
+                    UI.small.center(g, talk.title, w / 2f, 26, UI.GOLD, fadeIn);
+                    float bw = Math.min(w - 40, 430), bx = w / 2f - bw / 2f;
+                    if (tphase != 1) tdlg.draw(g, bx, 190, bw, 56, fadeIn, ovT);
+                    drawButtons(g);
+                }
                 break;
             }
             case OV_FORGE: {

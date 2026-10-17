@@ -1,4 +1,4 @@
-"""Logotipo SwordmanMagic / ABISMO ETERNO."""
+"""Logotipo SwordsmanMagic / ETERNAL ABYSS."""
 from common import *
 import fonts
 
@@ -46,14 +46,15 @@ def letters():
     G['M'] = (38, [st(3, CAP, b), E(12, 25, 8.5, 14, 180, 360), st(20.5, 25, b), E(28.5, 25, 8.5, 14, 180, 360), st(37, 25, b), hz(0, 8, CAP), hz(0, 7, b), hz(16, 24, b), hz(32, 40, b)])
     G['g'] = (21, [E(8, 35, 7.2, 10.8), st(15.5, x0, 53), E(8.5, 53, 7.2, 4.8, 0, 175), hz(12, 19, x0)])
     G['i'] = (9, [st(4, x0, b), st(4, 13.5, 17), hz(1, 5, x0), hz(1, 8, b)])
+    G['s'] = (17, [E(8.5, 29.5, 6.6, 5.6, -35, -255), E(8.5, 40.4, 7.2, 5.6, -115, 150)])
     G['c'] = (17, [E(8.5, 35, 7.4, 10.8, -45, -318), hz(9, 15, x0 - .5), [(15, 26), (15.5, 29)]])
     return G
 
 
 def logo_text_mask():
     G = letters()
-    word = 'SwordmanMagic'
-    sp = {'S': 3, 'w': 1, 'o': 1, 'r': 1, 'd': 2, 'm': 1, 'a': 1, 'n': 2, 'M': 3, 'g': 1, 'i': 1, 'c': 0}
+    word = 'SwordsmanMagic'
+    sp = {'S': 3, 'w': 1, 'o': 1, 'r': 1, 'd': 2, 'm': 1, 'a': 1, 'n': 2, 'M': 3, 'g': 1, 'i': 1, 'c': 0, 's': 1}
     f = 0.9
     total = sum((G[c][0] + sp.get(c, 1)) * f for c in word) - 1
     x = (W - total) / 2 + 1
@@ -151,7 +152,7 @@ def build_logo():
     img = over(img, ss)
     img = over(img, sword)
     # subtítulo con la fuente grande
-    sub = 'ABISMO ETERNO'
+    sub = 'ETERNAL ABYSS'
     fj = json.load(open(A + '/font/font_b.json'))
     fim = np.array(Image.open(A + '/font/font_b.png').convert('RGBA')).astype(float)
     cw, ch, cols = fj['cellW'], fj['cellH'], fj['cols']

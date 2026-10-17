@@ -1,4 +1,4 @@
-# SwordmanMagic: Abismo Eterno — DISEÑO Y CONTRATOS DE ASSETS
+# SwordsmanMagic: Eternal Abyss — DISEÑO Y CONTRATOS DE ASSETS
 
 Roguelike de acción 2D (estilo Dead Cells) para Android, en pixel art oscuro/gótico, basado en el mod de Minecraft
 "SwordmanMagic" (clases, armas, jefes, mazmorras). Idioma del juego: ESPAÑOL. Orientación: horizontal (landscape).
@@ -234,7 +234,7 @@ Estilo: cada bioma con su paleta/ambiente de la tabla de biomas; el terreno debe
 512×288, TESELABLES horizontalmente (el borde izquierdo continúa con el derecho). Capa 0 = lejana opaca (cielo/pared profunda con degradado, atmósfera, luna/sol/aurora/estrellas), capa 1 = media con transparencia (siluetas de arquitectura/árboles/montañas/estructuras con bruma), capa 2 = cercana con transparencia (columnas, ramas, cadenas, estalactitas, hojas; escasa, para dar profundidad; oscura). Mucha atmósfera; el centro-inferior debe quedar relativamente despejado para no estorbar la jugabilidad.
 
 ### 2.8 Interfaz — `A/ui/`
-* `ui_logo.png` (~300×84): logotipo "SwordmanMagic" en letras góticas pixeladas con filo/espada integrada y subtítulo "ABISMO ETERNO"; dorado envejecido + sombra roja; transparente.
+* `ui_logo.png` (~300×84): logotipo "SwordsmanMagic" en letras góticas pixeladas con filo/espada integrada y subtítulo "ETERNAL ABYSS"; dorado envejecido + sombra roja; transparente.
 * `ui_title_<0..3>.png` 512×288: capas parallax de la pantalla de título (estilo Bloodborne/Yharnam: ciudad gótica victoriana en ruinas, catedral, gran luna roja con halo, niebla; 0 = cielo+luna opaca, 1 = silueta lejana, 2 = edificios medios con luces, 3 = primer plano con verja/puente y cuervos; las 1–3 transparentes y teselables en horizontal).
 * `ui_panel.png` 32×32 (marco 9-slice, esquinas de 8 px, piedra oscura + filo dorado envejecido, centro semitransparente oscuro), `ui_panel_light.png` igual pero más claro (para tarjetas seleccionadas), `ui_panel_red.png` (alerta/jefe).
 * `ui_btn.png` 3 estados horizontales (normal | hover | pressed) cada uno 48×20 (9-slice con 6 px de esquina); `ui_btn_round.png` 3 estados cada uno 40×40 (botón circular táctil: normal | pressed | disabled), en gris-hueso oscuro con filo, SIN icono (el motor dibuja el icono encima).

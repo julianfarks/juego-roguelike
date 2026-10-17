@@ -200,7 +200,7 @@ final class Screens {
             UI.panel(g, 0, w / 2f - 120, 26, 240, 224, 0.95f);
             UI.big.center(g, "OPCIONES", w / 2f, 34, UI.GOLD, 1f);
             drawButtons(g);
-            UI.small.center(g, "SwordmanMagic: Abismo Eterno v2.0", w / 2f, 243, UI.GREY, 1f);
+            UI.small.center(g, "SwordsmanMagic: Eternal Abyss v2.1", w / 2f, 243, UI.GREY, 1f);
         }
     }
 
@@ -210,7 +210,7 @@ final class Screens {
         private final TitleBg bg;
         private float scroll;
         private static final String[] LINES = {
-                "#SWORDMANMAGIC", "#ABISMO ETERNO", "",
+                "#SWORDSMANMAGIC", "#ETERNAL ABYSS", "",
                 "Un roguelike de acción en 2D", "inspirado en SwordmanMagic,", "mod de Minecraft de JulianFarKs", "",
                 "-CREADOR", "JulianFarKs", "", "-IDEAS", "Team TKD y Chernobyl", "", "-BASADO EN", "un mod propio de Minecraft:", "SwordmanMagic", "", "-PRÓXIMAMENTE", "Mejoras en los niveles y diseños", "y en el menú de elegir el tipo de mundo", "",
                 "-ARTE", "Pixel art generado a mano,", "personajes, jefes, enemigos y mundos", "",

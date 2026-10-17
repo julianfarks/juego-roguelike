@@ -1,4 +1,4 @@
-# SwordmanMagic: Abismo Eterno
+# SwordsmanMagic: Eternal Abyss
 
 Roguelike 2D de acción para Android (pixel art), basado en el mod SwordmanMagic.
 Creador: JulianFarKs. Ideas de Team TKD y Chernobyl. Basado en SwordmanMagic, un mod propio de Minecraft.

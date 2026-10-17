@@ -20,6 +20,8 @@ public final class DebugBot {
     static int contStep = 0, contK0, contB0, contR0, contC0, contT;
     static int infStep = 0, infT = 0, infT0 = -1;
     static boolean enemyDone;
+    static String navLast = "";
+    static int navCls = -1;
     public static boolean trace = System.getenv("BOT_TRACE") != null;
     public static boolean godMode = System.getenv("BOT_GOD") != null;
 
@@ -99,11 +101,24 @@ public final class DebugBot {
             return;
         }
         if (frame == 1 && System.getenv("BOT_LANG") != null) I18n.set(Integer.parseInt(System.getenv("BOT_LANG")));
+        if (System.getenv("BOT_NAVLOG") != null && !s.getClass().getName().equals(navLast)) { navLast = s.getClass().getName(); System.out.println("NAV frame=" + frame + " " + s.getClass().getSimpleName()); }
+        if (System.getenv("BOT_NAVLOG") != null && s instanceof PrepScreen && Save.S.lastClass != navCls) { navCls = Save.S.lastClass; System.out.println("PREPCLS frame=" + frame + " " + navCls + " chosen=" + PrepScreen.chosenBlessing()); }
         if (System.getenv("BOT_SHOW") != null) {
             String[] names = System.getenv("BOT_SHOW").split(",");
+            if (frame % 60 == 50 && !PrepScreen.fitErrors.isEmpty()) { for (String e : PrepScreen.fitErrors) System.out.println("FIT " + e); PrepScreen.fitErrors.clear(); }
             if (frame % 60 == 5 && frame / 60 < names.length) {
                 Save.S.devUnlocked = true; for (int i = 0; i < 10; i++) Save.S.classUnlocked[i] = true;
-                switch (names[frame / 60]) {
+                String nm = names[frame / 60];
+                if (nm.startsWith("prep:")) {   // prep:clase:bendicion1:b2:b3:elegida:companero
+                    String[] q = nm.split(":");
+                    Save.S.lastClass = Integer.parseInt(q[1]);
+                    PrepScreen.debugOffer(new int[]{Integer.parseInt(q[2]), Integer.parseInt(q[3]), Integer.parseInt(q[4])}, Integer.parseInt(q[5]));
+                    Companions.refresh(Save.S);
+                    int cp = Integer.parseInt(q[6]); if (cp >= 0) Save.S.compMask |= 1 << cp; Companions.select(Save.S, cp);
+                    nm = "prep";
+                }
+                if (nm.startsWith("class:")) { Save.S.lastClass = Integer.parseInt(nm.substring(6)); nm = "class"; }
+                switch (nm) {
                     case "title": g.go(new Screens.Title(g)); break;
                     case "lang": g.go(new LanguageScreen(g)); break;
                     case "ops": g.go(new Ops(g)); break;

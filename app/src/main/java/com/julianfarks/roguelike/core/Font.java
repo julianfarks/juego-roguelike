@@ -105,6 +105,9 @@ public final class Font {
         for (int i = 0; i < ls.length; i++) rawDraw(g, ls[i], cx - rawWidth(ls[i]) / 2f, y + i * (ch + 1), color, alpha);
     }
 
+    /** Centra texto ya traducido (p. ej. una linea de wrap) sin volver a traducirlo. */
+    public void drawCenterRaw(Platform.Gfx g, String s, float cx, float y, int color, float alpha) { rawDraw(g, s, cx - rawWidth(s) / 2f, y, color, alpha); }
+
     public void right(Platform.Gfx g, String s, float rx, float y, int color, float alpha) { s = I18n.tr(s); rawDraw(g, s, rx - rawWidth(s), y, color, alpha); }
 
     /** Texto con sombra dura de 1px. */
@@ -153,8 +156,13 @@ public final class Font {
 
     /** Dibuja texto ajustado a ancho; devuelve el alto usado. */
     public int drawWrapped(Platform.Gfx g, String s, float x, float y, int maxW, int color, float alpha) {
+        return drawWrapped(g, s, x, y, maxW, color, alpha, ch + 2);
+    }
+
+    /** Igual, con interlineado propio (para zonas de alto limitado). El texto se traduce una sola vez. */
+    public int drawWrapped(Platform.Gfx g, String s, float x, float y, int maxW, int color, float alpha, int step) {
         List<String> ls = rawWrap(I18n.tr(s), maxW);
-        for (int i = 0; i < ls.size(); i++) rawDraw(g, ls.get(i), x, y + i * (ch + 2), color, alpha);
-        return ls.size() * (ch + 2);
+        for (int i = 0; i < ls.size(); i++) rawDraw(g, ls.get(i), x, y + i * step, color, alpha);
+        return ls.size() * step;
     }
 }

@@ -125,7 +125,7 @@ final class Screens {
             add(x, y + st * 2 + 6, bw, bh, "Códigos", () -> game.go(new CodesScreen(game)));
             add(x, y + st * 3 + 6, bw, bh, "Créditos", () -> game.go(new Credits(game, false)));
             add(x, y + st * 4 + 6, bw, bh, "Idioma", () -> game.go(new LanguageScreen(game)));
-            if (Save.S.devUnlocked) add(6, 26, 116, 17, "Modo Desarrollador", () -> game.go(new DevScreens.Menu(game)));
+            if (Save.S.devUnlocked) add(6, 248, Math.max(116, UI.small.width("Modo Desarrollador") + 14), 17, "Modo Desarrollador", () -> game.go(new DevScreens.Menu(game)));
         }
 
         @Override void update(float dt) {
@@ -201,7 +201,7 @@ final class Screens {
             UI.panel(g, 0, w / 2f - 120, 26, 240, 224, 0.95f);
             UI.big.center(g, "OPCIONES", w / 2f, 34, UI.GOLD, 1f);
             drawButtons(g);
-            UI.small.center(g, "SwordsmanMagic: Eternal Abyss v2.1", w / 2f, 243, UI.GREY, 1f);
+            UI.small.center(g, "SwordsmanMagic: Eternal Abyss v2.1", w / 2f, 255, UI.GREY, 1f);   // fuera del panel (que acaba en 250)
         }
     }
 

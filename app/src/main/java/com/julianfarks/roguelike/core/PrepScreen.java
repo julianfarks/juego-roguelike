@@ -17,7 +17,15 @@ final class PrepScreen extends Screen {
     private final Particles ps = new Particles();
     private final Rng rng = new Rng(11);
     private int selS;
-    private Hit leftHit, rightHit, startBtn, modeBtn, diffBtn;
+    private Hit leftHit, rightHit, startBtn, modeBtn, diffBtn, cmpHit;
+    private float cmpY = 232;       // fila del companero (la fija el resumen cada vez que se dibuja)
+    // Rejilla vertical de la columna derecha (alto virtual 270): cada zona tiene su sitio y no se invaden.
+    static final int CARD_Y = 151, CARD_H = 48, BTN_Y = 247, BTN_H = 22, SUM_Y = 202, SUM_END = 245;
+    /** Solo pruebas: textos que no caben en su zona (se rellena al dibujar; vacio = todo cabe). */
+    static final java.util.Set<String> fitErrors = new java.util.LinkedHashSet<>();
+    /** Registro de encaje para otras pantallas (solo pruebas). */
+    static void fitErr(String what, float bottom, float limit, int cls) { if (bottom > limit + 0.5f) fitErrors.add(what + " cls=" + cls + " lang=" + I18n.code() + " bottom=" + (int) bottom + ">" + (int) limit); }
+    private void fit(String what, float bottom, float limit) { if (bottom > limit + 0.5f) fitErrors.add(what + " cls=" + cls().id + " lang=" + I18n.code() + " w=" + W() + " bottom=" + (int) bottom + ">" + (int) limit); }
     private final Hit[] cardHit = new Hit[3], skillHit = new Hit[4];
     private float launchT = -1;
     private float enterT;
@@ -41,6 +49,9 @@ final class PrepScreen extends Screen {
         if (infiniteMode && !Save.S.finalBeaten) infiniteMode = false;
     }
 
+    /** Solo pruebas: fija las tres bendiciones ofrecidas y la elegida. */
+    static void debugOffer(int[] o, int pick) { offered = o; chosen = pick; }
+
     ClassDef cls() { int id = Save.S.lastClass; if (id < 0 || id > 9 || !Save.S.classUnlocked[id]) id = 0; return ClassDef.ALL[id]; }
 
     @Override void enter() { Snd.music("mus_sanctuary", true); enterT = 0; layout(); }
@@ -51,16 +62,16 @@ final class PrepScreen extends Screen {
         leftHit = add(4, 104, 26, 44, null, () -> swap(-1)); leftHit.plain = true; leftHit.noSound = true;
         rightHit = add(124, 104, 26, 44, null, () -> swap(1)); rightHit.plain = true; rightHit.noSound = true;
         float x0 = 156, wR = w - 162;
-        for (int i = 0; i < 4; i++) { final int id = i; skillHit[i] = add(x0 + i * 30, 88, 26, 26, null, () -> selS = id); skillHit[i].plain = true; }
+        for (int i = 0; i < 4; i++) { final int id = i; skillHit[i] = add(x0 + i * 30, 87, 26, 26, null, () -> selS = id); skillHit[i].plain = true; }
         float cw = (wR - 8) / 3f;
-        for (int i = 0; i < 3; i++) { final int id = i; cardHit[i] = add(x0 + i * (cw + 4), 148, cw, 56, null, () -> pick(id)); cardHit[i].plain = true; cardHit[i].noSound = true; }
-        Hit cmpHit = add(156, 227, w - 162, 14, null, () -> cycleCompanion()); cmpHit.plain = true;
-        add(6, 242, 44, 26, "Volver", () -> back());
-        modeBtn = add(54, 242, 112, 26, modeLabel(), () -> toggleMode());
-        Hit retos = add(226, 242, 74, 26, retosLabel(), () -> { if (infiniteMode && Save.S.finalBeaten) game.go(new CodexScreens.Challenges(game)); else { Snd.sfx("ui_error", 0.7f); say("Los retos son del modo Infinito"); } });
+        for (int i = 0; i < 3; i++) { final int id = i; cardHit[i] = add(x0 + i * (cw + 4), CARD_Y, cw, CARD_H, null, () -> pick(id)); cardHit[i].plain = true; cardHit[i].noSound = true; }
+        cmpHit = add(156, cmpY - 1, w - 162, 13, null, () -> cycleCompanion()); cmpHit.plain = true;
+        add(6, BTN_Y, 44, BTN_H, "Volver", () -> back());
+        modeBtn = add(54, BTN_Y, 112, BTN_H, modeLabel(), () -> toggleMode());
+        Hit retos = add(226, BTN_Y, 74, BTN_H, retosLabel(), () -> { if (infiniteMode && Save.S.finalBeaten) game.go(new CodexScreens.Challenges(game)); else { Snd.sfx("ui_error", 0.7f); say("Los retos son del modo Infinito"); } });
         retos.noSound = false;
-        diffBtn = add(170, 242, 52, 26, diffLabel(), () -> { Save.S.diffSel = (Save.S.diffSel + 1) % 3; Save.S.write(); diffBtn.label = diffLabel(); });
-        startBtn = add(w - 176, 239, 170, 30, "COMENZAR EXPEDICIÓN", () -> launch());
+        diffBtn = add(170, BTN_Y, 52, BTN_H, diffLabel(), () -> { Save.S.diffSel = (Save.S.diffSel + 1) % 3; Save.S.write(); diffBtn.label = diffLabel(); });
+        startBtn = add(w - 176, BTN_Y - 2, 170, BTN_H + 2, "COMENZAR EXPEDICIÓN", () -> launch());
     }
 
     private String retosLabel() { int n = Integer.bitCount(Save.S.infMods); return n > 0 && infiniteMode ? "Retos " + n : "Retos"; }
@@ -184,7 +195,7 @@ final class PrepScreen extends Screen {
         if (UI.vignette != null) g.image(UI.vignette, 0, 0, UI.vignette.w, UI.vignette.h, 0, 0, w, Platform.VIEW_H, 0, 0, 0.6f);
         UI.big.center(g, "PREPARACIÓN", (156 + w) / 2f, 4, UI.GOLD, 1f);
         drawButtons(g);
-        if (!Save.S.finalBeaten && modeBtn != null) UI.icon(g, "lock", modeBtn.x + modeBtn.w - 15, modeBtn.y + 5, 1f);
+        if (!Save.S.finalBeaten && modeBtn != null) UI.icon(g, "lock", modeBtn.x + modeBtn.w - 13, modeBtn.y - 4, 1f);   // candado en la esquina: no pisa el texto
         if (startBtn != null && launchT < 0) {          // brillo pulsante del boton principal
             float a = 0.35f + 0.25f * (float) Math.sin(t * 5);
             int col = Mth.withAlpha(0xFFD25A, (int) (a * 255));
@@ -216,10 +227,14 @@ final class PrepScreen extends Screen {
             if (launchT >= 0.4f) { float k = Mth.clamp((launchT - 0.4f) / 0.7f, 0, 1); sc *= 1 - 0.8f * k; a *= 1 - k; }
             sh.drawAt(g, an, tt, cx, fy - (launchT >= 0.4f ? Mth.clamp((launchT - 0.4f) / 0.7f, 0, 1) * 50 : 0), true, sc, tint != 0 ? Platform.TINT : 0, tint, a);
         }
-        UI.small.draw(g, c.name, 6, 26, c.color1, 1f);
-        UI.small.drawWrapped(g, c.role, 6, 38, 144, UI.GREY, 1f);
+        // placa translucida detras del nombre y el rol: se leen sobre cualquier fondo y el portal no los pisa
+        int roleH = UI.small.wrap(c.role, 144).size() * 12;
+        g.rect(2, 22, 150, 16 + roleH, Mth.withAlpha(0x0A0408, 170), false);
+        UI.small.draw(g, c.name, 6, 25, c.color1, 1f);
+        UI.small.drawWrapped(g, c.role, 6, 37, 144, UI.GREY, 1f);
+        fit("rol", 37 + roleH, 100);
         int unl = 0; for (boolean b : Save.S.classUnlocked) if (b) unl++;
-        UI.small.center(g, unl + "/10 desbloqueados", cx, 210, UI.GREY, 1f);
+        UI.small.center(g, unl + "/10 desbloqueados", cx, 212, UI.GREY, 1f);
         if (unl > 1 && UI.arrow != null) {
             float b = (float) Math.sin(t * 4) * 2;
             g.imageRot(UI.arrow, 0, 0, 8, 8, 8 - b, 118, 16, 16, 3.1416f, 0, 0, 0.95f);
@@ -227,9 +242,9 @@ final class PrepScreen extends Screen {
         }
     }
 
-    private void bar(Platform.Gfx g, String n, float v, String val, float x, float y, int col, float bw) {
+    private void bar(Platform.Gfx g, String n, float v, String val, float x, float y, int col, float bw, int lw) {
         UI.small.draw(g, n, x, y, UI.GREY, 1f);
-        float bx = x + 52;
+        float bx = x + lw;
         g.rect(bx, y + 2, bw, 5, 0xFF1A1620, false);
         g.rect(bx, y + 2, bw * Mth.clamp(v, 0.05f, 1f), 5, 0xFF000000 | col, false);
         g.rect(bx, y + 2, bw * Mth.clamp(v, 0.05f, 1f), 1, 0x66FFFFFF, false);
@@ -239,16 +254,22 @@ final class PrepScreen extends Screen {
     private void drawInfo(Platform.Gfx g, ClassDef c, int w) {
         float x0 = 156, wR = w - 162;
         UI.panel(g, 0, x0, 24, wR, 60, 0.92f);
-        float bw = Math.min(84, wR / 2f - 60);
-        bar(g, "Vida", c.hp / 140f, String.valueOf((int) c.hp), x0 + 6, 29, 0xFF5A5A, bw);
-        bar(g, "Daño", c.dmg / 28f, String.valueOf((int) c.dmg), x0 + 6, 39, 0xFFB040, bw);
-        bar(g, "Ataque", c.atkSpeed / 1.4f, String.format("%.2f", c.atkSpeed), x0 + 6, 49, 0x7AF0FF, bw);
-        bar(g, "Velocidad", c.speed / 1.15f, String.format("%.2f", c.speed), x0 + 6, 59, 0x6AE08A, bw);
-        bar(g, "Crítico", c.crit / 0.25f, Math.round(c.crit * 100) + "%", x0 + 6, 69, 0xC070FF, bw);
-        float tx = x0 + 6 + 52 + bw + 34;
-        float tw = x0 + wR - tx - 6;
-        UI.small.drawWrapped(g, c.weapon, tx, 29, (int) tw, UI.GOLD, 1f);
-        UI.small.drawWrapped(g, c.trait, tx, 51, (int) tw, UI.CYAN, 1f);
+        String[] names = {"Vida", "Daño", "Ataque", "Velocidad", "Crítico"};
+        int lw = 0; for (String n : names) lw = Math.max(lw, UI.small.width(n));
+        lw += 6;                                             // columna de etiquetas a la medida del idioma
+        float bw = Math.min(70, wR / 2f - lw - 40);
+        bar(g, names[0], c.hp / 140f, String.valueOf((int) c.hp), x0 + 6, 29, 0xFF5A5A, bw, lw);
+        bar(g, names[1], c.dmg / 28f, String.valueOf((int) c.dmg), x0 + 6, 39, 0xFFB040, bw, lw);
+        bar(g, names[2], c.atkSpeed / 1.4f, String.format("%.2f", c.atkSpeed), x0 + 6, 49, 0x7AF0FF, bw, lw);
+        bar(g, names[3], c.speed / 1.15f, String.format("%.2f", c.speed), x0 + 6, 59, 0x6AE08A, bw, lw);
+        bar(g, names[4], c.crit / 0.25f, Math.round(c.crit * 100) + "%", x0 + 6, 69, 0xC070FF, bw, lw);
+        float tx = x0 + 6 + lw + bw + 4 + UI.small.width("1.00") + 8;
+        int tw = (int) (x0 + wR - tx - 6);
+        int wl = UI.small.wrap(c.weapon, tw).size(), tl = UI.small.wrap(c.trait, tw).size();
+        UI.small.drawWrapped(g, c.weapon, tx, 27, tw, UI.GOLD, 1f, 11);
+        float ty = 27 + wl * 11 + 1;
+        UI.small.drawWrapped(g, c.trait, tx, ty, tw, UI.CYAN, 1f, 11);
+        fit("arma+rasgo", ty + tl * 11 - 1, 82);
         // habilidades
         for (int i = 0; i < 4; i++) {
             Hit h = skillHit[i];
@@ -256,23 +277,52 @@ final class PrepScreen extends Screen {
             UI.iconC(g, c.skills[i].icon, h.x + 13, h.y + 13, 1f, 1f);
         }
         ClassDef.Skill sk = c.skills[selS];
-        UI.small.draw(g, (selS == 3 ? "Definitiva: " : "") + sk.name, x0 + 124, 90, selS == 3 ? UI.ORANGE : UI.WHITE, 1f);
-        UI.small.draw(g, sk.cd > 0 ? "Enfriamiento " + (int) sk.cd + "s" : "Carga con golpes", x0 + 124, 101, UI.GREY, 1f);
-        UI.small.drawWrapped(g, sk.desc, x0, 117, (int) wR, 0xE8E0E0, 1f);
+        float sx = x0 + 124; int sw = (int) (x0 + wR - sx - 2);
+        String sn = (selS == 3 ? "Definitiva: " : "") + sk.name;
+        String cd = sk.cd > 0 ? "Enfriamiento " + (int) sk.cd + "s" : "Carga con golpes";
+        int nl = UI.small.wrap(sn, sw).size();
+        if (nl > 1) {   // nombre largo: pasa a dos lineas y el enfriamiento comparte la segunda si cabe
+            UI.small.drawWrapped(g, sn, sx, 86, sw, selS == 3 ? UI.ORANGE : UI.WHITE, 1f);
+            UI.small.draw(g, cd, sx, 86 + nl * 12, UI.GREY, 1f);
+            fit("habilidad", 86 + (nl + 1) * 12, 115);
+        } else {
+            UI.small.draw(g, sn, sx, 90, selS == 3 ? UI.ORANGE : UI.WHITE, 1f);
+            UI.small.draw(g, cd, sx, 101, UI.GREY, 1f);
+        }
+        int dl = UI.small.wrap(sk.desc, (int) wR).size();
+        UI.small.drawWrapped(g, sk.desc, x0, 115, (int) wR, 0xE8E0E0, 1f);
+        fit("descripcion habilidad", 115 + dl * 12 - 2, 139);
+    }
+
+    /** Flechita de 5x3 px (arriba = bonificacion, abajo = penalizacion). */
+    private static void marker(Platform.Gfx g, float x, float y, boolean up, int col) {
+        for (int r = 0; r < 3; r++) {
+            int n = up ? 1 + 2 * r : 5 - 2 * r;
+            g.rect(x + (5 - n) / 2f, y + 2 + r, n, 1, col, false);
+        }
     }
 
     private void drawCards(Platform.Gfx g, int w) {
-        UI.small.draw(g, "Bendición inicial · elige una", 156, 139, UI.GOLD, 1f);
+        UI.small.draw(g, "Bendición inicial · elige una", 156, 140, UI.GOLD, 1f);
         for (int i = 0; i < 3; i++) {
             Hit h = cardHit[i];
             StartBlessing b = StartBlessing.get(mine[i]);
             boolean on = chosen == i;
             float lift = on ? -2 : 0;
             UI.panel(g, on ? 1 : 0, h.x, h.y + lift, h.w, h.h, 0.96f);
-            UI.iconC(g, b.icon, h.x + 14, h.y + 15 + lift, 1f, 1f);
-            UI.small.drawWrapped(g, b.name, h.x + 28, h.y + 5 + lift, (int) h.w - 32, on ? UI.GOLD : UI.WHITE, 1f);
-            UI.small.draw(g, "+ " + b.sp, h.x + 6, h.y + 31 + lift, 0xFF6AE08A, 1f);
-            UI.small.draw(g, "- " + b.sc, h.x + 6, h.y + 42 + lift, 0xFFFF7A7A, 1f);
+            UI.iconC(g, b.icon, h.x + 14, h.y + 14 + lift, 1f, 1f);
+            int nw = (int) h.w - 32;
+            int nl = UI.small.wrap(b.name, nw).size();
+            UI.small.drawWrapped(g, b.name, h.x + 28, h.y + 3 + lift, nw, on ? UI.GOLD : UI.WHITE, 1f, 10);
+            fit("nombre bendicion", 3 + nl * 10 - 1, 23);
+            // marcador de signo (flecha) + texto: ocupa menos que "+ " y se distingue sin depender solo del color
+            float bx = h.x + 6, by = h.y + 25 + lift;
+            marker(g, bx, by, true, 0xFF6AE08A);
+            UI.small.draw(g, b.sp, bx + 9, by, 0xFF6AE08A, 1f);
+            marker(g, bx, by + 10, false, 0xFFFF7A7A);
+            UI.small.draw(g, b.sc, bx + 9, by + 10, 0xFFFF7A7A, 1f);
+            fit("bono tarjeta [+ " + I18n.tr(b.sp) + "]", UI.small.width(b.sp) + 15, h.w - 4);
+            fit("bono tarjeta [- " + I18n.tr(b.sc) + "]", UI.small.width(b.sc) + 15, h.w - 4);
             if (on) {
                 int c = Mth.withAlpha(0xFFD25A, (int) ((0.6f + 0.4f * (float) Math.sin(t * 6)) * 255));
                 float y = h.y + lift;
@@ -296,15 +346,35 @@ final class PrepScreen extends Screen {
         StartBlessing b = StartBlessing.get(shown());
         Cosmetics.Item sk = Cosmetics.equipped(c);
         float x = 156, wR = w - 162;
+        int ink = (int) wR;
+        float y = SUM_Y;
+        final int step = 11;
         if (b != null) {
-            float px = x;
-            UI.small.draw(g, "+ " + b.pro, px, 209, 0xFF6AE08A, 1f);
-            UI.small.draw(g, "- " + b.con, px + UI.small.width("+ " + b.pro) + 10, 209, 0xFFFF7A7A, 1f);
-        } else UI.small.draw(g, "Sin bendición inicial", x, 209, UI.GREY, 1f);
-        UI.small.draw(g, "Equipo: " + c.weapon + (sk != null ? " · " + sk.name : ""), x, 220, UI.WHITE, 1f);
+            String pro = "+ " + b.pro, con = "- " + b.con;
+            if (UI.small.width(pro) + 12 + UI.small.width(con) <= ink) {          // caben en una fila
+                UI.small.draw(g, pro, x, y, 0xFF6AE08A, 1f);
+                UI.small.draw(g, con, x + UI.small.width(pro) + 12, y, 0xFFFF7A7A, 1f);
+                y += step;
+            } else {                                                              // si no, cada una en su fila
+                y += UI.small.drawWrapped(g, pro, x, y, ink, 0xFF6AE08A, 1f, step);
+                y += UI.small.drawWrapped(g, con, x, y, ink, 0xFFFF7A7A, 1f, step);
+            }
+        } else { UI.small.draw(g, "Sin bendición inicial", x, y, UI.GREY, 1f); y += step; }
+        String eq = "Equipo: " + c.weapon + (sk != null ? " · " + sk.name : "");
+        y += UI.small.drawWrapped(g, eq, x, y, ink, UI.WHITE, 1f, step);
         int ca = Companions.active(Save.S);
-        if (ca < 0) UI.small.draw(g, "Compañero: ninguno (toca para elegir)", x, 231, UI.GREY, 1f);
-        else UI.small.draw(g, "Compañero: " + Companions.NAME[ca] + " · " + Companions.PASSIVE[ca].split("\\.")[0].replaceAll("\\(.*\\)", "").trim(), x, 231, Companions.COLOR[ca], 1f);
+        String cp;
+        if (ca < 0) cp = "Compañero: ninguno (toca para elegir)";
+        else {      // el pasivo se traduce completo y despues se resume (primera frase, sin parentesis)
+            String ps = I18n.tr(Companions.PASSIVE[ca]).split("[.。]")[0].replaceAll("\\(.*\\)|（.*）", "").trim();
+            cp = I18n.tr("Compañero: ") + I18n.tr(Companions.NAME[ca]) + " · " + ps;
+            I18n.pin(cp);
+        }
+        cmpY = y;
+        int ch = UI.small.drawWrapped(g, cp, x, y, ink, ca < 0 ? UI.GREY : Companions.COLOR[ca], 1f, step);
+        if (cmpHit != null) { cmpHit.y = y - 1; cmpHit.h = ch; }
+        y += ch;
+        fit("resumen", y - 1, SUM_END);
     }
 
     private void drawLaunch(Platform.Gfx g, int w, ClassDef c) {

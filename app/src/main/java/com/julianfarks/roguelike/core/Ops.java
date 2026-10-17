@@ -378,9 +378,9 @@ final class Ops extends Screen {
                 case PORTAL: drawPortal(g, x, a, sel); break;
                 case SANCT: spr(g, "prop_sanctuary", "idle", x, fy, 1.4f, a, 0, 0); UI.light(g, x, fy - 56, sel ? 52 : 38, 0x9A7AFF, 0.22f * a); break;
                 case SHOP: drawShop(g, x, fy, a, sel); break;
-            case CODEX: game.go(new CodexScreens.CodexScr(game)); break;
-            case GARDEN: game.go(new CodexScreens.GardenScr(game)); break;
-            case COMP: game.go(new CodexScreens.Comp(game)); break;
+                case CODEX: spr(g, "ops_codex", "idle", x, fy + lift, 1f, a, 0, 0); UI.light(g, x - 6, fy - 62, sel ? 40 : 28, 0x7AF0FF, 0.2f * a); break;
+                case GARDEN: drawGarden(g, x, fy, a, sel); break;
+                case COMP: spr(g, "ops_nook", "idle", x, fy + lift, 1f, a, 0, 0); UI.light(g, x, fy - 62, sel ? 48 : 34, 0xB080FF, 0.2f * a); break;
                 default: spr(g, "ops_board", "idle", x, fy + lift, 1f, a, 0, 0); UI.light(g, x, fy - 56, sel ? 46 : 32, 0xFFD25A, 0.12f * a); break;
             }
             if (i == PREP) drawNpc(g, "prop_npc_0", SX[i] + 62 - Math.round(cam), fy, a);

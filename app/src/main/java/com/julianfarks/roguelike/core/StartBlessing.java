@@ -12,8 +12,8 @@ public final class StartBlessing {
 
     public static final StartBlessing[] ALL = {
             new StartBlessing(0, "b_filo", "Filo Hambriento", "+12% de daño", "-10% de vida máxima", "+12% daño", "-10% vida"),
-            new StartBlessing(1, "b_piedra", "Piel de Piedra", "-10% de daño recibido", "-6% de velocidad", "-10% daño recib.", "-6% veloc."),
-            new StartBlessing(2, "b_alas", "Pies de Viento", "+10% de velocidad", "+8% de daño recibido", "+10% veloc.", "+8% daño recib."),
+            new StartBlessing(1, "b_piedra", "Piel de Piedra", "-10% de daño recibido", "-6% de velocidad", "-10% recibido", "-6% veloc."),
+            new StartBlessing(2, "b_alas", "Pies de Viento", "+10% de velocidad", "+8% de daño recibido", "+10% veloc.", "+8% recibido"),
             new StartBlessing(3, "b_fortuna", "Bolsa Pesada", "+60 de oro inicial", "1 poción menos", "+60 oro", "-1 poción"),
             new StartBlessing(4, "b_alma", "Sed de Almas", "+25% de almas ganadas", "-8% de daño", "+25% almas", "-8% daño"),
             new StartBlessing(5, "b_critico", "Pacto Frágil", "+12% de golpe crítico", "-15% de vida máxima", "+12% crítico", "-15% vida"),

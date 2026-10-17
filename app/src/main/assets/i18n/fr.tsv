@@ -58,17 +58,17 @@ Cada 12 s, tu siguiente golpe hace daño x2.5 (más rápido por nivel).	Toutes l
 Filo Hambriento	Lame affamée
 +12% de daño	+12 % dégâts
 -10% de vida máxima	-10 % de vie maximale
-+12% daño	+12 % dégâts
++12% daño	+12 % dég.
 -10% vida	-10 % vie
 -10% de daño recibido	-10 % de dégâts subis
 -6% de velocidad	-6 % de vitesse
--10% daño recib.	-10 % dég. subis
+-10% recibido	-10 % subis
 -6% veloc.	-6 % vitesse
 Pies de Viento	Pieds de vent
 +10% de velocidad	+10 % de vitesse
 +8% de daño recibido	+8 % de dégâts subis
 +10% veloc.	+10 % vitesse
-+8% daño recib.	+8 % dég. subis
++8% recibido	+8 % subis
 Bolsa Pesada	Bourse lourde
 +60 de oro inicial	+60 d'or de départ
 1 poción menos	1 potion en moins
@@ -82,13 +82,13 @@ Sed de Almas	Soif d'âmes
 Pacto Frágil	Pacte fragile
 +12% de golpe crítico	+12 % de coup critique
 -15% de vida máxima	-15 % de vie maximale
-+12% crítico	+12 % critique
++12% crítico	+12 % crit.
 -15% vida	-15 % vie
 Reflejo Veloz	Réflexes vifs
 Habilidades 12% más rápidas	Compétences 12 % plus rapides
 -10% de daño	-10 % dégâts
 Habil. +12%	Compét. +12 %
--10% daño	-10 % dégâts
+-10% daño	-10 % dég.
 Provisiones	Provisions
 +1 poción	+1 potion
 -15% de oro ganado	-15 % d'or gagné

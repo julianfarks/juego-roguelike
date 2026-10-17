@@ -69,7 +69,7 @@ final class CodexScreens {
                 final int k = i;
                 int lv = Garden.level(Save.S, i);
                 String lb = lv >= Garden.MAX ? "Máximo" : "Crecer · " + Garden.COST[lv] + " almas";
-                Hit h = add(20 + i * cw + 8, 210, cw - 16, 22, lb, () -> { if (Garden.grow(Save.S, k)) { popPlot = k; pop = 1f; Snd.sfx("ui_confirm", 0.9f); } layout(); });
+                Hit h = add(20 + i * cw + 8, 214, cw - 16, 20, lb, () -> { if (Garden.grow(Save.S, k)) { popPlot = k; pop = 1f; Snd.sfx("ui_confirm", 0.9f); } layout(); });
                 h.disabled = !Garden.canGrow(Save.S, i);
             }
             add(w / 2f - 40, 244, 80, 22, "Volver", () -> back());
@@ -87,12 +87,17 @@ final class CodexScreens {
                 int lv = Garden.level(Save.S, i);
                 UI.panel(g, lv >= Garden.MAX ? 1 : 0, x, 50, cw - 8, 190, 0.95f);
                 UI.light(g, cx, 112, 28 + 4 * lv + (popPlot == i && pop > 0 ? 18 * pop : 0), Garden.COLOR[i] | 0xFF000000, 0.12f + 0.06f * lv);
-                sheetAt(g, "ops_crystal", "stage" + lv, t + i * 0.3f, cx, 140, 1.6f, false, true);
-                UI.small.center(g, Garden.NAME[i], cx, 148, Garden.COLOR[i], 1f);
-                for (int s = 0; s < Garden.MAX; s++) g.rect(cx - 22 + s * 12, 160, 9, 4, s < lv ? (Garden.COLOR[i] | 0xFF000000) : 0xFF2A2838, false);
-                UI.small.center(g, "Etapa " + lv + " / " + Garden.MAX, cx, 168, UI.WHITE, 1f);
-                UI.small.center(g, lv == 0 ? "Aún sin efecto" : "Ahora: " + Garden.effect(i, lv), cx, 178, UI.GREEN, 1f);
-                UI.small.drawWrapped(g, Garden.DESC[i], x + 10, 190, (int) (cw - 28), UI.GREY, 1f);
+                sheetAt(g, "ops_crystal", "stage" + lv, t + i * 0.3f, cx, 132, 1.6f, false, true);
+                UI.small.center(g, Garden.NAME[i], cx, 140, Garden.COLOR[i], 1f);
+                for (int s = 0; s < Garden.MAX; s++) g.rect(cx - 22 + s * 12, 152, 9, 4, s < lv ? (Garden.COLOR[i] | 0xFF000000) : 0xFF2A2838, false);
+                UI.small.center(g, "Etapa " + lv + " / " + Garden.MAX, cx, 160, UI.WHITE, 1f);
+                int tw = (int) (cw - 20);
+                String ef = lv == 0 ? "Aún sin efecto" : "Ahora: " + Garden.effect(i, lv);
+                int eh = UI.small.wrap(ef, tw).size();
+                UI.small.drawWrapped(g, ef, x + 10, 170, tw, UI.GREEN, 1f, 10);
+                int dy = 170 + eh * 10 + 2;
+                int dh = UI.small.drawWrapped(g, Garden.DESC[i], x + 10, dy, tw, UI.GREY, 1f, 10);
+                PrepScreen.fitErr("jardin " + i, dy + dh - 1, 213, -1);
             }
             drawButtons(g);
         }
@@ -241,7 +246,8 @@ final class CodexScreens {
             int w = W();
             bg.render(g, w, 0.7f);
             UI.big.center(g, "RETOS DEL INFINITO", w / 2f, 12, UI.GOLD, 1f);
-            UI.small.center(g, "Opcionales. Cada reto suma puntaje; el récord sigue siendo por pisos.", w / 2f, 34, UI.GREY, 1f);
+            java.util.List<String> sub = UI.small.wrap("Opcionales. Cada reto suma puntaje; el récord sigue siendo por pisos.", w - 24);
+            for (int k = 0; k < sub.size(); k++) UI.small.drawCenterRaw(g, sub.get(k), w / 2f, sub.size() > 1 ? 31 + k * 10 : 34, UI.GREY, 1f);
             for (int i = 0; i < Infinite.MOD_COUNT; i++) {
                 boolean on = (Save.S.infMods & (1 << i)) != 0;
                 float y = 52 + i * 38;

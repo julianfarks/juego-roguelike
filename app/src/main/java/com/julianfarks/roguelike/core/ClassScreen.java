@@ -33,7 +33,7 @@ final class ClassScreen extends Screen {
         float px = 226, pw = w - 232;
         for (int i = 0; i < 4; i++) {
             final int id = i;
-            Hit h = add(px + 8 + i * 30, 176, 26, 26, null, () -> selS = id);
+            Hit h = add(px + 8 + i * 30, 166, 26, 26, null, () -> selS = id);
             h.plain = true;
         }
         add(6, 240, 70, 24, "Volver", () -> back());
@@ -45,7 +45,7 @@ final class ClassScreen extends Screen {
         String lab = unlocked ? (Save.S.lastClass == c.id ? "Confirmar elegido" : "Elegir espadachín") : "Desbloquear " + Meta.CLASS_COST[c.id];
         playBtn = add(w - 156, 240, 150, 24, lab, () -> play());
         playBtn.disabled = !unlocked && Save.S.souls < Meta.CLASS_COST[c.id];
-        liveBtn = add(88, 214, 128, 20, live ? "Ver ilustración" : "Ver en acción", () -> { live = !live; layout(); });
+        liveBtn = add(88, 208, 128, 18, live ? "Ver ilustración" : "Ver en acción", () -> { live = !live; layout(); });
     }
 
     private String ascLabel() { return asc == 0 ? "Ascensión 0" : "Ascensión " + asc; }
@@ -134,28 +134,31 @@ final class ClassScreen extends Screen {
         UI.small.draw(g, c.role, px + 8, py + 25, UI.GREY, 1f);
         int hh = UI.small.drawWrapped(g, c.desc, px + 8, py + 38, (int) pw - 16, 0xE8E0E0, 1f);
         float yy = py + 38 + hh + 2;
-        UI.small.draw(g, "Arma: " + c.weapon, px + 8, yy, UI.GOLD, 1f);
-        yy += 12;
+        yy += UI.small.drawWrapped(g, "Arma: " + c.weapon, px + 8, yy, (int) pw - 16, UI.GOLD, 1f);
         int th = UI.small.drawWrapped(g, c.trait, px + 8, yy, (int) pw - 16, UI.CYAN, 1f);
-        yy += th + 2;
-        stat(g, "Vida", c.hp / 140f, px + 8, yy, 0xFF5A5A, pw);
-        stat(g, "Daño", c.dmg / 28f, px + 8, yy + 11, 0xFFB040, pw);
-        stat(g, "Ataque", c.atkSpeed / 1.4f, px + 8, yy + 22, 0x7AF0FF, pw);
-        stat(g, "Velocidad", c.speed / 1.15f, px + 8, yy + 33, 0x6AE08A, pw);
+        yy += th + 1;
+        // estadisticas en dos columnas (ocupan 22 px en vez de 44: no invaden la fila de habilidades)
+        float half = (pw - 16) / 2f;
+        stat(g, "Vida", c.hp / 140f, px + 8, yy, 0xFF5A5A, half);
+        stat(g, "Daño", c.dmg / 28f, px + 8, yy + 11, 0xFFB040, half);
+        stat(g, "Ataque", c.atkSpeed / 1.4f, px + 8 + half + 4, yy, 0x7AF0FF, half);
+        stat(g, "Velocidad", c.speed / 1.15f, px + 8 + half + 4, yy + 11, 0x6AE08A, half);
+        PrepScreen.fitErr("ficha: estadisticas", yy + 22, 165, c.id);
 
         // habilidades
         for (int i = 0; i < 4; i++) {
-            float x = px + 8 + i * 30, y = 176;
+            float x = px + 8 + i * 30, y = 166;
             UI.panel(g, i == selS ? 1 : 0, x, y, 26, 26, 1f);
             UI.iconC(g, c.skills[i].icon, x + 13, y + 13, 1f, unlocked ? 1f : 0.5f);
         }
         ClassDef.Skill sk = c.skills[selS];
-        UI.small.draw(g, (selS == 3 ? "Definitiva: " : "") + sk.name, px + 130, 178, selS == 3 ? UI.ORANGE : UI.WHITE, 1f);
-        UI.small.draw(g, sk.cd > 0 ? "Enfriamiento " + (int) sk.cd + "s" : "Carga con golpes", px + 130, 190, UI.GREY, 1f);
-        UI.small.drawWrapped(g, sk.desc, px + 8, 207, (int) pw - 16, 0xE8E0E0, 1f);
+        UI.small.draw(g, (selS == 3 ? "Definitiva: " : "") + sk.name, px + 130, 168, selS == 3 ? UI.ORANGE : UI.WHITE, 1f);
+        UI.small.draw(g, sk.cd > 0 ? "Enfriamiento " + (int) sk.cd + "s" : "Carga con golpes", px + 130, 180, UI.GREY, 1f);
+        int dh2 = UI.small.drawWrapped(g, sk.desc, px + 8, 195, (int) pw - 16, 0xE8E0E0, 1f, 11);
+        PrepScreen.fitErr("ficha: descripcion habilidad", 195 + dh2 - 1, 231, c.id);
 
         drawButtons(g);
-        UI.small.draw(g, "Dificultad", 84, 231, UI.GREY, 1f);
+        UI.small.draw(g, "Dificultad", 84, 229, UI.GREY, 1f);
         if (diffBtn != null) {
             int dc = diff == 0 ? 0x6AE08A : (diff == 2 ? 0xFF5A5A : 0xFFD25A);
             g.rect(diffBtn.x + 4, diffBtn.y + diffBtn.h - 3, diffBtn.w - 8, 2, 0xFF000000 | dc, false);
@@ -181,9 +184,10 @@ final class ClassScreen extends Screen {
         UI.small.center(g, an, sx + 64, sy + 158, UI.GREY, 1f);
     }
 
-    private void stat(Platform.Gfx g, String n, float v, float x, float y, int col, float pw) {
+    private void stat(Platform.Gfx g, String n, float v, float x, float y, int col, float w) {
+        int lw = Math.max(UI.small.width("Velocidad"), UI.small.width("Ataque")) + 6;   // etiqueta a la medida del idioma
         UI.small.draw(g, n, x, y, UI.GREY, 1f);
-        float bx = x + 56, bw = pw - 80;
+        float bx = x + lw, bw = w - lw - 8;
         g.rect(bx, y + 2, bw, 5, 0xFF1A1620, false);
         g.rect(bx, y + 2, bw * Mth.clamp(v, 0.05f, 1f), 5, 0xFF000000 | col, false);
         g.rect(bx, y + 2, bw * Mth.clamp(v, 0.05f, 1f), 1, 0x66FFFFFF, false);

@@ -100,25 +100,28 @@ final class OpsScreens {
             bg.render(g, w, 0.65f);
             Save s = Save.S;
             UI.big.center(g, "TROFEOS", w / 2f, 6, UI.GOLD, 1f);
-            UI.small.center(g, Trophies.count(s) + " de " + Trophies.ALL.length + " desbloqueados", w / 2f, 24, UI.GREY, 1f);
+            UI.small.center(g, Trophies.count(s) + " de " + Trophies.ALL.length + " desbloqueados", w / 2f, 23, UI.GREY, 1f);
             int cols = 4, n = Trophies.ALL.length;
-            float cw = Math.min((w - 24) / cols - 4, 116), ch = 46, gx = w / 2f - (cols * (cw + 4) - 4) / 2f;
+            float cw = Math.min((w - 24) / cols - 4, 116), ch = 49, gx = w / 2f - (cols * (cw + 4) - 4) / 2f;
             for (int i = 0; i < n; i++) {
                 Trophies.T tr = Trophies.ALL[i];
-                float x = gx + (i % cols) * (cw + 4), y = 36 + (i / cols) * (ch + 3);
+                float x = gx + (i % cols) * (cw + 4), y = 35 + (i / cols) * (ch + 2);
                 boolean got = Trophies.has(s, i);
                 UI.panel(g, got ? 1 : 0, x, y, cw, ch, got ? 1f : 0.8f);
                 int col = got ? 0xFFD25A : 0x4A4658;
-                g.rect(x + 6, y + 8, 10, 7, Mth.withAlpha(col, 255), false);
-                g.rect(x + 9, y + 15, 4, 5, Mth.withAlpha(col, 255), false);
-                g.rect(x + 6, y + 20, 10, 2, Mth.withAlpha(col, 255), false);
-                UI.small.draw(g, tr.name, x + 20, y + 5, got ? UI.GOLD : UI.GREY, 1f);
-                UI.small.drawWrapped(g, tr.desc, x + 20, y + 17, (int) cw - 24, got ? 0xE8E0E0 : 0x808090, 1f);
+                // la copa va debajo del nombre, junto a la descripcion: asi el nombre usa todo el ancho de la tarjeta
+                g.rect(x + 6, y + 17, 10, 7, Mth.withAlpha(col, 255), false);
+                g.rect(x + 9, y + 24, 4, 5, Mth.withAlpha(col, 255), false);
+                g.rect(x + 6, y + 29, 10, 2, Mth.withAlpha(col, 255), false);
+                UI.small.draw(g, tr.name, x + 6, y + 4, got ? UI.GOLD : UI.GREY, 1f);
+                PrepScreen.fitErr("trofeo nombre [" + I18n.tr(tr.name) + "]", UI.small.width(tr.name) + 8, cw - 3, -1);
+                int dh = UI.small.drawWrapped(g, tr.desc, x + 20, y + 14, (int) cw - 24, got ? 0xE8E0E0 : 0x808090, 1f, 10);
+                PrepScreen.fitErr("trofeo desc [" + I18n.tr(tr.desc) + "]", 14 + dh - 1, got ? ch - 3 : ch - 6, -1);
                 if (!got) {
                     int p = Math.min(tr.goal, tr.prog.applyAsInt(s));
                     float bw = cw - 12;
-                    g.rect(x + 6, y + ch - 7, bw, 3, 0xFF1A1620, false);
-                    g.rect(x + 6, y + ch - 7, bw * p / (float) tr.goal, 3, 0xFF7AF0FF, false);
+                    g.rect(x + 6, y + ch - 5, bw, 3, 0xFF1A1620, false);
+                    g.rect(x + 6, y + ch - 5, bw * p / (float) tr.goal, 3, 0xFF7AF0FF, false);
                 }
             }
             drawButtons(g);

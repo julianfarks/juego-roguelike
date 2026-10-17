@@ -57,18 +57,18 @@ Cada 12 s, tu siguiente golpe hace daño x2.5 (más rápido por nivel).	Every 12
 Filo Hambriento	Hungry Edge	Lame affamée	饥渴之刃
 +12% de daño	+12% damage	+12 % dégâts	伤害提高12%
 -10% de vida máxima	-10% max health	-10 % de vie maximale	最大生命值降低10%
-+12% daño	+12% dmg	+12 % dégâts	伤害+12%
++12% daño	+12% dmg	+12 % dég.	伤害+12%
 -10% vida	-10% health	-10 % vie	生命-10%
 Piel de Piedra	Stone Skin	Peau de pierre	石肤术
 -10% de daño recibido	-10% damage taken	-10 % de dégâts subis	受到的伤害降低10%
 -6% de velocidad	-6% speed	-6 % de vitesse	速度降低6%
--10% daño recib.	-10% dmg in	-10 % dég. subis	受伤-10%
+-10% recibido	-10% taken	-10 % subis	受伤-10%
 -6% veloc.	-6% speed	-6 % vitesse	速度-6%
 Pies de Viento	Windfoot	Pieds de vent	疾风之足
 +10% de velocidad	+10% speed	+10 % de vitesse	速度提高10%
 +8% de daño recibido	+8% damage taken	+8 % de dégâts subis	受到的伤害提高8%
 +10% veloc.	+10% speed	+10 % vitesse	速度+10%
-+8% daño recib.	+8% dmg in	+8 % dég. subis	受伤+8%
++8% recibido	+8% taken	+8 % subis	受伤+8%
 Bolsa Pesada	Heavy Purse	Bourse lourde	沉甸钱袋
 +60 de oro inicial	+60 starting gold	+60 d'or de départ	初始金币+60
 1 poción menos	1 fewer potion	1 potion en moins	少1瓶药水
@@ -82,13 +82,13 @@ Sed de Almas	Soul Thirst	Soif d'âmes	灵魂渴求
 Pacto Frágil	Fragile Pact	Pacte fragile	脆弱契约
 +12% de golpe crítico	+12% critical hit chance	+12 % de coup critique	暴击率提高12%
 -15% de vida máxima	-15% max health	-15 % de vie maximale	最大生命值降低15%
-+12% crítico	+12% crit	+12 % critique	暴击+12%
++12% crítico	+12% crit	+12 % crit.	暴击+12%
 -15% vida	-15% health	-15 % vie	生命-15%
 Reflejo Veloz	Quick Reflexes	Réflexes vifs	迅捷反射
 Habilidades 12% más rápidas	Skills 12% faster	Compétences 12 % plus rapides	技能冷却加快12%
 -10% de daño	-10% damage	-10 % dégâts	伤害降低10%
 Habil. +12%	Skills +12%	Compét. +12 %	技能+12%
--10% daño	-10% dmg	-10 % dégâts	伤害-10%
+-10% daño	-10% dmg	-10 % dég.	伤害-10%
 Provisiones	Provisions	Provisions	补给
 +1 poción	+1 potion	+1 potion	药水+1
 -15% de oro ganado	-15% gold gained	-15 % d'or gagné	获得的金币降低15%

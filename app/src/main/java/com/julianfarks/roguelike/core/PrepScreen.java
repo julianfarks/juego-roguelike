@@ -54,7 +54,7 @@ final class PrepScreen extends Screen {
 
     ClassDef cls() { int id = Save.S.lastClass; if (id < 0 || id > 9 || !Save.S.classUnlocked[id]) id = 0; return ClassDef.ALL[id]; }
 
-    @Override void enter() { Snd.music("mus_sanctuary", true); enterT = 0; layout(); }
+    @Override void enter() { Snd.music(Snd.MENU_MUSIC, true); enterT = 0; layout(); }
 
     @Override void layout() {
         hits.clear();

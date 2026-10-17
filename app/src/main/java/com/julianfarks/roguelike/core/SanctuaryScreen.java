@@ -9,7 +9,7 @@ final class SanctuaryScreen extends Screen {
 
     SanctuaryScreen(Game g) { super(g); bg = new Screens.TitleBg(); }
 
-    @Override void enter() { Snd.music("mus_sanctuary", true); layout(); }
+    @Override void enter() { Snd.music(Snd.MENU_MUSIC, true); layout(); }
 
     private int tabsEnd = 270;
 

@@ -18,7 +18,7 @@ final class StoryScreens {
 
         Historia(Game g, boolean devAll) { super(g); this.devAll = devAll; }
 
-        @Override void enter() { Snd.music("mus_title", true); layout(); }
+        @Override void enter() { Snd.music(Snd.MENU_MUSIC, true); layout(); }
 
         @Override void layout() {
             hits.clear();

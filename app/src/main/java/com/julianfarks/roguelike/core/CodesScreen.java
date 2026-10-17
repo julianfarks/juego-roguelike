@@ -12,7 +12,7 @@ final class CodesScreen extends Screen {
 
     CodesScreen(Game g) { super(g); }
 
-    @Override void enter() { Snd.music("mus_title", true); layout(); }
+    @Override void enter() { Snd.music(Snd.MENU_MUSIC, true); layout(); }
 
     @Override void layout() {
         hits.clear();

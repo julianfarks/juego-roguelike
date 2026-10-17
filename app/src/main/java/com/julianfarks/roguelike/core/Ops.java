@@ -89,7 +89,7 @@ final class Ops extends Screen {
 
     @Override void enter() {
         active = true;
-        Snd.music("mus_sanctuary", true);
+        Snd.music(Snd.MENU_MUSIC, true);
         Snd.ambient(null, 0);
         enterT = 0;
         layout();

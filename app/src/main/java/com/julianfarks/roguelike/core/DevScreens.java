@@ -104,7 +104,7 @@ final class DevScreens {
     static final class Menu extends Screen {
         private final Screens.TitleBg bg = new Screens.TitleBg();
         Menu(Game g) { super(g); }
-        @Override void enter() { Snd.music("mus_sanctuary", true); layout(); }
+        @Override void enter() { Snd.music(Snd.MENU_MUSIC, true); layout(); }
 
         @Override void layout() {
             hits.clear();

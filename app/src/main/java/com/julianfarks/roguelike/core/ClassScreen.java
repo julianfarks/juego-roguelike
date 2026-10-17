@@ -19,7 +19,7 @@ final class ClassScreen extends Screen {
         diff = Save.S.diffSel;
     }
 
-    @Override void enter() { Snd.music("mus_sanctuary", true); layout(); }
+    @Override void enter() { Snd.music(Snd.MENU_MUSIC, true); layout(); }
 
     @Override void layout() {
         hits.clear();

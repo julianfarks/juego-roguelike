@@ -10,6 +10,8 @@ public final class Snd {
     static Platform.Audio A;
     static final Rng rng = new Rng(12345);
     static String currentMusic = "";
+    /** Musica de todos los menus (titulo, salon, preparacion, tienda...). La de partida (mus_sanctuary, biomas, jefes) no cambia. */
+    public static final String MENU_MUSIC = "mus_menu";
 
     public static void init(Platform p) {
         A = p.audio();

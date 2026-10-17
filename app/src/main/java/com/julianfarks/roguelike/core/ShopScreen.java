@@ -15,7 +15,7 @@ final class ShopScreen extends Screen {
 
     ShopScreen(Game g) { super(g); }
 
-    @Override void enter() { Snd.music("mus_sanctuary", true); layout(); }
+    @Override void enter() { Snd.music(Snd.MENU_MUSIC, true); layout(); }
     @Override boolean back() { game.go(new Ops(game)); return true; }
     @Override void update(float dt) { bg.update(dt, W()); t += dt; if (toastT > 0) toastT -= dt; }
 

@@ -103,6 +103,7 @@ public final class DebugBot {
         if (frame == 1 && System.getenv("BOT_LANG") != null) I18n.set(Integer.parseInt(System.getenv("BOT_LANG")));
         if (System.getenv("BOT_NAVLOG") != null && !s.getClass().getName().equals(navLast)) { navLast = s.getClass().getName(); System.out.println("NAV frame=" + frame + " " + s.getClass().getSimpleName()); }
         if (System.getenv("BOT_NAVLOG") != null && s instanceof PrepScreen && Save.S.lastClass != navCls) { navCls = Save.S.lastClass; System.out.println("PREPCLS frame=" + frame + " " + navCls + " chosen=" + PrepScreen.chosenBlessing()); }
+        if (System.getenv("BOT_TOOPS") != null && frame == Integer.parseInt(System.getenv("BOT_TOOPS")) && s instanceof RunScreen) g.go(new Ops(g));   // como "Menu principal" del pausa
         if (System.getenv("BOT_SHOW") != null) {
             String[] names = System.getenv("BOT_SHOW").split(",");
             if (frame % 60 == 50 && !PrepScreen.fitErrors.isEmpty()) { for (String e : PrepScreen.fitErrors) System.out.println("FIT " + e); PrepScreen.fitErrors.clear(); }

@@ -111,7 +111,7 @@ final class Screens {
 
         @Override void enter() {
             Ops.active = false;
-            Snd.music("mus_title", true);
+            Snd.music(Snd.MENU_MUSIC, true);
             Snd.ambient(null, 0);
             layout();
         }

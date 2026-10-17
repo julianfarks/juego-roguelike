@@ -80,7 +80,7 @@ ck('prueba de interrupcion: se encontro un reposo', first is not None)
 if first:
     f0 = first['f']
     for key, label in (('D', 'moverse'), ('J', 'atacar'), ('W', 'saltar'), ('K', 'esquivar')):
-        open('/tmp/pers_int.script', 'w').write(f'{f0 + 12} key {key} down\n{f0 + 14} key {key} up\n')
+        open('/tmp/pers_int.script', 'w').write(f'{f0 + 12} key {key} down\n{f0 + 40} key {key} up\n')
         rows2, _ = run(1, 'idle', 1500, '/tmp/pers_int.script')
         after = [x for x in rows2 if f0 + 12 <= x['f'] <= f0 + 30]
         before = [x for x in rows2 if f0 <= x['f'] < f0 + 12]

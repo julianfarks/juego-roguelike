@@ -33,6 +33,25 @@ public final class DebugBot {
 
     private boolean compDone, screenDone;
 
+    // ---- prueba de la ventana de parry: BOT_PARRYTEST="escudo;t1:etiqueta;t2:etiqueta..." (t = fotogramas desde el inicio de la sala).
+    // Inyecta un golpe real (Level.hurtPlayer, la misma via que usan enemigos, proyectiles y jefes) y registra si fue parry.
+    private int ptStart = -1;
+    private void parryStep(RunScreen rs, Level lv, Player p, int frame) {
+        if (rs.fadeA > 0.05f) return;
+        if (ptStart < 0) { ptStart = frame; System.out.println("PARRYSTART f=" + frame); }
+        int t = frame - ptStart;
+        String[] q = System.getenv("BOT_PARRYTEST").split(";");
+        if (t <= 5) { lv.enemies.clear(); lv.toKill = 0; lv.cleared = true; rs.rs.shield = Integer.parseInt(q[0]); }
+        for (int i = 1; i < q.length; i++) {
+            String[] w = q[i].split(":");
+            if (t != Integer.parseInt(w[0])) continue;
+            p.invuln = 0; rs.rs.hp = rs.rs.stats.maxHp;
+            int par = lv.parries; float hp = rs.rs.hp;
+            lv.hurtPlayer(10, p.x + 12 * p.dir(), -1, 0);
+            System.out.println("PARRYHIT shield=" + rs.rs.shield + " tag=" + w[1] + " parried=" + (lv.parries > par) + " dano=" + Math.round(hp - rs.rs.hp) + " guard=" + p.guarding + " parryT=" + p.parryT);
+        }
+    }
+
     // ---- prueba de animaciones de personalidad: el bot se queda quieto y registra que hace el personaje (BOT_PERSONA=idle|react)
     private int pStart = -1;
     private void personaStep(RunScreen rs, Level lv, Player p, int frame) {
@@ -236,6 +255,8 @@ public final class DebugBot {
         Level lv = rs.lv;
         Player p = lv.pl;
         if (System.getenv("BOT_PERSONA") != null) { personaStep(rs, lv, p, frame); return; }
+        if (System.getenv("BOT_PARRYTEST") != null) { parryStep(rs, lv, p, frame); return; }
+        if (System.getenv("BOT_PARRYLOG") != null && frame % 300 == 0) System.out.println("PARRIES f=" + frame + " n=" + lv.parries + " hp=" + Math.round(rs.rs.hp) + " escudo=" + rs.rs.shield + " jefe=" + (lv.boss != null && lv.boss.alive));
         String warp = System.getenv("BOT_WARP");
         if (warp != null && !warped && rs.fadeA < 0.05f && frame > 150) {
             warped = true; warpFrame = frame;

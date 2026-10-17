@@ -187,8 +187,9 @@ public final class Player extends Ent {
         boolean frozenNow = frozen();
         guarding = ctl && !frozenNow && alive && in.held(Input.B_GUARD) && (state == IDLE || state == RUN || state == AIR) && dashT <= 0;
         if (parryCd > 0) parryCd -= dt;
+        if (parryFlash > 0) parryFlash -= dt;
         if (guarding) {
-            if (in.pressed(Input.B_GUARD) && parryCd <= 0) { parryT = Items.SH_WIN[rs.shield]; parryCd = 0.7f; Snd.sfxv("swing_air", 0.5f); lv.fx("fx_ring", "pulse", x + dir() * 10, y - 16, 0.35f, 0xFFFFFF, Platform.ADD | Platform.TINT); }
+            if (in.pressed(Input.B_GUARD) && parryCd <= 0) { parryT = Items.SH_WIN[rs.shield]; parryCd = Items.SH_CD[rs.shield]; Snd.sfxv("swing_air", 0.5f); lv.fx("fx_ring", "pulse", x + dir() * 10, y - 16, 0.35f, 0xFFFFFF, Platform.ADD | Platform.TINT); }
             if (parryT > 0) parryT -= dt;
             spd *= 0.5f;
         } else parryT = 0;
@@ -667,7 +668,7 @@ public final class Player extends Ent {
 
     private int hazardN;
     public boolean guarding;
-    public float parryT, parryCd;
+    public float parryT, parryCd, parryFlash;
     private float sq;                       // squash (+) / stretch (-)
     private static final class Ghost { Anim a; int f; float x, y, t; boolean r; }
     private final java.util.ArrayList<Ghost> ghosts = new java.util.ArrayList<>();

@@ -728,9 +728,9 @@ Escudo de acero	钢盾
 Escudo rúnico	符文盾
 Escudo de espinas	荆棘盾
 Parry 0.20s · bloquea 55%	招架 0.20秒 · 格挡55%
-Parry 0.17s · bloquea 70%	招架 0.17秒 · 格挡70%
-Parry 0.15s · explosión al parry · bloquea 70%	招架 0.15秒 · 招架时爆炸 · 格挡70%
-Parry 0.17s · devuelve daño al bloquear	招架 0.17秒 · 格挡时反弹伤害
+Parry 0.28s · bloquea 70%	招架 0.28秒 · 格挡70%
+Parry 0.36s · explosión al parry · bloquea 70%	招架 0.36秒 · 招架时爆炸 · 格挡70%
+Parry 0.33s · devuelve daño al bloquear	招架 0.33秒 · 格挡时反弹伤害
 3 cuchillos en abanico · daño 0.65x	三把飞刀呈扇形射出 · 伤害0.65倍
 Atraviesa 2 enemigos · daño 2.1x	贯穿2名敌人 · 伤害2.1倍
 Arco alto, atraviesa 3 · daño 2.4x	高抛弧线，贯穿3名敌人 · 伤害2.4倍

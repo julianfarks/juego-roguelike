@@ -20,10 +20,15 @@ final class Items {
     // ---- escudos (boton ESCUDO: mantener = bloquear; pulsar justo antes del golpe = PARRY)
     static final int SH_COUNT = 4;
     static final String[] SH_NAME = {"Escudo de madera", "Escudo de acero", "Escudo rúnico", "Escudo de espinas"};
-    static final float[] SH_WIN = {0.20f, 0.17f, 0.15f, 0.17f};
+    /** Categoria del escudo: 0 basico, 1 intermedio, 2 superior (coincide con su rareza en los cofres). */
+    static final int[] SH_TIER = {0, 1, 2, 2};
+    /** Ventana de PARRY en segundos desde que se pulsa el boton (cuanto mejor el escudo, mas generosa). Era 0.20/0.17/0.15/0.17: justo al reves. */
+    static final float[] SH_WIN = {0.20f, 0.28f, 0.36f, 0.33f};
+    /** Enfriamiento tras pulsar (acierte o no). Crece con la ventana: el parry sigue sin poder encadenarse ni pulsarse a ciegas. */
+    static final float[] SH_CD = {0.70f, 0.80f, 0.95f, 0.90f};
     static final float[] SH_BLK = {0.45f, 0.30f, 0.30f, 0.35f};     // fraccion del daño que pasa al bloquear
     static final int[] SH_COL = {0x9A6A3A, 0xA8B4C8, 0x7A60E0, 0x5AB04A};
-    static final String[] SH_DESC = {"Parry 0.20s · bloquea 55%", "Parry 0.17s · bloquea 70%", "Parry 0.15s · explosión al parry · bloquea 70%", "Parry 0.17s · devuelve daño al bloquear"};
+    static final String[] SH_DESC = {"Parry 0.20s · bloquea 55%", "Parry 0.28s · bloquea 70%", "Parry 0.36s · explosión al parry · bloquea 70%", "Parry 0.33s · devuelve daño al bloquear"};
 
     static final String[] SEC_DESC = {"", "3 cuchillos en abanico · daño 0.65x", "Atraviesa 2 enemigos · daño 2.1x", "Arco alto, atraviesa 3 · daño 2.4x", "Persigue y explota · daño 1.5x"};
     static final String[] GR_DESC = {"", "Explosión grande · daño 3.0x", "Quema 4s · daño 1.7x", "Congela 1.8s · daño 1.3x", "Veneno 5s · radio enorme", "Aturde 1.2s · daño 1.8x"};

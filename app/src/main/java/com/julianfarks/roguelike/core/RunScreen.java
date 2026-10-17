@@ -1399,7 +1399,8 @@ final class RunScreen extends Screen implements Level.Listener {
             g.circle(b.cx, b.cy, b.r - 1, Mth.withAlpha(Items.SH_COL[rs.shield], on ? 150 : 60), false);
             UI.iconC(g, "shield", b.cx, b.cy, 1f, 1f);
             if (lv.pl.parryT > 0) g.circle(b.cx, b.cy, b.r + 2, 0xFFFFE070, true);
-            else if (lv.pl.parryCd > 0.1f && on) { g.clipBegin(b.cx - b.r, b.cy - b.r, 2 * b.r, 2 * b.r * Mth.clamp(lv.pl.parryCd / 0.7f, 0, 1) + 1); g.circle(b.cx, b.cy, b.r - 1, 0x88000000, false); g.clipEnd(); }
+            if (lv.pl.parryFlash > 0) { float k = lv.pl.parryFlash / 0.3f; g.circle(b.cx, b.cy, b.r + 2 + (1f - k) * 6, Mth.withAlpha(0xFFFFF4C0, (int) (255 * k)), true); }
+            else if (lv.pl.parryCd > 0.1f && on) { g.clipBegin(b.cx - b.r, b.cy - b.r, 2 * b.r, 2 * b.r * Mth.clamp(lv.pl.parryCd / Items.SH_CD[rs.shield], 0, 1) + 1); g.circle(b.cx, b.cy, b.r - 1, 0x88000000, false); g.clipEnd(); }
             return;
         }
         if (i == Input.B_SEC || i == Input.B_GREN) {

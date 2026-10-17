@@ -862,8 +862,11 @@ public final class Level {
     }
 
     /** Efectos de un parry exitoso. */
+    public int parries;   // parries logrados en la sala (estadistica / pruebas)
+
     public void parryFx(Player p, float srcX, boolean proj) {
         int t = rs.shield;
+        parries++; p.parryFlash = 0.3f;
         p.parryT = 0; p.invuln = Math.max(p.invuln, 0.5f);
         float fx = p.x + p.dir() * 12;
         text(p.x, p.y - p.bh - 14, "¡PARRY!", 0xFFE070, true);

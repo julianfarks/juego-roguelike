@@ -9,6 +9,7 @@ public final class DebugBot {
     private int warpFrame;
     private final java.util.HashSet<Object> done = new java.util.HashSet<>();
     private float lastX;
+    private static String navPrep = "";
     public static int classId = System.getenv("BOT_CLASS") != null ? Integer.parseInt(System.getenv("BOT_CLASS")) : 0;
     static int sbStep = 0, sbT = 0; static String sbBase = "";
     static String sbSnap(Game g) {
@@ -143,6 +144,7 @@ public final class DebugBot {
         }
         if (frame == 1 && System.getenv("BOT_LANG") != null) I18n.set(Integer.parseInt(System.getenv("BOT_LANG")));
         if (System.getenv("BOT_NAVLOG") != null && !s.getClass().getName().equals(navLast)) { navLast = s.getClass().getName(); System.out.println("NAV frame=" + frame + " " + s.getClass().getSimpleName()); }
+        if (System.getenv("BOT_NAVLOG") != null && s instanceof PrepScreen) { String d = ((PrepScreen) s).dbg(); if (!d.equals(navPrep)) { navPrep = d; System.out.println("PREP frame=" + frame + " " + d); } }
         if (System.getenv("BOT_NAVLOG") != null && s instanceof PrepScreen && Save.S.lastClass != navCls) { navCls = Save.S.lastClass; System.out.println("PREPCLS frame=" + frame + " " + navCls + " chosen=" + PrepScreen.chosenBlessing()); }
         if (System.getenv("BOT_TOOPS") != null && frame == Integer.parseInt(System.getenv("BOT_TOOPS")) && s instanceof RunScreen) g.go(new Ops(g));   // como "Menu principal" del pausa
         if (System.getenv("BOT_SHOW") != null) {

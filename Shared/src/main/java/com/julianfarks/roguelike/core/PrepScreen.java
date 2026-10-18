@@ -31,6 +31,12 @@ final class PrepScreen extends Screen {
     private float enterT;
     private String toast = ""; private float toastT;
     private float swapT = 1f;       // animacion al cambiar de espadachin
+    // Navegacion con mando/teclado por FILAS (vertical) y alternativas (horizontal). Cada accion es independiente:
+    // confirmar espadachin -> bendicion -> dificultad -> otras opciones -> COMENZAR (solo en la ultima fila).
+    static final int R_CHAR = 0, R_BLESS = 1, R_DIFF = 2, R_OPTS = 3, R_START = 4;
+    private int row = R_CHAR, bCur, oCol = 1;      // fila activa, tarjeta apuntada, opcion apuntada (0 Volver, 1 Modo, 2 Retos, 3 Companero)
+    private Hit backBtn, retosBtn;
+    private final boolean[] heldCode = new boolean[2100];   // una pulsacion mantenida no se repite (ni salta de fila/pantalla)
 
     PrepScreen(Game g) {
         super(g);
@@ -49,6 +55,9 @@ final class PrepScreen extends Screen {
         if (infiniteMode && !Save.S.finalBeaten) infiniteMode = false;
     }
 
+    /** Solo pruebas: estado de la preparacion. */
+    String dbg() { return "row=" + row + " bCur=" + bCur + " oCol=" + oCol + " cls=" + Save.S.lastClass + " bless=" + chosenBlessing() + " diff=" + Save.S.diffSel + " inf=" + infiniteMode + " launch=" + (launchT >= 0); }
+
     /** Solo pruebas: fija las tres bendiciones ofrecidas y la elegida. */
     static void debugOffer(int[] o, int pick) { offered = o; chosen = pick; }
 
@@ -66,14 +75,15 @@ final class PrepScreen extends Screen {
         float cw = (wR - 8) / 3f;
         for (int i = 0; i < 3; i++) { final int id = i; cardHit[i] = add(x0 + i * (cw + 4), CARD_Y, cw, CARD_H, null, () -> pick(id)); cardHit[i].plain = true; cardHit[i].noSound = true; }
         cmpHit = add(156, cmpY - 1, w - 162, 13, null, () -> cycleCompanion()); cmpHit.plain = true;
-        add(6, BTN_Y, 44, BTN_H, "Volver", () -> back());
+        backBtn = add(6, BTN_Y, 44, BTN_H, "Volver", () -> back());
         modeBtn = add(54, BTN_Y, 112, BTN_H, modeLabel(), () -> toggleMode());
-        Hit retos = add(226, BTN_Y, 74, BTN_H, retosLabel(), () -> { if (infiniteMode && Save.S.finalBeaten) game.go(new CodexScreens.Challenges(game)); else { Snd.sfx("ui_error", 0.7f); say("Los retos son del modo Infinito"); } });
+        Hit retos = retosBtn = add(226, BTN_Y, 74, BTN_H, retosLabel(), () -> retosAct());
         retos.noSound = false;
         diffBtn = add(170, BTN_Y, 52, BTN_H, diffLabel(), () -> { Save.S.diffSel = (Save.S.diffSel + 1) % 3; Save.S.write(); diffBtn.label = diffLabel(); });
         startBtn = add(w - 176, BTN_Y - 2, 170, BTN_H + 2, "COMENZAR EXPEDICIÓN", () -> launch());
     }
 
+    private void retosAct() { if (infiniteMode && Save.S.finalBeaten) game.go(new CodexScreens.Challenges(game)); else { Snd.sfx("ui_error", 0.7f); say("Los retos son del modo Infinito"); } }
     private String retosLabel() { int n = Integer.bitCount(Save.S.infMods); return n > 0 && infiniteMode ? "Retos " + n : "Retos"; }
     private String modeLabel() { return infiniteMode ? "Modo: Infinito" : "Modo: Campaña"; }
     private String diffLabel() { int d = Save.S.diffSel; return d == 0 ? "Fácil" : (d == 2 ? "Difícil" : "Normal"); }
@@ -120,13 +130,60 @@ final class PrepScreen extends Screen {
 
     @Override boolean back() { if (launchT >= 0) return true; game.go(new Ops(game)); return true; }
 
+    /** Boton/elemento apuntado por el mando (los de la fila de botones se resaltan con el mismo estado que el teclado). */
+    private Hit focusHit() {
+        switch (row) {
+            case R_DIFF: return diffBtn;
+            case R_START: return startBtn;
+            case R_OPTS: return oCol == 0 ? backBtn : oCol == 1 ? modeBtn : oCol == 2 ? retosBtn : cmpHit;
+            default: return null;
+        }
+    }
+
+    private void moveRow(int d) {
+        int n = Mth.clamp(row + d, R_CHAR, R_START);
+        if (n != row) { row = n; Snd.sfx("ui_hover", 0.5f); }
+    }
+
+    private void moveH(int d) {
+        switch (row) {
+            case R_CHAR: swap(d); break;
+            case R_BLESS: { int n = Mth.clamp(bCur + d, 0, 2); if (n != bCur) { bCur = n; Snd.sfx("ui_hover", 0.5f); } break; }
+            case R_DIFF: { int n = Mth.clamp(Save.S.diffSel + d, 0, 2); if (n != Save.S.diffSel) { Save.S.diffSel = n; Save.S.write(); diffBtn.label = diffLabel(); Snd.sfx("ui_hover", 0.7f); } break; }
+            case R_OPTS: { int n = Mth.clamp(oCol + d, 0, 3); if (n != oCol) { oCol = n; Snd.sfx("ui_hover", 0.5f); } break; }
+            default: break;
+        }
+    }
+
+    /** Aceptar (A / Enter): actua SOLO sobre la fila apuntada y, si no es el boton de inicio, pasa a la siguiente fila. */
+    private void accept() {
+        switch (row) {
+            case R_CHAR: Snd.sfx("ui_click", 0.8f); say(cls().name); row = R_BLESS; break;     // confirmar espadachin: NO empieza la partida
+            case R_BLESS: if (chosen != bCur) pick(bCur); else Snd.sfx("ui_click", 0.8f); row = R_DIFF; break;
+            case R_DIFF: Snd.sfx("ui_click", 0.8f); row = R_OPTS; break;
+            case R_OPTS: { Hit h = focusHit(); if (h != null) click(h); break; }
+            case R_START: launch(); break;
+            default: break;
+        }
+    }
+
     @Override void key(int code, boolean down) {
+        if (code > 0 && code < heldCode.length) {
+            if (!down) { heldCode[code] = false; return; }
+            if (heldCode[code]) return;          // repeticion de una tecla mantenida: se ignora
+            heldCode[code] = true;
+        }
         if (!down || launchT >= 0) return;
         game.keyboardUsed = true;
         if (code == 27) { back(); return; }
-        if (code == 10 || code == 32) { launch(); return; }
-        if (code == 37 || code == 'A') swap(-1);
-        else if (code == 39 || code == 'D') swap(1);
+        if (code == 10) { if (enterT >= 0.25f) accept(); return; }       // Enter / A: aceptar la fila apuntada (no inicia, salvo en COMENZAR)
+        if (code == 32) { if (enterT >= 0.25f) launch(); return; }       // atajo de teclado: Espacio comienza
+        if (code == 38 || code == 'W') moveRow(-1);
+        else if (code == 40 || code == 'S') moveRow(1);
+        else if (code == 37) moveH(-1);
+        else if (code == 39) moveH(1);
+        else if (code == 'A') swap(-1);
+        else if (code == 'D') swap(1);
         else if (code >= '1' && code <= '3') pick(code - '1');
         else if (code == 'M') toggleMode();
     }
@@ -194,7 +251,9 @@ final class PrepScreen extends Screen {
         ps.render(g, 0, 0);
         if (UI.vignette != null) g.image(UI.vignette, 0, 0, UI.vignette.w, UI.vignette.h, 0, 0, w, ViewSize.h, 0, 0, 0.6f);
         UI.big.center(g, "PREPARACIÓN", (156 + w) / 2f, 4, UI.GOLD, 1f);
+        Hit fh = focusHit(); sel = fh == null ? -1 : hits.indexOf(fh);
         drawButtons(g);
+        drawFocus(g, fh);
         if (!Save.S.finalBeaten && modeBtn != null) UI.icon(g, "lock", modeBtn.x + modeBtn.w - 13, modeBtn.y - 4, 1f);   // candado en la esquina: no pisa el texto
         if (startBtn != null && launchT < 0) {          // brillo pulsante del boton principal
             float a = 0.35f + 0.25f * (float) Math.sin(t * 5);
@@ -206,6 +265,19 @@ final class PrepScreen extends Screen {
         float fin = Mth.clamp(enterT / 0.5f, 0, 1);
         if (fin < 1) g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x000000, (int) ((1 - fin) * 255)), false);
         if (launchT >= 0) drawLaunch(g, w, c);
+    }
+
+    private static void outline(Platform.Gfx g, float x, float y, float w, float h, int c) {
+        g.rect(x, y, w, 2, c, false); g.rect(x, y + h - 2, w, 2, c, false); g.rect(x, y, 2, h, c, false); g.rect(x + w - 2, y, 2, h, c, false);
+    }
+
+    /** Resaltado claro del elemento apuntado con mando/teclado (cian pulsante; el dorado queda para lo ya elegido). */
+    private void drawFocus(Platform.Gfx g, Hit fh) {
+        if (!game.keyboardUsed || launchT >= 0) return;
+        int c = Mth.withAlpha(0x5AF0FF, (int) ((0.75f + 0.25f * (float) Math.sin(t * 8)) * 255));
+        if (row == R_CHAR) outline(g, 2, 100, 150, 52, c);
+        else if (row == R_BLESS && cardHit[bCur] != null) { Hit h = cardHit[bCur]; outline(g, h.x - 3, h.y - 4, h.w + 6, h.h + 6, c); }
+        else if (fh != null) outline(g, fh.x - 2, fh.y - 2, fh.w + 4, fh.h + 4, c);
     }
 
     private void drawShowcase(Platform.Gfx g, ClassDef c) {

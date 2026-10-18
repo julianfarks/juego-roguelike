@@ -206,6 +206,7 @@ public final class PcMain implements PcWindow.Host {
                     rep.append(g ? "ok   " : "FAIL ").append("sfx ").append(nm).append(": ").append(String.format("%.3f", got)).append(" s (manifiesto ").append(want).append(" s, ").append(PcAudio.lastPath).append(")\n");
                     ok &= g;
                 }
+                if (!PcAudio.lastJorbisError.isEmpty()) rep.append("info jorbis directo no disponible: ").append(PcAudio.lastJorbisError).append('\n');
                 PcAudio.Pcm a = PcAudio.decode(sfx), b = PcAudio.decode(mus);
                 boolean g = a.frames > 100 && b.frames > 44100 && b.ch == 2;
                 rep.append(g ? "ok   " : "FAIL ").append("OGG decodificado: sfx ").append(a.frames).append(" fotogramas, musica ").append(b.frames).append(" (").append(b.ch).append(" canales)\n");

@@ -146,9 +146,21 @@ final class PcAudio implements Platform.Audio {
             for (int i = 0; i < s.length; i++) s[i] = (short) ((b[2 * i] & 0xFF) | (b[2 * i + 1] << 8));
             return new Pcm(s, Math.max(1, Math.min(2, ch)), rate);
         } catch (Throwable t) {
+            Throwable c = t instanceof java.lang.reflect.InvocationTargetException && t.getCause() != null ? t.getCause() : t;
+            lastJorbisError = c.toString();
+            try {
+                Class<?> vfC = Class.forName("com.jcraft.jorbis.VorbisFile");
+                StringBuilder sb = new StringBuilder(" ctors:");
+                for (java.lang.reflect.Constructor<?> k : vfC.getConstructors()) sb.append(' ').append(java.util.Arrays.toString(k.getParameterTypes()));
+                sb.append(" read:");
+                for (java.lang.reflect.Method m : vfC.getMethods()) if (m.getName().equals("read") || m.getName().equals("getInfo")) sb.append(' ').append(m.getName()).append(java.util.Arrays.toString(m.getParameterTypes()));
+                lastJorbisError += sb;
+            } catch (Throwable ignored) { }
             return null;
         }
     }
+
+    static volatile String lastJorbisError = "";
 
     static Pcm decode(File f) throws Exception {
         Pcm j = decodeJorbis(f);

@@ -8,8 +8,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT=${SWR_OUT:-/tmp/swr_build}
 rm -rf "$OUT"; mkdir -p "$OUT"
-find "$ROOT/Shared/src/main/java/com/julianfarks/roguelike/core" -name '*.java' > "$OUT/sources.txt"
-find "$ROOT/PC/src/main/java" -name '*.java' >> "$OUT/sources.txt"
+find "$ROOT/Shared/src/main/java/com/julianfarks/roguelike/core" -name '*.java' ! -name OggJorbis.java > "$OUT/sources.txt"
+find "$ROOT/PC/src/main/java" -name '*.java' ! -name OggJorbis.java >> "$OUT/sources.txt"
 JV=$(javac -version 2>&1 | grep -o 'javac [0-9]*' | grep -o '[0-9]*' | head -1)
 if [ "$JV" -ge 22 ]; then FLAGS="--release 22"; RUNF=""; else FLAGS="--release 21 --enable-preview"; RUNF="--enable-preview"; fi
 if ! javac $FLAGS -encoding UTF-8 -nowarn -d "$OUT" @"$OUT/sources.txt" > "$OUT/javac.log" 2>&1; then cat "$OUT/javac.log"; exit 1; fi

@@ -118,44 +118,26 @@ final class PcAudio implements Platform.Audio {
     }
 
     /**
-     * Decodifica un OGG completo con JOrbis (via reflexion, para no depender de la libreria al compilar). El SPI de Java Sound pierde
-     * los efectos MUY cortos (devuelve 0 bytes), JOrbis directo no. Devuelve null si JOrbis no esta o falla.
+     * Decodifica un OGG completo con JOrbis directo (clase pc.OggJorbis, buscada por reflexion: solo existe si jorbis estaba al compilar).
+     * El SPI de Java Sound pierde los efectos MUY cortos (devuelve 0 bytes); JOrbis directo no. null si no esta o falla.
      */
     private static Pcm decodeJorbis(File f) {
         try {
-            Class<?> vfC = Class.forName("com.jcraft.jorbis.VorbisFile");
+            Class<?> c = Class.forName("pc.OggJorbis");
             java.io.InputStream is = new java.io.BufferedInputStream(new java.io.FileInputStream(f), 1 << 16);
-            Object vf = vfC.getConstructor(java.io.InputStream.class, byte[].class, int.class).newInstance(is, null, -1);
-            Object info = vfC.getMethod("getInfo", int.class).invoke(vf, 0);
-            int ch = info.getClass().getField("channels").getInt(info);
-            int rate = info.getClass().getField("rate").getInt(info);
-            java.lang.reflect.Method rd = vfC.getMethod("read", byte[].class, int.class, int.class, int.class, int.class, int[].class);
-            ByteArrayOutputStream bo = new ByteArrayOutputStream(1 << 16);
-            byte[] buf = new byte[4096];
-            int[] bit = new int[1];
-            for (int guard = 0; guard < 5_000_000; guard++) {
-                int n = (Integer) rd.invoke(vf, buf, buf.length, 0, 2, 1, bit);   // little endian, 16 bits, con signo
-                if (n == 0) break;                                              // fin
-                if (n < 0) continue;                                            // salto en el flujo: sigue
-                bo.write(buf, 0, n);
-            }
-            try { vfC.getMethod("close").invoke(vf); } catch (Throwable ignored) { }
-            byte[] b = bo.toByteArray();
+            Object[] r;
+            try { r = (Object[]) c.getMethod("decode", java.io.InputStream.class).invoke(null, is); } finally { is.close(); }
+            byte[] b = (byte[]) r[0];
             if (b.length == 0) return null;
             short[] s = new short[b.length / 2];
             for (int i = 0; i < s.length; i++) s[i] = (short) ((b[2 * i] & 0xFF) | (b[2 * i + 1] << 8));
-            return new Pcm(s, Math.max(1, Math.min(2, ch)), rate);
+            return new Pcm(s, Math.max(1, Math.min(2, (Integer) r[1])), (Integer) r[2]);
+        } catch (ClassNotFoundException e) {
+            lastJorbisError = "sin pc.OggJorbis";
+            return null;
         } catch (Throwable t) {
             Throwable c = t instanceof java.lang.reflect.InvocationTargetException && t.getCause() != null ? t.getCause() : t;
             lastJorbisError = c.toString();
-            try {
-                Class<?> vfC = Class.forName("com.jcraft.jorbis.VorbisFile");
-                StringBuilder sb = new StringBuilder(" ctors:");
-                for (java.lang.reflect.Constructor<?> k : vfC.getConstructors()) sb.append(' ').append(java.util.Arrays.toString(k.getParameterTypes()));
-                sb.append(" read:");
-                for (java.lang.reflect.Method m : vfC.getMethods()) if (m.getName().equals("read") || m.getName().equals("getInfo")) sb.append(' ').append(m.getName()).append(java.util.Arrays.toString(m.getParameterTypes()));
-                lastJorbisError += sb;
-            } catch (Throwable ignored) { }
             return null;
         }
     }

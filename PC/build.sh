@@ -20,7 +20,7 @@ dl com/googlecode/soundlibs/tritonus-share/0.3.7.4/tritonus-share-0.3.7.4.jar
 
 # Motor compartido (Shared) + codigo de PC
 find "$ROOT/Shared/src/main/java" "$ROOT/PC/src/main/java" -name '*.java' > "$B/sources.txt"
-javac --release 22 -encoding UTF-8 -nowarn -d "$B/classes" @"$B/sources.txt"
+javac --release 22 -encoding UTF-8 -nowarn -cp "$B/lib/jorbis-0.0.17.4.jar" -d "$B/classes" @"$B/sources.txt"
 cp -r "$ROOT/PC/src/main/resources/." "$B/classes/"
 jar --create --file "$B/input/swordsmanmagic.jar" --main-class pc.PcMain -C "$B/classes" .
 cp "$B"/lib/*.jar "$B/input/"

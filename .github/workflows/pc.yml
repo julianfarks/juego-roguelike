@@ -42,9 +42,17 @@ jobs:
           $exe = "PC/build/dist/SwordsmanMagic/SwordsmanMagic.exe"
           $p = Start-Process -FilePath $exe -ArgumentList "--selftest" -Wait -PassThru
           $dir = Join-Path $env:APPDATA "SwordsmanMagic-EternalAbyss"
-          if (Test-Path "$dir/selftest.txt") { Get-Content "$dir/selftest.txt" }
-          if (Test-Path "$dir/log.txt") { Write-Host "---- log.txt ----"; Get-Content "$dir/log.txt" }
-          if ($p.ExitCode -ne 0) { throw "selftest fallo (codigo $($p.ExitCode))" }
+          $out = ""
+          if (Test-Path "$dir/selftest.txt") { $out += (Get-Content "$dir/selftest.txt" -Raw) }
+          if (Test-Path "$dir/log.txt") { $out += "---- log.txt ---- " + ((Get-Content "$dir/log.txt" | Select-Object -First 40) -join " | ") }
+          Write-Host $out
+          Write-Host "exit code: $($p.ExitCode)"
+          if ($p.ExitCode -ne 0) {
+            $msg = ("exit " + $p.ExitCode + " :: " + $out) -replace "[\r\n]+", " | "
+            if ($msg.Length -gt 1800) { $msg = $msg.Substring(0, 1800) }
+            Write-Host "::error title=selftest fallo::$msg"
+            exit 1
+          }
       - name: Comprimir
         shell: pwsh
         run: Compress-Archive -Path "PC/build/dist/SwordsmanMagic" -DestinationPath SwordsmanMagic-Windows.zip

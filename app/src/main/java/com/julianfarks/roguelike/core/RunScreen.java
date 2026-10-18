@@ -208,6 +208,7 @@ final class RunScreen extends Screen implements Level.Listener {
         if (type == Room.BOSS) setupBoss(null);
         sandboxSetup();
         if (lv.cleared && type != Room.BOSS && !sandbox) spawnDoors();
+        else if (type == Room.COMBAT && rs.curEvent == 0 && !sandbox) addSideDoor(true);   // el mercader errante puede encontrarse durante la exploracion
         // banner
         if (type == Room.HUB) {
             bannerTitle = rs.stage >= 3 ? "El Sello está completo" : "Santuario del Viajero";
@@ -265,6 +266,12 @@ final class RunScreen extends Screen implements Level.Listener {
     private void spawnDoors() {
         Room rm = lv.room;
         if (rm.type == Room.HUB) return;
+        if (rm.type == Room.EVENT && rs.curEvent == Events.MERCHANT && rs.sideOrigin >= 0) {   // salida del mercader: vuelve al piso de origen (NO es la salida principal)
+            Prop d = lv.addProp(new Room.PropSpec("door", rm.exitX, rm.exitY, 0));
+            d.doorIdx = 0; d.nextType = -3; d.label = "Volver"; d.anim = "open"; d.animT = 0;
+            Snd.sfx("door_open", 0.8f);
+            return;
+        }
         int next = rs.roomNo + 1;
         int[] types;
         if (rm.type == Room.BOSS) return;
@@ -280,18 +287,26 @@ final class RunScreen extends Screen implements Level.Listener {
             d.anim = "open"; d.animT = 0;
         }
         // puerta lateral opcional hacia un suceso especial (solo tras salas de combate normales; jamas sustituye a la puerta principal)
-        if (rm.type == Room.COMBAT && rs.curEvent == 0 && !sandbox) {
-            Rng er = new Rng(rs.seed ^ (rs.stage * 1315423911L + rs.roomNo * 2654435761L + (rs.biome == null ? 0 : rs.biome.id) * 97L + rs.floor * 7919L));
-            int ek = Events.roll(rs, er, next);
-            float[] sd = ek > 0 ? Events.sideDoor(rm) : null;
-            if (ek > 0 && sd != null) {
-                Prop d = lv.addProp(new Room.PropSpec("door", sd[0], sd[1], 0));
-                d.doorIdx = 1; d.event = ek; d.nextType = ek == Events.TRIAL ? Room.ELITE : Room.EVENT;
-                d.icon = Events.ICON[ek]; d.tint = Events.GLOW[ek]; d.label = Events.NAME[ek];
-                d.anim = "open"; d.animT = 0;
-            }
-        }
+        if (rm.type == Room.COMBAT && rs.curEvent == 0 && !sandbox) addSideDoor(false);
         Snd.sfx("door_open", 0.8f);
+    }
+
+    /** Puerta lateral hacia un suceso. earlyOnly: solo el mercader errante, que puede aparecer antes de despejar la sala. */
+    private void addSideDoor(boolean earlyOnly) {
+        Room rm = lv.room;
+        for (Prop q : lv.props) if (q.kind.equals("door") && q.event > 0) return;   // ya hay una (o ya se uso): no se duplica
+        int next = rs.roomNo + 1;
+        Rng er = new Rng(rs.seed ^ (rs.stage * 1315423911L + rs.roomNo * 2654435761L + (rs.biome == null ? 0 : rs.biome.id) * 97L + rs.floor * 7919L));
+        int ek = Events.roll(rs, er, next);
+        if (earlyOnly && ek != Events.MERCHANT) return;
+        float[] sd = ek > 0 ? Events.sideDoor(rm) : null;
+        if (ek > 0 && sd != null) {
+            Prop d = lv.addProp(new Room.PropSpec("door", sd[0], sd[1], 0));
+            d.doorIdx = 1; d.event = ek; d.nextType = ek == Events.TRIAL ? Room.ELITE : Room.EVENT;
+            d.icon = Events.ICON[ek]; d.tint = Events.GLOW[ek]; d.label = Events.NAME[ek];
+            d.anim = "open"; d.animT = 0;
+            if (earlyOnly) Snd.sfx("door_open", 0.5f);
+        }
     }
 
     // =============================================================== Level.Listener
@@ -454,6 +469,43 @@ final class RunScreen extends Screen implements Level.Listener {
         goRoom(nid == 8 ? Room.BOSS : Room.COMBAT);
     }
 
+    // =============================================================== mercader errante (sala secundaria temporal)
+    private Level originLv;      // sala de origen, conservada viva (enemigos, trampas, objetos) mientras se esta en la tienda
+    private Prop originDoor;     // la puerta por la que se entro
+
+    private void enterMerchant(Prop p) {
+        originLv = lv; originDoor = p;
+        p.locked = true; p.done = true; p.label = "Mercader visitado";   // su entrada queda desactivada
+        rs.sideOrigin = lv.room.type;
+        rs.curEvent = p.event; rs.eventBiomeDone = true; rs.eventsThisRun[p.event]++;
+        if (!sandbox) { Save.S.events[p.event]++; Save.S.write(); }
+        goRoom(Room.EVENT);
+    }
+
+    private void leaveMerchant() {
+        if (fadeMode == 1) return;
+        fadeMode = 1; in.reset();
+        fadeAct = this::restoreOrigin;
+    }
+
+    /** Vuelve a la sala de origen tal como estaba (sin regenerarla). Si se cargo una partida dentro de la tienda, la sala de origen se vuelve a crear. */
+    private void restoreOrigin() {
+        Level o = originLv; Prop d = originDoor; int ot = rs.sideOrigin;
+        originLv = null; originDoor = null; rs.sideOrigin = -1; rs.curEvent = 0;
+        if (o == null) { loadRoom(ot >= 0 ? ot : Room.COMBAT); return; }
+        lv = o;
+        Player pl = o.pl;
+        pl.x = d.x + 22; pl.y = d.y; pl.vx = pl.vy = 0; pl.safeX = pl.x; pl.safeY = pl.y;
+        pl.state = Player.IDLE;
+        lv.snapCamera();
+        shop = null; ov = OV_NONE; quitConfirm = false;
+        Snd.music(rs.biome.music, true); Snd.ambient(rs.biome.ambient, 0.3f);
+        bannerT = 0;
+        fadeAct = null;
+        in.reset();
+        layoutOverlay();
+    }
+
     // =============================================================== interaccion
     private void interact() {
         Prop p = lv.nearestInteractable();
@@ -468,6 +520,8 @@ final class RunScreen extends Screen implements Level.Listener {
             case "door":
                 Snd.sfx("door_open", 0.7f);
                 if (p.nextType == -2) { afterBoss(); break; }
+                if (p.nextType == -3) { leaveMerchant(); break; }
+                if (p.event == Events.MERCHANT && p.nextType == Room.EVENT) { enterMerchant(p); break; }
                 if (p.event > 0) {   // puerta lateral: no avanza la ruta principal
                     rs.curEvent = p.event; rs.eventBiomeDone = true; rs.eventsThisRun[p.event]++;
                     if (!sandbox) { Save.S.events[p.event]++; Save.S.write(); }
@@ -799,7 +853,7 @@ final class RunScreen extends Screen implements Level.Listener {
         return l;
     }
 
-    private void buy(ShopItem it) {
+    void buy(ShopItem it) {
         if (it.sold) return;
         if (rs.gold < it.cost) { Snd.sfx("ui_error", 0.8f); hintT = 1.2f; return; }
         rs.gold -= it.cost;
@@ -1283,7 +1337,7 @@ final class RunScreen extends Screen implements Level.Listener {
 
     private String hintFor(Prop p) {
         switch (p.kind) {
-            case "door": return p.nextType == -2 ? "Salir" : "Entrar";
+            case "door": return p.nextType == -2 ? "Salir" : p.nextType == -3 ? "Volver" : "Entrar";
             case "portal": return "Viajar";
             case "altar": return "Rezar";
             case "forge": return "Forjar";

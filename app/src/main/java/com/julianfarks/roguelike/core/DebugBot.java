@@ -275,6 +275,7 @@ public final class DebugBot {
             rs.loadRoom(type);
             return;
         }
+        if (System.getenv("BOT_MERCHTEST") != null && warped && frame > warpFrame + 60) { merchStep(g, rs, lv, p, frame); return; }
         if (System.getenv("BOT_SECTEST") != null && (warp == null || (warped && frame > warpFrame + 20))) { secretStep(g, rs, lv, p, frame); return; }
         if (System.getenv("BOT_SPIKETEST") != null && !spikeDone && frame > 260) {
             spikeDone = true;
@@ -560,6 +561,119 @@ public final class DebugBot {
         lastX = p.x;
         if (stuck > 60) { tap(g, 'W'); if (stuck > 90) { tap(g, 'K'); stuck = 0; } }
     }
+
+    // ---- prueba del mercader errante: piso con enemigos vivos -> tienda -> compra -> salir -> mismo piso (BOT_MERCHTEST=1 con BOT_EVENT=1)
+    private int mst, mT; private Level mOrigin; private Prop mDoor;
+    private final java.util.List<Enemy> mEn = new java.util.ArrayList<>();
+    private float[] mPos; private float mHp, mGold; private int mKill, mRoomNo, mProps, mPotions;
+    private boolean mFail;
+
+    private void mchk(String what, boolean ok) { System.out.println("MERCHTEST " + (ok ? "ok   " : "FAIL ") + what); if (!ok) mFail = true; }
+
+    private void mSnap(Level lv, RunScreen rs) {
+        mPos = new float[mEn.size() * 3];
+        for (int i = 0; i < mEn.size(); i++) { Enemy e = mEn.get(i); mPos[i * 3] = e.x; mPos[i * 3 + 1] = e.y; mPos[i * 3 + 2] = e.hp; }
+        mHp = rs.rs.hp; mGold = rs.rs.gold; mKill = lv.toKill; mProps = lv.props.size();
+    }
+
+    private void merchStep(Game g, RunScreen rs, Level lv, Player p, int frame) {
+        mT++;
+        if (rs.fadeA > 0.05f && mst != 5 && mst != 1) return;
+        switch (mst) {
+            case 0: {
+                if (lv.room.type != Room.COMBAT) return;
+                mDoor = null;
+                for (Prop q : lv.props) if (q.kind.equals("door") && q.event == Events.MERCHANT) mDoor = q;
+                if (mDoor == null) { if (mT < 40) { rs.loadRoom(Room.COMBAT); return; } System.out.println("MERCHTEST: la sala no tiene puerta de mercader"); mst = 99; return; }
+                mOrigin = lv; mEn.addAll(lv.enemies); mRoomNo = rs.rs.roomNo;
+                rs.rs.hp = Math.max(30, rs.rs.stats.maxHp - 43); rs.rs.gold = 400;
+                mchk("el piso tiene enemigos vivos y la salida principal bloqueada (toKill=" + lv.toKill + ", cleared=" + lv.cleared + ")", lv.toKill > 0 && !lv.cleared && mEn.size() > 0);
+                boolean exitDoor = false; for (Prop q : lv.props) if (q.kind.equals("door") && q.event == 0) exitDoor = true;
+                mchk("no hay puerta de salida al siguiente piso", !exitDoor);
+                mPotions = rs.rs.potions;
+                p.x = mDoor.x; p.y = mDoor.y; p.vx = p.vy = 0; lv.snapCamera();
+                mst = 1; mT = 0; return;
+            }
+            case 1: {   // entrar: se guarda la ultima foto de la sala de origen mientras siga siendo la actual
+                if (lv == mOrigin) { mSnap(lv, rs); p.x = mDoor.x; p.y = mDoor.y; p.vx = 0; if (mT % 10 == 0) tap(g, 'E'); return; }
+                mchk("estamos en la sala de mercader (tipo EVENT, suceso mercader, origen guardado)", lv.room.type == Room.EVENT && rs.rs.curEvent == Events.MERCHANT && rs.rs.sideOrigin == Room.COMBAT);
+                mchk("la entrada del mercader quedo marcada como visitada", mDoor.locked && mDoor.done);
+                mst = 2; mT = 0; return;
+            }
+            case 2: {
+                Prop m = null; for (Prop q : lv.props) if (q.kind.equals("merchant")) m = q;
+                if (m == null) { mchk("hay un mercader en la tienda", false); mst = 99; return; }
+                p.x = m.x - 12; p.y = m.y; p.vx = 0;
+                if (rs.ov == RunScreen.OV_SHOP) { mst = 3; mT = 0; return; }
+                if (mT % 10 == 0) tap(g, 'E'); return;
+            }
+            case 3: {
+                float g0 = rs.rs.gold; RunScreen.ShopItem pick = null;
+                for (RunScreen.ShopItem it : rs.shop) if (!it.sold && it.cost <= g0) { pick = it; break; }
+                mchk("hay algo que comprar", pick != null);
+                if (pick != null) { int pot0 = rs.rs.potions; rs.buy(pick); mchk("la compra resta oro (" + (int) g0 + " -> " + (int) rs.rs.gold + ") y marca vendido", rs.rs.gold == g0 - pick.cost && pick.sold); mGold = rs.rs.gold; }
+                mPotions = rs.rs.potions; mHp = rs.rs.hp;
+                tap(g, 27); mst = 4; mT = 0; return;
+            }
+            case 4: {
+                if (rs.ov != RunScreen.OV_NONE) { if (mT % 10 == 0) tap(g, 27); return; }
+                // guardar dentro de la tienda: el piso de origen y la visita se conservan
+                boolean w = RunSave.write(g.P, rs, 0);
+                RunScreen ld = RunSave.load(g, 0);
+                mchk("guardar/cargar dentro de la tienda conserva origen y visita (guardado=" + w + ", sideOrigin=" + (ld == null ? "?" : ld.rs.sideOrigin) + ", eventBiomeDone=" + (ld != null && ld.rs.eventBiomeDone) + ")", ld != null && ld.rs.sideOrigin == Room.COMBAT && ld.rs.eventBiomeDone && ld.rs.curEvent == Events.MERCHANT);
+                Prop ex = null; for (Prop q : lv.props) if (q.kind.equals("door") && q.nextType == -3) ex = q;
+                mchk("la salida del mercader es 'Volver' (no la salida principal)", ex != null);
+                if (ex == null) { mst = 99; return; }
+                mDoor.getClass(); mExit = ex; mst = 5; mT = 0; return;
+            }
+            case 5: {
+                if (lv.room.type == Room.EVENT) { p.x = mExit.x; p.y = mExit.y; p.vx = 0; if (mT % 10 == 0) tap(g, 'E'); return; }
+                mchk("volvimos al MISMO piso (misma sala, sin regenerar)", lv == mOrigin);
+                mchk("la sala de origen no avanzo de numero (roomNo " + mRoomNo + " -> " + rs.rs.roomNo + ")", rs.rs.roomNo == mRoomNo);
+                boolean same = lv.enemies.size() == mEn.size();
+                for (int i = 0; same && i < mEn.size(); i++) same = lv.enemies.contains(mEn.get(i)) && mEn.get(i).alive && Math.abs(mEn.get(i).x - mPos[i * 3]) < 1.5f && Math.abs(mEn.get(i).y - mPos[i * 3 + 1]) < 1.5f && Math.abs(mEn.get(i).hp - mPos[i * 3 + 2]) < 0.01f;   // tolerancia: un fotograma de la ultima actualizacion antes del cambio de sala
+                float md = 0; for (int i = 0; i < mEn.size(); i++) md = Math.max(md, Math.max(Math.abs(mEn.get(i).x - mPos[i * 3]), Math.abs(mEn.get(i).y - mPos[i * 3 + 1])));
+                System.out.println("MERCHTEST detalle: desplazamiento maximo de un enemigo = " + md + " px; vivos=" + lv.enemies.size() + " misma lista=" + lv.enemies.containsAll(mEn));
+                mchk("los mismos " + mEn.size() + " enemigos siguen vivos, con la misma posicion y vida", same);
+                mchk("toKill intacto (" + lv.toKill + " = " + mKill + ") y la sala sigue sin despejar", lv.toKill == mKill && !lv.cleared);
+                mchk("vida y oro conservados (hp " + rs.rs.hp + " = " + mHp + ", oro " + (int) rs.rs.gold + " = " + (int) mGold + ", frascos " + rs.rs.potions + ")", rs.rs.hp == mHp && rs.rs.gold == mGold && rs.rs.potions == mPotions);
+                boolean exitDoor = false; for (Prop q : lv.props) if (q.kind.equals("door") && q.event == 0) exitDoor = true;
+                mchk("la salida al siguiente piso sigue bloqueada (no existe)", !exitDoor);
+                mchk("sin objetos/props de mas ni de menos (" + lv.props.size() + " = " + mProps + ")", lv.props.size() == mProps);
+                mchk("el jugador reaparece junto a la puerta de acceso (x=" + (int) p.x + ", puerta " + (int) mDoor.x + ")", Math.abs(p.x - mDoor.x) < 40 && Math.abs(p.y - mDoor.y) < 4);
+                mst = 6; mT = 0; return;
+            }
+            case 6: {   // reintentar entrar: debe estar desactivada
+                p.x = mDoor.x; p.y = mDoor.y; p.vx = 0;
+                if (mT % 10 == 0) tap(g, 'E');
+                if (mT > 90) {
+                    mchk("la entrada del mercader no permite volver a entrar en este piso", lv == mOrigin && rs.rs.sideOrigin == -1 && lv.room.type == Room.COMBAT);
+                    mst = 7; mT = 0;
+                }
+                return;
+            }
+            case 7: {   // derrotar a los enemigos: se habilita la salida normal
+                for (Enemy e : new java.util.ArrayList<>(lv.enemies)) if (e.alive) e.die(lv);
+                if (!lv.cleared) { if (mT > 600) { mchk("el piso se despeja al derrotar a los enemigos", false); mst = 99; } return; }
+                if (mT < 30) return;
+                Prop ex = null; for (Prop q : lv.props) if (q.kind.equals("door") && q.event == 0 && q.nextType >= 0) ex = q;
+                mchk("al despejar aparece la salida normal", ex != null);
+                int before = rs.rs.roomNo;
+                if (ex == null) { mst = 99; return; }
+                mExit = ex; mst = 8; mT = 0; return;
+            }
+            case 8: {
+                if (lv == mOrigin) { p.x = mExit.x; p.y = mExit.y; p.vx = 0; if (mT % 10 == 0) tap(g, 'E'); return; }
+                mchk("la salida normal funciona: pasamos a la siguiente sala (roomNo " + mRoomNo + " -> " + rs.rs.roomNo + ")", rs.rs.roomNo == mRoomNo + 1);
+                boolean again = false; for (Prop q : lv.props) if (q.kind.equals("door") && q.event == Events.MERCHANT) again = true;
+                mchk("en la sala siguiente no reaparece el mercader (ya visitado en este bioma)", !again);
+                System.out.println(mFail ? "MERCHTEST FALLOS" : "MERCHTEST TODO OK");
+                mst = 99; return;
+            }
+            default: return;
+        }
+    }
+    private Prop mExit;
 
     // ---- banco de pruebas de camaras secretas (BOT_SECTEST=indice de camara): secuencia fija para capturar con --script
     private int secT0 = -1;

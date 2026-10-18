@@ -32,6 +32,7 @@ public final class RunState {
     public final int[] pacts = new int[Events.PACTS.length];     // pactos de santuario tomados (0/1)
     public final int[] eventsThisRun = new int[Events.COUNT];
     public boolean eventBiomeDone;      // ya hubo un suceso en este bioma
+    public int sideOrigin = -1;         // dentro del mercader errante: tipo de sala (Room.*) a la que se vuelve al salir (-1 = no estamos en una sala secundaria)
     public int curEvent;                // suceso de la sala actual (Events.*)
     public int startBless = -1;          // bendicion inicial elegida en la preparacion (-1 = ninguna)
     public int damageTaken;

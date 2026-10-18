@@ -89,31 +89,52 @@ final class PcAudio implements Platform.Audio {
         Pcm(short[] d, int ch, float rate) { data = d; this.ch = ch; frames = d.length / ch; this.rate = rate; }
     }
 
-    /** Abre un archivo de audio y lo entrega como PCM 16 bits little endian (decodifica OGG con el SPI). */
-    static AudioInputStream openPcm(File f) throws Exception {
-        AudioInputStream raw = AudioSystem.getAudioInputStream(f);
+    /** Abre un flujo de audio y lo entrega como PCM 16 bits little endian (decodifica OGG con el SPI). */
+    static AudioInputStream toPcm(AudioInputStream raw) throws Exception {
         AudioFormat sf = raw.getFormat();
         if (sf.getEncoding() == AudioFormat.Encoding.PCM_SIGNED && sf.getSampleSizeInBits() == 16 && !sf.isBigEndian()) return raw;
         AudioFormat pcm = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sf.getSampleRate(), 16, sf.getChannels(), sf.getChannels() * 2, sf.getSampleRate(), false);
         return AudioSystem.getAudioInputStream(pcm, raw);
     }
 
-    static Pcm decode(File f) throws Exception {
-        AudioInputStream in = openPcm(f);
+    static AudioInputStream openPcm(File f) throws Exception {
+        return toPcm(AudioSystem.getAudioInputStream(f));
+    }
+
+    /** Descripcion de como se decodifico el ultimo efecto (diagnostico). */
+    static volatile String lastPath = "";
+
+    private static byte[] readAll(AudioInputStream in, int bufSize) throws Exception {
         try {
-            AudioFormat fm = in.getFormat();
             ByteArrayOutputStream bo = new ByteArrayOutputStream(1 << 16);
-            byte[] buf = new byte[16384];
+            byte[] buf = new byte[bufSize];
             int n, zeros = 0;
             while ((n = in.read(buf, 0, buf.length)) != -1) {      // el decodificador OGG puede devolver 0 sin haber terminado
                 if (n > 0) { bo.write(buf, 0, n); zeros = 0; }
                 else if (++zeros > 2000) break;
             }
-            byte[] b = bo.toByteArray();
-            short[] s = new short[b.length / 2];
-            for (int i = 0; i < s.length; i++) s[i] = (short) ((b[2 * i] & 0xFF) | (b[2 * i + 1] << 8));
-            return new Pcm(s, Math.max(1, Math.min(2, fm.getChannels())), fm.getSampleRate());
+            return bo.toByteArray();
         } finally { in.close(); }
+    }
+
+    static Pcm decode(File f) throws Exception {
+        // 1) desde archivo; 2) desde bytes en memoria con bufer grande (algunos OGG cortos/mono devuelven 0 bytes por el primer camino)
+        AudioFormat fm = null;
+        byte[] b = null;
+        AudioInputStream in = openPcm(f);
+        fm = in.getFormat();
+        b = readAll(in, 16384);
+        lastPath = "archivo";
+        if (b.length == 0) {
+            byte[] raw = java.nio.file.Files.readAllBytes(f.toPath());
+            in = toPcm(AudioSystem.getAudioInputStream(new java.io.BufferedInputStream(new java.io.ByteArrayInputStream(raw))));
+            fm = in.getFormat();
+            b = readAll(in, 65536);
+            lastPath = "memoria";
+        }
+        short[] s = new short[b.length / 2];
+        for (int i = 0; i < s.length; i++) s[i] = (short) ((b[2 * i] & 0xFF) | (b[2 * i + 1] << 8));
+        return new Pcm(s, Math.max(1, Math.min(2, fm.getChannels())), fm.getSampleRate());
     }
 
     private Pcm sfxPcm(final String name) {

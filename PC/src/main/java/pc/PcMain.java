@@ -197,6 +197,10 @@ public final class PcMain implements PcWindow.Host {
                 byte[] pb = new byte[4096];
                 rep.append("info primera lectura: ").append(pi.read(pb, 0, pb.length)).append(" bytes\n");
                 pi.close();
+                for (String nm : new String[]{"ui_click", "jump", "land", "block", "hurt_1", "explosion_big"}) {
+                    PcAudio.Pcm t = PcAudio.decode(new File(assetsDir, "audio/sfx/" + nm + ".ogg"));
+                    rep.append("info sfx ").append(nm).append(": ").append(t.frames).append(" fotogramas (").append(PcAudio.lastPath).append(")\n");
+                }
                 PcAudio.Pcm a = PcAudio.decode(sfx), b = PcAudio.decode(mus);
                 boolean g = a.frames > 100 && b.frames > 44100 && b.ch == 2;
                 rep.append(g ? "ok   " : "FAIL ").append("OGG decodificado: sfx ").append(a.frames).append(" fotogramas, musica ").append(b.frames).append(" (").append(b.ch).append(" canales)\n");

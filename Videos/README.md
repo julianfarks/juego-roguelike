@@ -7,9 +7,9 @@ Dos tráileres de **30 s exactos**, hechos solo con **gameplay real** del juego 
 | `Trailer_Spanish.mp4` | Español | 30,000 s (1800 fotogramas) | 1920×1080 (16:9) | 60 | H.264 High, yuv420p / AAC estéreo 48 kHz |
 | `Trailer_English.mp4` | English | 30,000 s (1800 fotogramas) | 1920×1080 (16:9) | 60 | H.264 High, yuv420p / AAC estéreo 48 kHz |
 
-Descarga directa (Release `trailers`):
-- https://github.com/julianfarks/juego-roguelike/releases/download/trailers/Trailer_Spanish.mp4
-- https://github.com/julianfarks/juego-roguelike/releases/download/trailers/Trailer_English.mp4
+Descarga directa (archivos del repositorio, rama `main`):
+- https://github.com/julianfarks/juego-roguelike/raw/main/Videos/Trailer_Spanish.mp4
+- https://github.com/julianfarks/juego-roguelike/raw/main/Videos/Trailer_English.mp4
 
 ## Contenido (todo verificado con el código del juego)
 - **10 clases** (cada una con 3 habilidades + 1 definitiva), **9 biomas**, **9 jefes** (8 de bioma + El Cazador, con 3 formas), **28 bendiciones**.

@@ -66,15 +66,21 @@ for sid in range(4):
 ck('categorias: basico < intermedio < superior (medido en el juego)', meas[0] < meas[1] < meas[2] and meas[1] < meas[3])
 ck('superior claramente mas ancho que basico (>=60%)', meas[2] >= meas[0] * 1.6)
 
-# jefes reales: con el escudo superior y pulsando el boton a ritmo se logran parries contra ataques de jefe de verdad
-lines = []
-for k in range(0, 60):
-    f = 600 + k * 75
-    lines += [f'{f} key C down', f'{f + 30} key C up']
-open('/tmp/parry_boss.script', 'w').write('\n'.join(lines) + '\n')
-out = sh({'BOT_WARP': 'boss:0', 'BOT_GOD': '1', 'BOT_PARRYLOG': '1'}, 5400, '/tmp/parry_boss.script')
-n = [int(m[1]) for m in re.finditer(r'PARRIES f=\d+ n=(\d+)', out)]
-ck(f'contra un jefe real se logran parries pulsando el escudo (parries={max(n) if n else 0})', bool(n) and max(n) >= 1)
+# jefe REAL. El bot juega como una persona (BOT_PARRYBOSS): no ataca, se acerca mirando al jefe y pulsa el escudo C al ver que
+# el jefe empieza su ataque. (La version anterior pulsaba C a ciegas mientras el bot atacaba sin parar: en estado de ataque el
+# escudo no puede activarse -Player: guarding exige IDLE/RUN/AIR-, asi que NUNCA habia guardia y parries=0 era un fallo del test,
+# no del juego.) Control: el mismo combate sin pulsar el escudo no puede dar ningun parry.
+def boss(mode):
+    out = sh({'BOT_WARP': 'boss:0', 'BOT_GOD': '1', 'BOT_PARRYBOSS': mode}, 3600)
+    m = list(re.finditer(r'BOSSPARRY f=\d+ ataques=(\d+) parries=(\d+)', out))
+    return (int(m[-1][1]), int(m[-1][2])) if m else (0, 0), out
+
+(atk, par), out1 = boss('1')
+ck(f'jefe real: el jefe ataca ({atk} ataques)', atk >= 5)
+ck(f'jefe real: parries al reaccionar a su ataque ({par} de {atk} ataques)', par >= 2 and par >= 0.3 * atk and par <= atk + 2, (atk, par))
+(atk0, par0), out0 = boss('0')
+ck(f'jefe real, control sin pulsar escudo: 0 parries ({par0}; {atk0} ataques)', par0 == 0 and atk0 >= 2)
+out = out1 + out0
 ck('sin excepciones', 'Exception' not in out)
 print('parry_test OK' if not fails else f'parry_test FALLOS: {fails}')
 sys.exit(1 if fails else 0)

@@ -53,6 +53,31 @@ public final class DebugBot {
         }
     }
 
+    // ---- parry contra un jefe REAL (BOT_PARRYBOSS=1 reactivo | =0 control sin guardia). El bot juega como una persona: no ataca,
+    // se acerca al jefe mirandole y, al ver que el jefe empieza su ataque (telegrafia), pulsa el escudo C. Registra ataques y parries.
+    private int pbAtk, pbPrevState = -1, pbHoldUntil = -1, pbHits, pbLastLog;
+    private int pbParries0 = -1;
+    private void bossParryStep(Game g, RunScreen rs, Level lv, Player p, int frame) {
+        boolean react = "1".equals(System.getenv("BOT_PARRYBOSS"));
+        Boss b = lv.boss;
+        if (b == null || !b.alive || rs.fadeA > 0.05f) return;
+        if (pbParries0 < 0) pbParries0 = lv.parries;
+        rs.rs.hp = rs.rs.stats.maxHp;      // el banco no debe morir a mitad de la medicion
+        hold(g, 'J', false); hold(g, 'X', false);
+        float dx = b.x - p.x;
+        boolean near = Math.abs(dx) < 46;
+        hold(g, 39, !near && dx > 0); hold(g, 37, !near && dx < 0);
+        if (near && p.dir() * dx < 0) { hold(g, dx > 0 ? 39 : 37, true); }          // girarse hacia el jefe
+        else if (near) { hold(g, 39, false); hold(g, 37, false); }
+        if (b.state == Boss.ATTACK && pbPrevState != Boss.ATTACK && near) {
+            pbAtk++;
+            if (react) { hold(g, 'C', true); pbHoldUntil = frame + 28; }
+        }
+        pbPrevState = b.state;
+        if (pbHoldUntil >= 0 && frame >= pbHoldUntil) { hold(g, 'C', false); pbHoldUntil = -1; }
+        if (frame - pbLastLog >= 300) { pbLastLog = frame; System.out.println("BOSSPARRY f=" + frame + " ataques=" + pbAtk + " parries=" + (lv.parries - pbParries0) + " hp=" + Math.round(rs.rs.hp) + " estado=" + b.state + " cerca=" + near); }
+    }
+
     // ---- prueba de animaciones de personalidad: el bot se queda quieto y registra que hace el personaje (BOT_PERSONA=idle|react)
     private int pStart = -1;
     private void personaStep(RunScreen rs, Level lv, Player p, int frame) {
@@ -278,6 +303,7 @@ public final class DebugBot {
             rs.loadRoom(type);
             return;
         }
+        if (System.getenv("BOT_PARRYBOSS") != null && warped && frame > warpFrame + 30) { bossParryStep(g, rs, lv, p, frame); return; }
         if (System.getenv("BOT_MERCHTEST") != null && warped && frame > warpFrame + 60) { merchStep(g, rs, lv, p, frame); return; }
         if (System.getenv("BOT_SECTEST") != null && (warp == null || (warped && frame > warpFrame + 20))) { secretStep(g, rs, lv, p, frame); return; }
         if (System.getenv("BOT_SPIKETEST") != null && !spikeDone && frame > 260) {

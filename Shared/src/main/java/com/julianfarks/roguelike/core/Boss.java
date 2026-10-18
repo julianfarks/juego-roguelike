@@ -107,7 +107,7 @@ public final class Boss extends Ent {
             Status.fx(lv, this, dt);
             if (dps > 0) {
                 dotAcc += dps * dt;
-                if (dotAcc >= 3f) { int d = (int) dotAcc; dotAcc -= d; lv.damageEnemy(this, d, false, 0, 0); if (state == DEAD) return; }
+                if (dotAcc >= 3f) { int d = (int) dotAcc; dotAcc -= d; int pv = lv.dmgSrc; lv.dmgSrc = BlessFx.SRC_DOT; try { lv.damageEnemy(this, d, false, 0, 0); } finally { lv.dmgSrc = pv; } if (state == DEAD) return; }
             }
         }
         if (state != DEAD) lv.bossBarShow = Math.min(1f, lv.bossBarShow + dt * 1.5f);

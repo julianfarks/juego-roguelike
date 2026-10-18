@@ -1,0 +1,417 @@
+Golpe Certero	Sure Strike	Frappe sûre	精准一击
+Cada 4 golpes seguidos, el siguiente hace +25% de daño por nivel.	Every 4 consecutive hits, the next one deals +25% damage per level.	Tous les 4 coups enchaînés, le suivant inflige +25 % de dégâts par niveau.	每连续命中4次，下一击伤害+25%（每级）。
+Hoja Rápida	Swift Blade	Lame vive	迅捷之刃
++7% de velocidad de ataque por nivel.	+7% attack speed per level.	+7 % de vitesse d'attaque par niveau.	攻击速度+7%（每级）。
+Peso Pesado	Heavyweight	Poids lourd	重量级
++18% de daño por nivel a enemigos con más del 80% de vida.	+18% damage per level to enemies above 80% health.	+18 % de dégâts par niveau aux ennemis à plus de 80 % de vie.	对生命高于80%的敌人伤害+18%（每级）。
+Rompeguardias	Guard Breaker	Brise-garde	破卫者
++22% de daño por nivel contra mini-jefes y jefes.	+22% damage per level against mini-bosses and bosses.	+22 % de dégâts par niveau contre mini-boss et boss.	对精英和首领伤害+22%（每级）。
+Puñalada Trapera	Backstab	Coup dans le dos	背刺
+Golpear a un enemigo por la espalda: +35% de daño.	Hitting an enemy from behind: +35% damage.	Frapper un ennemi dans le dos : +35 % de dégâts.	从背后攻击敌人：伤害+35%。
+Cazador de Enjambres	Swarm Hunter	Chasseur d'essaims	猎群者
++15% de daño por nivel a enemigos con otros dos cerca.	+15% damage per level to enemies with two others nearby.	+15 % de dégâts par niveau aux ennemis entourés d'au moins deux autres.	对周围有其他敌人的目标伤害+15%（每级）。
+Estocada Larga	Long Thrust	Estoc long	长刺
++18% de alcance de arma por nivel.	+18% weapon reach per level.	+18 % de portée d'arme par niveau.	武器攻击范围+18%（每级）。
+Filo Sangrante	Bleeding Edge	Lame saignante	放血之刃
+25% de causar sangrado. Los enemigos sangrando reciben +15% de daño de tus golpes.	25% chance to cause bleeding. Bleeding enemies take +15% damage from your hits.	25 % de provoquer un saignement. Les ennemis qui saignent subissent +15 % de dégâts de vos coups.	25%几率造成流血。流血的敌人受到你的攻击伤害+15%。
+Doble Tajo	Double Slash	Double entaille	双重斩
+18% de que tu golpe se repita poco después con el 40% del daño.	18% chance for your hit to repeat shortly after for 40% damage.	18 % de chance que votre coup se répète peu après avec 40 % des dégâts.	18%几率使你的攻击稍后重复，造成40%伤害。
+Impulso Letal	Lethal Momentum	Élan létal	致命势头
+Cada crítico da +7% de daño durante 4 s (hasta 5 cargas).	Each critical hit gives +7% damage for 4 s (up to 5 stacks).	Chaque critique donne +7 % de dégâts pendant 4 s (jusqu'à 5 cumuls).	每次暴击伤害+7%，持续4秒（最多5层）。
+Pulso Constante	Steady Pulse	Pouls régulier	稳定节奏
+Los golpes no críticos hacen +14% de daño por nivel.	Non-critical hits deal +14% damage per level.	Les coups non critiques infligent +14 % de dégâts par niveau.	非暴击攻击伤害+14%（每级）。
+Remate Brutal	Brutal Finisher	Finisseur brutal	残暴终结
+El tercer golpe del combo hace +25% de daño por nivel.	The third hit of the combo deals +25% damage per level.	Le troisième coup du combo inflige +25 % de dégâts par niveau.	连击第三击伤害+25%（每级）。
+Ritmo de Combate	Battle Rhythm	Rythme de combat	战斗节奏
+Cada remate de combo da +10% de velocidad de ataque durante 3 s (hasta 3 cargas).	Each combo finisher gives +10% attack speed for 3 s (up to 3 stacks).	Chaque fin de combo donne +10 % de vitesse d'attaque pendant 3 s (jusqu'à 3 cumuls).	每次连击终结攻击速度+10%，持续3秒（最多3层）。
+Sentencia	Verdict	Sentence	审判之刃
+Tu remate detona una explosión de 200% de daño cada 4 s.	Your finisher detonates an explosion for 200% damage every 4 s.	Votre finisseur déclenche une explosion à 200 % de dégâts toutes les 4 s.	连击终结引发爆炸，造成200%伤害，每4秒一次。
+Maestro de Armas	Weapon Master	Maître d'armes	武器大师
+Con la vida al 90% o más: +30% de daño de arma.	At 90% health or more: +30% weapon damage.	À 90 % de vie ou plus : +30 % de dégâts d'arme.	生命值不低于90%时，武器伤害+30%。
+Sed de Batalla	Battle Thirst	Soif de bataille	战斗渴望
+Cada baja da +12% de velocidad de ataque durante 3 s (hasta 2 cargas).	Each kill gives +12% attack speed for 3 s (up to 2 stacks).	Chaque kill donne +12 % de vitesse d'attaque pendant 3 s (jusqu'à 2 cumuls).	每次击杀攻击速度+12%，持续3秒（最多2层）。
+Ojo de Halcón	Hawk Eye	Œil de faucon	鹰眼
++5% de probabilidad de crítico por nivel.	+5% critical chance per level.	+5 % de chance de critique par niveau.	暴击率+5%（每级）。
+Ensañamiento	Overkill	Acharnement	赶尽杀绝
+Los críticos contra enemigos con menos del 30% de vida hacen +50% de daño crítico extra.	Critical hits against enemies below 30% health deal +50% extra critical damage.	Les critiques contre les ennemis à moins de 30 % de vie infligent +50 % de dégâts critiques en plus.	对生命低于30%的敌人暴击伤害额外+50%。
+Cadena de Críticos	Critical Chain	Chaîne critique	暴击连锁
+Tras 2 críticos seguidos, +20% de probabilidad de crítico hasta que falles un golpe o te hieran.	After 2 consecutive crits, +20% crit chance until you miss a crit or get hurt.	Après 2 critiques d'affilée, +20 % de chance de critique jusqu'à un coup non critique ou une blessure.	连续2次暴击后，暴击率+20%，直到某次攻击未暴击或你受伤。
+Combustión	Combustion	Combustion	燃烧强化
+El daño periódico (fuego, veneno, sangrado) hace +20% por nivel.	Damage over time (burn, poison, bleed) deals +20% per level.	Les dégâts sur la durée (feu, poison, saignement) font +20 % par niveau.	持续伤害（燃烧、中毒、流血）+20%（每级）。
+Llama Voraz	Ravenous Flame	Flamme vorace	贪婪之焰
+Los enemigos en llamas reciben +15% de daño de tus golpes y habilidades.	Burning enemies take +15% damage from your hits and skills.	Les ennemis en flammes subissent +15 % de dégâts de vos coups et compétences.	燃烧中的敌人受到你的攻击和技能伤害+15%。
+Brasa Crítica	Critical Ember	Braise critique	暴击余烬
++25% de probabilidad de crítico contra enemigos en llamas.	+25% critical chance against burning enemies.	+25 % de chance de critique contre les ennemis en flammes.	对燃烧中的敌人暴击率+25%。
+Contagio Ígneo	Fire Contagion	Contagion ignée	火焰传染
+Cuando muere un enemigo en llamas, el fuego salta a los cercanos.	When a burning enemy dies, the fire jumps to nearby enemies.	Quand un ennemi en flammes meurt, le feu saute aux ennemis proches.	燃烧的敌人死亡时，火焰蔓延到附近的敌人。
+Pira Viviente	Living Pyre	Bûcher vivant	活体火葬
+Los enemigos en llamas explotan al morir (60% de daño) y prenden fuego alrededor.	Burning enemies explode on death (60% damage) and ignite those around.	Les ennemis en flammes explosent à leur mort (60 % de dégâts) et enflamment les alentours.	燃烧的敌人死亡时爆炸（60%伤害）并点燃周围。
+Aliento de Dragón	Dragon Breath	Souffle de dragon	龙息
+Tu definitiva prende fuego a todos los enemigos durante 4 s.	Your ultimate sets all enemies on fire for 4 s.	Votre ultime enflamme tous les ennemis pendant 4 s.	你的终极技能点燃所有敌人，持续4秒。
+Rastro Ardiente	Burning Trail	Traînée ardente	烈焰轨迹
+Al rodar dejas dos charcos de fuego que queman a los enemigos.	Rolling leaves two fire patches that burn enemies.	En roulant, vous laissez deux flaques de feu qui brûlent les ennemis.	翻滚时留下两处火焰，灼烧敌人。
+Escarcha Quebradiza	Brittle Frost	Givre fragile	易碎寒霜
++35% de probabilidad de crítico contra enemigos ralentizados o congelados.	+35% critical chance against slowed or frozen enemies.	+35 % de chance de critique contre les ennemis ralentis ou gelés.	对减速或冰冻的敌人暴击率+35%。
+Esquirlas de Hielo	Ice Shards	Éclats de glace	冰晶碎片
+Los enemigos ralentizados o congelados sueltan 3 esquirlas al morir.	Slowed or frozen enemies release 3 shards on death.	Les ennemis ralentis ou gelés libèrent 3 éclats à leur mort.	减速或冰冻的敌人死亡时释放3枚冰晶。
+Aura Gélida	Frost Aura	Aura glaciale	寒霜光环
+Cada 3 s ralentizas a los enemigos cercanos.	Every 3 s you slow nearby enemies.	Toutes les 3 s, vous ralentissez les ennemis proches.	每3秒使附近的敌人减速。
+Ventisca	Blizzard	Blizzard	暴风雪
+Tus habilidades ralentizan a los enemigos en un radio amplio.	Your skills slow enemies in a wide radius.	Vos compétences ralentissent les ennemis dans un large rayon.	你的技能使大范围内的敌人减速。
+Congelación Profunda	Deep Freeze	Gel profond	深度冻结
+Golpear a un enemigo ralentizado: 12% de congelarlo 1,2 s (cada 2 s). Los jefes solo se ralentizan.	Hitting a slowed enemy: 12% chance to freeze it for 1.2 s (every 2 s). Bosses only get slowed.	Frapper un ennemi ralenti : 12 % de le geler 1,2 s (toutes les 2 s). Les boss sont seulement ralentis.	攻击减速的敌人：12%几率冻结1.2秒（每2秒）。首领仅被减速。
+Carga Estática	Static Charge	Charge statique	静电充能
+Tus golpes acumulan carga arcana (máx. 10). Al llegar a 10 se libera un rayo encadenado.	Your hits build arcane charge (max 10). At 10 it releases a chain lightning.	Vos coups accumulent de la charge arcanique (max 10). À 10, elle libère un éclair en chaîne.	攻击积累奥术电荷（最多10）。满10时释放连锁闪电。
+Pararrayos	Lightning Rod	Paratonnerre	避雷针
+Cada parry da 2 cargas arcanas y libera una descarga con todas tus cargas.	Each parry grants 2 arcane charges and releases a discharge with all your charges.	Chaque parade donne 2 charges arcaniques et libère une décharge avec toutes vos charges.	每次格挡获得2点电荷并释放全部电荷的放电。
+Voltio Arcano	Arcane Volt	Volt arcanique	奥术伏特
+Cada habilidad que lanzas te da 3 cargas arcanas.	Each skill you cast gives you 3 arcane charges.	Chaque compétence lancée vous donne 3 charges arcaniques.	每次施放技能获得3点电荷。
+Batería Viva	Living Battery	Batterie vivante	活体电池
+Cada esquiva o rodar exitoso da 2 cargas arcanas.	Each dodge or roll grants 2 arcane charges.	Chaque esquive ou roulade donne 2 charges arcaniques.	每次闪避或翻滚获得2点电荷。
+Descarga Mayor	Grand Discharge	Grande décharge	大放电
+Con 6 o más cargas arcanas, tus golpes sueltan una descarga de 4 saltos (cada 1,5 s).	With 6 or more arcane charges, your hits release a 4-jump discharge (every 1.5 s).	Avec 6 charges arcaniques ou plus, vos coups libèrent une décharge à 4 sauts (toutes les 1,5 s).	电荷不少于6时，攻击释放4次跳跃的放电（每1.5秒）。
+Conductor	Conductor	Conducteur	导体
+Tus rayos encadenados saltan a 1 enemigo más.	Your chain lightning jumps to 1 more enemy.	Vos éclairs en chaîne sautent vers 1 ennemi de plus.	你的连锁闪电多跳跃1个敌人。
+Tempestad Eterna	Eternal Tempest	Tempête éternelle	永恒风暴
+En combate, cada 4 s caen 3 rayos sobre enemigos al azar.	In combat, every 4 s three lightning bolts strike random enemies.	En combat, toutes les 4 s trois éclairs frappent des ennemis au hasard.	战斗中每4秒有3道闪电劈向随机敌人。
+Ponzoña Virulenta	Virulent Venom	Venin virulent	剧毒
+Tus estados alterados duran 40% más.	Your status effects last 40% longer.	Vos états altérés durent 40 % plus longtemps.	你的异常状态持续时间延长40%。
+Plaga	Plague	Peste	瘟疫
+Cuando muere un enemigo envenenado, el veneno se contagia a los cercanos.	When a poisoned enemy dies, the poison spreads to nearby enemies.	Quand un ennemi empoisonné meurt, le poison se propage aux ennemis proches.	中毒的敌人死亡时，毒素传染给附近的敌人。
+Toxina Nerviosa	Nerve Toxin	Toxine nerveuse	神经毒素
+40% de ralentizar al golpear a un enemigo envenenado.	40% chance to slow when hitting a poisoned enemy.	40 % de ralentir en frappant un ennemi empoisonné.	攻击中毒的敌人时，40%几率使其减速。
+Esporas Tóxicas	Toxic Spores	Spores toxiques	毒孢子
+En combate, cada 6 s una nube envenena a los enemigos cercanos.	In combat, every 6 s a cloud poisons nearby enemies.	En combat, toutes les 6 s un nuage empoisonne les ennemis proches.	战斗中每6秒，毒云使附近的敌人中毒。
+Eco Arcano	Arcane Echo	Écho arcanique	奥术回响
+Tras lanzar una habilidad, tu siguiente golpe hace +50% de daño (5 s).	After casting a skill, your next hit deals +50% damage (5 s).	Après avoir lancé une compétence, votre prochain coup inflige +50 % de dégâts (5 s).	施放技能后，下一次攻击伤害+50%（5秒）。
+Canalizador	Channeler	Canalisateur	导能者
+Cada golpe acorta 0,25 s la reutilización de tu habilidad más lenta (límite por segundo).	Each hit shortens your slowest skill cooldown by 0.25 s (rate-limited).	Chaque coup réduit de 0,25 s la recharge de votre compétence la plus lente (limité).	每次攻击使最慢的技能冷却缩短0.25秒（有速率上限）。
+Catalizador	Catalyst	Catalyseur	催化剂
+Al usar tu definitiva, tus habilidades se reponen al instante.	Using your ultimate instantly resets your skills.	Utiliser votre ultime réinitialise instantanément vos compétences.	使用终极技能时，立即重置所有技能冷却。
+Resonancia	Resonance	Résonance	共鸣
+Cada habilidad potencia la siguiente: +35% de daño (6 s).	Each skill empowers the next one: +35% damage (6 s).	Chaque compétence renforce la suivante : +35 % de dégâts (6 s).	每个技能强化下一个技能：伤害+35%（6秒）。
+Manantial de Maná	Mana Spring	Source de mana	法力之泉
+Cada habilidad lanzada carga un 6% de tu definitiva.	Each skill cast charges 6% of your ultimate.	Chaque compétence lancée charge 6 % de votre ultime.	每次施放技能为终极技能充能6%。
+Runa de Poder	Rune of Power	Rune de puissance	力量符文
++25% de carga de definitiva y +10% de daño de habilidades.	+25% ultimate charge and +10% skill damage.	+25 % de charge d'ultime et +10 % de dégâts de compétence.	终极技能充能+25%，技能伤害+10%。
+Contra del Parry	Parry Counter	Contre de parade	格挡反击
+Tras un parry, tu siguiente golpe hace +60% de daño (4 s).	After a parry, your next hit deals +60% damage (4 s).	Après une parade, votre prochain coup inflige +60 % de dégâts (4 s).	格挡后，下一次攻击伤害+60%（4秒）。
+Parry Templado	Tempered Parry	Parade trempée	格挡护盾
+Cada parry te da un escudo de 15.	Each parry grants a 15-point shield.	Chaque parade vous donne un bouclier de 15.	每次格挡获得15点护盾。
+Parry Cargado	Charged Parry	Parade chargée	格挡蓄能
+Cada parry carga un 8% de tu definitiva.	Each parry charges 8% of your ultimate.	Chaque parade charge 8 % de votre ultime.	每次格挡为终极技能充能8%。
+Eco Defensivo	Defensive Echo	Écho défensif	防御回响
+Cada parry libera una onda de 100% de daño que empuja a los enemigos.	Each parry releases a 100% damage wave that pushes enemies back.	Chaque parade libère une onde à 100 % de dégâts qui repousse les ennemis.	每次格挡释放100%伤害的冲击波，击退敌人。
+Maestro del Parry	Parry Master	Maître de la parade	格挡大师
+Cada parry da +12% de daño durante 5 s (hasta 3 cargas).	Each parry gives +12% damage for 5 s (up to 3 stacks).	Chaque parade donne +12 % de dégâts pendant 5 s (jusqu'à 3 cumuls).	每次格挡伤害+12%，持续5秒（最多3层）。
+Reflejo Estelar	Star Reflection	Reflet stellaire	星辰反射
+Cada parry dispara un anillo de 8 estrellas (50% de daño).	Each parry fires a ring of 8 stars (50% damage).	Chaque parade tire un anneau de 8 étoiles (50 % de dégâts).	每次格挡发射8颗星星组成的环（50%伤害）。
+Calma del Guardián	Guardian's Calm	Calme du gardien	守护者的平静
+Cada parry cura el 3% de tu vida máxima (límite por sala).	Each parry heals 3% of your max health (limited per room).	Chaque parade soigne 3 % de votre vie max (limité par salle).	每次格挡恢复3%最大生命（每个房间有上限）。
+Escudo Reactivo	Reactive Shield	Bouclier réactif	反应护盾
+Cuando tu escudo absorbe un golpe, estalla con 80% de daño a tu alrededor.	When your shield absorbs a hit, it bursts for 80% damage around you.	Quand votre bouclier absorbe un coup, il explose à 80 % de dégâts autour de vous.	护盾吸收攻击时，在周围爆发80%伤害。
+Bastión de Victoria	Victory Bastion	Bastion de victoire	胜利壁垒
+Al limpiar una sala ganas un escudo de 20.	Clearing a room grants a 20-point shield.	Nettoyer une salle donne un bouclier de 20.	清理房间后获得20点护盾。
+Armadura de Hierro	Iron Armor	Armure de fer	铁甲
+Tus golpes dan 3 de escudo (cada 1,2 s) y tu escudo puede acumular 30 más.	Your hits grant 3 shield (every 1.2 s) and your shield can hold 30 more.	Vos coups donnent 3 de bouclier (toutes les 1,2 s) et votre bouclier peut contenir 30 de plus.	攻击获得3点护盾（每1.2秒），护盾上限+30。
+Coraza de Espinas	Thorn Carapace	Carapace d'épines	荆棘外壳
+Al recibir daño estallas dañando (70%) a los enemigos cercanos (cada 1,5 s).	When hurt you burst, damaging (70%) nearby enemies (every 1.5 s).	Quand vous êtes blessé, vous explosez et infligez 70 % de dégâts aux ennemis proches (toutes les 1,5 s).	受伤时爆发，对附近敌人造成70%伤害（每1.5秒）。
+Contragolpe Desesperado	Desperate Counter	Contre désespéré	绝地反击
+Al recibir daño, tu siguiente golpe hace +70% de daño (4 s).	When hurt, your next hit deals +70% damage (4 s).	Quand vous êtes blessé, votre prochain coup inflige +70 % de dégâts (4 s).	受伤后，下一次攻击伤害+70%（4秒）。
+Sangre Fría	Cold Blood	Sang-froid	冷血
+Al caer por debajo del 35% de vida ganas un escudo de 40 (cada 20 s).	Dropping below 35% health grants a 40-point shield (every 20 s).	Passer sous 35 % de vie donne un bouclier de 40 (toutes les 20 s).	生命低于35%时获得40点护盾（每20秒）。
+Instinto de Supervivencia	Survival Instinct	Instinct de survie	求生本能
+Al caer por debajo del 35% de vida: 0,6 s de invulnerabilidad y cura del 8% (cada 25 s).	Dropping below 35% health: 0.6 s of invulnerability and an 8% heal (every 25 s).	Passer sous 35 % de vie : 0,6 s d'invulnérabilité et 8 % de soin (toutes les 25 s).	生命低于35%时：0.6秒无敌并恢复8%生命（每25秒）。
+Último Bastión	Last Bastion	Dernier bastion	最后堡垒
+Con menos del 35% de vida recibes un 30% menos de daño.	Below 35% health you take 30% less damage.	Sous 35 % de vie, vous subissez 30 % de dégâts en moins.	生命低于35%时，受到的伤害降低30%。
+Rabia Herida	Wounded Rage	Rage blessée	负伤之怒
+Con menos del 35% de vida haces +35% de daño.	Below 35% health you deal +35% damage.	Sous 35 % de vie, vous infligez +35 % de dégâts.	生命低于35%时，伤害+35%。
+Sanguinario	Bloodthirsty	Sanguinaire	嗜血者
+Con menos del 35% de vida robas un 5% del daño que infliges.	Below 35% health you steal 5% of the damage you deal.	Sous 35 % de vie, vous volez 5 % des dégâts infligés.	生命低于35%时，吸取你所造成伤害的5%。
+Vitalidad	Vitality	Vitalité	活力
++10% de vida máxima por nivel.	+10% max health per level.	+10 % de vie max par niveau.	最大生命+10%（每级）。
+Sanación de Victoria	Victory Mending	Soin de victoire	胜利疗愈
+Al limpiar una sala recuperas el 5% de tu vida máxima.	Clearing a room restores 5% of your max health.	Nettoyer une salle restaure 5 % de votre vie max.	清理房间后恢复5%最大生命。
+Cosecha de Vida	Life Harvest	Moisson de vie	生命收割
+Cada baja cura el 1,5% de tu vida máxima (límite por sala).	Each kill heals 1.5% of your max health (limited per room).	Chaque kill soigne 1,5 % de votre vie max (limité par salle).	每次击杀恢复1.5%最大生命（每个房间有上限）。
+Égida Perpetua	Perpetual Aegis	Égide perpétuelle	永恒神盾
+En combate ganas un escudo de 30 cada 8 s. Si el escudo absorbe un golpe, 0,5 s de invulnerabilidad (cada 3 s).	In combat you gain a 30-point shield every 8 s. When it absorbs a hit: 0.5 s of invulnerability (every 3 s).	En combat, vous gagnez un bouclier de 30 toutes les 8 s. S'il absorbe un coup : 0,5 s d'invulnérabilité (toutes les 3 s).	战斗中每8秒获得30点护盾。护盾吸收攻击时获得0.5秒无敌（每3秒）。
+Onda de Choque	Shockwave	Onde de choc	冲击波
+Al recibir un golpe empujas a los enemigos cercanos (cada 1,2 s).	When hit, you push nearby enemies away (every 1.2 s).	Quand vous êtes touché, vous repoussez les ennemis proches (toutes les 1,2 s).	受到攻击时击退附近的敌人（每1.2秒）。
+Impulso de Rodada	Roll Momentum	Élan de roulade	翻滚动力
+Tu rodada es un 25% más rápida por nivel: recorre más distancia y termina antes.	Your roll is 25% faster per level: it covers more distance and ends sooner.	Votre roulade est 25 % plus rapide par niveau : elle couvre plus de distance et finit plus tôt.	翻滚速度提升25%（每级）：移动距离更远，结束更快。
+Sombra Veloz	Swift Shadow	Ombre véloce	迅捷之影
+Tras rodar ganas +20% de velocidad de movimiento durante 2,5 s.	After rolling you gain +20% movement speed for 2.5 s.	Après une roulade, +20 % de vitesse de déplacement pendant 2,5 s.	翻滚后移动速度+20%，持续2.5秒。
+Racha del Cazador	Hunter's Streak	Série du chasseur	猎手连杀
+Cada baja da +10% de velocidad de movimiento durante 4 s (hasta 3 cargas).	Each kill gives +10% movement speed for 4 s (up to 3 stacks).	Chaque kill donne +10 % de vitesse de déplacement pendant 4 s (jusqu'à 3 cumuls).	每次击杀移动速度+10%，持续4秒（最多3层）。
+Esquiva Sagrada	Sacred Dodge	Esquive sacrée	神圣闪避
+Cada esquiva da +15% de daño durante 4 s (hasta 2 cargas).	Each dodge gives +15% damage for 4 s (up to 2 stacks).	Chaque esquive donne +15 % de dégâts pendant 4 s (jusqu'à 2 cumuls).	每次闪避伤害+15%，持续4秒（最多2层）。
+Baile de Cuchillas	Dagger Waltz	Valse des lames	飞刀圆舞
+Cada esquiva lanza 3 cuchillas (60% de daño).	Each dodge throws 3 blades (60% damage).	Chaque esquive lance 3 lames (60 % de dégâts).	每次闪避投出3把飞刀（60%伤害）。
+Evasión Mágica	Magic Evasion	Évasion magique	魔法闪避
+Cada esquiva reduce 0,6 s tus habilidades y carga un 5% de tu definitiva.	Each dodge shortens your skill cooldowns by 0.6 s and charges 5% of your ultimate.	Chaque esquive réduit vos recharges de 0,6 s et charge 5 % de votre ultime.	每次闪避使技能冷却缩短0.6秒，并为终极技能充能5%。
+Salto Explosivo	Blast Jump	Saut explosif	爆裂跳跃
+Cada salto en el aire detona una explosión del 50% de daño bajo ti.	Each mid-air jump detonates a 50% damage explosion beneath you.	Chaque saut en l'air déclenche une explosion à 50 % de dégâts sous vous.	每次空中跳跃在脚下引发50%伤害的爆炸。
+Aterrizaje Sísmico	Seismic Landing	Atterrissage sismique	震地降落
+Las caídas largas provocan una onda del 100% de daño al aterrizar.	Long falls cause a 100% damage shockwave on landing.	Les longues chutes provoquent une onde à 100 % de dégâts à l'atterrissage.	长距离坠落着地时引发100%伤害的冲击波。
+Cadencia en Movimiento	Moving Cadence	Cadence en mouvement	移动节奏
+Mientras te mueves, +18% de velocidad de ataque.	While moving, +18% attack speed.	En mouvement, +18 % de vitesse d'attaque.	移动时攻击速度+18%。
+Golpe en Carrera	Running Strike	Frappe en course	冲刺打击
+Mientras te mueves, +12% de daño.	While moving, +12% damage.	En mouvement, +12 % de dégâts.	移动时伤害+12%。
+Quietud Letal	Deadly Stillness	Immobilité mortelle	静止杀机
+Quieto, haces +20% de daño y recibes un 10% menos.	Standing still, you deal +20% damage and take 10% less.	Immobile, vous infligez +20 % de dégâts et en subissez 10 % de moins.	站立不动时，伤害+20%，受到的伤害降低10%。
+Ráfaga de Remate	Finisher Rush	Rafale de finisseur	终结疾风
+Cada remate de combo da +15% de velocidad de movimiento durante 3 s.	Each combo finisher gives +15% movement speed for 3 s.	Chaque finisseur de combo donne +15 % de vitesse de déplacement pendant 3 s.	每次连击终结移动速度+15%，持续3秒。
+Viento de Cola	Tailwind	Vent arrière	顺风
+Cada salto en el aire da +20% de velocidad de movimiento durante 3 s.	Each mid-air jump gives +20% movement speed for 3 s.	Chaque saut en l'air donne +20 % de vitesse de déplacement pendant 3 s.	每次空中跳跃移动速度+20%，持续3秒。
+Segundo Aliento	Second Wind	Second souffle	回气
+Cada esquiva te da 0,4 s de invulnerabilidad (cada 3 s).	Each dodge gives you 0.4 s of invulnerability (every 3 s).	Chaque esquive vous donne 0,4 s d'invulnérabilité (toutes les 3 s).	每次闪避获得0.4秒无敌（每3秒）。
+Reloj del Destino	Clock of Fate	Horloge du destin	命运之钟
+Un parry o una esquiva ralentiza el tiempo 1,2 s para los enemigos (cada 18 s).	A parry or dodge slows time for enemies for 1.2 s (every 18 s).	Une parade ou une esquive ralentit le temps des ennemis pendant 1,2 s (toutes les 18 s).	格挡或闪避使敌人时间减慢1.2秒（每18秒）。
+Maestro de Trampas	Trap Master	Maître des pièges	陷阱大师
+Sobrevolar pinchos sin tocarlos te da 15 de escudo y +20% de daño durante 5 s.	Passing over spikes without touching them gives 15 shield and +20% damage for 5 s.	Survoler des pointes sans les toucher donne 15 de bouclier et +20 % de dégâts pendant 5 s.	越过尖刺而不受伤：获得15点护盾，伤害+20%，持续5秒。
+Acróbata	Acrobat	Acrobate	杂技师
+Cada salto da +10% de velocidad de ataque durante 2 s.	Each jump gives +10% attack speed for 2 s.	Chaque saut donne +10 % de vitesse d'attaque pendant 2 s.	每次跳跃攻击速度+10%，持续2秒。
+Danza Aérea	Aerial Dance	Danse aérienne	空中之舞
+En el aire haces +20% de daño.	While airborne you deal +20% damage.	En l'air, vous infligez +20 % de dégâts.	在空中时伤害+20%。
+Punta Afilada	Sharp Tip	Pointe affûtée	锋利箭头
+Tus proyectiles atraviesan 1 enemigo más por nivel.	Your projectiles pierce 1 more enemy per level.	Vos projectiles transpercent 1 ennemi de plus par niveau.	你的投射物多穿透1个敌人（每级）。
+Vuelo Veloz	Swift Flight	Vol rapide	迅疾飞行
+Tus proyectiles van un 25% más rápido y son un 20% más grandes.	Your projectiles fly 25% faster and are 20% bigger.	Vos projectiles vont 25 % plus vite et sont 20 % plus gros.	你的投射物速度+25%，体积+20%。
+Ricochet	Ricochet	Ricochet	弹射
+Tus proyectiles rebotan una vez contra paredes o enemigos.	Your projectiles bounce once off walls or enemies.	Vos projectiles rebondissent une fois sur les murs ou les ennemis.	你的投射物在墙壁或敌人上弹射一次。
+Buscador	Seeker	Chercheur	追踪者
+Tus proyectiles giran ligeramente hacia los enemigos cercanos.	Your projectiles curve slightly toward nearby enemies.	Vos projectiles s'orientent légèrement vers les ennemis proches.	你的投射物会略微转向附近的敌人。
+Perforante	Armor Piercer	Perforant	穿甲
+Tus proyectiles hacen +20% de daño por cada enemigo que atraviesan.	Your projectiles deal +20% damage for each enemy they pass through.	Vos projectiles infligent +20 % de dégâts pour chaque ennemi traversé.	你的投射物每穿透一个敌人，伤害+20%。
+Doble Lanzamiento	Double Throw	Double lancer	双重投掷
+20% de que tus proyectiles se lancen dos veces.	20% chance for your projectiles to be launched twice.	20 % de chance que vos projectiles soient lancés deux fois.	20%几率使你的投射物发射两次。
+Onda Expansiva	Expanding Wave	Onde expansive	扩散波
+Tus ondas de energía (Hoja Fantasma y similares) hacen +40% de daño y son más grandes.	Your energy waves (Phantom Blade and similar) deal +40% damage and are larger.	Vos ondes d'énergie (Lame fantôme et similaires) infligent +40 % de dégâts et sont plus grandes.	你的能量波（幽灵之刃等）伤害+40%，范围更大。
+Proyectil Explosivo	Explosive Shot	Projectile explosif	爆裂弹
+Tus proyectiles explotan al terminar su trayecto (50% de daño).	Your projectiles explode at the end of their path (50% damage).	Vos projectiles explosent à la fin de leur trajet (50 % de dégâts).	你的投射物在飞行终点爆炸（50%伤害）。
+Disparo Incendiario	Incendiary Shot	Tir incendiaire	燃烧弹
+30% de que tus proyectiles prendan fuego al impactar.	30% chance for your projectiles to ignite on hit.	30 % de chance que vos projectiles enflamment à l'impact.	30%几率使你的投射物命中时点燃目标。
+Disparo Gélido	Frost Shot	Tir glacial	寒冰弹
+50% de que tus proyectiles ralenticen al impactar.	50% chance for your projectiles to slow on hit.	50 % de chance que vos projectiles ralentissent à l'impact.	50%几率使你的投射物命中时减速目标。
+Disparo Voltaico	Voltaic Shot	Tir voltaïque	雷电弹
+Tus proyectiles descargan un rayo de 2 saltos al impactar (cada 0,5 s).	Your projectiles discharge a 2-jump lightning on hit (every 0.5 s).	Vos projectiles libèrent un éclair à 2 sauts à l'impact (toutes les 0,5 s).	你的投射物命中时释放2次跳跃的闪电（每0.5秒）。
+Lluvia de Hojas	Leaf Rain	Pluie de feuilles	落叶雨
+Cada habilidad invoca una lluvia de 5 hojas cortantes sobre los enemigos.	Each skill summons a rain of 5 cutting leaves on enemies.	Chaque compétence invoque une pluie de 5 feuilles tranchantes sur les ennemis.	每次施放技能，在敌人头上降下5片锋利的叶子。
+Ráfaga Estelar	Star Burst	Rafale stellaire	星芒连发
+Cada 5 golpes sueltas 3 estrellas teledirigidas (50% de daño).	Every 5 hits you release 3 homing stars (50% damage).	Tous les 5 coups, vous libérez 3 étoiles à tête chercheuse (50 % de dégâts).	每攻击5次释放3颗追踪星星（50%伤害）。
+Estela de Rodada	Roll Wake	Sillage de roulade	翻滚余波
+Al terminar un rodar lanzas una onda de energía (80% de daño).	Finishing a roll fires an energy wave (80% damage).	Terminer une roulade lance une onde d'énergie (80 % de dégâts).	翻滚结束时发射能量波（80%伤害）。
+Tirador Experto	Marksman	Tireur expert	神射手
+Los proyectiles que impactan a enemigos lejanos hacen +40% de daño.	Projectiles that hit distant enemies deal +40% damage.	Les projectiles touchant des ennemis éloignés infligent +40 % de dégâts.	命中远处敌人的投射物伤害+40%。
+Foco Letal	Lethal Focus	Concentration létale	致命专注
+Impactos seguidos con proyectiles al mismo enemigo: +8% de daño acumulable (hasta 5).	Consecutive projectile hits on the same enemy: +8% damage, stacking (up to 5).	Impacts successifs de projectiles sur le même ennemi : +8 % de dégâts cumulables (jusqu'à 5).	投射物连续命中同一敌人：伤害+8%可叠加（最多5层）。
+Orbe Santo	Holy Orb	Orbe sacré	圣光球
+Matar con un proyectil libera un orbe sagrado teledirigido (70% de daño).	Killing with a projectile releases a homing holy orb (70% damage).	Tuer avec un projectile libère un orbe sacré à tête chercheuse (70 % de dégâts).	用投射物击杀敌人会释放追踪圣光球（70%伤害）。
+Tormenta de Acero	Steel Storm	Tempête d'acier	钢铁风暴
+Cada habilidad lanza 10 cuchillas desde el cielo y tu definitiva 16. Tus proyectiles atraviesan 1 enemigo más.	Each skill rains 10 blades from the sky and your ultimate 16. Your projectiles pierce 1 more enemy.	Chaque compétence fait pleuvoir 10 lames du ciel et votre ultime 16. Vos projectiles transpercent 1 ennemi de plus.	每次技能从天而降10把刀刃，终极技能16把。你的投射物多穿透1个敌人。
+Mercader Astuto	Shrewd Trader	Marchand rusé	精明商人
+Los precios de las tiendas bajan un 10% por nivel (máx. 50%).	Shop prices drop 10% per level (max 50%).	Les prix des boutiques baissent de 10 % par niveau (max 50 %).	商店价格降低10%（每级，最多50%）。
+Interés Compuesto	Compound Interest	Intérêts composés	复利
+Al limpiar una sala con 100 o más de oro, ganas 12 de oro extra.	Clearing a room with 100 or more gold earns 12 extra gold.	Nettoyer une salle avec au moins 100 d'or rapporte 12 d'or de plus.	持有100以上金币时清理房间，额外获得12金币。
+Poder del Oro	Power of Gold	Pouvoir de l'or	黄金之力
+Con 150 o más de oro, haces +12% de daño.	With 150 or more gold, you deal +12% damage.	Avec 150 d'or ou plus, vous infligez +12 % de dégâts.	持有150以上金币时，伤害+12%。
+Cosecha de Almas	Soul Harvest	Moisson d'âmes	灵魂收割
+Los mini-jefes y jefes sueltan 6 almas extra al morir.	Mini-bosses and bosses drop 6 extra souls on death.	Les mini-boss et boss lâchent 6 âmes de plus à leur mort.	精英和首领死亡时额外掉落6点灵魂。
+Almas en Furia	Souls Ablaze	Âmes en furie	魂之狂怒
+Cada alma recogida da +5% de daño durante 6 s (hasta 5 cargas).	Each soul picked up gives +5% damage for 6 s (up to 5 stacks).	Chaque âme ramassée donne +5 % de dégâts pendant 6 s (jusqu'à 5 cumuls).	每拾取一个灵魂，伤害+5%，持续6秒（最多5层）。
+Corazón Blindado	Armored Heart	Cœur blindé	铁心
+Un corazón recogido con la vida llena te da 12 de escudo.	A heart picked up at full health gives 12 shield.	Un cœur ramassé à pleine vie donne 12 de bouclier.	满血时拾取心形物品，获得12点护盾。
+Alquimista	Alchemist	Alchimiste	炼金术士
+Beber un frasco te da +20% de daño durante 8 s y limpia tus estados alterados.	Drinking a flask gives +20% damage for 8 s and cleanses your status effects.	Boire une fiole donne +20 % de dégâts pendant 8 s et purifie vos états altérés.	饮用药瓶后伤害+20%，持续8秒，并清除你的异常状态。
+Reserva de Frascos	Flask Reserve	Réserve de fioles	药瓶储备
++1 frasco de curación máximo.	+1 maximum healing flask.	+1 fiole de soin maximum.	最大药瓶数量+1。
+Brebaje Rebosante	Overflowing Brew	Breuvage débordant	满溢药剂
+Un frasco recogido con la reserva llena cura el 12% de tu vida.	A flask picked up with a full reserve heals 12% of your health.	Une fiole ramassée avec une réserve pleine soigne 12 % de votre vie.	药瓶已满时拾取药瓶，恢复12%生命。
+Visión del Altar	Altar Vision	Vision de l'autel	祭坛视界
+Los altares de bendición ofrecen una opción adicional.	Blessing altars offer one additional option.	Les autels de bénédiction offrent une option de plus.	祝福祭坛多提供一个选项。
+Suerte Dorada	Golden Luck	Chance dorée	金色幸运
++1 de suerte: mejores recompensas en cofres y tiendas.	+1 luck: better rewards from chests and shops.	+1 chance : de meilleures récompenses dans les coffres et boutiques.	幸运+1：宝箱和商店的奖励更好。
+Botín de Élite	Elite Spoils	Butin d'élite	精英战利品
+Los mini-jefes y jefes sueltan 15 de oro extra.	Mini-bosses and bosses drop 15 extra gold.	Les mini-boss et boss lâchent 15 d'or de plus.	精英和首领额外掉落15金币。
+Recaudador	Tax Collector	Collecteur	收税官
+Cada baja con tu arma te da 1 de oro (límite por sala).	Each weapon kill gives you 1 gold (limited per room).	Chaque kill à l'arme vous donne 1 d'or (limité par salle).	每次用武器击杀获得1金币（每个房间有上限）。
+Cazatesoros	Treasure Hunter	Chasseur de trésors	寻宝者
+Al entrar en una sala ganas 8 de oro.	Entering a room gives you 8 gold.	Entrer dans une salle vous donne 8 d'or.	进入房间时获得8金币。
+Ladrón de Almas	Soul Thief	Voleur d'âmes	盗魂者
+Los críticos te dan 2 almas (cada 0,8 s, límite por sala).	Critical hits give you 2 souls (every 0.8 s, limited per room).	Les critiques vous donnent 2 âmes (toutes les 0,8 s, limité par salle).	暴击获得2点灵魂（每0.8秒，每个房间有上限）。
+Corona del Avaro	Miser's Crown	Couronne de l'avare	守财奴之冠
++50% de oro. Con 200 o más de oro haces +20% de daño y cada baja te da 2 de oro (límite por sala).	+50% gold. With 200 or more gold you deal +20% damage and each kill gives 2 gold (limited per room).	+50 % d'or. Avec 200 d'or ou plus : +20 % de dégâts et chaque kill donne 2 d'or (limité par salle).	金币+50%。持有200以上金币时伤害+20%，每次击杀获得2金币（每个房间有上限）。
+Luciérnaga	Firefly	Luciole	萤火虫
+Una luciérnaga te acompaña y dispara a los enemigos cercanos (50% de daño cada 2 s).	A firefly accompanies you and shoots nearby enemies (50% damage every 2 s).	Une luciole vous accompagne et tire sur les ennemis proches (50 % de dégâts toutes les 2 s).	一只萤火虫伴随你，攻击附近的敌人（每2秒造成50%伤害）。
+Llama Fatua	Wisp of Flame	Feu follet	鬼火
+Un espíritu de fuego te acompaña: dispara cada 2,6 s (55%) y prende fuego.	A fire spirit accompanies you: shoots every 2.6 s (55%) and ignites.	Un esprit de feu vous accompagne : tire toutes les 2,6 s (55 %) et enflamme.	火焰精灵伴随你：每2.6秒攻击一次（55%伤害）并点燃目标。
+Espíritu Glacial	Frost Spirit	Esprit glacial	寒冰精灵
+Un espíritu de hielo libera cada 5 s una onda helada que ralentiza (70% de daño).	An ice spirit releases a freezing pulse every 5 s that slows (70% damage).	Un esprit de glace libère toutes les 5 s une onde glacée qui ralentit (70 % de dégâts).	冰霜精灵每5秒释放一次减速的寒冰脉冲（70%伤害）。
+Espíritu del Trueno	Thunder Spirit	Esprit du tonnerre	雷霆精灵
+Un espíritu eléctrico lanza cada 4 s un rayo de 3 saltos (60% de daño).	A lightning spirit casts a 3-jump bolt every 4 s (60% damage).	Un esprit électrique lance toutes les 4 s un éclair à 3 sauts (60 % de dégâts).	雷电精灵每4秒释放一道3次跳跃的闪电（60%伤害）。
+Espíritu Maldito	Cursed Spirit	Esprit maudit	诅咒精灵
+Un espíritu oscuro maldice cada 8 s al enemigo más sano (+20% de daño recibido).	A dark spirit curses the healthiest enemy every 8 s (+20% damage taken).	Un esprit sombre maudit toutes les 8 s l'ennemi le plus sain (+20 % de dégâts reçus).	黑暗精灵每8秒诅咒生命最高的敌人（受到伤害+20%）。
+Espíritu Sanador	Healing Spirit	Esprit guérisseur	治愈精灵
+Un espíritu te cura el 4% de tu vida cada 9 s si estás herido (límite por sala).	A spirit heals 4% of your health every 9 s when you are hurt (limited per room).	Un esprit vous soigne de 4 % de votre vie toutes les 9 s si vous êtes blessé (limité par salle).	精灵每9秒恢复你4%生命（受伤时，每个房间有上限）。
+Espíritu Guardián	Guardian Spirit	Esprit gardien	守护精灵
+Un espíritu te protege con un escudo de 18 cada 14 s si no tienes ninguno.	A spirit shields you for 18 every 14 s if you have none.	Un esprit vous protège avec un bouclier de 18 toutes les 14 s si vous n'en avez pas.	精灵每14秒为你提供18点护盾（若你没有护盾）。
+Espíritu Venenoso	Venom Spirit	Esprit venimeux	剧毒精灵
+Un espíritu de veneno dispara cada 3 s (45%) y envenena.	A venom spirit shoots every 3 s (45%) and poisons.	Un esprit de venin tire toutes les 3 s (45 %) et empoisonne.	剧毒精灵每3秒攻击一次（45%伤害）并使目标中毒。
+Espíritu de Sombra	Shadow Spirit	Esprit d'ombre	暗影精灵
+Un espíritu de sombra hiere cada 2,8 s (60%) y causa sangrado.	A shadow spirit strikes every 2.8 s (60%) and causes bleeding.	Un esprit d'ombre frappe toutes les 2,8 s (60 %) et provoque un saignement.	暗影精灵每2.8秒攻击一次（60%伤害）并造成流血。
+Vínculo Espiritual	Spirit Bond	Lien spirituel	灵魂羁绊
+Un espíritu menor te acompaña (35% cada 3 s) y todos tus espíritus actúan un 30% más rápido.	A minor spirit accompanies you (35% every 3 s) and all your spirits act 30% faster.	Un esprit mineur vous accompagne (35 % toutes les 3 s) et tous vos esprits agissent 30 % plus vite.	一只小精灵伴随你（每3秒35%伤害），所有精灵行动速度+30%。
+Sinfonía Espiritual	Spirit Symphony	Symphonie spirituelle	灵魂交响
+Tus espíritus actúan un 50% más rápido y cada baja los acelera aún más durante 4 s.	Your spirits act 50% faster and each kill speeds them up further for 4 s.	Vos esprits agissent 50 % plus vite et chaque kill les accélère encore pendant 4 s.	你的精灵行动速度+50%，每次击杀使其在4秒内进一步加速。
+Pastor de Almas	Soul Shepherd	Berger d'âmes	牧魂人
+Cada alma recogida acelera a tus espíritus durante 5 s.	Each soul picked up speeds up your spirits for 5 s.	Chaque âme ramassée accélère vos esprits pendant 5 s.	每拾取一个灵魂，精灵加速5秒。
+Legión Espectral	Spectral Legion	Légion spectrale	幽灵军团
+Invoca tres espíritus: uno de fuego, uno glacial y uno eléctrico.	Summons three spirits: one of fire, one of ice and one of lightning.	Invoque trois esprits : un de feu, un de glace et un électrique.	召唤三个精灵：火焰、寒冰和雷电各一。
+Desafío Doble	Double Challenge	Double défi	双倍挑战
+Los enemigos tienen +15% de vida, pero ganas +35% de oro y +20% de almas.	Enemies have +15% health, but you earn +35% gold and +20% souls.	Les ennemis ont +15 % de vie, mais vous gagnez +35 % d'or et +20 % d'âmes.	敌人生命+15%，但你获得的金币+35%，灵魂+20%。
+Sed de Riesgo	Thirst for Risk	Soif de risque	冒险渴望
+Los enemigos te hacen +20% de daño, pero haces +25% de daño y +30% de daño crítico.	Enemies deal +20% damage to you, but you deal +25% damage and +30% critical damage.	Les ennemis vous infligent +20 % de dégâts, mais vous infligez +25 % de dégâts et +30 % de dégâts critiques.	敌人对你的伤害+20%，但你的伤害+25%，暴击伤害+30%。
+Cañón de Cristal	Glass Cannon	Canon de verre	玻璃大炮
+-25% de vida máxima, +25% de daño.	-25% max health, +25% damage.	-25 % de vie max, +25 % de dégâts.	最大生命-25%，伤害+25%。
+Pacto de Sangre	Blood Pact	Pacte de sang	血之契约
+Al entrar en cada sala pierdes el 8% de tu vida (nunca mueres por esto), pero haces +30% de daño.	Entering each room costs 8% of your health (this never kills you), but you deal +30% damage.	Entrer dans chaque salle coûte 8 % de votre vie (cela ne vous tue jamais), mais vous infligez +30 % de dégâts.	进入每个房间会损失8%生命（不会致死），但伤害+30%。
+Todo o Nada	All or Nothing	Tout ou rien	孤注一掷
+Las salas perfectas (sin daño) dan 25 de oro y curan el 12%. Cada golpe recibido te cuesta 5 de oro.	Perfect rooms (no damage) give 25 gold and heal 12%. Each hit you take costs 5 gold.	Les salles parfaites (sans dégâts) donnent 25 d'or et soignent 12 %. Chaque coup reçu coûte 5 d'or.	完美房间（未受伤）获得25金币并恢复12%生命。每次受伤损失5金币。
+Temerario	Reckless	Téméraire	无畏者
+Mientras no te hayan herido en la sala, haces +20% de daño.	As long as you haven't been hurt in the room, you deal +20% damage.	Tant que vous n'avez pas été blessé dans la salle, vous infligez +20 % de dégâts.	在房间中未受伤时，伤害+20%。
+Sacrificio	Sacrifice	Sacrifice	牺牲
+Beber un frasco te cuesta el 5% de tu vida, pero carga un 25% de tu definitiva.	Drinking a flask costs 5% of your health but charges 25% of your ultimate.	Boire une fiole coûte 5 % de votre vie mais charge 25 % de votre ultime.	饮用药瓶损失5%生命，但为终极技能充能25%。
+Apostador	Gambler	Parieur	赌徒
+Entrar en una sala cuesta 10 de oro; limpiarla sin que te hieran da 40 de oro.	Entering a room costs 10 gold; clearing it without being hurt gives 40 gold.	Entrer dans une salle coûte 10 d'or ; la nettoyer sans être blessé donne 40 d'or.	进入房间花费10金币；不受伤地清理房间获得40金币。
+Juicio Final	Final Judgment	Jugement dernier	最终审判
++35% de daño, pero los enemigos tienen +20% de vida y hacen +30% de daño. Derrotar a un jefe te cura el 35%.	+35% damage, but enemies have +20% health and deal +30% damage. Defeating a boss heals 35%.	+35 % de dégâts, mais les ennemis ont +20 % de vie et infligent +30 % de dégâts. Vaincre un boss soigne 35 %.	伤害+35%，但敌人生命+20%，伤害+30%。击败首领后恢复35%生命。
+Último Recurso	Last Resort	Dernier recours	最后手段
+Beber un frasco con poca vida te da 0,6 s de invulnerabilidad.	Drinking a flask at low health gives you 0.6 s of invulnerability.	Boire une fiole à faible vie vous donne 0,6 s d'invulnérabilité.	生命值低时饮用药瓶，获得0.6秒无敌。
+Caza Mayor	Big Game	Gros gibier	猎杀巨兽
+Los enemigos tienen +20% de vida. Los mini-jefes y jefes sueltan un corazón y 8 almas al morir.	Enemies have +20% health. Mini-bosses and bosses drop a heart and 8 souls on death.	Les ennemis ont +20 % de vie. Les mini-boss et boss lâchent un cœur et 8 âmes à leur mort.	敌人生命+20%。精英和首领死亡时掉落一颗心和8点灵魂。
+Ayuno	Fasting	Jeûne	禁食
+-1 frasco máximo, pero haces +20% de daño.	-1 maximum flask, but you deal +20% damage.	-1 fiole maximum, mais vous infligez +20 % de dégâts.	最大药瓶数-1，但伤害+20%。
+Marca Maldita	Cursed Mark	Marque maudite	诅咒印记
+15% de maldecir al golpear: los malditos reciben +20% de daño tuyo durante 6 s.	15% chance to curse on hit: cursed enemies take +20% damage from you for 6 s.	15 % de maudire en frappant : les maudits subissent +20 % de vos dégâts pendant 6 s.	攻击时15%几率施加诅咒：被诅咒的敌人受到你的伤害+20%，持续6秒。
+Sentencia Oscura	Dark Verdict	Verdict sombre	黑暗判决
+En combate, cada 9 s maldices al enemigo con más vida.	In combat, every 9 s you curse the enemy with the most health.	En combat, toutes les 9 s vous maudissez l'ennemi avec le plus de vie.	战斗中每9秒诅咒生命最高的敌人。
+Maldición Contagiosa	Contagious Curse	Malédiction contagieuse	蔓延诅咒
+Cuando muere un enemigo maldito, la maldición salta a los cercanos.	When a cursed enemy dies, the curse jumps to nearby enemies.	Quand un ennemi maudit meurt, la malédiction saute aux ennemis proches.	被诅咒的敌人死亡时，诅咒传给附近的敌人。
+Cosecha Maldita	Cursed Harvest	Moisson maudite	诅咒收获
+Los enemigos malditos sueltan 3 almas al morir (límite por sala).	Cursed enemies drop 3 souls on death (limited per room).	Les ennemis maudits lâchent 3 âmes à leur mort (limité par salle).	被诅咒的敌人死亡时掉落3点灵魂（每个房间有上限）。
+Festín Oscuro	Dark Feast	Festin sombre	黑暗盛宴
+Contra enemigos malditos robas un 4% del daño como vida.	Against cursed enemies you steal 4% of damage as health.	Contre les ennemis maudits, vous volez 4 % des dégâts en vie.	对被诅咒的敌人，吸取4%伤害作为生命。
+Crítico Maldito	Cursed Critical	Critique maudit	诅咒暴击
++20% de probabilidad de crítico contra enemigos malditos.	+20% critical chance against cursed enemies.	+20 % de chance de critique contre les ennemis maudits.	对被诅咒的敌人暴击率+20%。
+Forma de Sombra	Shadow Form	Forme d'ombre	暗影形态
+Tu definitiva te transforma 8 s: +30% de daño, +25% de velocidad y -20% de daño recibido; dejas un rastro de sombra y maldices al enemigo más sano.	Your ultimate transforms you for 8 s: +30% damage, +25% speed and -20% damage taken; you leave a shadow trail and curse the healthiest enemy.	Votre ultime vous transforme 8 s : +30 % de dégâts, +25 % de vitesse et -20 % de dégâts reçus ; vous laissez une traînée d'ombre et maudissez l'ennemi le plus sain.	终极技能使你变身8秒：伤害+30%，速度+25%，受到伤害-20%；留下暗影轨迹并诅咒最健康的敌人。
+Forma Bestial	Beast Form	Forme bestiale	野兽形态
+Al caer por debajo del 35% de vida te transformas 6 s: +30% de velocidad de ataque y +20% de velocidad (cada 30 s).	Dropping below 35% health transforms you for 6 s: +30% attack speed and +20% speed (every 30 s).	Passer sous 35 % de vie vous transforme 6 s : +30 % de vitesse d'attaque et +20 % de vitesse (toutes les 30 s).	生命低于35%时变身6秒：攻击速度+30%，移动速度+20%（每30秒）。
+Forma Espectral	Spectral Form	Forme spectrale	幽魂形态
+Cada parry te vuelve espectral: +25% de velocidad 3 s y maldices al enemigo más sano.	Each parry makes you spectral: +25% speed for 3 s and curses the healthiest enemy.	Chaque parade vous rend spectral : +25 % de vitesse pendant 3 s et maudit l'ennemi le plus sain.	每次格挡使你变为幽魂：移动速度+25%，持续3秒，并诅咒最健康的敌人。
+Vacío Voraz	Hungry Void	Vide vorace	饥饿虚空
+Cada baja carga un 3% de tu definitiva y, al terminar la definitiva, te curas el 10%.	Each kill charges 3% of your ultimate, and when the ultimate ends you heal 10%.	Chaque kill charge 3 % de votre ultime et, à la fin de l'ultime, vous soignez 10 %.	每次击杀为终极技能充能3%，终极技能结束时恢复10%生命。
+Corrupción	Corruption	Corruption	腐化
+30% de envenenar al golpear a un enemigo maldito.	30% chance to poison when hitting a cursed enemy.	30 % d'empoisonner en frappant un ennemi maudit.	攻击被诅咒的敌人时，30%几率使其中毒。
+Aura de Penumbra	Penumbra Aura	Aura de pénombre	幽影光环
+Al rodar dejas dos charcos de sombra que maldicen a los enemigos que los pisan.	Rolling leaves two shadow patches that curse enemies who step on them.	En roulant, vous laissez deux flaques d'ombre qui maudissent les ennemis qui marchent dessus.	翻滚时留下两处暗影，诅咒踩上去的敌人。
+Fuego y Rayo	Fire and Lightning	Feu et foudre	火与雷
+Los críticos contra enemigos en llamas sueltan un rayo de 2 saltos (cada 0,5 s).	Critical hits against burning enemies release a 2-jump lightning bolt (every 0.5 s).	Les critiques contre les ennemis en flammes libèrent un éclair à 2 sauts (toutes les 0,5 s).	对燃烧的敌人暴击时释放2次跳跃的闪电（每0.5秒）。
+Estallido Helado	Frost Burst	Éclat glacé	冰霜爆裂
+Golpear a un enemigo congelado: 20% de causar un estallido (70% de daño, cada 1 s).	Hitting a frozen enemy: 20% chance to cause a burst (70% damage, every 1 s).	Frapper un ennemi gelé : 20 % de provoquer un éclat (70 % de dégâts, toutes les 1 s).	攻击冰冻的敌人：20%几率引发爆裂（70%伤害，每1秒）。
+Choque Térmico	Thermal Shock	Choc thermique	热冲击
+Golpear a un enemigo en llamas y ralentizado a la vez provoca una explosión de vapor (120% de daño, cada 2 s).	Hitting an enemy that is burning and slowed at once causes a steam explosion (120% damage, every 2 s).	Frapper un ennemi à la fois en flammes et ralenti provoque une explosion de vapeur (120 % de dégâts, toutes les 2 s).	攻击同时燃烧和减速的敌人，引发蒸汽爆炸（120%伤害，每2秒）。
+Conducción Tóxica	Toxic Conduction	Conduction toxique	毒导
+Golpear a un enemigo envenenado y electrizado provoca una explosión tóxica (80% de daño, cada 1,5 s).	Hitting an enemy that is poisoned and shocked causes a toxic explosion (80% damage, every 1.5 s).	Frapper un ennemi empoisonné et électrisé provoque une explosion toxique (80 % de dégâts, toutes les 1,5 s).	攻击同时中毒和感电的敌人，引发毒爆（80%伤害，每1.5秒）。
+Sangre Hirviente	Boiling Blood	Sang bouillant	沸血
+Los enemigos que sangran y arden a la vez reciben +30% de daño.	Enemies that are bleeding and burning at once take +30% damage.	Les ennemis qui saignent et brûlent à la fois subissent +30 % de dégâts.	同时流血和燃烧的敌人受到的伤害+30%。
+Parry Ardiente	Blazing Parry	Parade ardente	烈焰格挡
+Cada parry prende fuego a los enemigos cercanos durante 3 s.	Each parry sets nearby enemies on fire for 3 s.	Chaque parade enflamme les ennemis proches pendant 3 s.	每次格挡点燃附近的敌人，持续3秒。
+Parry Glacial	Glacial Parry	Parade glaciale	寒冰格挡
+Cada parry congela 1,2 s a los enemigos cercanos (los jefes solo se ralentizan).	Each parry freezes nearby enemies for 1.2 s (bosses are only slowed).	Chaque parade gèle les ennemis proches pendant 1,2 s (les boss sont seulement ralentis).	每次格挡冻结附近的敌人1.2秒（首领仅被减速）。
+Hechizo Certero	Precise Spell	Sort précis	精准法术
+Tras lanzar una habilidad, +25% de probabilidad de crítico durante 5 s.	After casting a skill, +25% critical chance for 5 s.	Après avoir lancé une compétence, +25 % de chance de critique pendant 5 s.	施放技能后，暴击率+25%，持续5秒。
+Toxina Crítica	Critical Toxin	Toxine critique	暴击毒素
++18% de probabilidad de crítico contra enemigos envenenados.	+18% critical chance against poisoned enemies.	+18 % de chance de critique contre les ennemis empoisonnés.	对中毒的敌人暴击率+18%。
+Frasco Explosivo	Explosive Flask	Fiole explosive	爆裂药瓶
+Beber un frasco provoca una explosión a tu alrededor (150% de daño).	Drinking a flask causes an explosion around you (150% damage).	Boire une fiole provoque une explosion autour de vous (150 % de dégâts).	饮用药瓶时在周围引发爆炸（150%伤害）。
+Triple Filo	Triple Edge	Triple tranchant	三重锋刃
+Cada 7 golpes lanzas 3 cuchillas (50% de daño).	Every 7 hits you throw 3 blades (50% damage).	Tous les 7 coups, vous lancez 3 lames (50 % de dégâts).	每攻击7次投出3把飞刀（50%伤害）。
+Corazón Ardiente	Burning Heart	Cœur ardent	炽热之心
+Los enemigos en llamas pueden soltar un corazón al morir (cada 25 s).	Burning enemies may drop a heart on death (every 25 s).	Les ennemis en flammes peuvent lâcher un cœur à leur mort (toutes les 25 s).	燃烧的敌人死亡时可能掉落一颗心（每25秒）。
+Convergencia Elemental	Elemental Convergence	Convergence élémentaire	元素汇聚
+En combate, cada 8 s un anillo de fuego y uno de hielo salen de ti y caen 2 rayos.	In combat, every 8 s a ring of fire and a ring of ice burst from you and 2 lightning bolts strike.	En combat, toutes les 8 s un anneau de feu et un de glace jaillissent de vous et 2 éclairs frappent.	战斗中每8秒，火焰环和寒冰环从你身上迸发，并落下2道闪电。
+Infierno	Inferno	Enfer	炼狱
+Tus golpes contra enemigos en llamas propagan el fuego a los cercanos (cada 0,6 s) y los quemados reciben +10% de daño.	Your hits on burning enemies spread the fire to nearby ones (every 0.6 s) and burning enemies take +10% damage.	Vos coups sur des ennemis en flammes propagent le feu aux proches (toutes les 0,6 s) et les ennemis en flammes subissent +10 % de dégâts.	你对燃烧敌人的攻击会将火焰传给附近敌人（每0.6秒），燃烧的敌人受到的伤害+10%。
+Cripta de Hielo	Ice Crypt	Crypte de glace	寒冰地窖
+Tus críticos contra enemigos ralentizados o congelados estallan en escarcha (70% de daño, cada 0,8 s).	Your critical hits against slowed or frozen enemies burst into frost (70% damage, every 0.8 s).	Vos critiques contre les ennemis ralentis ou gelés explosent en givre (70 % de dégâts, toutes les 0,8 s).	你对减速或冰冻敌人的暴击会爆发寒霜（70%伤害，每0.8秒）。
+Tormenta Viva	Living Storm	Tempête vivante	活风暴
+Cada descarga arcana te da +15% de velocidad de ataque 4 s y carga un 6% de tu definitiva.	Each arcane discharge gives +15% attack speed for 4 s and charges 6% of your ultimate.	Chaque décharge arcanique donne +15 % de vitesse d'attaque pendant 4 s et charge 6 % de votre ultime.	每次奥术放电使攻击速度+15%，持续4秒，并为终极技能充能6%。
+Muerte Lenta	Slow Death	Mort lente	缓慢死亡
+El daño periódico hace +25% y los enemigos con 2 o más estados alterados reciben +15% de daño.	Damage over time deals +25% and enemies with 2 or more status effects take +15% damage.	Les dégâts sur la durée font +25 % et les ennemis avec 2 états altérés ou plus subissent +15 % de dégâts.	持续伤害+25%，拥有2种及以上异常状态的敌人受到的伤害+15%。
+Contragolpe Perfecto	Perfect Counter	Contre parfait	完美反击
+Cada parry reduce 1 s tus habilidades y te da +20% de velocidad de ataque durante 4 s.	Each parry shortens your skill cooldowns by 1 s and gives +20% attack speed for 4 s.	Chaque parade réduit vos recharges de 1 s et donne +20 % de vitesse d'attaque pendant 4 s.	每次格挡使技能冷却缩短1秒，并获得+20%攻击速度，持续4秒。
+Muro Viviente	Living Wall	Mur vivant	活墙
+Mientras tengas escudo haces +15% de daño, y cuando absorbe un golpe te curas el 3%.	While you have a shield you deal +15% damage, and when it absorbs a hit you heal 3%.	Tant que vous avez un bouclier, vous infligez +15 % de dégâts, et quand il absorbe un coup, vous vous soignez de 3 %.	拥有护盾时伤害+15%，护盾吸收攻击时恢复3%生命。
+Sangre y Furia	Blood and Fury	Sang et fureur	血与怒
+Con poca vida: +15% de velocidad de ataque; matar cura el 4% y al ser herido tu siguiente golpe hace +50%.	At low health: +15% attack speed; killing heals 4% and when hurt your next hit deals +50%.	À faible vie : +15 % de vitesse d'attaque ; tuer soigne 4 % et, si vous êtes blessé, votre prochain coup inflige +50 %.	生命值低时：攻击速度+15%；击杀恢复4%生命；受伤后下一击伤害+50%。
+Ritmo Imparable	Unstoppable Rhythm	Rythme inarrêtable	势不可挡
+Cada crítico da +8% de velocidad de ataque durante 3 s (hasta 3 cargas) y +6% de probabilidad de crítico.	Each critical hit gives +8% attack speed for 3 s (up to 3 stacks) and +6% critical chance.	Chaque critique donne +8 % de vitesse d'attaque pendant 3 s (jusqu'à 3 cumuls) et +6 % de chance de critique.	每次暴击攻击速度+8%，持续3秒（最多3层），并且暴击率+6%。
+Artillería	Artillery	Artillerie	炮兵
+Tus proyectiles hacen +20% de daño y explotan al terminar (35% de daño).	Your projectiles deal +20% damage and explode at the end of their path (35% damage).	Vos projectiles infligent +20 % de dégâts et explosent à la fin de leur trajet (35 % de dégâts).	你的投射物伤害+20%，并在飞行终点爆炸（35%伤害）。
+Danza Etérea	Ethereal Dance	Danse éthérée	空灵之舞
+Cada esquiva carga un 8% de tu definitiva y potencia tu siguiente habilidad un 40% (5 s).	Each dodge charges 8% of your ultimate and empowers your next skill by 40% (5 s).	Chaque esquive charge 8 % de votre ultime et renforce votre prochaine compétence de 40 % (5 s).	每次闪避为终极技能充能8%，并使下一个技能强化40%（5秒）。
+Alquimia Mayor	Grand Alchemy	Grande alchimie	大炼金术
+Cada moneda carga 1,5% de tu definitiva y cada alma 3%; con 100 de oro o más haces +8% de daño.	Each coin charges 1.5% of your ultimate and each soul 3%; with 100 gold or more you deal +8% damage.	Chaque pièce charge 1,5 % de votre ultime et chaque âme 3 % ; avec 100 d'or ou plus, vous infligez +8 % de dégâts.	每枚金币为终极技能充能1.5%，每个灵魂3%；持有100以上金币时伤害+8%。
+Legión del Más Allá	Legion Beyond	Légion de l'au-delà	彼岸军团
+Mientras tengas espíritus haces +10% de daño; al ser herido uno te protege con 12 de escudo (cada 8 s).	While you have spirits you deal +10% damage; when hurt, one shields you for 12 (every 8 s).	Tant que vous avez des esprits, vous infligez +10 % de dégâts ; si vous êtes blessé, l'un d'eux vous protège avec 12 de bouclier (toutes les 8 s).	拥有精灵时伤害+10%；受伤时一只精灵为你提供12点护盾（每8秒）。
+Oscuridad Total	Total Darkness	Ténèbres totales	无尽黑暗
+Los enemigos malditos reciben +15% de daño extra y al morir cargan un 5% de tu definitiva.	Cursed enemies take +15% extra damage and charge 5% of your ultimate when they die.	Les ennemis maudits subissent +15 % de dégâts supplémentaires et chargent 5 % de votre ultime à leur mort.	被诅咒的敌人受到的伤害额外+15%，死亡时为终极技能充能5%。
+Pacto del Riesgo	Risk Pact	Pacte du risque	风险契约
+Limpiar una sala sin recibir daño da +15% de daño durante 25 s y 10 de oro.	Clearing a room without being hurt gives +15% damage for 25 s and 10 gold.	Nettoyer une salle sans être blessé donne +15 % de dégâts pendant 25 s et 10 d'or.	不受伤地清理房间，获得+15%伤害（25秒）和10金币。
+Hechicero Supremo	Supreme Sorcerer	Sorcier suprême	至尊术士
+Cada habilidad reduce 0,8 s las demás y tu definitiva potencia tus habilidades un 30% durante 8 s.	Each skill shortens the others by 0.8 s and your ultimate empowers skills by 30% for 8 s.	Chaque compétence réduit les autres de 0,8 s et votre ultime renforce vos compétences de 30 % pendant 8 s.	每个技能使其他技能冷却缩短0.8秒，终极技能使技能强化30%（8秒）。
+Cazador de Élites	Elite Hunter	Chasseur d'élite	精英猎手
++15% de probabilidad de crítico contra mini-jefes y jefes; matarlos te cura el 5%.	+15% critical chance against mini-bosses and bosses; killing them heals 5%.	+15 % de chance de critique contre les mini-boss et boss ; les tuer vous soigne de 5 %.	对精英和首领暴击率+15%；击杀它们恢复5%生命。
+Terremoto	Earthquake	Séisme	地震
+Al aterrizar de una caída larga ganas +20% de daño 4 s y cada salto en el aire te da 8 de escudo (cada 2 s).	Landing from a long fall gives +20% damage for 4 s and each mid-air jump gives 8 shield (every 2 s).	Atterrir d'une longue chute donne +20 % de dégâts pendant 4 s et chaque saut en l'air donne 8 de bouclier (toutes les 2 s).	长距离坠落着地后伤害+20%（4秒），每次空中跳跃获得8点护盾（每2秒）。
+Reacción en Cadena	Chain Reaction	Réaction en chaîne	连锁反应
+Tus golpes a enemigos rodeados tienen 15% de provocar una explosión (40% de daño, cada 1 s).	Your hits on surrounded enemies have a 15% chance to cause an explosion (40% damage, every 1 s).	Vos coups sur des ennemis entourés ont 15 % de chance de provoquer une explosion (40 % de dégâts, toutes les 1 s).	你对被包围的敌人发动攻击时，有15%几率引发爆炸（40%伤害，每1秒）。
+Resonancia Elemental	Elemental Resonance	Résonance élémentaire	元素共鸣
+Golpear a un enemigo con 2 o más estados alterados lanza un rayo de 2 saltos (cada 1,2 s).	Hitting an enemy with 2 or more status effects casts a 2-jump lightning bolt (every 1.2 s).	Frapper un ennemi avec 2 états altérés ou plus lance un éclair à 2 sauts (toutes les 1,2 s).	攻击拥有2种及以上异常状态的敌人，释放2次跳跃的闪电（每1.2秒）。
+Frasco de Vida	Life Flask	Fiole de vie	生命之瓶
+Toda curación recibida es un 25% mayor y beber un frasco te da 25 de escudo.	All healing received is 25% greater and drinking a flask gives you 25 shield.	Tous les soins reçus sont 25 % plus importants et boire une fiole vous donne 25 de bouclier.	所有受到的治疗效果+25%，饮用药瓶获得25点护盾。
+Reúne {} de sus bendiciones para activarla.	Gather {} of its blessings to activate it.	Réunissez {} de ses bénédictions pour l'activer.	集齐其中{}个祝福即可激活。
+Sinergia activa	Synergy active	Synergie active	协同已激活
+Sinergia {}/{}	Synergy {}/{}	Synergie {}/{}	协同 {}/{}
+Bendiciones y sinergias	Blessings & synergies	Bénédictions et synergies	祝福与协同
+Bendiciones	Blessings	Bénédictions	祝福
+Bendiciones *	Blessings *	Bénédictions *	祝福 *
+Sinergias	Synergies	Synergies	协同
+Sinergias *	Synergies *	Synergies *	协同 *
+BENDICIONES ACTIVAS	ACTIVE BLESSINGS	BÉNÉDICTIONS ACTIVES	已有祝福
+SINERGIAS	SYNERGIES	SYNERGIES	协同效果
+Pág. {}/{}	Page {}/{}	Page {}/{}	第 {}/{} 页
+Aún no tienes ninguna sinergia en marcha.	You have no synergies going yet.	Aucune synergie en cours pour l'instant.	你还没有任何协同效果。
+ACTIVA {}/{}	ACTIVE {}/{}	ACTIVE {}/{}	已激活 {}/{}
+Nv {}/{}	Lv {}/{}	Niv {}/{}	等级 {}/{}
++{} más	+{} more	+{} de plus	另有 {} 个
+¡Sinergia activada!	Synergy activated!	Synergie activée !	协同已激活！
+Aparece con {} bendiciones de su categoría	Appears with {} blessings of its category	Apparaît avec {} bénédictions de sa catégorie	拥有{}个同类祝福时出现
+Aparece con {} bendiciones de su familia	Appears with {} blessings of its family	Apparaît avec {} bénédictions de sa famille	拥有{}个同系祝福时出现
+Daño físico	Physical damage	Dégâts physiques	物理伤害
+Magia y elementos	Magic & elements	Magie et éléments	魔法与元素
+Defensa y supervivencia	Defense & survival	Défense et survie	防御与生存
+Velocidad y evasión	Speed & evasion	Vitesse et esquive	速度与闪避
+Proyectiles	Projectiles	Projectiles	投射物
+Recursos y recompensas	Resources & rewards	Ressources et récompenses	资源与奖励
+Invocaciones y compañeros	Summons & companions	Invocations et compagnons	召唤与伙伴
+Riesgo y recompensa	Risk & reward	Risque et récompense	风险与回报
+Maldiciones y transformaciones	Curses & transformations	Malédictions et transformations	诅咒与变身
+Híbridas	Hybrids	Hybrides	混合
+común	common	commune	普通
+poco común	uncommon	peu commune	罕见
+rara	rare	rare	稀有
+épica	epic	épique	史诗
+legendaria	legendary	légendaire	传说

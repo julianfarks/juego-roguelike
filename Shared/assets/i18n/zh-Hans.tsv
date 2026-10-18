@@ -117,6 +117,423 @@ Arma	武器
 Granada	手雷
 Habilidad	技能
 ¡DESBLOQUEADO!	已解锁！
+Golpe Certero	精准一击
+Cada 4 golpes seguidos, el siguiente hace +25% de daño por nivel.	每连续命中4次，下一击伤害+25%（每级）。
+Hoja Rápida	迅捷之刃
++7% de velocidad de ataque por nivel.	攻击速度+7%（每级）。
+Peso Pesado	重量级
++18% de daño por nivel a enemigos con más del 80% de vida.	对生命高于80%的敌人伤害+18%（每级）。
+Rompeguardias	破卫者
++22% de daño por nivel contra mini-jefes y jefes.	对精英和首领伤害+22%（每级）。
+Puñalada Trapera	背刺
+Golpear a un enemigo por la espalda: +35% de daño.	从背后攻击敌人：伤害+35%。
+Cazador de Enjambres	猎群者
++15% de daño por nivel a enemigos con otros dos cerca.	对周围有其他敌人的目标伤害+15%（每级）。
+Estocada Larga	长刺
++18% de alcance de arma por nivel.	武器攻击范围+18%（每级）。
+Filo Sangrante	放血之刃
+25% de causar sangrado. Los enemigos sangrando reciben +15% de daño de tus golpes.	25%几率造成流血。流血的敌人受到你的攻击伤害+15%。
+Doble Tajo	双重斩
+18% de que tu golpe se repita poco después con el 40% del daño.	18%几率使你的攻击稍后重复，造成40%伤害。
+Impulso Letal	致命势头
+Cada crítico da +7% de daño durante 4 s (hasta 5 cargas).	每次暴击伤害+7%，持续4秒（最多5层）。
+Pulso Constante	稳定节奏
+Los golpes no críticos hacen +14% de daño por nivel.	非暴击攻击伤害+14%（每级）。
+Remate Brutal	残暴终结
+El tercer golpe del combo hace +25% de daño por nivel.	连击第三击伤害+25%（每级）。
+Ritmo de Combate	战斗节奏
+Cada remate de combo da +10% de velocidad de ataque durante 3 s (hasta 3 cargas).	每次连击终结攻击速度+10%，持续3秒（最多3层）。
+Sentencia	审判之刃
+Tu remate detona una explosión de 200% de daño cada 4 s.	连击终结引发爆炸，造成200%伤害，每4秒一次。
+Maestro de Armas	武器大师
+Con la vida al 90% o más: +30% de daño de arma.	生命值不低于90%时，武器伤害+30%。
+Sed de Batalla	战斗渴望
+Cada baja da +12% de velocidad de ataque durante 3 s (hasta 2 cargas).	每次击杀攻击速度+12%，持续3秒（最多2层）。
+Ojo de Halcón	鹰眼
++5% de probabilidad de crítico por nivel.	暴击率+5%（每级）。
+Ensañamiento	赶尽杀绝
+Los críticos contra enemigos con menos del 30% de vida hacen +50% de daño crítico extra.	对生命低于30%的敌人暴击伤害额外+50%。
+Cadena de Críticos	暴击连锁
+Tras 2 críticos seguidos, +20% de probabilidad de crítico hasta que falles un golpe o te hieran.	连续2次暴击后，暴击率+20%，直到某次攻击未暴击或你受伤。
+Combustión	燃烧强化
+El daño periódico (fuego, veneno, sangrado) hace +20% por nivel.	持续伤害（燃烧、中毒、流血）+20%（每级）。
+Llama Voraz	贪婪之焰
+Los enemigos en llamas reciben +15% de daño de tus golpes y habilidades.	燃烧中的敌人受到你的攻击和技能伤害+15%。
+Brasa Crítica	暴击余烬
++25% de probabilidad de crítico contra enemigos en llamas.	对燃烧中的敌人暴击率+25%。
+Contagio Ígneo	火焰传染
+Cuando muere un enemigo en llamas, el fuego salta a los cercanos.	燃烧的敌人死亡时，火焰蔓延到附近的敌人。
+Pira Viviente	活体火葬
+Los enemigos en llamas explotan al morir (60% de daño) y prenden fuego alrededor.	燃烧的敌人死亡时爆炸（60%伤害）并点燃周围。
+Aliento de Dragón	龙息
+Tu definitiva prende fuego a todos los enemigos durante 4 s.	你的终极技能点燃所有敌人，持续4秒。
+Rastro Ardiente	烈焰轨迹
+Al rodar dejas dos charcos de fuego que queman a los enemigos.	翻滚时留下两处火焰，灼烧敌人。
+Escarcha Quebradiza	易碎寒霜
++35% de probabilidad de crítico contra enemigos ralentizados o congelados.	对减速或冰冻的敌人暴击率+35%。
+Esquirlas de Hielo	冰晶碎片
+Los enemigos ralentizados o congelados sueltan 3 esquirlas al morir.	减速或冰冻的敌人死亡时释放3枚冰晶。
+Aura Gélida	寒霜光环
+Cada 3 s ralentizas a los enemigos cercanos.	每3秒使附近的敌人减速。
+Ventisca	暴风雪
+Tus habilidades ralentizan a los enemigos en un radio amplio.	你的技能使大范围内的敌人减速。
+Congelación Profunda	深度冻结
+Golpear a un enemigo ralentizado: 12% de congelarlo 1,2 s (cada 2 s). Los jefes solo se ralentizan.	攻击减速的敌人：12%几率冻结1.2秒（每2秒）。首领仅被减速。
+Carga Estática	静电充能
+Tus golpes acumulan carga arcana (máx. 10). Al llegar a 10 se libera un rayo encadenado.	攻击积累奥术电荷（最多10）。满10时释放连锁闪电。
+Pararrayos	避雷针
+Cada parry da 2 cargas arcanas y libera una descarga con todas tus cargas.	每次格挡获得2点电荷并释放全部电荷的放电。
+Voltio Arcano	奥术伏特
+Cada habilidad que lanzas te da 3 cargas arcanas.	每次施放技能获得3点电荷。
+Batería Viva	活体电池
+Cada esquiva o rodar exitoso da 2 cargas arcanas.	每次闪避或翻滚获得2点电荷。
+Descarga Mayor	大放电
+Con 6 o más cargas arcanas, tus golpes sueltan una descarga de 4 saltos (cada 1,5 s).	电荷不少于6时，攻击释放4次跳跃的放电（每1.5秒）。
+Conductor	导体
+Tus rayos encadenados saltan a 1 enemigo más.	你的连锁闪电多跳跃1个敌人。
+Tempestad Eterna	永恒风暴
+En combate, cada 4 s caen 3 rayos sobre enemigos al azar.	战斗中每4秒有3道闪电劈向随机敌人。
+Ponzoña Virulenta	剧毒
+Tus estados alterados duran 40% más.	你的异常状态持续时间延长40%。
+Plaga	瘟疫
+Cuando muere un enemigo envenenado, el veneno se contagia a los cercanos.	中毒的敌人死亡时，毒素传染给附近的敌人。
+Toxina Nerviosa	神经毒素
+40% de ralentizar al golpear a un enemigo envenenado.	攻击中毒的敌人时，40%几率使其减速。
+Esporas Tóxicas	毒孢子
+En combate, cada 6 s una nube envenena a los enemigos cercanos.	战斗中每6秒，毒云使附近的敌人中毒。
+Eco Arcano	奥术回响
+Tras lanzar una habilidad, tu siguiente golpe hace +50% de daño (5 s).	施放技能后，下一次攻击伤害+50%（5秒）。
+Canalizador	导能者
+Cada golpe acorta 0,25 s la reutilización de tu habilidad más lenta (límite por segundo).	每次攻击使最慢的技能冷却缩短0.25秒（有速率上限）。
+Catalizador	催化剂
+Al usar tu definitiva, tus habilidades se reponen al instante.	使用终极技能时，立即重置所有技能冷却。
+Resonancia	共鸣
+Cada habilidad potencia la siguiente: +35% de daño (6 s).	每个技能强化下一个技能：伤害+35%（6秒）。
+Manantial de Maná	法力之泉
+Cada habilidad lanzada carga un 6% de tu definitiva.	每次施放技能为终极技能充能6%。
+Runa de Poder	力量符文
++25% de carga de definitiva y +10% de daño de habilidades.	终极技能充能+25%，技能伤害+10%。
+Contra del Parry	格挡反击
+Tras un parry, tu siguiente golpe hace +60% de daño (4 s).	格挡后，下一次攻击伤害+60%（4秒）。
+Parry Templado	格挡护盾
+Cada parry te da un escudo de 15.	每次格挡获得15点护盾。
+Parry Cargado	格挡蓄能
+Cada parry carga un 8% de tu definitiva.	每次格挡为终极技能充能8%。
+Eco Defensivo	防御回响
+Cada parry libera una onda de 100% de daño que empuja a los enemigos.	每次格挡释放100%伤害的冲击波，击退敌人。
+Maestro del Parry	格挡大师
+Cada parry da +12% de daño durante 5 s (hasta 3 cargas).	每次格挡伤害+12%，持续5秒（最多3层）。
+Reflejo Estelar	星辰反射
+Cada parry dispara un anillo de 8 estrellas (50% de daño).	每次格挡发射8颗星星组成的环（50%伤害）。
+Calma del Guardián	守护者的平静
+Cada parry cura el 3% de tu vida máxima (límite por sala).	每次格挡恢复3%最大生命（每个房间有上限）。
+Escudo Reactivo	反应护盾
+Cuando tu escudo absorbe un golpe, estalla con 80% de daño a tu alrededor.	护盾吸收攻击时，在周围爆发80%伤害。
+Bastión de Victoria	胜利壁垒
+Al limpiar una sala ganas un escudo de 20.	清理房间后获得20点护盾。
+Armadura de Hierro	铁甲
+Tus golpes dan 3 de escudo (cada 1,2 s) y tu escudo puede acumular 30 más.	攻击获得3点护盾（每1.2秒），护盾上限+30。
+Coraza de Espinas	荆棘外壳
+Al recibir daño estallas dañando (70%) a los enemigos cercanos (cada 1,5 s).	受伤时爆发，对附近敌人造成70%伤害（每1.5秒）。
+Contragolpe Desesperado	绝地反击
+Al recibir daño, tu siguiente golpe hace +70% de daño (4 s).	受伤后，下一次攻击伤害+70%（4秒）。
+Sangre Fría	冷血
+Al caer por debajo del 35% de vida ganas un escudo de 40 (cada 20 s).	生命低于35%时获得40点护盾（每20秒）。
+Instinto de Supervivencia	求生本能
+Al caer por debajo del 35% de vida: 0,6 s de invulnerabilidad y cura del 8% (cada 25 s).	生命低于35%时：0.6秒无敌并恢复8%生命（每25秒）。
+Último Bastión	最后堡垒
+Con menos del 35% de vida recibes un 30% menos de daño.	生命低于35%时，受到的伤害降低30%。
+Rabia Herida	负伤之怒
+Con menos del 35% de vida haces +35% de daño.	生命低于35%时，伤害+35%。
+Sanguinario	嗜血者
+Con menos del 35% de vida robas un 5% del daño que infliges.	生命低于35%时，吸取你所造成伤害的5%。
+Vitalidad	活力
++10% de vida máxima por nivel.	最大生命+10%（每级）。
+Sanación de Victoria	胜利疗愈
+Al limpiar una sala recuperas el 5% de tu vida máxima.	清理房间后恢复5%最大生命。
+Cosecha de Vida	生命收割
+Cada baja cura el 1,5% de tu vida máxima (límite por sala).	每次击杀恢复1.5%最大生命（每个房间有上限）。
+Égida Perpetua	永恒神盾
+En combate ganas un escudo de 30 cada 8 s. Si el escudo absorbe un golpe, 0,5 s de invulnerabilidad (cada 3 s).	战斗中每8秒获得30点护盾。护盾吸收攻击时获得0.5秒无敌（每3秒）。
+Onda de Choque	冲击波
+Al recibir un golpe empujas a los enemigos cercanos (cada 1,2 s).	受到攻击时击退附近的敌人（每1.2秒）。
+Impulso de Rodada	翻滚动力
+Tu rodada es un 25% más rápida por nivel: recorre más distancia y termina antes.	翻滚速度提升25%（每级）：移动距离更远，结束更快。
+Sombra Veloz	迅捷之影
+Tras rodar ganas +20% de velocidad de movimiento durante 2,5 s.	翻滚后移动速度+20%，持续2.5秒。
+Racha del Cazador	猎手连杀
+Cada baja da +10% de velocidad de movimiento durante 4 s (hasta 3 cargas).	每次击杀移动速度+10%，持续4秒（最多3层）。
+Esquiva Sagrada	神圣闪避
+Cada esquiva da +15% de daño durante 4 s (hasta 2 cargas).	每次闪避伤害+15%，持续4秒（最多2层）。
+Baile de Cuchillas	飞刀圆舞
+Cada esquiva lanza 3 cuchillas (60% de daño).	每次闪避投出3把飞刀（60%伤害）。
+Evasión Mágica	魔法闪避
+Cada esquiva reduce 0,6 s tus habilidades y carga un 5% de tu definitiva.	每次闪避使技能冷却缩短0.6秒，并为终极技能充能5%。
+Salto Explosivo	爆裂跳跃
+Cada salto en el aire detona una explosión del 50% de daño bajo ti.	每次空中跳跃在脚下引发50%伤害的爆炸。
+Aterrizaje Sísmico	震地降落
+Las caídas largas provocan una onda del 100% de daño al aterrizar.	长距离坠落着地时引发100%伤害的冲击波。
+Cadencia en Movimiento	移动节奏
+Mientras te mueves, +18% de velocidad de ataque.	移动时攻击速度+18%。
+Golpe en Carrera	冲刺打击
+Mientras te mueves, +12% de daño.	移动时伤害+12%。
+Quietud Letal	静止杀机
+Quieto, haces +20% de daño y recibes un 10% menos.	站立不动时，伤害+20%，受到的伤害降低10%。
+Ráfaga de Remate	终结疾风
+Cada remate de combo da +15% de velocidad de movimiento durante 3 s.	每次连击终结移动速度+15%，持续3秒。
+Viento de Cola	顺风
+Cada salto en el aire da +20% de velocidad de movimiento durante 3 s.	每次空中跳跃移动速度+20%，持续3秒。
+Segundo Aliento	回气
+Cada esquiva te da 0,4 s de invulnerabilidad (cada 3 s).	每次闪避获得0.4秒无敌（每3秒）。
+Reloj del Destino	命运之钟
+Un parry o una esquiva ralentiza el tiempo 1,2 s para los enemigos (cada 18 s).	格挡或闪避使敌人时间减慢1.2秒（每18秒）。
+Maestro de Trampas	陷阱大师
+Sobrevolar pinchos sin tocarlos te da 15 de escudo y +20% de daño durante 5 s.	越过尖刺而不受伤：获得15点护盾，伤害+20%，持续5秒。
+Acróbata	杂技师
+Cada salto da +10% de velocidad de ataque durante 2 s.	每次跳跃攻击速度+10%，持续2秒。
+Danza Aérea	空中之舞
+En el aire haces +20% de daño.	在空中时伤害+20%。
+Punta Afilada	锋利箭头
+Tus proyectiles atraviesan 1 enemigo más por nivel.	你的投射物多穿透1个敌人（每级）。
+Vuelo Veloz	迅疾飞行
+Tus proyectiles van un 25% más rápido y son un 20% más grandes.	你的投射物速度+25%，体积+20%。
+Ricochet	弹射
+Tus proyectiles rebotan una vez contra paredes o enemigos.	你的投射物在墙壁或敌人上弹射一次。
+Buscador	追踪者
+Tus proyectiles giran ligeramente hacia los enemigos cercanos.	你的投射物会略微转向附近的敌人。
+Perforante	穿甲
+Tus proyectiles hacen +20% de daño por cada enemigo que atraviesan.	你的投射物每穿透一个敌人，伤害+20%。
+Doble Lanzamiento	双重投掷
+20% de que tus proyectiles se lancen dos veces.	20%几率使你的投射物发射两次。
+Onda Expansiva	扩散波
+Tus ondas de energía (Hoja Fantasma y similares) hacen +40% de daño y son más grandes.	你的能量波（幽灵之刃等）伤害+40%，范围更大。
+Proyectil Explosivo	爆裂弹
+Tus proyectiles explotan al terminar su trayecto (50% de daño).	你的投射物在飞行终点爆炸（50%伤害）。
+Disparo Incendiario	燃烧弹
+30% de que tus proyectiles prendan fuego al impactar.	30%几率使你的投射物命中时点燃目标。
+Disparo Gélido	寒冰弹
+50% de que tus proyectiles ralenticen al impactar.	50%几率使你的投射物命中时减速目标。
+Disparo Voltaico	雷电弹
+Tus proyectiles descargan un rayo de 2 saltos al impactar (cada 0,5 s).	你的投射物命中时释放2次跳跃的闪电（每0.5秒）。
+Lluvia de Hojas	落叶雨
+Cada habilidad invoca una lluvia de 5 hojas cortantes sobre los enemigos.	每次施放技能，在敌人头上降下5片锋利的叶子。
+Ráfaga Estelar	星芒连发
+Cada 5 golpes sueltas 3 estrellas teledirigidas (50% de daño).	每攻击5次释放3颗追踪星星（50%伤害）。
+Estela de Rodada	翻滚余波
+Al terminar un rodar lanzas una onda de energía (80% de daño).	翻滚结束时发射能量波（80%伤害）。
+Tirador Experto	神射手
+Los proyectiles que impactan a enemigos lejanos hacen +40% de daño.	命中远处敌人的投射物伤害+40%。
+Foco Letal	致命专注
+Impactos seguidos con proyectiles al mismo enemigo: +8% de daño acumulable (hasta 5).	投射物连续命中同一敌人：伤害+8%可叠加（最多5层）。
+Orbe Santo	圣光球
+Matar con un proyectil libera un orbe sagrado teledirigido (70% de daño).	用投射物击杀敌人会释放追踪圣光球（70%伤害）。
+Tormenta de Acero	钢铁风暴
+Cada habilidad lanza 10 cuchillas desde el cielo y tu definitiva 16. Tus proyectiles atraviesan 1 enemigo más.	每次技能从天而降10把刀刃，终极技能16把。你的投射物多穿透1个敌人。
+Mercader Astuto	精明商人
+Los precios de las tiendas bajan un 10% por nivel (máx. 50%).	商店价格降低10%（每级，最多50%）。
+Interés Compuesto	复利
+Al limpiar una sala con 100 o más de oro, ganas 12 de oro extra.	持有100以上金币时清理房间，额外获得12金币。
+Poder del Oro	黄金之力
+Con 150 o más de oro, haces +12% de daño.	持有150以上金币时，伤害+12%。
+Cosecha de Almas	灵魂收割
+Los mini-jefes y jefes sueltan 6 almas extra al morir.	精英和首领死亡时额外掉落6点灵魂。
+Almas en Furia	魂之狂怒
+Cada alma recogida da +5% de daño durante 6 s (hasta 5 cargas).	每拾取一个灵魂，伤害+5%，持续6秒（最多5层）。
+Corazón Blindado	铁心
+Un corazón recogido con la vida llena te da 12 de escudo.	满血时拾取心形物品，获得12点护盾。
+Alquimista	炼金术士
+Beber un frasco te da +20% de daño durante 8 s y limpia tus estados alterados.	饮用药瓶后伤害+20%，持续8秒，并清除你的异常状态。
+Reserva de Frascos	药瓶储备
++1 frasco de curación máximo.	最大药瓶数量+1。
+Brebaje Rebosante	满溢药剂
+Un frasco recogido con la reserva llena cura el 12% de tu vida.	药瓶已满时拾取药瓶，恢复12%生命。
+Visión del Altar	祭坛视界
+Los altares de bendición ofrecen una opción adicional.	祝福祭坛多提供一个选项。
+Suerte Dorada	金色幸运
++1 de suerte: mejores recompensas en cofres y tiendas.	幸运+1：宝箱和商店的奖励更好。
+Botín de Élite	精英战利品
+Los mini-jefes y jefes sueltan 15 de oro extra.	精英和首领额外掉落15金币。
+Recaudador	收税官
+Cada baja con tu arma te da 1 de oro (límite por sala).	每次用武器击杀获得1金币（每个房间有上限）。
+Cazatesoros	寻宝者
+Al entrar en una sala ganas 8 de oro.	进入房间时获得8金币。
+Ladrón de Almas	盗魂者
+Los críticos te dan 2 almas (cada 0,8 s, límite por sala).	暴击获得2点灵魂（每0.8秒，每个房间有上限）。
+Corona del Avaro	守财奴之冠
++50% de oro. Con 200 o más de oro haces +20% de daño y cada baja te da 2 de oro (límite por sala).	金币+50%。持有200以上金币时伤害+20%，每次击杀获得2金币（每个房间有上限）。
+Luciérnaga	萤火虫
+Una luciérnaga te acompaña y dispara a los enemigos cercanos (50% de daño cada 2 s).	一只萤火虫伴随你，攻击附近的敌人（每2秒造成50%伤害）。
+Llama Fatua	鬼火
+Un espíritu de fuego te acompaña: dispara cada 2,6 s (55%) y prende fuego.	火焰精灵伴随你：每2.6秒攻击一次（55%伤害）并点燃目标。
+Espíritu Glacial	寒冰精灵
+Un espíritu de hielo libera cada 5 s una onda helada que ralentiza (70% de daño).	冰霜精灵每5秒释放一次减速的寒冰脉冲（70%伤害）。
+Espíritu del Trueno	雷霆精灵
+Un espíritu eléctrico lanza cada 4 s un rayo de 3 saltos (60% de daño).	雷电精灵每4秒释放一道3次跳跃的闪电（60%伤害）。
+Espíritu Maldito	诅咒精灵
+Un espíritu oscuro maldice cada 8 s al enemigo más sano (+20% de daño recibido).	黑暗精灵每8秒诅咒生命最高的敌人（受到伤害+20%）。
+Espíritu Sanador	治愈精灵
+Un espíritu te cura el 4% de tu vida cada 9 s si estás herido (límite por sala).	精灵每9秒恢复你4%生命（受伤时，每个房间有上限）。
+Espíritu Guardián	守护精灵
+Un espíritu te protege con un escudo de 18 cada 14 s si no tienes ninguno.	精灵每14秒为你提供18点护盾（若你没有护盾）。
+Espíritu Venenoso	剧毒精灵
+Un espíritu de veneno dispara cada 3 s (45%) y envenena.	剧毒精灵每3秒攻击一次（45%伤害）并使目标中毒。
+Espíritu de Sombra	暗影精灵
+Un espíritu de sombra hiere cada 2,8 s (60%) y causa sangrado.	暗影精灵每2.8秒攻击一次（60%伤害）并造成流血。
+Vínculo Espiritual	灵魂羁绊
+Un espíritu menor te acompaña (35% cada 3 s) y todos tus espíritus actúan un 30% más rápido.	一只小精灵伴随你（每3秒35%伤害），所有精灵行动速度+30%。
+Sinfonía Espiritual	灵魂交响
+Tus espíritus actúan un 50% más rápido y cada baja los acelera aún más durante 4 s.	你的精灵行动速度+50%，每次击杀使其在4秒内进一步加速。
+Pastor de Almas	牧魂人
+Cada alma recogida acelera a tus espíritus durante 5 s.	每拾取一个灵魂，精灵加速5秒。
+Legión Espectral	幽灵军团
+Invoca tres espíritus: uno de fuego, uno glacial y uno eléctrico.	召唤三个精灵：火焰、寒冰和雷电各一。
+Desafío Doble	双倍挑战
+Los enemigos tienen +15% de vida, pero ganas +35% de oro y +20% de almas.	敌人生命+15%，但你获得的金币+35%，灵魂+20%。
+Sed de Riesgo	冒险渴望
+Los enemigos te hacen +20% de daño, pero haces +25% de daño y +30% de daño crítico.	敌人对你的伤害+20%，但你的伤害+25%，暴击伤害+30%。
+Cañón de Cristal	玻璃大炮
+-25% de vida máxima, +25% de daño.	最大生命-25%，伤害+25%。
+Pacto de Sangre	血之契约
+Al entrar en cada sala pierdes el 8% de tu vida (nunca mueres por esto), pero haces +30% de daño.	进入每个房间会损失8%生命（不会致死），但伤害+30%。
+Todo o Nada	孤注一掷
+Las salas perfectas (sin daño) dan 25 de oro y curan el 12%. Cada golpe recibido te cuesta 5 de oro.	完美房间（未受伤）获得25金币并恢复12%生命。每次受伤损失5金币。
+Temerario	无畏者
+Mientras no te hayan herido en la sala, haces +20% de daño.	在房间中未受伤时，伤害+20%。
+Sacrificio	牺牲
+Beber un frasco te cuesta el 5% de tu vida, pero carga un 25% de tu definitiva.	饮用药瓶损失5%生命，但为终极技能充能25%。
+Apostador	赌徒
+Entrar en una sala cuesta 10 de oro; limpiarla sin que te hieran da 40 de oro.	进入房间花费10金币；不受伤地清理房间获得40金币。
+Juicio Final	最终审判
++35% de daño, pero los enemigos tienen +20% de vida y hacen +30% de daño. Derrotar a un jefe te cura el 35%.	伤害+35%，但敌人生命+20%，伤害+30%。击败首领后恢复35%生命。
+Último Recurso	最后手段
+Beber un frasco con poca vida te da 0,6 s de invulnerabilidad.	生命值低时饮用药瓶，获得0.6秒无敌。
+Caza Mayor	猎杀巨兽
+Los enemigos tienen +20% de vida. Los mini-jefes y jefes sueltan un corazón y 8 almas al morir.	敌人生命+20%。精英和首领死亡时掉落一颗心和8点灵魂。
+Ayuno	禁食
+-1 frasco máximo, pero haces +20% de daño.	最大药瓶数-1，但伤害+20%。
+Marca Maldita	诅咒印记
+15% de maldecir al golpear: los malditos reciben +20% de daño tuyo durante 6 s.	攻击时15%几率施加诅咒：被诅咒的敌人受到你的伤害+20%，持续6秒。
+Sentencia Oscura	黑暗判决
+En combate, cada 9 s maldices al enemigo con más vida.	战斗中每9秒诅咒生命最高的敌人。
+Maldición Contagiosa	蔓延诅咒
+Cuando muere un enemigo maldito, la maldición salta a los cercanos.	被诅咒的敌人死亡时，诅咒传给附近的敌人。
+Cosecha Maldita	诅咒收获
+Los enemigos malditos sueltan 3 almas al morir (límite por sala).	被诅咒的敌人死亡时掉落3点灵魂（每个房间有上限）。
+Festín Oscuro	黑暗盛宴
+Contra enemigos malditos robas un 4% del daño como vida.	对被诅咒的敌人，吸取4%伤害作为生命。
+Crítico Maldito	诅咒暴击
++20% de probabilidad de crítico contra enemigos malditos.	对被诅咒的敌人暴击率+20%。
+Forma de Sombra	暗影形态
+Tu definitiva te transforma 8 s: +30% de daño, +25% de velocidad y -20% de daño recibido; dejas un rastro de sombra y maldices al enemigo más sano.	终极技能使你变身8秒：伤害+30%，速度+25%，受到伤害-20%；留下暗影轨迹并诅咒最健康的敌人。
+Forma Bestial	野兽形态
+Al caer por debajo del 35% de vida te transformas 6 s: +30% de velocidad de ataque y +20% de velocidad (cada 30 s).	生命低于35%时变身6秒：攻击速度+30%，移动速度+20%（每30秒）。
+Forma Espectral	幽魂形态
+Cada parry te vuelve espectral: +25% de velocidad 3 s y maldices al enemigo más sano.	每次格挡使你变为幽魂：移动速度+25%，持续3秒，并诅咒最健康的敌人。
+Vacío Voraz	饥饿虚空
+Cada baja carga un 3% de tu definitiva y, al terminar la definitiva, te curas el 10%.	每次击杀为终极技能充能3%，终极技能结束时恢复10%生命。
+Corrupción	腐化
+30% de envenenar al golpear a un enemigo maldito.	攻击被诅咒的敌人时，30%几率使其中毒。
+Aura de Penumbra	幽影光环
+Al rodar dejas dos charcos de sombra que maldicen a los enemigos que los pisan.	翻滚时留下两处暗影，诅咒踩上去的敌人。
+Fuego y Rayo	火与雷
+Los críticos contra enemigos en llamas sueltan un rayo de 2 saltos (cada 0,5 s).	对燃烧的敌人暴击时释放2次跳跃的闪电（每0.5秒）。
+Estallido Helado	冰霜爆裂
+Golpear a un enemigo congelado: 20% de causar un estallido (70% de daño, cada 1 s).	攻击冰冻的敌人：20%几率引发爆裂（70%伤害，每1秒）。
+Choque Térmico	热冲击
+Golpear a un enemigo en llamas y ralentizado a la vez provoca una explosión de vapor (120% de daño, cada 2 s).	攻击同时燃烧和减速的敌人，引发蒸汽爆炸（120%伤害，每2秒）。
+Conducción Tóxica	毒导
+Golpear a un enemigo envenenado y electrizado provoca una explosión tóxica (80% de daño, cada 1,5 s).	攻击同时中毒和感电的敌人，引发毒爆（80%伤害，每1.5秒）。
+Sangre Hirviente	沸血
+Los enemigos que sangran y arden a la vez reciben +30% de daño.	同时流血和燃烧的敌人受到的伤害+30%。
+Parry Ardiente	烈焰格挡
+Cada parry prende fuego a los enemigos cercanos durante 3 s.	每次格挡点燃附近的敌人，持续3秒。
+Parry Glacial	寒冰格挡
+Cada parry congela 1,2 s a los enemigos cercanos (los jefes solo se ralentizan).	每次格挡冻结附近的敌人1.2秒（首领仅被减速）。
+Hechizo Certero	精准法术
+Tras lanzar una habilidad, +25% de probabilidad de crítico durante 5 s.	施放技能后，暴击率+25%，持续5秒。
+Toxina Crítica	暴击毒素
++18% de probabilidad de crítico contra enemigos envenenados.	对中毒的敌人暴击率+18%。
+Frasco Explosivo	爆裂药瓶
+Beber un frasco provoca una explosión a tu alrededor (150% de daño).	饮用药瓶时在周围引发爆炸（150%伤害）。
+Triple Filo	三重锋刃
+Cada 7 golpes lanzas 3 cuchillas (50% de daño).	每攻击7次投出3把飞刀（50%伤害）。
+Corazón Ardiente	炽热之心
+Los enemigos en llamas pueden soltar un corazón al morir (cada 25 s).	燃烧的敌人死亡时可能掉落一颗心（每25秒）。
+Convergencia Elemental	元素汇聚
+En combate, cada 8 s un anillo de fuego y uno de hielo salen de ti y caen 2 rayos.	战斗中每8秒，火焰环和寒冰环从你身上迸发，并落下2道闪电。
+Infierno	炼狱
+Tus golpes contra enemigos en llamas propagan el fuego a los cercanos (cada 0,6 s) y los quemados reciben +10% de daño.	你对燃烧敌人的攻击会将火焰传给附近敌人（每0.6秒），燃烧的敌人受到的伤害+10%。
+Cripta de Hielo	寒冰地窖
+Tus críticos contra enemigos ralentizados o congelados estallan en escarcha (70% de daño, cada 0,8 s).	你对减速或冰冻敌人的暴击会爆发寒霜（70%伤害，每0.8秒）。
+Tormenta Viva	活风暴
+Cada descarga arcana te da +15% de velocidad de ataque 4 s y carga un 6% de tu definitiva.	每次奥术放电使攻击速度+15%，持续4秒，并为终极技能充能6%。
+Muerte Lenta	缓慢死亡
+El daño periódico hace +25% y los enemigos con 2 o más estados alterados reciben +15% de daño.	持续伤害+25%，拥有2种及以上异常状态的敌人受到的伤害+15%。
+Contragolpe Perfecto	完美反击
+Cada parry reduce 1 s tus habilidades y te da +20% de velocidad de ataque durante 4 s.	每次格挡使技能冷却缩短1秒，并获得+20%攻击速度，持续4秒。
+Muro Viviente	活墙
+Mientras tengas escudo haces +15% de daño, y cuando absorbe un golpe te curas el 3%.	拥有护盾时伤害+15%，护盾吸收攻击时恢复3%生命。
+Sangre y Furia	血与怒
+Con poca vida: +15% de velocidad de ataque; matar cura el 4% y al ser herido tu siguiente golpe hace +50%.	生命值低时：攻击速度+15%；击杀恢复4%生命；受伤后下一击伤害+50%。
+Ritmo Imparable	势不可挡
+Cada crítico da +8% de velocidad de ataque durante 3 s (hasta 3 cargas) y +6% de probabilidad de crítico.	每次暴击攻击速度+8%，持续3秒（最多3层），并且暴击率+6%。
+Artillería	炮兵
+Tus proyectiles hacen +20% de daño y explotan al terminar (35% de daño).	你的投射物伤害+20%，并在飞行终点爆炸（35%伤害）。
+Danza Etérea	空灵之舞
+Cada esquiva carga un 8% de tu definitiva y potencia tu siguiente habilidad un 40% (5 s).	每次闪避为终极技能充能8%，并使下一个技能强化40%（5秒）。
+Alquimia Mayor	大炼金术
+Cada moneda carga 1,5% de tu definitiva y cada alma 3%; con 100 de oro o más haces +8% de daño.	每枚金币为终极技能充能1.5%，每个灵魂3%；持有100以上金币时伤害+8%。
+Legión del Más Allá	彼岸军团
+Mientras tengas espíritus haces +10% de daño; al ser herido uno te protege con 12 de escudo (cada 8 s).	拥有精灵时伤害+10%；受伤时一只精灵为你提供12点护盾（每8秒）。
+Oscuridad Total	无尽黑暗
+Los enemigos malditos reciben +15% de daño extra y al morir cargan un 5% de tu definitiva.	被诅咒的敌人受到的伤害额外+15%，死亡时为终极技能充能5%。
+Pacto del Riesgo	风险契约
+Limpiar una sala sin recibir daño da +15% de daño durante 25 s y 10 de oro.	不受伤地清理房间，获得+15%伤害（25秒）和10金币。
+Hechicero Supremo	至尊术士
+Cada habilidad reduce 0,8 s las demás y tu definitiva potencia tus habilidades un 30% durante 8 s.	每个技能使其他技能冷却缩短0.8秒，终极技能使技能强化30%（8秒）。
+Cazador de Élites	精英猎手
++15% de probabilidad de crítico contra mini-jefes y jefes; matarlos te cura el 5%.	对精英和首领暴击率+15%；击杀它们恢复5%生命。
+Terremoto	地震
+Al aterrizar de una caída larga ganas +20% de daño 4 s y cada salto en el aire te da 8 de escudo (cada 2 s).	长距离坠落着地后伤害+20%（4秒），每次空中跳跃获得8点护盾（每2秒）。
+Reacción en Cadena	连锁反应
+Tus golpes a enemigos rodeados tienen 15% de provocar una explosión (40% de daño, cada 1 s).	你对被包围的敌人发动攻击时，有15%几率引发爆炸（40%伤害，每1秒）。
+Resonancia Elemental	元素共鸣
+Golpear a un enemigo con 2 o más estados alterados lanza un rayo de 2 saltos (cada 1,2 s).	攻击拥有2种及以上异常状态的敌人，释放2次跳跃的闪电（每1.2秒）。
+Frasco de Vida	生命之瓶
+Toda curación recibida es un 25% mayor y beber un frasco te da 25 de escudo.	所有受到的治疗效果+25%，饮用药瓶获得25点护盾。
+Reúne {} de sus bendiciones para activarla.	集齐其中{}个祝福即可激活。
+Sinergia activa	协同已激活
+Sinergia {}/{}	协同 {}/{}
+Bendiciones y sinergias	祝福与协同
+Bendiciones	祝福
+Bendiciones *	祝福 *
+Sinergias	协同
+Sinergias *	协同 *
+BENDICIONES ACTIVAS	已有祝福
+SINERGIAS	协同效果
+Pág. {}/{}	第 {}/{} 页
+Aún no tienes ninguna sinergia en marcha.	你还没有任何协同效果。
+ACTIVA {}/{}	已激活 {}/{}
+Nv {}/{}	等级 {}/{}
++{} más	另有 {} 个
+¡Sinergia activada!	协同已激活！
+Aparece con {} bendiciones de su categoría	拥有{}个同类祝福时出现
+Aparece con {} bendiciones de su familia	拥有{}个同系祝福时出现
+Daño físico	物理伤害
+Magia y elementos	魔法与元素
+Defensa y supervivencia	防御与生存
+Velocidad y evasión	速度与闪避
+Proyectiles	投射物
+Recursos y recompensas	资源与奖励
+Invocaciones y compañeros	召唤与伙伴
+Riesgo y recompensa	风险与回报
+Maldiciones y transformaciones	诅咒与变身
+Híbridas	混合
+común	普通
+poco común	罕见
+rara	稀有
+épica	史诗
+legendaria	传说
 MEJORAS	强化
 ARMAMENTO	军械
 ARSENAL	武库
@@ -321,7 +738,6 @@ Esquirlas Glaciales	冰川碎片
 Abanico de lanzas de hielo que ralentiza y congela.	扇形冰矛使敌人减速并冻结。
 Prisión de Hielo	冰之牢笼
 Encierra a un enemigo en hielo que luego estalla.	将敌人封入冰中，随后冰块爆裂。
-Ventisca	暴风雪
 Un torbellino de nieve cortante que arrastra y congela.	锋利的雪旋风卷起并冻结敌人。
 Cero Absoluto	绝对零度
 Todo se congela y luego se hace añicos.	万物冻结，随后粉碎。
@@ -345,7 +761,6 @@ Guadaña de hoja roja	赤刃镰刀
 Sangre: roba 7% del daño como vida.	鲜血：将7%的伤害转化为生命。
 Tajo Sangriento	血腥斩
 Embestida y triple tajo que te cura por cada enemigo golpeado.	冲锋并发动三连斩，每命中一名敌人便为你疗伤。
-Pacto de Sangre	血之契约
 Drena la vida de los enemigos cercanos con hilos de sangre.	以血丝吸取附近敌人的生命。
 Hoz Giratoria	旋转镰刃
 Una tormenta de hoces gira a tu alrededor desgarrándolo todo.	镰刀风暴环绕你旋转，撕碎一切。
@@ -359,7 +774,6 @@ Roca: -20% de daño recibido, golpes con gran empuje.	岩石：受到的伤害�
 Puño de Roca	岩拳
 Un golpe brutal que levanta una columna de roca frente a ti.	一记猛击，在你面前升起一根岩柱。
 Gran resistencia: te vuelves inamovible.	极高的防御力：你将岿然不动。
-Terremoto	地震
 Salto y estampida que parte el suelo en grietas.	跃起践踏，将地面震出道道裂缝。
 Cataclismo del Titán	泰坦天灾
 Una lluvia de meteoritos arrasa el campo de batalla.	流星雨席卷整片战场。
@@ -759,10 +1173,8 @@ Envenena al golpear	命中时使敌人中毒
 sin munición	弹药耗尽
 sin granadas	手雷耗尽
 ¡Pociones de vida!	生命药水！
-Vitalidad	活力
 Fuerza	力量
 Bolsa del Viajero	旅人行囊
-Cosecha de Almas	灵魂收割
 Frascos de Vida	生命药瓶
 Agilidad	敏捷
 Temple	坚毅
@@ -1033,7 +1445,6 @@ Especial: {}	特殊：{}
 2ª: {} x{}	副：{} x{}
 2ª: {} x{}  Gran: x{}	副：{} x{}  手雷：x{}
 {} (parry {}ms)	{}（格挡窗口 {}毫秒）
-Bendiciones	祝福
 Aún no tienes ninguna.	你还没有任何祝福。
 HAS CAÍDO	你已倒下
 Revividas: {}/{} usadas	复活：已用 {}/{}
@@ -1273,7 +1684,6 @@ Silencio	沉默
 Voluntad	意志
 Libertad	自由
 Paciencia	耐心
-Sacrificio	牺牲
 Reliquia	遗物
 ¡Segunda oportunidad!	第二次机会！
 ¡Reliquia obtenida!	获得遗物！

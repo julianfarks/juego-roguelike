@@ -52,5 +52,6 @@ public final class Stats {
         Events.applyStats(rs, this);
         Garden.applyStats(this, s);
         Companions.applyStats(rs, this);
+        BlessFx.applyStats(rs, this);
     }
 }

@@ -6,15 +6,33 @@ public final class Blessing {
     public final String icon, name, desc;
     public final int max;
     public final int weight;
+    /** Categoria 'A'..'J' (ver BlessData.CATS), rareza 0 comun..4 legendaria, piso minimo de aparicion, requisito de aparicion ("cat:C:3" / "has:2:id,id" / ""), reglas de efecto y clave textual. */
+    public final char cat;
+    public final int rar, minStage;
+    public final String req, key;
+    final BRule[] rules;
+
     Blessing(int id, String icon, String name, String desc, int max, int weight) {
-        this.id = id; this.icon = icon; this.name = name; this.desc = desc; this.max = max; this.weight = weight;
+        this(id, icon, name, desc, max, weight, 'A', 0, 0, "", new BRule[0], "");
     }
+
+    Blessing(int id, String icon, String name, String desc, int max, int weight, char cat, int rar, int minStage, String req, BRule[] rules, String key) {
+        this.id = id; this.icon = icon; this.name = name; this.desc = desc; this.max = max; this.weight = weight;
+        this.cat = cat; this.rar = rar; this.minStage = minStage; this.req = req; this.rules = rules; this.key = key;
+    }
+
+    public static final int LEGACY_COUNT = 28;
+    public static final int COMMON = 0, UNCOMMON = 1, RARE = 2, EPIC = 3, LEGENDARY = 4;
+    public static final int[] RAR_COLOR = {0xC8CCD8, 0x6AE08A, 0x6AA8FF, 0xC070FF, 0xFFB030};
+
+    /** Indice por clave textual ("certero", "brasas"...). */
+    public static Blessing byKey(String k) { for (Blessing b : ALL) if (b.key.equals(k)) return b; return null; }
 
     public static final int FILO = 0, CORAZON = 1, ALAS = 2, FURIA = 3, SANGRE = 4, BRASAS = 5, GLACIAL = 6, CHISPA = 7, ESPINAS = 8, PIEDRA = 9,
             FANTASMA = 10, DOBLE_SALTO = 11, CRITICO = 12, ALMA = 13, FORTUNA = 14, ESCUDO = 15, ENFRIAMIENTO = 16, HABILIDAD = 17,
             EJECUTOR = 18, IMAN = 19, VENGANZA = 20, SEGUNDA = 21, ONDA = 22, EGIDA = 23, SABIO = 24, GIGANTE = 25, SOMBRA = 26, ECLIPSE = 27;
 
-    public static final Blessing[] ALL = {
+    private static final Blessing[] LEGACY = {
             new Blessing(FILO, "b_filo", "Filo Afilado", "+15% de daño de arma por nivel.", 3, 10),
             new Blessing(CORAZON, "b_corazon", "Corazón Robusto", "+20 de vida máxima por nivel y te cura 20.", 3, 10),
             new Blessing(ALAS, "b_alas", "Pies Alados", "+8% de velocidad de movimiento por nivel.", 3, 8),
@@ -44,4 +62,7 @@ public final class Blessing {
             new Blessing(SOMBRA, "b_sombra", "Paso de Sombra", "Rodar atraviesa enemigos y los daña.", 2, 5),
             new Blessing(ECLIPSE, "b_eclipse", "Eclipse", "Cada 12 s, tu siguiente golpe hace daño x2.5 (más rápido por nivel).", 2, 5),
     };
+
+    /** Las 200 bendiciones (las 28 primeras son las originales; ver BlessData). */
+    public static final Blessing[] ALL = BlessData.all(LEGACY);
 }

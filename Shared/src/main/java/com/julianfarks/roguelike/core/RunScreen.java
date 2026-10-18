@@ -5,7 +5,7 @@ import java.util.List;
 
 /** La partida: salas, HUD, controles tactiles, altares, tienda, forja, jefes, muerte y victoria. */
 final class RunScreen extends Screen implements Level.Listener {
-    static final int OV_NONE = 0, OV_PAUSE = 1, OV_BLESS = 2, OV_SHOP = 3, OV_FORGE = 4, OV_DEAD = 5, OV_WIN = 6, OV_CHEST = 7, OV_TALK = 8, OV_REVIVE = 9, OV_EVENT = 10;
+    static final int OV_NONE = 0, OV_PAUSE = 1, OV_BLESS = 2, OV_SHOP = 3, OV_FORGE = 4, OV_DEAD = 5, OV_WIN = 6, OV_CHEST = 7, OV_TALK = 8, OV_REVIVE = 9, OV_EVENT = 10, OV_BLESSLIST = 11;
     static final String[] RELIC_NAMES = {"Corona Exánime", "Corazón de Magma", "Lágrima de Escarcha", "Ojo del Vacío", "Savia Ancestral", "Chispa del Titán", "Cáliz de Sangre", "Disco del Eclipse"};
 
     static final class ShopItem {
@@ -37,6 +37,8 @@ final class RunScreen extends Screen implements Level.Listener {
     float bossCardT = -1;
     int[] offer = new int[3];
     int offerSel;
+    private int blTab, blPage;         // lista de bendiciones activas: pestana (0 bendiciones, 1 sinergias) y pagina
+    private int[] blRows = new int[0];
     ChestLoot.Reward[] cOffer;      // las 3 opciones del cofre abierto
     int cMode;
     Prop ovProp;
@@ -695,25 +697,14 @@ final class RunScreen extends Screen implements Level.Listener {
     }
 
     private void openBlessing() {
-        // elegir 3 distintas con peso
-        List<Integer> pool = new ArrayList<>();
-        for (Blessing b : Blessing.ALL) if (rs.bless[b.id] < b.max) pool.add(b.id);
-        int[] pick = new int[3];
-        int n = Math.min(3, pool.size());
-        if (n == 0) { lv.healPlayer(rs.stats.maxHp * 0.3f); return; }
-        for (int i = 0; i < 3; i++) pick[i] = -1;
-        for (int i = 0; i < n; i++) {
-            float tot = 0;
-            for (int id : pool) tot += Blessing.ALL[id].weight * (rs.bless[id] > 0 ? 1.4f : 1f);
-            float r = rs.rng.f() * tot;
-            int chosen = pool.get(0);
-            for (int id : pool) {
-                r -= Blessing.ALL[id].weight * (rs.bless[id] > 0 ? 1.4f : 1f);
-                if (r <= 0) { chosen = id; break; }
-            }
-            pick[i] = chosen;
-            pool.remove((Integer) chosen);
-        }
+        // opciones variadas con rareza, afinidad y condiciones de aparicion (ver BlessOffer)
+        int[] pick = BlessOffer.pick(rs, 3 + BlessFx.offerExtra(rs), rs.rng);
+        int cnt = 0;
+        for (int id : pick) if (id >= 0) cnt++;
+        if (cnt == 0) { lv.healPlayer(rs.stats.maxHp * 0.3f); return; }
+        int[] comp = new int[cnt];
+        for (int i = 0, k = 0; i < pick.length; i++) if (pick[i] >= 0) comp[k++] = pick[i];
+        pick = comp;
         offer = pick;
         offerSel = 0;
         openOv(OV_BLESS);
@@ -721,12 +712,17 @@ final class RunScreen extends Screen implements Level.Listener {
     }
 
     private void applyBless(int id) {
+        BlessFx.sync(rs);
+        boolean[] synBefore = rs.bx.synOn.clone();
         rs.bless[id]++;
         rs.blessingTaken = true;
         float oldMax = rs.stats.maxHp;
         rs.stats.recalc(rs);
         if (id == Blessing.CORAZON) rs.hp = Math.min(rs.stats.maxHp, rs.hp + 20);
+        else if (id >= Blessing.LEGACY_COUNT && rs.stats.maxHp > oldMax) rs.hp += rs.stats.maxHp - oldMax;     // mas vida maxima: tambien la ganas
         rs.hp = Math.min(rs.hp, rs.stats.maxHp);
+        rs.potions = Math.min(rs.potions, rs.stats.potionsMax);
+        if (lv.pl != null) for (int s = 0; s < synBefore.length; s++) if (rs.bx.synOn[s] && !synBefore[s]) BlessEffects.synergyActivated(lv, s);
         if (id == Blessing.ESCUDO && lv.pl != null) lv.pl.shield = Math.max(lv.pl.shield, 14 + 10 * rs.stats.shieldLvl);
         if (id == Blessing.SEGUNDA) rs.reviveUsed = false;
         if (lv.pl != null) {
@@ -748,9 +744,7 @@ final class RunScreen extends Screen implements Level.Listener {
     }
 
     private int randomBlessingId() {
-        List<Integer> pool = new ArrayList<>();
-        for (Blessing b : Blessing.ALL) if (rs.bless[b.id] < b.max) pool.add(b.id);
-        return pool.isEmpty() ? -1 : pool.get(rs.rng.i(pool.size()));
+        return BlessOffer.pickOne(rs, rs.rng);
     }
 
     /** Sube un nivel una bendicion al azar sin tocar la regla de una bendicion de altar por bioma. */
@@ -840,16 +834,16 @@ final class RunScreen extends Screen implements Level.Listener {
         l.add(new ShopItem("Frasco de vida", "+1 frasco de vida.", "potion", 30 + 10 * st, 0, 0));
         l.add(new ShopItem("Elixir", "Cura el 50% de tu vida.", "heart", 45 + 10 * st, 1, 0));
         // bendicion aleatoria
-        List<Integer> pool = new ArrayList<>();
-        for (Blessing b : Blessing.ALL) if (rs.bless[b.id] < b.max) pool.add(b.id);
-        if (!pool.isEmpty()) {
-            int id = pool.get(rs.rng.i(pool.size()));
-            Blessing b = Blessing.ALL[id];
-            l.add(new ShopItem(b.name, b.desc, b.icon, 95 + 25 * st, 2, id));
+        int bid = BlessOffer.pickOne(rs, rs.rng);
+        if (bid >= 0) {
+            Blessing b = Blessing.ALL[bid];
+            l.add(new ShopItem(b.name, b.desc, b.icon, Math.round((95 + 25 * st) * (1f + 0.25f * b.rar)), 2, bid));
         }
         if (rs.rng.chance(0.5f)) l.add(new ShopItem("Cristal de poder", "Carga tu definitiva al máximo.", "star", 60 + 10 * st, 3, 0));
         else if (rs.weaponLvl < 5) l.add(new ShopItem("Piedra de afilar", "Mejora tu arma un nivel.", "forge", Math.round(rs.forgeCost() * 1.15f), 4, 0));
         else l.add(new ShopItem("Reserva de almas", "Obtienes 15 almas.", "soul", 50, 5, 0));
+        float disc = BlessFx.shopDisc(rs);
+        if (disc > 0f) for (ShopItem it : l) it.cost = Math.max(5, Math.round(it.cost * (1f - disc)));
         return l;
     }
 
@@ -877,11 +871,12 @@ final class RunScreen extends Screen implements Level.Listener {
         int w = W();
         switch (ov) {
             case OV_BLESS: {
-                float cw = Math.min(150, (w - 40) / 3f), gap = 8, x0 = w / 2f - (3 * cw + 2 * gap) / 2f;
-                for (int i = 0; i < 3; i++) {
+                int on = offer.length;
+                float gap = 8, cw = Math.min(150, (w - 24 - (on - 1) * gap) / on), x0 = w / 2f - (on * cw + (on - 1) * gap) / 2f;
+                for (int i = 0; i < on; i++) {
                     if (offer[i] < 0) continue;
                     final int k = i;
-                    Hit h = add(x0 + i * (cw + gap), 52, cw, 160, null, () -> {
+                    Hit h = add(x0 + i * (cw + gap), 40, cw, 196, null, () -> {
                         if (ovT < 0.35f) return;
                         applyBless(offer[k]);
                         if (ovProp != null && ovProp.kind.equals("altar")) { ovProp.used = true; ovProp.anim = "used"; ovProp.label = null; }
@@ -989,6 +984,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 } else add(bx, by + 84, bw, 22, "Vibración: " + (s.vibOn ? "SÍ" : "NO"), () -> { s.vibOn = !s.vibOn; s.write(); layoutOverlay(); });
                 if (isTestSession()) {      // prueba del Modo Desarrollador: sin "Guardar partida"; solo continuar o salir
                     add(bx, by + 112, bw + 12, 22, "Salir del modo de prueba", () -> { exitTest(); });
+                    add(bx, by + 140, bw, 22, "Bendiciones y sinergias", this::openBlessList);
                     break;
                 }
                 add(bx, by + 112, bw, 22, "Guardar partida", () -> { if (isTestSession()) return; saveMenu = true; layoutOverlay(); });
@@ -997,6 +993,11 @@ final class RunScreen extends Screen implements Level.Listener {
                     if (quitConfirm) { endRun(false); game.go(new Ops(game)); }
                     else { quitConfirm = true; layoutOverlay(); }
                 });
+                add(bx, by + 168, bw, 22, "Bendiciones y sinergias", this::openBlessList);
+                break;
+            }
+            case OV_BLESSLIST: {
+                layoutBlessList(w);
                 break;
             }
             case OV_REVIVE: {
@@ -1116,6 +1117,7 @@ final class RunScreen extends Screen implements Level.Listener {
         if (lv == null) return false;
         if (ov == OV_NONE) { openOv(OV_PAUSE); return true; }
         if (ov == OV_PAUSE && saveMenu) { saveMenu = false; layoutOverlay(); return true; }
+        if (ov == OV_BLESSLIST) { ov = OV_PAUSE; ovT = 0.3f; layoutOverlay(); return true; }
         if (ov == OV_TALK) { talk = null; closeOv(); return true; }
         if (ov == OV_REVIVE) return true;
         if (ov == OV_PAUSE || ov == OV_SHOP || ov == OV_FORGE || ov == OV_EVENT) { closeOv(); return true; }
@@ -1205,9 +1207,17 @@ final class RunScreen extends Screen implements Level.Listener {
     @Override void key(int code, boolean isDown) {
         if (ov != OV_NONE) {
             if (ov == OV_BLESS && isDown) {
-                if (code == 37 || code == 'A') offerSel = (offerSel + 2) % 3;
-                else if (code == 39 || code == 'D') offerSel = (offerSel + 1) % 3;
+                int on = Math.max(1, offer.length);
+                if (code == 37 || code == 'A') offerSel = (offerSel + on - 1) % on;
+                else if (code == 39 || code == 'D') offerSel = (offerSel + 1) % on;
                 else if ((code == 10 || code == 32 || code == 'J') && ovT > 0.35f) { for (Hit h : hits) if (h.tag == offerSel) { click(h); break; } }
+                return;
+            }
+            if (ov == OV_BLESSLIST && isDown) {
+                if (code == 37 || code == 'A') blPage(-1);
+                else if (code == 39 || code == 'D') blPage(1);
+                else if (code == 9 || code == 'Q') { blTab = 1 - blTab; blPage = 0; layoutOverlay(); }
+                else if (code == 27 || code == 10 || code == 32) back();
                 return;
             }
             if (ov == OV_EVENT && isDown) {
@@ -1290,9 +1300,16 @@ final class RunScreen extends Screen implements Level.Listener {
         UI.icon(g, "soul", rx - UI.small.width(String.valueOf(rs.souls)) - 18, 17, 1f);
         // estados alterados: fila bajo las barras
         int sx = 8;
-        String[] ic = {"burn", "freeze", "shield", "poison", "shock", "bleed", "lock", "star"};
+        String[] ic = {"burn", "freeze", "shield", "poison", "shock", "bleed", "lock", "star", "skull"};
         for (int i = 0; i < Ent.ST_COUNT; i++) {
             if (pl.st[i] > 0 && i != Ent.ROOT && i != Ent.STUN) { UI.icon(g, ic[i], sx, 38, 1f, Platform.TINT, Ent.ST_COLOR[i], 1f); sx += 18; }
+        }
+        BlessRt bxr = rs.bx;
+        if (bxr != null && bxr.any) {      // bendiciones: carga arcana y mejoras temporales activas
+            if (bxr.arc >= 1f) { UI.icon(g, "shock", sx, 38, 1f, Platform.TINT, 0xF0F060, 1f); UI.small.draw(g, "x" + (int) bxr.arc, sx + 16, 42, 0xFFF0F060, 1f); sx += 34; }
+            if (bxr.chOn(BRule.CH_DMG) || bxr.nextHitT > 0) { UI.icon(g, "attack", sx, 38, 1f, Platform.TINT, 0xFFB030, 1f); sx += 18; }
+            if (bxr.chOn(BRule.CH_SPD) || bxr.chOn(BRule.CH_ATK)) { UI.icon(g, "jump", sx, 38, 1f, Platform.TINT, 0x6AE0FF, 1f); sx += 18; }
+            if (bxr.slowT > 0) { UI.icon(g, "freeze", sx, 38, 1f, Platform.TINT, 0x9AD8FF, 1f); sx += 18; }
         }
         // sala: nombre del bioma + progreso en puntos
         if (rs.biome != null && lv.room.type != Room.HUB && lv.boss == null) {
@@ -1526,6 +1543,141 @@ final class RunScreen extends Screen implements Level.Listener {
         UI.roundButton(g, cx + kx, cy + ky, R * 0.46f, on ? 1 : 0, on ? 0.95f : 0.6f);
     }
 
+    // ---------------------------------------------------------------- bendiciones: carta de oferta y lista de activas
+    private static final String[] RAR_ES = {"común", "poco común", "rara", "épica", "legendaria"};
+
+    /** Mejor sinergia a mostrar para una bendicion ofrecida: la mas avanzada (activa o a punto de activarse). */
+    private int[] bestSyn(Blessing b) {
+        int[] best = null;
+        for (int[] s : BlessOffer.synergyInfo(rs, b)) {
+            if (best == null || s[1] - s[2] > best[1] - best[2] || (s[1] - s[2] == best[1] - best[2] && s[1] > best[1])) best = s;
+        }
+        return best;
+    }
+
+    private void drawBlessCard(Platform.Gfx g, Hit h, float fadeIn) {
+        int i = h.tag;
+        Blessing b = Blessing.ALL[offer[i]];
+        boolean selected = down == h || (game.keyboardUsed && offerSel == i);
+        float y = h.y + (selected ? -4 : 0), cx = h.x + h.w / 2f;
+        int rc = Blessing.RAR_COLOR[b.rar];
+        UI.panel(g, selected ? 1 : 0, h.x, y, h.w, h.h, fadeIn);
+        int ba = (int) (fadeIn * (selected ? 255 : 190));
+        g.rect(h.x + 3, y + 3, h.w - 6, 2, Mth.withAlpha(rc, ba), false);
+        if (b.rar >= 3 || selected) { g.rect(h.x + 1, y + 1, 2, h.h - 2, Mth.withAlpha(rc, ba), false); g.rect(h.x + h.w - 3, y + 1, 2, h.h - 2, Mth.withAlpha(rc, ba), false); }
+        UI.small.center(g, RAR_ES[b.rar], cx, y + 8, rc, fadeIn);
+        UI.small.center(g, BlessData.CAT_ES[b.cat - 'A'], cx, y + 19, UI.GREY, fadeIn);
+        UI.light(g, cx, y + 46, 20 + b.rar * 4, rc & 0xFFFFFF, (0.16f + 0.06f * b.rar + (selected ? 0.1f : 0f)) * fadeIn);
+        UI.iconC(g, b.icon, cx, y + 46, 2f, fadeIn);
+        int maxW = (int) h.w - 10;
+        java.util.List<String> nm = UI.small.wrap(b.name, maxW);
+        float ty = y + 66;
+        for (String ln : nm) { UI.small.drawCenterRaw(g, ln, cx, ty, UI.GOLD, fadeIn); ty += 10; }
+        int cur = rs.bless[b.id];
+        UI.small.center(g, cur == 0 ? "NUEVA" : "Nv " + cur + " > " + (cur + 1), cx, ty + 1, cur == 0 ? UI.GREEN : UI.CYAN, fadeIn);
+        ty += 14;
+        // descripcion: el interlineado se ajusta para que nunca se corte
+        int[] sy = bestSyn(b);
+        float bottom = y + h.h - (sy != null ? 30 : 8);
+        int lines = UI.small.wrap(b.desc, (int) h.w - 14).size();
+        int step = (int) Math.max(8, Math.min(UI.small.lineHeight() + 1, (bottom - ty) / Math.max(1, lines)));
+        UI.small.drawWrapped(g, b.desc, h.x + 7, ty, (int) h.w - 14, 0xE8E0E0, fadeIn, step);
+        if (sy != null) {
+            BSyn s = BlessData.syns()[sy[0]];
+            boolean on = sy[3] == 1 || sy[1] >= sy[2];
+            int sc = on ? 0xFFE070 : 0x8AD8FF;
+            float by = y + h.h - 27;
+            g.rect(h.x + 6, by - 3, h.w - 12, 1, Mth.withAlpha(sc, (int) (110 * fadeIn)), false);
+            java.util.List<String> sn = UI.small.wrap(s.name, (int) h.w - 22);
+            UI.iconC(g, "star", h.x + 11, by + 5, 1f, fadeIn);
+            UI.small.drawCenterRaw(g, sn.get(0), cx + 5, by, sc, fadeIn);
+            UI.small.center(g, on ? "Sinergia activa" : "Sinergia " + sy[1] + "/" + sy[2], cx, by + 11, sc, fadeIn);
+        }
+    }
+
+    private void openBlessList() {
+        blTab = 0; blPage = 0;
+        ov = OV_BLESSLIST; ovT = 0.3f;
+        Snd.sfx("ui_open", 0.7f);
+        layoutOverlay();
+    }
+
+    private static final int BL_PER_PAGE = 5;
+
+    private void blPage(int d) {
+        int pages = Math.max(1, (blRows.length + BL_PER_PAGE - 1) / BL_PER_PAGE);
+        blPage = (blPage + d + pages) % pages;
+        Snd.sfx("ui_hover", 0.6f);
+        layoutOverlay();
+    }
+
+    /** Filas de la lista: bendiciones activas (por categoria) o sinergias con al menos un miembro. */
+    private void layoutBlessList(int w) {
+        java.util.List<Integer> rows = new ArrayList<>();
+        if (blTab == 0) {
+            for (char c = 'A'; c <= 'J'; c++) for (Blessing b : Blessing.ALL) if (b.cat == c && rs.bless[b.id] > 0) rows.add(b.id);
+        } else {
+            BSyn[] ss = BlessData.syns();
+            java.util.List<Integer> act = new ArrayList<>(), part = new ArrayList<>();
+            for (int si = 0; si < ss.length; si++) {
+                int have = 0;
+                for (int id : ss[si].members) if (rs.bless[id] > 0) have++;
+                if (have >= ss[si].need) act.add(si); else if (have > 0) part.add(si);
+            }
+            rows.addAll(act); rows.addAll(part);
+        }
+        blRows = new int[rows.size()];
+        for (int i = 0; i < blRows.length; i++) blRows[i] = rows.get(i);
+        int pages = Math.max(1, (blRows.length + BL_PER_PAGE - 1) / BL_PER_PAGE);
+        if (blPage >= pages) blPage = pages - 1;
+        float py = 234;
+        add(24, py, 104, 22, blTab == 0 ? "Bendiciones *" : "Bendiciones", () -> { blTab = 0; blPage = 0; layoutOverlay(); });
+        add(132, py, 104, 22, blTab == 1 ? "Sinergias *" : "Sinergias", () -> { blTab = 1; blPage = 0; layoutOverlay(); });
+        add(w / 2f - 12 - 40, py, 40, 22, "<", () -> blPage(-1)).disabled = pages <= 1;
+        add(w / 2f + 12, py, 40, 22, ">", () -> blPage(1)).disabled = pages <= 1;
+        add(w - 24 - 100, py, 100, 22, "Volver", this::back);
+    }
+
+    private void renderBlessList(Platform.Gfx g, int w) {
+        float px = 12, pw = w - 24;
+        UI.panel(g, 0, px, 8, pw, 222, 0.98f);
+        UI.big.center(g, blTab == 0 ? "BENDICIONES ACTIVAS" : "SINERGIAS", w / 2f, 14, UI.GOLD, 1f);
+        int pages = Math.max(1, (blRows.length + BL_PER_PAGE - 1) / BL_PER_PAGE);
+        UI.small.right(g, "Pág. " + (blPage + 1) + "/" + pages, px + pw - 10, 16, UI.GREY, 1f);
+        if (blRows.length == 0) {
+            UI.small.center(g, blTab == 0 ? "Aún no tienes ninguna." : "Aún no tienes ninguna sinergia en marcha.", w / 2f, 100, UI.GREY, 1f);
+        }
+        BSyn[] ss = BlessData.syns();
+        for (int k = 0; k < BL_PER_PAGE; k++) {
+            int idx = blPage * BL_PER_PAGE + k;
+            if (idx >= blRows.length) break;
+            float y = 34 + k * 38;
+            g.rect(px + 8, y + 35, pw - 16, 1, Mth.withAlpha(0x8A8AA0, 60), false);
+            if (blTab == 0) {
+                Blessing b = Blessing.ALL[blRows[idx]];
+                int rc = Blessing.RAR_COLOR[b.rar];
+                UI.panel(g, 0, px + 10, y + 3, 24, 24, 1f);
+                UI.iconC(g, b.icon, px + 22, y + 15, 1f, 1f);
+                UI.small.draw(g, b.name, px + 42, y + 2, rc, 1f);
+                UI.small.right(g, "Nv " + rs.bless[b.id] + "/" + b.max, px + pw - 12, y + 2, UI.CYAN, 1f);
+                float tx2 = px + 42 + Math.max(UI.small.width(b.name) + 8, 110);
+                UI.small.draw(g, RAR_ES[b.rar], tx2, y + 2, rc, 1f);
+                UI.small.draw(g, BlessData.CAT_ES[b.cat - 'A'], tx2 + UI.small.width(RAR_ES[b.rar]) + 8, y + 2, UI.GREY, 1f);
+                UI.small.drawWrapped(g, b.desc, px + 42, y + 13, (int) pw - 60, 0xE8E0E0, 1f, 9);
+            } else {
+                BSyn s = ss[blRows[idx]];
+                int have = 0;
+                for (int id : s.members) if (rs.bless[id] > 0) have++;
+                boolean on = have >= s.need;
+                int sc = on ? 0xFFE070 : 0x8AD8FF;
+                UI.iconC(g, "star", px + 22, y + 15, 1.5f, on ? 1f : 0.45f);
+                UI.small.draw(g, s.name, px + 42, y + 2, sc, 1f);
+                UI.small.right(g, on ? "ACTIVA " + have + "/" + s.need : have + "/" + s.need, px + pw - 12, y + 2, on ? UI.GREEN : UI.GREY, 1f);
+                UI.small.drawWrapped(g, on ? s.desc : s.desc, px + 42, y + 13, (int) pw - 60 - 0, on ? 0xE8E0E0 : 0xA09CA8, 1f, 9);
+            }
+        }
+    }
+
     private void dim(Platform.Gfx g, int w, float a) { g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x000008, (int) (a * 255)), false); }
 
     private void renderOverlay(Platform.Gfx g, int w) {
@@ -1534,20 +1686,9 @@ final class RunScreen extends Screen implements Level.Listener {
         switch (ov) {
             case OV_BLESS: {
                 dim(g, w, 0.62f * fadeIn);
-                UI.big.center(g, "ELIGE UNA BENDICIÓN", w / 2f, 20, UI.GOLD, fadeIn);
-                UI.small.center(g, "Mejoras que duran toda la partida", w / 2f, 38, UI.GREY, fadeIn);
-                for (Hit h : hits) {
-                    int i = h.tag;
-                    Blessing b = Blessing.ALL[offer[i]];
-                    boolean selected = down == h || (game.keyboardUsed && offerSel == i);
-                    float yoff = selected ? -4 : 0;
-                    UI.panel(g, selected ? 1 : 0, h.x, h.y + yoff, h.w, h.h, fadeIn);
-                    UI.iconC(g, b.icon, h.x + h.w / 2f, h.y + 28 + yoff, 2f, fadeIn);
-                    UI.small.center(g, b.name, h.x + h.w / 2f, h.y + 54 + yoff, UI.GOLD, fadeIn);
-                    int cur = rs.bless[b.id];
-                    UI.small.center(g, cur == 0 ? "NUEVA" : "Nv " + cur + " > " + (cur + 1), h.x + h.w / 2f, h.y + 67 + yoff, cur == 0 ? UI.GREEN : UI.CYAN, fadeIn);
-                    UI.small.drawWrapped(g, b.desc, h.x + 8, h.y + 84 + yoff, (int) h.w - 16, 0xE8E0E0, fadeIn);
-                }
+                UI.big.center(g, "ELIGE UNA BENDICIÓN", w / 2f, 8, UI.GOLD, fadeIn);
+                UI.small.center(g, "Mejoras que duran toda la partida", w / 2f, 26, UI.GREY, fadeIn);
+                for (Hit h : hits) drawBlessCard(g, h, fadeIn);
                 break;
             }
             case OV_EVENT: {
@@ -1687,17 +1828,25 @@ final class RunScreen extends Screen implements Level.Listener {
                 UI.small.draw(g, "2ª: " + (rs.sec == 0 ? "-" : Items.SEC_NAME[rs.sec] + " x" + rs.secAmmo) + (rs.gren == 0 ? "" : "  Gran: x" + rs.grenCount), ix, 141, UI.WHITE, 1f);
                 UI.small.draw(g, Items.SH_NAME[rs.shield] + " (parry " + Math.round(Items.SH_WIN[rs.shield] * 1000) + "ms)", ix, 152, Items.SH_COL[rs.shield] | 0x404040, 1f);
                 UI.small.draw(g, "Bendiciones", ix, 167, UI.GOLD, 1f);
-                int n = 0;
+                int n = 0, total = 0;
                 for (Blessing b : Blessing.ALL) {
                     int lv2 = rs.bless[b.id];
                     if (lv2 <= 0) continue;
-                    float bx = ix + (n % 8) * 26, by = 180 + (n / 8) * 24;
+                    total++;
+                    if (n >= 20) continue;
+                    float bx = ix + (n % 10) * 24, by = 180 + (n / 10) * 24;
                     UI.panel(g, 0, bx, by, 22, 22, 1f);
                     UI.iconC(g, b.icon, bx + 11, by + 11, 1f, 1f);
-                    UI.small.draw(g, String.valueOf(lv2), bx + 15, by + 13, UI.GOLD, 1f);
+                    if (lv2 > 1) UI.small.draw(g, String.valueOf(lv2), bx + 15, by + 13, UI.GOLD, 1f);
                     n++;
                 }
-                if (n == 0) UI.small.draw(g, "Aún no tienes ninguna.", ix, 182, UI.GREY, 1f);
+                if (total == 0) UI.small.draw(g, "Aún no tienes ninguna.", ix, 182, UI.GREY, 1f);
+                else if (total > 20) UI.small.draw(g, "+" + (total - 20) + " más", ix + 180, 167, UI.GREY, 1f);
+                break;
+            }
+            case OV_BLESSLIST: {
+                dim(g, w, 0.8f);
+                renderBlessList(g, w);
                 break;
             }
             case OV_REVIVE: {

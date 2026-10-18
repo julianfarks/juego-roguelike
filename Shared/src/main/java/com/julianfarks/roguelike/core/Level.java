@@ -120,7 +120,16 @@ public final class Level {
         return p;
     }
 
-    public void later(float delay, Runnable r) { delayed.add(r); delayT.add(delay); }
+    /** Origen del dano que se esta aplicando (BlessFx.SRC_*): lo fijan el arma, las habilidades, los proyectiles y los efectos de bendicion. */
+    public int dmgSrc;
+    /** Contador de golpes recibidos por el jugador (lo usan las bendiciones de peligros esquivados). */
+    public int hurtMark;
+
+    public void later(float delay, Runnable r) {
+        final int src = dmgSrc;
+        delayed.add(src == 0 ? r : () -> { int pv = dmgSrc; dmgSrc = src; try { r.run(); } finally { dmgSrc = pv; } });
+        delayT.add(delay);
+    }
 
     // ------------------------------------------------------------------ utilidades de mundo
     public boolean solidAtPx(float px, float py) {
@@ -261,6 +270,10 @@ public final class Level {
     public Proj proj(float x, float y, float vx, float vy, float dmg, boolean friendly, String sprite, int color) {
         Proj p = new Proj();
         p.x = x; p.y = y; p.vx = vx; p.vy = vy; p.dmg = dmg; p.friendly = friendly; p.sprite = sprite; p.color = color;
+        if (friendly) {
+            p.src = dmgSrc == BlessFx.SRC_S || dmgSrc == BlessFx.SRC_X ? dmgSrc : BlessFx.SRC_P;
+            BlessFx.tuneProj(this, p);
+        }
         projs.add(p);
         return p;
     }
@@ -312,16 +325,20 @@ public final class Level {
         }
         if (rs.stats.exec > 0 && e.hp / e.maxHp < 0.3f) dmg *= 1 + rs.stats.exec;
         if (e.st[Ent.FREEZE] > 0) dmg *= 1.25f;
+        final int src = dmgSrc;
+        dmg = BlessFx.modDamage(this, e, dmg, crit, src);
         e.hp -= dmg;
         e.hitFlash = 0.1f;
         text(e.x + rng.f(-6, 6), e.y - e.bh - 4, String.valueOf(Math.round(dmg)), crit ? 0xFFD25A : 0xFFFFFF, crit);
         if (e instanceof Enemy) ((Enemy) e).onHit(this, kx, ky, dmg);
         else if (e instanceof Boss) ((Boss) e).onHit(this, dmg);
         rs.ult = Math.min(100f, rs.ult + dmg * 0.06f * rs.stats.ultGain);
-        if (e.hp <= 0) {
+        BlessFx.afterDamage(this, e, dmg, crit, src);
+        if (e.hp <= 0 && e.alive) {
             e.hp = 0;
             if (e instanceof Enemy) ((Enemy) e).die(this);
-            else if (e instanceof Boss) ((Boss) e).die(this);
+            else if (e instanceof Boss) { ((Boss) e).die(this); BlessFx.onBossDead(this); }
+            BlessFx.onKill(this, e, src);
         }
         return dmg;
     }
@@ -333,12 +350,15 @@ public final class Level {
         if (rng.chance(s.freeze)) { if (rng.chance(0.25f)) e.applyStatus(Ent.FREEZE, 1.6f, 0); else e.applyStatus(Ent.SLOW, 3f, 0); }
         if (rng.chance(s.poison)) e.applyStatus(Ent.POISON, 4f, 5f + rs.stats.dmgMul * 2f);
         if (rng.chance(s.shock)) chain(e, dmg * 0.6f, 3);
-        if (s.lifesteal > 0) healPlayer(dmg * s.lifesteal);
+        float ls = s.lifesteal + BlessFx.sumMod(this, BRule.M_LIFESTEAL, e, BlessFx.SRC_W);
+        if (ls > 0) healPlayer(dmg * ls);
         rs.ult = Math.min(100f, rs.ult + 2.5f * s.ultGain);
+        BlessFx.onHit(this, e, dmg, crit, combo);
     }
 
     /** Rayo encadenado desde un enemigo. */
     public void chain(Ent from, float dmg, int jumps) {
+        jumps = Math.min(9, jumps + Math.round(BlessFx.sv(rs, BRule.M_CHAINJUMPS)));
         Ent cur = from;
         java.util.HashSet<Ent> hit = new java.util.HashSet<>();
         hit.add(from);
@@ -355,6 +375,15 @@ public final class Level {
         }
         Snd.sfxv("hit_shock", 0.6f);
     }
+
+    /** Tirada de critico del jugador contra e (probabilidad base + bendiciones). Un golpe marcado como critico seguro (NEXTHIT) lo fuerza. */
+    public boolean rollCrit(Ent e) {
+        int src = dmgSrc;
+        float ch = rs.stats.critChance + BlessFx.critBonus(this, e, src);
+        return BlessFx.forcedCrit(this, src) || rng.chance(Math.min(0.95f, ch));
+    }
+
+    public float critMulOf(Ent e) { return rs.stats.critMul + BlessFx.critMulBonus(this, e, dmgSrc); }
 
     /** Linea de rayo visual entre dos puntos. */
     public void lightning(float x1, float y1, float x2, float y2) {
@@ -373,7 +402,7 @@ public final class Level {
 
     public void healPlayer(float amt) {
         if (amt <= 0 || pl == null || !pl.alive) return;
-        amt *= Infinite.healMul(rs);
+        amt *= Infinite.healMul(rs) * BlessFx.healMul(rs);
         float before = rs.hp;
         rs.hp = Math.min(rs.stats.maxHp, rs.hp + amt);
         float got = rs.hp - before;
@@ -388,8 +417,8 @@ public final class Level {
             for (Ent e : enemiesIn(x, y, r)) {
                 float dir = Mth.sign(e.x - x);
                 if (dir == 0) dir = 1;
-                boolean crit = rng.chance(rs.stats.critChance);
-                float dd = dmg * (crit ? rs.stats.critMul : 1f);
+                boolean crit = rollCrit(e);
+                float dd = dmg * (crit ? critMulOf(e) : 1f);
                 damageEnemy(e, dd, crit, dir * knock, -knock * 0.4f);
                 if (status >= 0) e.applyStatus(status, sDur, sPow);
                 n++;
@@ -406,7 +435,7 @@ public final class Level {
         if (rs.sandbox) return false;
         Player p = pl;
         if (p == null || !p.alive || cinematic) return false;
-        if (p.invuln > 0 || p.rolling()) return false;
+        if (p.invuln > 0 || p.rolling()) { if (p.rolling()) BlessFx.onDodge(this); return false; }
         dbgHurt++;
         Stats s = rs.stats;
         boolean blocked = false;
@@ -416,7 +445,7 @@ public final class Level {
             dmg *= Items.SH_BLK[rs.shield];
             status = -1;
         }
-        dmg *= s.dmgTaken * (rs.asc > 0 ? 1 + 0.05f * rs.asc : 1f);
+        dmg *= s.dmgTaken * (rs.asc > 0 ? 1 + 0.05f * rs.asc : 1f) * BlessFx.takenMul(this);
         if (p.skinT > 0) dmg *= 0.4f;
         if (p.shield > 0) {
             float ab = Math.min(p.shield, dmg);
@@ -424,6 +453,7 @@ public final class Level {
             text(p.x, p.y - p.bh - 8, "bloqueo", 0x7AF0FF, false);
             Snd.sfx("block", 0.8f);
             fxAdd("fx_hit", "magic", p.x, p.y - 14, 1f, 0x7AF0FF);
+            BlessFx.onBlocked(this, ab);
             if (dmg <= 0.5f) { p.invuln = 0.35f; return false; }
         }
         rs.hp -= dmg;
@@ -452,7 +482,9 @@ public final class Level {
         flash(0xFF2030, 0.18f);
         if (Save.S.vibOn) P.vibrate(40);
         p.furia = 0;
+        hurtMark++;
         if (rs.hp <= 0) playerDeath();
+        else BlessFx.onHurt(this, dmg);
         return true;
     }
 
@@ -517,10 +549,12 @@ public final class Level {
         updateCompanion(dt);
         if (!pl.alive && timeScale < 1f) timeScale = Math.min(1f, timeScale + rawDt * 0.0f);
         if (freezeEnemies > 0) freezeEnemies -= dt;
+        BlessFx.update(this, dt);
         if (freezeEnemies <= 0) {
-            for (Enemy e : enemies) e.update(this, dt);
-            for (Enemy e : enemies) trapDamage(e, dt);
-            if (boss != null) boss.update(this, dt);
+            float edt = BlessFx.enemyDt(this, dt);
+            for (Enemy e : enemies) e.update(this, edt);
+            for (Enemy e : enemies) trapDamage(e, edt);
+            if (boss != null) boss.update(this, edt);
         } else {
             for (Enemy e : enemies) e.animFrozen(dt);
         }
@@ -647,6 +681,7 @@ public final class Level {
             } else if (!p.passWalls && solidAtPx(p.x, p.y)) {
                 if (p.special == 2) { p.vy = -Math.abs(p.vy) * 0.6f; p.y -= 3; p.vx *= 0.7f; continue; }
                 if (p.friendly) breakCircle(p.x, p.y, 6, 2);
+                if (p.friendly && p.bounces > 0) { p.bounces--; p.vx = -p.vx; p.x += Mth.sign(p.vx) * 4; p.life = Math.max(p.life, 0.4f); continue; }
                 projDie(p, true);
                 continue;
             }
@@ -654,15 +689,26 @@ public final class Level {
             if (p.friendly) {
                 for (Ent e : enemiesIn(p.x, p.y, p.radius)) {
                     if (p.hit != null && p.hit.contains(e)) continue;
-                    boolean crit = rng.chance(rs.stats.critChance);
-                    float d = p.dmg * (crit ? rs.stats.critMul : 1f);
-                    damageEnemy(e, d, crit, Mth.sign(p.vx) * p.knock, -40);
-                    if (p.status >= 0) e.applyStatus(p.status, p.statusDur, p.statusPow);
-                    onWeaponHitLite(e, d);
+                    int pvSrc = dmgSrc;
+                    dmgSrc = p.src == 0 ? BlessFx.SRC_P : p.src;
+                    try {
+                        boolean crit = rollCrit(e);
+                        float d = p.dmg * (crit ? critMulOf(e) : 1f);
+                        damageEnemy(e, d, crit, Mth.sign(p.vx) * p.knock, -40);
+                        if (p.status >= 0) e.applyStatus(p.status, p.statusDur, p.statusPow);
+                        onWeaponHitLite(e, d);
+                    } finally { dmgSrc = pvSrc; }
                     Snd.sfxv("hit_magic", 0.55f);
                     fx("fx_hit", "magic", p.x, p.y, 1f, p.color, Platform.ADD | Platform.TINT);
-                    if (p.pierce > 0) { if (p.hit == null) p.hit = new java.util.HashSet<>(); p.hit.add(e); p.pierce--; if (p.explode > 0) explode(p); }
-                    else { projDie(p, false); break; }
+                    if (p.pierce > 0) {
+                        if (p.hit == null) p.hit = new java.util.HashSet<>(); p.hit.add(e); p.pierce--;
+                        if (p.pierceGrow > 0) p.dmg *= 1f + p.pierceGrow;
+                        if (p.explode > 0) explode(p);
+                    } else if (p.bounces > 0) {
+                        p.bounces--; if (p.hit == null) p.hit = new java.util.HashSet<>(); p.hit.add(e);
+                        p.vx = -p.vx * 0.9f; p.vy = -Math.abs(p.vy) * 0.5f - 60f;
+                        p.life = Math.max(p.life, 0.5f);
+                    } else { projDie(p, false); break; }
                 }
                 // romper vasijas
                 for (Prop pr : props) if (pr.kind.equals("pot") && !pr.open && Math.abs(pr.x - p.x) < 12 && Math.abs(pr.y - 8 - p.y) < 14) breakPot(pr);
@@ -699,6 +745,7 @@ public final class Level {
     private void projDie(Proj p, boolean wall) {
         if (p.dead) return;
         p.dead = true;
+        if (p.friendly && p.src != BlessFx.SRC_X) { int pv = dmgSrc; dmgSrc = 0; try { BlessFx.onProjEnd(this, p.x, p.y, p.src); } finally { dmgSrc = pv; } }
         if (p.explode > 0) explode(p);
         else {
             ps.burst(rng, p.x, p.y, p.color, 6, 60, 0.25f, 2, 0, true);
@@ -734,7 +781,8 @@ public final class Level {
                 float tyc = t.y - 10;
                 for (int i = 0; i < 8; i++) { float f = i / 7f; ps.spawn(cmpX + (t.x - cmpX) * f, cmpY + (tyc - cmpY) * f, rng.f(-8, 8), rng.f(-8, 8), 0.3f, 2, 0, 0xFFB43A, true); }
                 fx("fx_hit", "spark", t.x, tyc, 0.9f, 0xFF8A30, Platform.ADD | Platform.TINT);
-                damageEnemy(t, pl.baseDmg(this) * (t instanceof Boss ? 0.10f : 0.25f), false, 0, 0);
+                dmgSrc = BlessFx.SRC_COMP;
+                try { damageEnemy(t, pl.baseDmg(this) * (t instanceof Boss ? 0.10f : 0.25f), false, 0, 0); } finally { dmgSrc = 0; }
             }
         }
     }
@@ -797,17 +845,21 @@ public final class Level {
             case Pickup.GOLD:
                 rs.gold += p.value;
                 Snd.sfxv("coin", 0.55f);
+                BlessFx.onPick(this, 0);
                 break;
             case Pickup.SOUL:
                 rs.souls += p.value;
                 Snd.sfxv("soul", 0.5f);
+                BlessFx.onPick(this, 1);
                 break;
             case Pickup.HEART:
+                if (rs.hp >= rs.stats.maxHp - 0.5f) BlessFx.onOverflow(this, 2); else BlessFx.onPick(this, 2);
                 healPlayer(rs.stats.maxHp * 0.15f);
                 Snd.sfx("heart", 0.9f);
                 fx("fx_heal", "rise", pl.x, pl.y - 10, 0.8f, 0, 0);
                 break;
             case Pickup.POTION:
+                if (rs.potions >= rs.stats.potionsMax) BlessFx.onOverflow(this, 3); else BlessFx.onPick(this, 3);
                 rs.potions = Math.min(rs.stats.potionsMax, rs.potions + 1);
                 Snd.sfx("potion", 0.9f);
                 break;
@@ -888,6 +940,7 @@ public final class Level {
     public void parryFx(Player p, float srcX, boolean proj) {
         int t = rs.shield;
         parries++; p.parryFlash = 0.3f;
+        BlessFx.onParry(this);
         p.parryT = 0; p.invuln = Math.max(p.invuln, 0.5f);
         float fx = p.x + p.dir() * 12;
         text(p.x, p.y - p.bh - 14, "¡PARRY!", 0xFFE070, true);
@@ -978,6 +1031,7 @@ public final class Level {
         pl.render(g, this);
         drawSecretMarks(g);
         for (Proj p : projs) drawProj(g, p);
+        BlessFx.draw(this, g);
         for (FxObj f : fxs) if (!f.behind) drawFx(g, f);
         for (float[] l : lines) g.line(l[0], l[1], l[2], l[3], 2f, Mth.withAlpha((int) l[5], 255), true);
         ps.render(g, 0, 0);

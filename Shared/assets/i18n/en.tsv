@@ -117,6 +117,423 @@ Arma	Weapon
 Granada	Grenade
 Habilidad	Skill
 ¡DESBLOQUEADO!	UNLOCKED!
+Golpe Certero	Sure Strike
+Cada 4 golpes seguidos, el siguiente hace +25% de daño por nivel.	Every 4 consecutive hits, the next one deals +25% damage per level.
+Hoja Rápida	Swift Blade
++7% de velocidad de ataque por nivel.	+7% attack speed per level.
+Peso Pesado	Heavyweight
++18% de daño por nivel a enemigos con más del 80% de vida.	+18% damage per level to enemies above 80% health.
+Rompeguardias	Guard Breaker
++22% de daño por nivel contra mini-jefes y jefes.	+22% damage per level against mini-bosses and bosses.
+Puñalada Trapera	Backstab
+Golpear a un enemigo por la espalda: +35% de daño.	Hitting an enemy from behind: +35% damage.
+Cazador de Enjambres	Swarm Hunter
++15% de daño por nivel a enemigos con otros dos cerca.	+15% damage per level to enemies with two others nearby.
+Estocada Larga	Long Thrust
++18% de alcance de arma por nivel.	+18% weapon reach per level.
+Filo Sangrante	Bleeding Edge
+25% de causar sangrado. Los enemigos sangrando reciben +15% de daño de tus golpes.	25% chance to cause bleeding. Bleeding enemies take +15% damage from your hits.
+Doble Tajo	Double Slash
+18% de que tu golpe se repita poco después con el 40% del daño.	18% chance for your hit to repeat shortly after for 40% damage.
+Impulso Letal	Lethal Momentum
+Cada crítico da +7% de daño durante 4 s (hasta 5 cargas).	Each critical hit gives +7% damage for 4 s (up to 5 stacks).
+Pulso Constante	Steady Pulse
+Los golpes no críticos hacen +14% de daño por nivel.	Non-critical hits deal +14% damage per level.
+Remate Brutal	Brutal Finisher
+El tercer golpe del combo hace +25% de daño por nivel.	The third hit of the combo deals +25% damage per level.
+Ritmo de Combate	Battle Rhythm
+Cada remate de combo da +10% de velocidad de ataque durante 3 s (hasta 3 cargas).	Each combo finisher gives +10% attack speed for 3 s (up to 3 stacks).
+Sentencia	Verdict
+Tu remate detona una explosión de 200% de daño cada 4 s.	Your finisher detonates an explosion for 200% damage every 4 s.
+Maestro de Armas	Weapon Master
+Con la vida al 90% o más: +30% de daño de arma.	At 90% health or more: +30% weapon damage.
+Sed de Batalla	Battle Thirst
+Cada baja da +12% de velocidad de ataque durante 3 s (hasta 2 cargas).	Each kill gives +12% attack speed for 3 s (up to 2 stacks).
+Ojo de Halcón	Hawk Eye
++5% de probabilidad de crítico por nivel.	+5% critical chance per level.
+Ensañamiento	Overkill
+Los críticos contra enemigos con menos del 30% de vida hacen +50% de daño crítico extra.	Critical hits against enemies below 30% health deal +50% extra critical damage.
+Cadena de Críticos	Critical Chain
+Tras 2 críticos seguidos, +20% de probabilidad de crítico hasta que falles un golpe o te hieran.	After 2 consecutive crits, +20% crit chance until you miss a crit or get hurt.
+Combustión	Combustion
+El daño periódico (fuego, veneno, sangrado) hace +20% por nivel.	Damage over time (burn, poison, bleed) deals +20% per level.
+Llama Voraz	Ravenous Flame
+Los enemigos en llamas reciben +15% de daño de tus golpes y habilidades.	Burning enemies take +15% damage from your hits and skills.
+Brasa Crítica	Critical Ember
++25% de probabilidad de crítico contra enemigos en llamas.	+25% critical chance against burning enemies.
+Contagio Ígneo	Fire Contagion
+Cuando muere un enemigo en llamas, el fuego salta a los cercanos.	When a burning enemy dies, the fire jumps to nearby enemies.
+Pira Viviente	Living Pyre
+Los enemigos en llamas explotan al morir (60% de daño) y prenden fuego alrededor.	Burning enemies explode on death (60% damage) and ignite those around.
+Aliento de Dragón	Dragon Breath
+Tu definitiva prende fuego a todos los enemigos durante 4 s.	Your ultimate sets all enemies on fire for 4 s.
+Rastro Ardiente	Burning Trail
+Al rodar dejas dos charcos de fuego que queman a los enemigos.	Rolling leaves two fire patches that burn enemies.
+Escarcha Quebradiza	Brittle Frost
++35% de probabilidad de crítico contra enemigos ralentizados o congelados.	+35% critical chance against slowed or frozen enemies.
+Esquirlas de Hielo	Ice Shards
+Los enemigos ralentizados o congelados sueltan 3 esquirlas al morir.	Slowed or frozen enemies release 3 shards on death.
+Aura Gélida	Frost Aura
+Cada 3 s ralentizas a los enemigos cercanos.	Every 3 s you slow nearby enemies.
+Ventisca	Blizzard
+Tus habilidades ralentizan a los enemigos en un radio amplio.	Your skills slow enemies in a wide radius.
+Congelación Profunda	Deep Freeze
+Golpear a un enemigo ralentizado: 12% de congelarlo 1,2 s (cada 2 s). Los jefes solo se ralentizan.	Hitting a slowed enemy: 12% chance to freeze it for 1.2 s (every 2 s). Bosses only get slowed.
+Carga Estática	Static Charge
+Tus golpes acumulan carga arcana (máx. 10). Al llegar a 10 se libera un rayo encadenado.	Your hits build arcane charge (max 10). At 10 it releases a chain lightning.
+Pararrayos	Lightning Rod
+Cada parry da 2 cargas arcanas y libera una descarga con todas tus cargas.	Each parry grants 2 arcane charges and releases a discharge with all your charges.
+Voltio Arcano	Arcane Volt
+Cada habilidad que lanzas te da 3 cargas arcanas.	Each skill you cast gives you 3 arcane charges.
+Batería Viva	Living Battery
+Cada esquiva o rodar exitoso da 2 cargas arcanas.	Each dodge or roll grants 2 arcane charges.
+Descarga Mayor	Grand Discharge
+Con 6 o más cargas arcanas, tus golpes sueltan una descarga de 4 saltos (cada 1,5 s).	With 6 or more arcane charges, your hits release a 4-jump discharge (every 1.5 s).
+Conductor	Conductor
+Tus rayos encadenados saltan a 1 enemigo más.	Your chain lightning jumps to 1 more enemy.
+Tempestad Eterna	Eternal Tempest
+En combate, cada 4 s caen 3 rayos sobre enemigos al azar.	In combat, every 4 s three lightning bolts strike random enemies.
+Ponzoña Virulenta	Virulent Venom
+Tus estados alterados duran 40% más.	Your status effects last 40% longer.
+Plaga	Plague
+Cuando muere un enemigo envenenado, el veneno se contagia a los cercanos.	When a poisoned enemy dies, the poison spreads to nearby enemies.
+Toxina Nerviosa	Nerve Toxin
+40% de ralentizar al golpear a un enemigo envenenado.	40% chance to slow when hitting a poisoned enemy.
+Esporas Tóxicas	Toxic Spores
+En combate, cada 6 s una nube envenena a los enemigos cercanos.	In combat, every 6 s a cloud poisons nearby enemies.
+Eco Arcano	Arcane Echo
+Tras lanzar una habilidad, tu siguiente golpe hace +50% de daño (5 s).	After casting a skill, your next hit deals +50% damage (5 s).
+Canalizador	Channeler
+Cada golpe acorta 0,25 s la reutilización de tu habilidad más lenta (límite por segundo).	Each hit shortens your slowest skill cooldown by 0.25 s (rate-limited).
+Catalizador	Catalyst
+Al usar tu definitiva, tus habilidades se reponen al instante.	Using your ultimate instantly resets your skills.
+Resonancia	Resonance
+Cada habilidad potencia la siguiente: +35% de daño (6 s).	Each skill empowers the next one: +35% damage (6 s).
+Manantial de Maná	Mana Spring
+Cada habilidad lanzada carga un 6% de tu definitiva.	Each skill cast charges 6% of your ultimate.
+Runa de Poder	Rune of Power
++25% de carga de definitiva y +10% de daño de habilidades.	+25% ultimate charge and +10% skill damage.
+Contra del Parry	Parry Counter
+Tras un parry, tu siguiente golpe hace +60% de daño (4 s).	After a parry, your next hit deals +60% damage (4 s).
+Parry Templado	Tempered Parry
+Cada parry te da un escudo de 15.	Each parry grants a 15-point shield.
+Parry Cargado	Charged Parry
+Cada parry carga un 8% de tu definitiva.	Each parry charges 8% of your ultimate.
+Eco Defensivo	Defensive Echo
+Cada parry libera una onda de 100% de daño que empuja a los enemigos.	Each parry releases a 100% damage wave that pushes enemies back.
+Maestro del Parry	Parry Master
+Cada parry da +12% de daño durante 5 s (hasta 3 cargas).	Each parry gives +12% damage for 5 s (up to 3 stacks).
+Reflejo Estelar	Star Reflection
+Cada parry dispara un anillo de 8 estrellas (50% de daño).	Each parry fires a ring of 8 stars (50% damage).
+Calma del Guardián	Guardian's Calm
+Cada parry cura el 3% de tu vida máxima (límite por sala).	Each parry heals 3% of your max health (limited per room).
+Escudo Reactivo	Reactive Shield
+Cuando tu escudo absorbe un golpe, estalla con 80% de daño a tu alrededor.	When your shield absorbs a hit, it bursts for 80% damage around you.
+Bastión de Victoria	Victory Bastion
+Al limpiar una sala ganas un escudo de 20.	Clearing a room grants a 20-point shield.
+Armadura de Hierro	Iron Armor
+Tus golpes dan 3 de escudo (cada 1,2 s) y tu escudo puede acumular 30 más.	Your hits grant 3 shield (every 1.2 s) and your shield can hold 30 more.
+Coraza de Espinas	Thorn Carapace
+Al recibir daño estallas dañando (70%) a los enemigos cercanos (cada 1,5 s).	When hurt you burst, damaging (70%) nearby enemies (every 1.5 s).
+Contragolpe Desesperado	Desperate Counter
+Al recibir daño, tu siguiente golpe hace +70% de daño (4 s).	When hurt, your next hit deals +70% damage (4 s).
+Sangre Fría	Cold Blood
+Al caer por debajo del 35% de vida ganas un escudo de 40 (cada 20 s).	Dropping below 35% health grants a 40-point shield (every 20 s).
+Instinto de Supervivencia	Survival Instinct
+Al caer por debajo del 35% de vida: 0,6 s de invulnerabilidad y cura del 8% (cada 25 s).	Dropping below 35% health: 0.6 s of invulnerability and an 8% heal (every 25 s).
+Último Bastión	Last Bastion
+Con menos del 35% de vida recibes un 30% menos de daño.	Below 35% health you take 30% less damage.
+Rabia Herida	Wounded Rage
+Con menos del 35% de vida haces +35% de daño.	Below 35% health you deal +35% damage.
+Sanguinario	Bloodthirsty
+Con menos del 35% de vida robas un 5% del daño que infliges.	Below 35% health you steal 5% of the damage you deal.
+Vitalidad	Vitality
++10% de vida máxima por nivel.	+10% max health per level.
+Sanación de Victoria	Victory Mending
+Al limpiar una sala recuperas el 5% de tu vida máxima.	Clearing a room restores 5% of your max health.
+Cosecha de Vida	Life Harvest
+Cada baja cura el 1,5% de tu vida máxima (límite por sala).	Each kill heals 1.5% of your max health (limited per room).
+Égida Perpetua	Perpetual Aegis
+En combate ganas un escudo de 30 cada 8 s. Si el escudo absorbe un golpe, 0,5 s de invulnerabilidad (cada 3 s).	In combat you gain a 30-point shield every 8 s. When it absorbs a hit: 0.5 s of invulnerability (every 3 s).
+Onda de Choque	Shockwave
+Al recibir un golpe empujas a los enemigos cercanos (cada 1,2 s).	When hit, you push nearby enemies away (every 1.2 s).
+Impulso de Rodada	Roll Momentum
+Tu rodada es un 25% más rápida por nivel: recorre más distancia y termina antes.	Your roll is 25% faster per level: it covers more distance and ends sooner.
+Sombra Veloz	Swift Shadow
+Tras rodar ganas +20% de velocidad de movimiento durante 2,5 s.	After rolling you gain +20% movement speed for 2.5 s.
+Racha del Cazador	Hunter's Streak
+Cada baja da +10% de velocidad de movimiento durante 4 s (hasta 3 cargas).	Each kill gives +10% movement speed for 4 s (up to 3 stacks).
+Esquiva Sagrada	Sacred Dodge
+Cada esquiva da +15% de daño durante 4 s (hasta 2 cargas).	Each dodge gives +15% damage for 4 s (up to 2 stacks).
+Baile de Cuchillas	Dagger Waltz
+Cada esquiva lanza 3 cuchillas (60% de daño).	Each dodge throws 3 blades (60% damage).
+Evasión Mágica	Magic Evasion
+Cada esquiva reduce 0,6 s tus habilidades y carga un 5% de tu definitiva.	Each dodge shortens your skill cooldowns by 0.6 s and charges 5% of your ultimate.
+Salto Explosivo	Blast Jump
+Cada salto en el aire detona una explosión del 50% de daño bajo ti.	Each mid-air jump detonates a 50% damage explosion beneath you.
+Aterrizaje Sísmico	Seismic Landing
+Las caídas largas provocan una onda del 100% de daño al aterrizar.	Long falls cause a 100% damage shockwave on landing.
+Cadencia en Movimiento	Moving Cadence
+Mientras te mueves, +18% de velocidad de ataque.	While moving, +18% attack speed.
+Golpe en Carrera	Running Strike
+Mientras te mueves, +12% de daño.	While moving, +12% damage.
+Quietud Letal	Deadly Stillness
+Quieto, haces +20% de daño y recibes un 10% menos.	Standing still, you deal +20% damage and take 10% less.
+Ráfaga de Remate	Finisher Rush
+Cada remate de combo da +15% de velocidad de movimiento durante 3 s.	Each combo finisher gives +15% movement speed for 3 s.
+Viento de Cola	Tailwind
+Cada salto en el aire da +20% de velocidad de movimiento durante 3 s.	Each mid-air jump gives +20% movement speed for 3 s.
+Segundo Aliento	Second Wind
+Cada esquiva te da 0,4 s de invulnerabilidad (cada 3 s).	Each dodge gives you 0.4 s of invulnerability (every 3 s).
+Reloj del Destino	Clock of Fate
+Un parry o una esquiva ralentiza el tiempo 1,2 s para los enemigos (cada 18 s).	A parry or dodge slows time for enemies for 1.2 s (every 18 s).
+Maestro de Trampas	Trap Master
+Sobrevolar pinchos sin tocarlos te da 15 de escudo y +20% de daño durante 5 s.	Passing over spikes without touching them gives 15 shield and +20% damage for 5 s.
+Acróbata	Acrobat
+Cada salto da +10% de velocidad de ataque durante 2 s.	Each jump gives +10% attack speed for 2 s.
+Danza Aérea	Aerial Dance
+En el aire haces +20% de daño.	While airborne you deal +20% damage.
+Punta Afilada	Sharp Tip
+Tus proyectiles atraviesan 1 enemigo más por nivel.	Your projectiles pierce 1 more enemy per level.
+Vuelo Veloz	Swift Flight
+Tus proyectiles van un 25% más rápido y son un 20% más grandes.	Your projectiles fly 25% faster and are 20% bigger.
+Ricochet	Ricochet
+Tus proyectiles rebotan una vez contra paredes o enemigos.	Your projectiles bounce once off walls or enemies.
+Buscador	Seeker
+Tus proyectiles giran ligeramente hacia los enemigos cercanos.	Your projectiles curve slightly toward nearby enemies.
+Perforante	Armor Piercer
+Tus proyectiles hacen +20% de daño por cada enemigo que atraviesan.	Your projectiles deal +20% damage for each enemy they pass through.
+Doble Lanzamiento	Double Throw
+20% de que tus proyectiles se lancen dos veces.	20% chance for your projectiles to be launched twice.
+Onda Expansiva	Expanding Wave
+Tus ondas de energía (Hoja Fantasma y similares) hacen +40% de daño y son más grandes.	Your energy waves (Phantom Blade and similar) deal +40% damage and are larger.
+Proyectil Explosivo	Explosive Shot
+Tus proyectiles explotan al terminar su trayecto (50% de daño).	Your projectiles explode at the end of their path (50% damage).
+Disparo Incendiario	Incendiary Shot
+30% de que tus proyectiles prendan fuego al impactar.	30% chance for your projectiles to ignite on hit.
+Disparo Gélido	Frost Shot
+50% de que tus proyectiles ralenticen al impactar.	50% chance for your projectiles to slow on hit.
+Disparo Voltaico	Voltaic Shot
+Tus proyectiles descargan un rayo de 2 saltos al impactar (cada 0,5 s).	Your projectiles discharge a 2-jump lightning on hit (every 0.5 s).
+Lluvia de Hojas	Leaf Rain
+Cada habilidad invoca una lluvia de 5 hojas cortantes sobre los enemigos.	Each skill summons a rain of 5 cutting leaves on enemies.
+Ráfaga Estelar	Star Burst
+Cada 5 golpes sueltas 3 estrellas teledirigidas (50% de daño).	Every 5 hits you release 3 homing stars (50% damage).
+Estela de Rodada	Roll Wake
+Al terminar un rodar lanzas una onda de energía (80% de daño).	Finishing a roll fires an energy wave (80% damage).
+Tirador Experto	Marksman
+Los proyectiles que impactan a enemigos lejanos hacen +40% de daño.	Projectiles that hit distant enemies deal +40% damage.
+Foco Letal	Lethal Focus
+Impactos seguidos con proyectiles al mismo enemigo: +8% de daño acumulable (hasta 5).	Consecutive projectile hits on the same enemy: +8% damage, stacking (up to 5).
+Orbe Santo	Holy Orb
+Matar con un proyectil libera un orbe sagrado teledirigido (70% de daño).	Killing with a projectile releases a homing holy orb (70% damage).
+Tormenta de Acero	Steel Storm
+Cada habilidad lanza 10 cuchillas desde el cielo y tu definitiva 16. Tus proyectiles atraviesan 1 enemigo más.	Each skill rains 10 blades from the sky and your ultimate 16. Your projectiles pierce 1 more enemy.
+Mercader Astuto	Shrewd Trader
+Los precios de las tiendas bajan un 10% por nivel (máx. 50%).	Shop prices drop 10% per level (max 50%).
+Interés Compuesto	Compound Interest
+Al limpiar una sala con 100 o más de oro, ganas 12 de oro extra.	Clearing a room with 100 or more gold earns 12 extra gold.
+Poder del Oro	Power of Gold
+Con 150 o más de oro, haces +12% de daño.	With 150 or more gold, you deal +12% damage.
+Cosecha de Almas	Soul Harvest
+Los mini-jefes y jefes sueltan 6 almas extra al morir.	Mini-bosses and bosses drop 6 extra souls on death.
+Almas en Furia	Souls Ablaze
+Cada alma recogida da +5% de daño durante 6 s (hasta 5 cargas).	Each soul picked up gives +5% damage for 6 s (up to 5 stacks).
+Corazón Blindado	Armored Heart
+Un corazón recogido con la vida llena te da 12 de escudo.	A heart picked up at full health gives 12 shield.
+Alquimista	Alchemist
+Beber un frasco te da +20% de daño durante 8 s y limpia tus estados alterados.	Drinking a flask gives +20% damage for 8 s and cleanses your status effects.
+Reserva de Frascos	Flask Reserve
++1 frasco de curación máximo.	+1 maximum healing flask.
+Brebaje Rebosante	Overflowing Brew
+Un frasco recogido con la reserva llena cura el 12% de tu vida.	A flask picked up with a full reserve heals 12% of your health.
+Visión del Altar	Altar Vision
+Los altares de bendición ofrecen una opción adicional.	Blessing altars offer one additional option.
+Suerte Dorada	Golden Luck
++1 de suerte: mejores recompensas en cofres y tiendas.	+1 luck: better rewards from chests and shops.
+Botín de Élite	Elite Spoils
+Los mini-jefes y jefes sueltan 15 de oro extra.	Mini-bosses and bosses drop 15 extra gold.
+Recaudador	Tax Collector
+Cada baja con tu arma te da 1 de oro (límite por sala).	Each weapon kill gives you 1 gold (limited per room).
+Cazatesoros	Treasure Hunter
+Al entrar en una sala ganas 8 de oro.	Entering a room gives you 8 gold.
+Ladrón de Almas	Soul Thief
+Los críticos te dan 2 almas (cada 0,8 s, límite por sala).	Critical hits give you 2 souls (every 0.8 s, limited per room).
+Corona del Avaro	Miser's Crown
++50% de oro. Con 200 o más de oro haces +20% de daño y cada baja te da 2 de oro (límite por sala).	+50% gold. With 200 or more gold you deal +20% damage and each kill gives 2 gold (limited per room).
+Luciérnaga	Firefly
+Una luciérnaga te acompaña y dispara a los enemigos cercanos (50% de daño cada 2 s).	A firefly accompanies you and shoots nearby enemies (50% damage every 2 s).
+Llama Fatua	Wisp of Flame
+Un espíritu de fuego te acompaña: dispara cada 2,6 s (55%) y prende fuego.	A fire spirit accompanies you: shoots every 2.6 s (55%) and ignites.
+Espíritu Glacial	Frost Spirit
+Un espíritu de hielo libera cada 5 s una onda helada que ralentiza (70% de daño).	An ice spirit releases a freezing pulse every 5 s that slows (70% damage).
+Espíritu del Trueno	Thunder Spirit
+Un espíritu eléctrico lanza cada 4 s un rayo de 3 saltos (60% de daño).	A lightning spirit casts a 3-jump bolt every 4 s (60% damage).
+Espíritu Maldito	Cursed Spirit
+Un espíritu oscuro maldice cada 8 s al enemigo más sano (+20% de daño recibido).	A dark spirit curses the healthiest enemy every 8 s (+20% damage taken).
+Espíritu Sanador	Healing Spirit
+Un espíritu te cura el 4% de tu vida cada 9 s si estás herido (límite por sala).	A spirit heals 4% of your health every 9 s when you are hurt (limited per room).
+Espíritu Guardián	Guardian Spirit
+Un espíritu te protege con un escudo de 18 cada 14 s si no tienes ninguno.	A spirit shields you for 18 every 14 s if you have none.
+Espíritu Venenoso	Venom Spirit
+Un espíritu de veneno dispara cada 3 s (45%) y envenena.	A venom spirit shoots every 3 s (45%) and poisons.
+Espíritu de Sombra	Shadow Spirit
+Un espíritu de sombra hiere cada 2,8 s (60%) y causa sangrado.	A shadow spirit strikes every 2.8 s (60%) and causes bleeding.
+Vínculo Espiritual	Spirit Bond
+Un espíritu menor te acompaña (35% cada 3 s) y todos tus espíritus actúan un 30% más rápido.	A minor spirit accompanies you (35% every 3 s) and all your spirits act 30% faster.
+Sinfonía Espiritual	Spirit Symphony
+Tus espíritus actúan un 50% más rápido y cada baja los acelera aún más durante 4 s.	Your spirits act 50% faster and each kill speeds them up further for 4 s.
+Pastor de Almas	Soul Shepherd
+Cada alma recogida acelera a tus espíritus durante 5 s.	Each soul picked up speeds up your spirits for 5 s.
+Legión Espectral	Spectral Legion
+Invoca tres espíritus: uno de fuego, uno glacial y uno eléctrico.	Summons three spirits: one of fire, one of ice and one of lightning.
+Desafío Doble	Double Challenge
+Los enemigos tienen +15% de vida, pero ganas +35% de oro y +20% de almas.	Enemies have +15% health, but you earn +35% gold and +20% souls.
+Sed de Riesgo	Thirst for Risk
+Los enemigos te hacen +20% de daño, pero haces +25% de daño y +30% de daño crítico.	Enemies deal +20% damage to you, but you deal +25% damage and +30% critical damage.
+Cañón de Cristal	Glass Cannon
+-25% de vida máxima, +25% de daño.	-25% max health, +25% damage.
+Pacto de Sangre	Blood Pact
+Al entrar en cada sala pierdes el 8% de tu vida (nunca mueres por esto), pero haces +30% de daño.	Entering each room costs 8% of your health (this never kills you), but you deal +30% damage.
+Todo o Nada	All or Nothing
+Las salas perfectas (sin daño) dan 25 de oro y curan el 12%. Cada golpe recibido te cuesta 5 de oro.	Perfect rooms (no damage) give 25 gold and heal 12%. Each hit you take costs 5 gold.
+Temerario	Reckless
+Mientras no te hayan herido en la sala, haces +20% de daño.	As long as you haven't been hurt in the room, you deal +20% damage.
+Sacrificio	Sacrifice
+Beber un frasco te cuesta el 5% de tu vida, pero carga un 25% de tu definitiva.	Drinking a flask costs 5% of your health but charges 25% of your ultimate.
+Apostador	Gambler
+Entrar en una sala cuesta 10 de oro; limpiarla sin que te hieran da 40 de oro.	Entering a room costs 10 gold; clearing it without being hurt gives 40 gold.
+Juicio Final	Final Judgment
++35% de daño, pero los enemigos tienen +20% de vida y hacen +30% de daño. Derrotar a un jefe te cura el 35%.	+35% damage, but enemies have +20% health and deal +30% damage. Defeating a boss heals 35%.
+Último Recurso	Last Resort
+Beber un frasco con poca vida te da 0,6 s de invulnerabilidad.	Drinking a flask at low health gives you 0.6 s of invulnerability.
+Caza Mayor	Big Game
+Los enemigos tienen +20% de vida. Los mini-jefes y jefes sueltan un corazón y 8 almas al morir.	Enemies have +20% health. Mini-bosses and bosses drop a heart and 8 souls on death.
+Ayuno	Fasting
+-1 frasco máximo, pero haces +20% de daño.	-1 maximum flask, but you deal +20% damage.
+Marca Maldita	Cursed Mark
+15% de maldecir al golpear: los malditos reciben +20% de daño tuyo durante 6 s.	15% chance to curse on hit: cursed enemies take +20% damage from you for 6 s.
+Sentencia Oscura	Dark Verdict
+En combate, cada 9 s maldices al enemigo con más vida.	In combat, every 9 s you curse the enemy with the most health.
+Maldición Contagiosa	Contagious Curse
+Cuando muere un enemigo maldito, la maldición salta a los cercanos.	When a cursed enemy dies, the curse jumps to nearby enemies.
+Cosecha Maldita	Cursed Harvest
+Los enemigos malditos sueltan 3 almas al morir (límite por sala).	Cursed enemies drop 3 souls on death (limited per room).
+Festín Oscuro	Dark Feast
+Contra enemigos malditos robas un 4% del daño como vida.	Against cursed enemies you steal 4% of damage as health.
+Crítico Maldito	Cursed Critical
++20% de probabilidad de crítico contra enemigos malditos.	+20% critical chance against cursed enemies.
+Forma de Sombra	Shadow Form
+Tu definitiva te transforma 8 s: +30% de daño, +25% de velocidad y -20% de daño recibido; dejas un rastro de sombra y maldices al enemigo más sano.	Your ultimate transforms you for 8 s: +30% damage, +25% speed and -20% damage taken; you leave a shadow trail and curse the healthiest enemy.
+Forma Bestial	Beast Form
+Al caer por debajo del 35% de vida te transformas 6 s: +30% de velocidad de ataque y +20% de velocidad (cada 30 s).	Dropping below 35% health transforms you for 6 s: +30% attack speed and +20% speed (every 30 s).
+Forma Espectral	Spectral Form
+Cada parry te vuelve espectral: +25% de velocidad 3 s y maldices al enemigo más sano.	Each parry makes you spectral: +25% speed for 3 s and curses the healthiest enemy.
+Vacío Voraz	Hungry Void
+Cada baja carga un 3% de tu definitiva y, al terminar la definitiva, te curas el 10%.	Each kill charges 3% of your ultimate, and when the ultimate ends you heal 10%.
+Corrupción	Corruption
+30% de envenenar al golpear a un enemigo maldito.	30% chance to poison when hitting a cursed enemy.
+Aura de Penumbra	Penumbra Aura
+Al rodar dejas dos charcos de sombra que maldicen a los enemigos que los pisan.	Rolling leaves two shadow patches that curse enemies who step on them.
+Fuego y Rayo	Fire and Lightning
+Los críticos contra enemigos en llamas sueltan un rayo de 2 saltos (cada 0,5 s).	Critical hits against burning enemies release a 2-jump lightning bolt (every 0.5 s).
+Estallido Helado	Frost Burst
+Golpear a un enemigo congelado: 20% de causar un estallido (70% de daño, cada 1 s).	Hitting a frozen enemy: 20% chance to cause a burst (70% damage, every 1 s).
+Choque Térmico	Thermal Shock
+Golpear a un enemigo en llamas y ralentizado a la vez provoca una explosión de vapor (120% de daño, cada 2 s).	Hitting an enemy that is burning and slowed at once causes a steam explosion (120% damage, every 2 s).
+Conducción Tóxica	Toxic Conduction
+Golpear a un enemigo envenenado y electrizado provoca una explosión tóxica (80% de daño, cada 1,5 s).	Hitting an enemy that is poisoned and shocked causes a toxic explosion (80% damage, every 1.5 s).
+Sangre Hirviente	Boiling Blood
+Los enemigos que sangran y arden a la vez reciben +30% de daño.	Enemies that are bleeding and burning at once take +30% damage.
+Parry Ardiente	Blazing Parry
+Cada parry prende fuego a los enemigos cercanos durante 3 s.	Each parry sets nearby enemies on fire for 3 s.
+Parry Glacial	Glacial Parry
+Cada parry congela 1,2 s a los enemigos cercanos (los jefes solo se ralentizan).	Each parry freezes nearby enemies for 1.2 s (bosses are only slowed).
+Hechizo Certero	Precise Spell
+Tras lanzar una habilidad, +25% de probabilidad de crítico durante 5 s.	After casting a skill, +25% critical chance for 5 s.
+Toxina Crítica	Critical Toxin
++18% de probabilidad de crítico contra enemigos envenenados.	+18% critical chance against poisoned enemies.
+Frasco Explosivo	Explosive Flask
+Beber un frasco provoca una explosión a tu alrededor (150% de daño).	Drinking a flask causes an explosion around you (150% damage).
+Triple Filo	Triple Edge
+Cada 7 golpes lanzas 3 cuchillas (50% de daño).	Every 7 hits you throw 3 blades (50% damage).
+Corazón Ardiente	Burning Heart
+Los enemigos en llamas pueden soltar un corazón al morir (cada 25 s).	Burning enemies may drop a heart on death (every 25 s).
+Convergencia Elemental	Elemental Convergence
+En combate, cada 8 s un anillo de fuego y uno de hielo salen de ti y caen 2 rayos.	In combat, every 8 s a ring of fire and a ring of ice burst from you and 2 lightning bolts strike.
+Infierno	Inferno
+Tus golpes contra enemigos en llamas propagan el fuego a los cercanos (cada 0,6 s) y los quemados reciben +10% de daño.	Your hits on burning enemies spread the fire to nearby ones (every 0.6 s) and burning enemies take +10% damage.
+Cripta de Hielo	Ice Crypt
+Tus críticos contra enemigos ralentizados o congelados estallan en escarcha (70% de daño, cada 0,8 s).	Your critical hits against slowed or frozen enemies burst into frost (70% damage, every 0.8 s).
+Tormenta Viva	Living Storm
+Cada descarga arcana te da +15% de velocidad de ataque 4 s y carga un 6% de tu definitiva.	Each arcane discharge gives +15% attack speed for 4 s and charges 6% of your ultimate.
+Muerte Lenta	Slow Death
+El daño periódico hace +25% y los enemigos con 2 o más estados alterados reciben +15% de daño.	Damage over time deals +25% and enemies with 2 or more status effects take +15% damage.
+Contragolpe Perfecto	Perfect Counter
+Cada parry reduce 1 s tus habilidades y te da +20% de velocidad de ataque durante 4 s.	Each parry shortens your skill cooldowns by 1 s and gives +20% attack speed for 4 s.
+Muro Viviente	Living Wall
+Mientras tengas escudo haces +15% de daño, y cuando absorbe un golpe te curas el 3%.	While you have a shield you deal +15% damage, and when it absorbs a hit you heal 3%.
+Sangre y Furia	Blood and Fury
+Con poca vida: +15% de velocidad de ataque; matar cura el 4% y al ser herido tu siguiente golpe hace +50%.	At low health: +15% attack speed; killing heals 4% and when hurt your next hit deals +50%.
+Ritmo Imparable	Unstoppable Rhythm
+Cada crítico da +8% de velocidad de ataque durante 3 s (hasta 3 cargas) y +6% de probabilidad de crítico.	Each critical hit gives +8% attack speed for 3 s (up to 3 stacks) and +6% critical chance.
+Artillería	Artillery
+Tus proyectiles hacen +20% de daño y explotan al terminar (35% de daño).	Your projectiles deal +20% damage and explode at the end of their path (35% damage).
+Danza Etérea	Ethereal Dance
+Cada esquiva carga un 8% de tu definitiva y potencia tu siguiente habilidad un 40% (5 s).	Each dodge charges 8% of your ultimate and empowers your next skill by 40% (5 s).
+Alquimia Mayor	Grand Alchemy
+Cada moneda carga 1,5% de tu definitiva y cada alma 3%; con 100 de oro o más haces +8% de daño.	Each coin charges 1.5% of your ultimate and each soul 3%; with 100 gold or more you deal +8% damage.
+Legión del Más Allá	Legion Beyond
+Mientras tengas espíritus haces +10% de daño; al ser herido uno te protege con 12 de escudo (cada 8 s).	While you have spirits you deal +10% damage; when hurt, one shields you for 12 (every 8 s).
+Oscuridad Total	Total Darkness
+Los enemigos malditos reciben +15% de daño extra y al morir cargan un 5% de tu definitiva.	Cursed enemies take +15% extra damage and charge 5% of your ultimate when they die.
+Pacto del Riesgo	Risk Pact
+Limpiar una sala sin recibir daño da +15% de daño durante 25 s y 10 de oro.	Clearing a room without being hurt gives +15% damage for 25 s and 10 gold.
+Hechicero Supremo	Supreme Sorcerer
+Cada habilidad reduce 0,8 s las demás y tu definitiva potencia tus habilidades un 30% durante 8 s.	Each skill shortens the others by 0.8 s and your ultimate empowers skills by 30% for 8 s.
+Cazador de Élites	Elite Hunter
++15% de probabilidad de crítico contra mini-jefes y jefes; matarlos te cura el 5%.	+15% critical chance against mini-bosses and bosses; killing them heals 5%.
+Terremoto	Earthquake
+Al aterrizar de una caída larga ganas +20% de daño 4 s y cada salto en el aire te da 8 de escudo (cada 2 s).	Landing from a long fall gives +20% damage for 4 s and each mid-air jump gives 8 shield (every 2 s).
+Reacción en Cadena	Chain Reaction
+Tus golpes a enemigos rodeados tienen 15% de provocar una explosión (40% de daño, cada 1 s).	Your hits on surrounded enemies have a 15% chance to cause an explosion (40% damage, every 1 s).
+Resonancia Elemental	Elemental Resonance
+Golpear a un enemigo con 2 o más estados alterados lanza un rayo de 2 saltos (cada 1,2 s).	Hitting an enemy with 2 or more status effects casts a 2-jump lightning bolt (every 1.2 s).
+Frasco de Vida	Life Flask
+Toda curación recibida es un 25% mayor y beber un frasco te da 25 de escudo.	All healing received is 25% greater and drinking a flask gives you 25 shield.
+Reúne {} de sus bendiciones para activarla.	Gather {} of its blessings to activate it.
+Sinergia activa	Synergy active
+Sinergia {}/{}	Synergy {}/{}
+Bendiciones y sinergias	Blessings & synergies
+Bendiciones	Blessings
+Bendiciones *	Blessings *
+Sinergias	Synergies
+Sinergias *	Synergies *
+BENDICIONES ACTIVAS	ACTIVE BLESSINGS
+SINERGIAS	SYNERGIES
+Pág. {}/{}	Page {}/{}
+Aún no tienes ninguna sinergia en marcha.	You have no synergies going yet.
+ACTIVA {}/{}	ACTIVE {}/{}
+Nv {}/{}	Lv {}/{}
++{} más	+{} more
+¡Sinergia activada!	Synergy activated!
+Aparece con {} bendiciones de su categoría	Appears with {} blessings of its category
+Aparece con {} bendiciones de su familia	Appears with {} blessings of its family
+Daño físico	Physical damage
+Magia y elementos	Magic & elements
+Defensa y supervivencia	Defense & survival
+Velocidad y evasión	Speed & evasion
+Proyectiles	Projectiles
+Recursos y recompensas	Resources & rewards
+Invocaciones y compañeros	Summons & companions
+Riesgo y recompensa	Risk & reward
+Maldiciones y transformaciones	Curses & transformations
+Híbridas	Hybrids
+común	common
+poco común	uncommon
+rara	rare
+épica	epic
+legendaria	legendary
 MEJORAS	UPGRADES
 ARMAMENTO	ARMAMENT
 ARSENAL	ARSENAL
@@ -321,7 +738,6 @@ Esquirlas Glaciales	Glacial Shards
 Abanico de lanzas de hielo que ralentiza y congela.	A fan of ice spears that slows and freezes.
 Prisión de Hielo	Ice Prison
 Encierra a un enemigo en hielo que luego estalla.	Encases an enemy in ice that then bursts.
-Ventisca	Blizzard
 Un torbellino de nieve cortante que arrastra y congela.	A whirlwind of cutting snow that drags and freezes.
 Cero Absoluto	Absolute Zero
 Todo se congela y luego se hace añicos.	Everything freezes and then shatters.
@@ -345,7 +761,6 @@ Guadaña de hoja roja	Red-bladed scythe
 Sangre: roba 7% del daño como vida.	Blood: steals 7% of damage as life.
 Tajo Sangriento	Bloody Slash
 Embestida y triple tajo que te cura por cada enemigo golpeado.	A charge and triple slash that heals you for every enemy hit.
-Pacto de Sangre	Blood Pact
 Drena la vida de los enemigos cercanos con hilos de sangre.	Drains the life of nearby enemies with threads of blood.
 Hoz Giratoria	Spinning Sickle
 Una tormenta de hoces gira a tu alrededor desgarrándolo todo.	A storm of sickles spins around you, tearing everything apart.
@@ -359,7 +774,6 @@ Roca: -20% de daño recibido, golpes con gran empuje.	Rock: -20% damage taken, b
 Puño de Roca	Rock Fist
 Un golpe brutal que levanta una columna de roca frente a ti.	A brutal blow that raises a column of rock in front of you.
 Gran resistencia: te vuelves inamovible.	Great resilience: you become immovable.
-Terremoto	Earthquake
 Salto y estampida que parte el suelo en grietas.	A leap and stampede that splits the ground into cracks.
 Cataclismo del Titán	Titan's Cataclysm
 Una lluvia de meteoritos arrasa el campo de batalla.	A meteor shower devastates the battlefield.
@@ -759,10 +1173,8 @@ Envenena al golpear	Poisons on hit
 sin munición	out of ammo
 sin granadas	out of grenades
 ¡Pociones de vida!	Health potions!
-Vitalidad	Vitality
 Fuerza	Strength
 Bolsa del Viajero	Traveler's Pouch
-Cosecha de Almas	Soul Harvest
 Frascos de Vida	Life Flasks
 Agilidad	Agility
 Temple	Resolve
@@ -1033,7 +1445,6 @@ Especial: {}	Special: {}
 2ª: {} x{}	2nd: {} x{}
 2ª: {} x{}  Gran: x{}	2nd: {} x{}  Gren: x{}
 {} (parry {}ms)	{} (parry {}ms)
-Bendiciones	Blessings
 Aún no tienes ninguna.	You have none yet.
 HAS CAÍDO	YOU HAVE FALLEN
 Revividas: {}/{} usadas	Revives: {}/{} used
@@ -1273,7 +1684,6 @@ Silencio	Silence
 Voluntad	Will
 Libertad	Freedom
 Paciencia	Patience
-Sacrificio	Sacrifice
 Reliquia	Relic
 ¡Segunda oportunidad!	Second chance!
 ¡Reliquia obtenida!	Relic obtained!

@@ -117,6 +117,423 @@ Arma	Arme
 Granada	Grenade
 Habilidad	Compétence
 ¡DESBLOQUEADO!	DÉBLOQUÉ !
+Golpe Certero	Frappe sûre
+Cada 4 golpes seguidos, el siguiente hace +25% de daño por nivel.	Tous les 4 coups enchaînés, le suivant inflige +25 % de dégâts par niveau.
+Hoja Rápida	Lame vive
++7% de velocidad de ataque por nivel.	+7 % de vitesse d'attaque par niveau.
+Peso Pesado	Poids lourd
++18% de daño por nivel a enemigos con más del 80% de vida.	+18 % de dégâts par niveau aux ennemis à plus de 80 % de vie.
+Rompeguardias	Brise-garde
++22% de daño por nivel contra mini-jefes y jefes.	+22 % de dégâts par niveau contre mini-boss et boss.
+Puñalada Trapera	Coup dans le dos
+Golpear a un enemigo por la espalda: +35% de daño.	Frapper un ennemi dans le dos : +35 % de dégâts.
+Cazador de Enjambres	Chasseur d'essaims
++15% de daño por nivel a enemigos con otros dos cerca.	+15 % de dégâts par niveau aux ennemis entourés d'au moins deux autres.
+Estocada Larga	Estoc long
++18% de alcance de arma por nivel.	+18 % de portée d'arme par niveau.
+Filo Sangrante	Lame saignante
+25% de causar sangrado. Los enemigos sangrando reciben +15% de daño de tus golpes.	25 % de provoquer un saignement. Les ennemis qui saignent subissent +15 % de dégâts de vos coups.
+Doble Tajo	Double entaille
+18% de que tu golpe se repita poco después con el 40% del daño.	18 % de chance que votre coup se répète peu après avec 40 % des dégâts.
+Impulso Letal	Élan létal
+Cada crítico da +7% de daño durante 4 s (hasta 5 cargas).	Chaque critique donne +7 % de dégâts pendant 4 s (jusqu'à 5 cumuls).
+Pulso Constante	Pouls régulier
+Los golpes no críticos hacen +14% de daño por nivel.	Les coups non critiques infligent +14 % de dégâts par niveau.
+Remate Brutal	Finisseur brutal
+El tercer golpe del combo hace +25% de daño por nivel.	Le troisième coup du combo inflige +25 % de dégâts par niveau.
+Ritmo de Combate	Rythme de combat
+Cada remate de combo da +10% de velocidad de ataque durante 3 s (hasta 3 cargas).	Chaque fin de combo donne +10 % de vitesse d'attaque pendant 3 s (jusqu'à 3 cumuls).
+Sentencia	Sentence
+Tu remate detona una explosión de 200% de daño cada 4 s.	Votre finisseur déclenche une explosion à 200 % de dégâts toutes les 4 s.
+Maestro de Armas	Maître d'armes
+Con la vida al 90% o más: +30% de daño de arma.	À 90 % de vie ou plus : +30 % de dégâts d'arme.
+Sed de Batalla	Soif de bataille
+Cada baja da +12% de velocidad de ataque durante 3 s (hasta 2 cargas).	Chaque kill donne +12 % de vitesse d'attaque pendant 3 s (jusqu'à 2 cumuls).
+Ojo de Halcón	Oeil de faucon
++5% de probabilidad de crítico por nivel.	+5 % de chance de critique par niveau.
+Ensañamiento	Acharnement
+Los críticos contra enemigos con menos del 30% de vida hacen +50% de daño crítico extra.	Les critiques contre les ennemis à moins de 30 % de vie infligent +50 % de dégâts critiques en plus.
+Cadena de Críticos	Chaîne critique
+Tras 2 críticos seguidos, +20% de probabilidad de crítico hasta que falles un golpe o te hieran.	Après 2 critiques d'affilée, +20 % de chance de critique jusqu'à un coup non critique ou une blessure.
+Combustión	Combustion
+El daño periódico (fuego, veneno, sangrado) hace +20% por nivel.	Les dégâts sur la durée (feu, poison, saignement) font +20 % par niveau.
+Llama Voraz	Flamme vorace
+Los enemigos en llamas reciben +15% de daño de tus golpes y habilidades.	Les ennemis en flammes subissent +15 % de dégâts de vos coups et compétences.
+Brasa Crítica	Braise critique
++25% de probabilidad de crítico contra enemigos en llamas.	+25 % de chance de critique contre les ennemis en flammes.
+Contagio Ígneo	Contagion ignée
+Cuando muere un enemigo en llamas, el fuego salta a los cercanos.	Quand un ennemi en flammes meurt, le feu saute aux ennemis proches.
+Pira Viviente	Bûcher vivant
+Los enemigos en llamas explotan al morir (60% de daño) y prenden fuego alrededor.	Les ennemis en flammes explosent à leur mort (60 % de dégâts) et enflamment les alentours.
+Aliento de Dragón	Souffle de dragon
+Tu definitiva prende fuego a todos los enemigos durante 4 s.	Votre ultime enflamme tous les ennemis pendant 4 s.
+Rastro Ardiente	Traînée ardente
+Al rodar dejas dos charcos de fuego que queman a los enemigos.	En roulant, vous laissez deux flaques de feu qui brûlent les ennemis.
+Escarcha Quebradiza	Givre fragile
++35% de probabilidad de crítico contra enemigos ralentizados o congelados.	+35 % de chance de critique contre les ennemis ralentis ou gelés.
+Esquirlas de Hielo	Éclats de glace
+Los enemigos ralentizados o congelados sueltan 3 esquirlas al morir.	Les ennemis ralentis ou gelés libèrent 3 éclats à leur mort.
+Aura Gélida	Aura glaciale
+Cada 3 s ralentizas a los enemigos cercanos.	Toutes les 3 s, vous ralentissez les ennemis proches.
+Ventisca	Blizzard
+Tus habilidades ralentizan a los enemigos en un radio amplio.	Vos compétences ralentissent les ennemis dans un large rayon.
+Congelación Profunda	Gel profond
+Golpear a un enemigo ralentizado: 12% de congelarlo 1,2 s (cada 2 s). Los jefes solo se ralentizan.	Frapper un ennemi ralenti : 12 % de le geler 1,2 s (toutes les 2 s). Les boss sont seulement ralentis.
+Carga Estática	Charge statique
+Tus golpes acumulan carga arcana (máx. 10). Al llegar a 10 se libera un rayo encadenado.	Vos coups accumulent de la charge arcanique (max 10). À 10, elle libère un éclair en chaîne.
+Pararrayos	Paratonnerre
+Cada parry da 2 cargas arcanas y libera una descarga con todas tus cargas.	Chaque parade donne 2 charges arcaniques et libère une décharge avec toutes vos charges.
+Voltio Arcano	Volt arcanique
+Cada habilidad que lanzas te da 3 cargas arcanas.	Chaque compétence lancée vous donne 3 charges arcaniques.
+Batería Viva	Batterie vivante
+Cada esquiva o rodar exitoso da 2 cargas arcanas.	Chaque esquive ou roulade donne 2 charges arcaniques.
+Descarga Mayor	Grande décharge
+Con 6 o más cargas arcanas, tus golpes sueltan una descarga de 4 saltos (cada 1,5 s).	Avec 6 charges arcaniques ou plus, vos coups libèrent une décharge à 4 sauts (toutes les 1,5 s).
+Conductor	Conducteur
+Tus rayos encadenados saltan a 1 enemigo más.	Vos éclairs en chaîne sautent vers 1 ennemi de plus.
+Tempestad Eterna	Tempête éternelle
+En combate, cada 4 s caen 3 rayos sobre enemigos al azar.	En combat, toutes les 4 s trois éclairs frappent des ennemis au hasard.
+Ponzoña Virulenta	Venin virulent
+Tus estados alterados duran 40% más.	Vos états altérés durent 40 % plus longtemps.
+Plaga	Peste
+Cuando muere un enemigo envenenado, el veneno se contagia a los cercanos.	Quand un ennemi empoisonné meurt, le poison se propage aux ennemis proches.
+Toxina Nerviosa	Toxine nerveuse
+40% de ralentizar al golpear a un enemigo envenenado.	40 % de ralentir en frappant un ennemi empoisonné.
+Esporas Tóxicas	Spores toxiques
+En combate, cada 6 s una nube envenena a los enemigos cercanos.	En combat, toutes les 6 s un nuage empoisonne les ennemis proches.
+Eco Arcano	Écho arcanique
+Tras lanzar una habilidad, tu siguiente golpe hace +50% de daño (5 s).	Après avoir lancé une compétence, votre prochain coup inflige +50 % de dégâts (5 s).
+Canalizador	Canalisateur
+Cada golpe acorta 0,25 s la reutilización de tu habilidad más lenta (límite por segundo).	Chaque coup réduit de 0,25 s la recharge de votre compétence la plus lente (limité).
+Catalizador	Catalyseur
+Al usar tu definitiva, tus habilidades se reponen al instante.	Utiliser votre ultime réinitialise instantanément vos compétences.
+Resonancia	Résonance
+Cada habilidad potencia la siguiente: +35% de daño (6 s).	Chaque compétence renforce la suivante : +35 % de dégâts (6 s).
+Manantial de Maná	Source de mana
+Cada habilidad lanzada carga un 6% de tu definitiva.	Chaque compétence lancée charge 6 % de votre ultime.
+Runa de Poder	Rune de puissance
++25% de carga de definitiva y +10% de daño de habilidades.	+25 % de charge d'ultime et +10 % de dégâts de compétence.
+Contra del Parry	Contre de parade
+Tras un parry, tu siguiente golpe hace +60% de daño (4 s).	Après une parade, votre prochain coup inflige +60 % de dégâts (4 s).
+Parry Templado	Parade trempée
+Cada parry te da un escudo de 15.	Chaque parade vous donne un bouclier de 15.
+Parry Cargado	Parade chargée
+Cada parry carga un 8% de tu definitiva.	Chaque parade charge 8 % de votre ultime.
+Eco Defensivo	Écho défensif
+Cada parry libera una onda de 100% de daño que empuja a los enemigos.	Chaque parade libère une onde à 100 % de dégâts qui repousse les ennemis.
+Maestro del Parry	Maître de la parade
+Cada parry da +12% de daño durante 5 s (hasta 3 cargas).	Chaque parade donne +12 % de dégâts pendant 5 s (jusqu'à 3 cumuls).
+Reflejo Estelar	Reflet stellaire
+Cada parry dispara un anillo de 8 estrellas (50% de daño).	Chaque parade tire un anneau de 8 étoiles (50 % de dégâts).
+Calma del Guardián	Calme du gardien
+Cada parry cura el 3% de tu vida máxima (límite por sala).	Chaque parade soigne 3 % de votre vie max (limité par salle).
+Escudo Reactivo	Bouclier réactif
+Cuando tu escudo absorbe un golpe, estalla con 80% de daño a tu alrededor.	Quand votre bouclier absorbe un coup, il explose à 80 % de dégâts autour de vous.
+Bastión de Victoria	Bastion de victoire
+Al limpiar una sala ganas un escudo de 20.	Nettoyer une salle donne un bouclier de 20.
+Armadura de Hierro	Armure de fer
+Tus golpes dan 3 de escudo (cada 1,2 s) y tu escudo puede acumular 30 más.	Vos coups donnent 3 de bouclier (toutes les 1,2 s) et votre bouclier peut contenir 30 de plus.
+Coraza de Espinas	Carapace d'épines
+Al recibir daño estallas dañando (70%) a los enemigos cercanos (cada 1,5 s).	Quand vous êtes blessé, vous explosez et infligez 70 % de dégâts aux ennemis proches (toutes les 1,5 s).
+Contragolpe Desesperado	Contre désespéré
+Al recibir daño, tu siguiente golpe hace +70% de daño (4 s).	Quand vous êtes blessé, votre prochain coup inflige +70 % de dégâts (4 s).
+Sangre Fría	Sang-froid
+Al caer por debajo del 35% de vida ganas un escudo de 40 (cada 20 s).	Passer sous 35 % de vie donne un bouclier de 40 (toutes les 20 s).
+Instinto de Supervivencia	Instinct de survie
+Al caer por debajo del 35% de vida: 0,6 s de invulnerabilidad y cura del 8% (cada 25 s).	Passer sous 35 % de vie : 0,6 s d'invulnérabilité et 8 % de soin (toutes les 25 s).
+Último Bastión	Dernier bastion
+Con menos del 35% de vida recibes un 30% menos de daño.	Sous 35 % de vie, vous subissez 30 % de dégâts en moins.
+Rabia Herida	Rage blessée
+Con menos del 35% de vida haces +35% de daño.	Sous 35 % de vie, vous infligez +35 % de dégâts.
+Sanguinario	Sanguinaire
+Con menos del 35% de vida robas un 5% del daño que infliges.	Sous 35 % de vie, vous volez 5 % des dégâts infligés.
+Vitalidad	Vitalité
++10% de vida máxima por nivel.	+10 % de vie max par niveau.
+Sanación de Victoria	Soin de victoire
+Al limpiar una sala recuperas el 5% de tu vida máxima.	Nettoyer une salle restaure 5 % de votre vie max.
+Cosecha de Vida	Moisson de vie
+Cada baja cura el 1,5% de tu vida máxima (límite por sala).	Chaque kill soigne 1,5 % de votre vie max (limité par salle).
+Égida Perpetua	Égide perpétuelle
+En combate ganas un escudo de 30 cada 8 s. Si el escudo absorbe un golpe, 0,5 s de invulnerabilidad (cada 3 s).	En combat, vous gagnez un bouclier de 30 toutes les 8 s. S'il absorbe un coup : 0,5 s d'invulnérabilité (toutes les 3 s).
+Onda de Choque	Onde de choc
+Al recibir un golpe empujas a los enemigos cercanos (cada 1,2 s).	Quand vous êtes touché, vous repoussez les ennemis proches (toutes les 1,2 s).
+Impulso de Rodada	Élan de roulade
+Tu rodada es un 25% más rápida por nivel: recorre más distancia y termina antes.	Votre roulade est 25 % plus rapide par niveau : elle couvre plus de distance et finit plus tôt.
+Sombra Veloz	Ombre véloce
+Tras rodar ganas +20% de velocidad de movimiento durante 2,5 s.	Après une roulade, +20 % de vitesse de déplacement pendant 2,5 s.
+Racha del Cazador	Série du chasseur
+Cada baja da +10% de velocidad de movimiento durante 4 s (hasta 3 cargas).	Chaque kill donne +10 % de vitesse de déplacement pendant 4 s (jusqu'à 3 cumuls).
+Esquiva Sagrada	Esquive sacrée
+Cada esquiva da +15% de daño durante 4 s (hasta 2 cargas).	Chaque esquive donne +15 % de dégâts pendant 4 s (jusqu'à 2 cumuls).
+Baile de Cuchillas	Valse des lames
+Cada esquiva lanza 3 cuchillas (60% de daño).	Chaque esquive lance 3 lames (60 % de dégâts).
+Evasión Mágica	Évasion magique
+Cada esquiva reduce 0,6 s tus habilidades y carga un 5% de tu definitiva.	Chaque esquive réduit vos recharges de 0,6 s et charge 5 % de votre ultime.
+Salto Explosivo	Saut explosif
+Cada salto en el aire detona una explosión del 50% de daño bajo ti.	Chaque saut en l'air déclenche une explosion à 50 % de dégâts sous vous.
+Aterrizaje Sísmico	Atterrissage sismique
+Las caídas largas provocan una onda del 100% de daño al aterrizar.	Les longues chutes provoquent une onde à 100 % de dégâts à l'atterrissage.
+Cadencia en Movimiento	Cadence en mouvement
+Mientras te mueves, +18% de velocidad de ataque.	En mouvement, +18 % de vitesse d'attaque.
+Golpe en Carrera	Frappe en course
+Mientras te mueves, +12% de daño.	En mouvement, +12 % de dégâts.
+Quietud Letal	Immobilité mortelle
+Quieto, haces +20% de daño y recibes un 10% menos.	Immobile, vous infligez +20 % de dégâts et en subissez 10 % de moins.
+Ráfaga de Remate	Rafale de finisseur
+Cada remate de combo da +15% de velocidad de movimiento durante 3 s.	Chaque finisseur de combo donne +15 % de vitesse de déplacement pendant 3 s.
+Viento de Cola	Vent arrière
+Cada salto en el aire da +20% de velocidad de movimiento durante 3 s.	Chaque saut en l'air donne +20 % de vitesse de déplacement pendant 3 s.
+Segundo Aliento	Second souffle
+Cada esquiva te da 0,4 s de invulnerabilidad (cada 3 s).	Chaque esquive vous donne 0,4 s d'invulnérabilité (toutes les 3 s).
+Reloj del Destino	Horloge du destin
+Un parry o una esquiva ralentiza el tiempo 1,2 s para los enemigos (cada 18 s).	Une parade ou une esquive ralentit le temps des ennemis pendant 1,2 s (toutes les 18 s).
+Maestro de Trampas	Maître des pièges
+Sobrevolar pinchos sin tocarlos te da 15 de escudo y +20% de daño durante 5 s.	Survoler des pointes sans les toucher donne 15 de bouclier et +20 % de dégâts pendant 5 s.
+Acróbata	Acrobate
+Cada salto da +10% de velocidad de ataque durante 2 s.	Chaque saut donne +10 % de vitesse d'attaque pendant 2 s.
+Danza Aérea	Danse aérienne
+En el aire haces +20% de daño.	En l'air, vous infligez +20 % de dégâts.
+Punta Afilada	Pointe affûtée
+Tus proyectiles atraviesan 1 enemigo más por nivel.	Vos projectiles transpercent 1 ennemi de plus par niveau.
+Vuelo Veloz	Vol rapide
+Tus proyectiles van un 25% más rápido y son un 20% más grandes.	Vos projectiles vont 25 % plus vite et sont 20 % plus gros.
+Ricochet	Ricochet
+Tus proyectiles rebotan una vez contra paredes o enemigos.	Vos projectiles rebondissent une fois sur les murs ou les ennemis.
+Buscador	Chercheur
+Tus proyectiles giran ligeramente hacia los enemigos cercanos.	Vos projectiles s'orientent légèrement vers les ennemis proches.
+Perforante	Perforant
+Tus proyectiles hacen +20% de daño por cada enemigo que atraviesan.	Vos projectiles infligent +20 % de dégâts pour chaque ennemi traversé.
+Doble Lanzamiento	Double lancer
+20% de que tus proyectiles se lancen dos veces.	20 % de chance que vos projectiles soient lancés deux fois.
+Onda Expansiva	Onde expansive
+Tus ondas de energía (Hoja Fantasma y similares) hacen +40% de daño y son más grandes.	Vos ondes d'énergie (Lame fantôme et similaires) infligent +40 % de dégâts et sont plus grandes.
+Proyectil Explosivo	Projectile explosif
+Tus proyectiles explotan al terminar su trayecto (50% de daño).	Vos projectiles explosent à la fin de leur trajet (50 % de dégâts).
+Disparo Incendiario	Tir incendiaire
+30% de que tus proyectiles prendan fuego al impactar.	30 % de chance que vos projectiles enflamment à l'impact.
+Disparo Gélido	Tir glacial
+50% de que tus proyectiles ralenticen al impactar.	50 % de chance que vos projectiles ralentissent à l'impact.
+Disparo Voltaico	Tir voltaïque
+Tus proyectiles descargan un rayo de 2 saltos al impactar (cada 0,5 s).	Vos projectiles libèrent un éclair à 2 sauts à l'impact (toutes les 0,5 s).
+Lluvia de Hojas	Pluie de feuilles
+Cada habilidad invoca una lluvia de 5 hojas cortantes sobre los enemigos.	Chaque compétence invoque une pluie de 5 feuilles tranchantes sur les ennemis.
+Ráfaga Estelar	Rafale stellaire
+Cada 5 golpes sueltas 3 estrellas teledirigidas (50% de daño).	Tous les 5 coups, vous libérez 3 étoiles à tête chercheuse (50 % de dégâts).
+Estela de Rodada	Sillage de roulade
+Al terminar un rodar lanzas una onda de energía (80% de daño).	Terminer une roulade lance une onde d'énergie (80 % de dégâts).
+Tirador Experto	Tireur expert
+Los proyectiles que impactan a enemigos lejanos hacen +40% de daño.	Les projectiles touchant des ennemis éloignés infligent +40 % de dégâts.
+Foco Letal	Concentration létale
+Impactos seguidos con proyectiles al mismo enemigo: +8% de daño acumulable (hasta 5).	Impacts successifs de projectiles sur le même ennemi : +8 % de dégâts cumulables (jusqu'à 5).
+Orbe Santo	Orbe sacré
+Matar con un proyectil libera un orbe sagrado teledirigido (70% de daño).	Tuer avec un projectile libère un orbe sacré à tête chercheuse (70 % de dégâts).
+Tormenta de Acero	Tempête d'acier
+Cada habilidad lanza 10 cuchillas desde el cielo y tu definitiva 16. Tus proyectiles atraviesan 1 enemigo más.	Chaque compétence fait pleuvoir 10 lames du ciel et votre ultime 16. Vos projectiles transpercent 1 ennemi de plus.
+Mercader Astuto	Marchand rusé
+Los precios de las tiendas bajan un 10% por nivel (máx. 50%).	Les prix des boutiques baissent de 10 % par niveau (max 50 %).
+Interés Compuesto	Intérêts composés
+Al limpiar una sala con 100 o más de oro, ganas 12 de oro extra.	Nettoyer une salle avec au moins 100 d'or rapporte 12 d'or de plus.
+Poder del Oro	Pouvoir de l'or
+Con 150 o más de oro, haces +12% de daño.	Avec 150 d'or ou plus, vous infligez +12 % de dégâts.
+Cosecha de Almas	Moisson d'âmes
+Los mini-jefes y jefes sueltan 6 almas extra al morir.	Les mini-boss et boss lâchent 6 âmes de plus à leur mort.
+Almas en Furia	Âmes en furie
+Cada alma recogida da +5% de daño durante 6 s (hasta 5 cargas).	Chaque âme ramassée donne +5 % de dégâts pendant 6 s (jusqu'à 5 cumuls).
+Corazón Blindado	Coeur blindé
+Un corazón recogido con la vida llena te da 12 de escudo.	Un coeur ramassé à pleine vie donne 12 de bouclier.
+Alquimista	Alchimiste
+Beber un frasco te da +20% de daño durante 8 s y limpia tus estados alterados.	Boire une fiole donne +20 % de dégâts pendant 8 s et purifie vos états altérés.
+Reserva de Frascos	Réserve de fioles
++1 frasco de curación máximo.	+1 fiole de soin maximum.
+Brebaje Rebosante	Breuvage débordant
+Un frasco recogido con la reserva llena cura el 12% de tu vida.	Une fiole ramassée avec une réserve pleine soigne 12 % de votre vie.
+Visión del Altar	Vision de l'autel
+Los altares de bendición ofrecen una opción adicional.	Les autels de bénédiction offrent une option de plus.
+Suerte Dorada	Chance dorée
++1 de suerte: mejores recompensas en cofres y tiendas.	+1 chance : de meilleures récompenses dans les coffres et boutiques.
+Botín de Élite	Butin d'élite
+Los mini-jefes y jefes sueltan 15 de oro extra.	Les mini-boss et boss lâchent 15 d'or de plus.
+Recaudador	Collecteur
+Cada baja con tu arma te da 1 de oro (límite por sala).	Chaque kill à l'arme vous donne 1 d'or (limité par salle).
+Cazatesoros	Chasseur de trésors
+Al entrar en una sala ganas 8 de oro.	Entrer dans une salle vous donne 8 d'or.
+Ladrón de Almas	Voleur d'âmes
+Los críticos te dan 2 almas (cada 0,8 s, límite por sala).	Les critiques vous donnent 2 âmes (toutes les 0,8 s, limité par salle).
+Corona del Avaro	Couronne de l'avare
++50% de oro. Con 200 o más de oro haces +20% de daño y cada baja te da 2 de oro (límite por sala).	+50 % d'or. Avec 200 d'or ou plus : +20 % de dégâts et chaque kill donne 2 d'or (limité par salle).
+Luciérnaga	Luciole
+Una luciérnaga te acompaña y dispara a los enemigos cercanos (50% de daño cada 2 s).	Une luciole vous accompagne et tire sur les ennemis proches (50 % de dégâts toutes les 2 s).
+Llama Fatua	Feu follet
+Un espíritu de fuego te acompaña: dispara cada 2,6 s (55%) y prende fuego.	Un esprit de feu vous accompagne : tire toutes les 2,6 s (55 %) et enflamme.
+Espíritu Glacial	Esprit glacial
+Un espíritu de hielo libera cada 5 s una onda helada que ralentiza (70% de daño).	Un esprit de glace libère toutes les 5 s une onde glacée qui ralentit (70 % de dégâts).
+Espíritu del Trueno	Esprit du tonnerre
+Un espíritu eléctrico lanza cada 4 s un rayo de 3 saltos (60% de daño).	Un esprit électrique lance toutes les 4 s un éclair à 3 sauts (60 % de dégâts).
+Espíritu Maldito	Esprit maudit
+Un espíritu oscuro maldice cada 8 s al enemigo más sano (+20% de daño recibido).	Un esprit sombre maudit toutes les 8 s l'ennemi le plus sain (+20 % de dégâts reçus).
+Espíritu Sanador	Esprit guérisseur
+Un espíritu te cura el 4% de tu vida cada 9 s si estás herido (límite por sala).	Un esprit vous soigne de 4 % de votre vie toutes les 9 s si vous êtes blessé (limité par salle).
+Espíritu Guardián	Esprit gardien
+Un espíritu te protege con un escudo de 18 cada 14 s si no tienes ninguno.	Un esprit vous protège avec un bouclier de 18 toutes les 14 s si vous n'en avez pas.
+Espíritu Venenoso	Esprit venimeux
+Un espíritu de veneno dispara cada 3 s (45%) y envenena.	Un esprit de venin tire toutes les 3 s (45 %) et empoisonne.
+Espíritu de Sombra	Esprit d'ombre
+Un espíritu de sombra hiere cada 2,8 s (60%) y causa sangrado.	Un esprit d'ombre frappe toutes les 2,8 s (60 %) et provoque un saignement.
+Vínculo Espiritual	Lien spirituel
+Un espíritu menor te acompaña (35% cada 3 s) y todos tus espíritus actúan un 30% más rápido.	Un esprit mineur vous accompagne (35 % toutes les 3 s) et tous vos esprits agissent 30 % plus vite.
+Sinfonía Espiritual	Symphonie spirituelle
+Tus espíritus actúan un 50% más rápido y cada baja los acelera aún más durante 4 s.	Vos esprits agissent 50 % plus vite et chaque kill les accélère encore pendant 4 s.
+Pastor de Almas	Berger d'âmes
+Cada alma recogida acelera a tus espíritus durante 5 s.	Chaque âme ramassée accélère vos esprits pendant 5 s.
+Legión Espectral	Légion spectrale
+Invoca tres espíritus: uno de fuego, uno glacial y uno eléctrico.	Invoque trois esprits : un de feu, un de glace et un électrique.
+Desafío Doble	Double défi
+Los enemigos tienen +15% de vida, pero ganas +35% de oro y +20% de almas.	Les ennemis ont +15 % de vie, mais vous gagnez +35 % d'or et +20 % d'âmes.
+Sed de Riesgo	Soif de risque
+Los enemigos te hacen +20% de daño, pero haces +25% de daño y +30% de daño crítico.	Les ennemis vous infligent +20 % de dégâts, mais vous infligez +25 % de dégâts et +30 % de dégâts critiques.
+Cañón de Cristal	Canon de verre
+-25% de vida máxima, +25% de daño.	-25 % de vie max, +25 % de dégâts.
+Pacto de Sangre	Pacte de sang
+Al entrar en cada sala pierdes el 8% de tu vida (nunca mueres por esto), pero haces +30% de daño.	Entrer dans chaque salle coûte 8 % de votre vie (cela ne vous tue jamais), mais vous infligez +30 % de dégâts.
+Todo o Nada	Tout ou rien
+Las salas perfectas (sin daño) dan 25 de oro y curan el 12%. Cada golpe recibido te cuesta 5 de oro.	Les salles parfaites (sans dégâts) donnent 25 d'or et soignent 12 %. Chaque coup reçu coûte 5 d'or.
+Temerario	Téméraire
+Mientras no te hayan herido en la sala, haces +20% de daño.	Tant que vous n'avez pas été blessé dans la salle, vous infligez +20 % de dégâts.
+Sacrificio	Sacrifice
+Beber un frasco te cuesta el 5% de tu vida, pero carga un 25% de tu definitiva.	Boire une fiole coûte 5 % de votre vie mais charge 25 % de votre ultime.
+Apostador	Parieur
+Entrar en una sala cuesta 10 de oro; limpiarla sin que te hieran da 40 de oro.	Entrer dans une salle coûte 10 d'or ; la nettoyer sans être blessé donne 40 d'or.
+Juicio Final	Jugement dernier
++35% de daño, pero los enemigos tienen +20% de vida y hacen +30% de daño. Derrotar a un jefe te cura el 35%.	+35 % de dégâts, mais les ennemis ont +20 % de vie et infligent +30 % de dégâts. Vaincre un boss soigne 35 %.
+Último Recurso	Dernier recours
+Beber un frasco con poca vida te da 0,6 s de invulnerabilidad.	Boire une fiole à faible vie vous donne 0,6 s d'invulnérabilité.
+Caza Mayor	Gros gibier
+Los enemigos tienen +20% de vida. Los mini-jefes y jefes sueltan un corazón y 8 almas al morir.	Les ennemis ont +20 % de vie. Les mini-boss et boss lâchent un coeur et 8 âmes à leur mort.
+Ayuno	Jeûne
+-1 frasco máximo, pero haces +20% de daño.	-1 fiole maximum, mais vous infligez +20 % de dégâts.
+Marca Maldita	Marque maudite
+15% de maldecir al golpear: los malditos reciben +20% de daño tuyo durante 6 s.	15 % de maudire en frappant : les maudits subissent +20 % de vos dégâts pendant 6 s.
+Sentencia Oscura	Verdict sombre
+En combate, cada 9 s maldices al enemigo con más vida.	En combat, toutes les 9 s vous maudissez l'ennemi avec le plus de vie.
+Maldición Contagiosa	Malédiction contagieuse
+Cuando muere un enemigo maldito, la maldición salta a los cercanos.	Quand un ennemi maudit meurt, la malédiction saute aux ennemis proches.
+Cosecha Maldita	Moisson maudite
+Los enemigos malditos sueltan 3 almas al morir (límite por sala).	Les ennemis maudits lâchent 3 âmes à leur mort (limité par salle).
+Festín Oscuro	Festin sombre
+Contra enemigos malditos robas un 4% del daño como vida.	Contre les ennemis maudits, vous volez 4 % des dégâts en vie.
+Crítico Maldito	Critique maudit
++20% de probabilidad de crítico contra enemigos malditos.	+20 % de chance de critique contre les ennemis maudits.
+Forma de Sombra	Forme d'ombre
+Tu definitiva te transforma 8 s: +30% de daño, +25% de velocidad y -20% de daño recibido; dejas un rastro de sombra y maldices al enemigo más sano.	Votre ultime vous transforme 8 s : +30 % de dégâts, +25 % de vitesse et -20 % de dégâts reçus ; vous laissez une traînée d'ombre et maudissez l'ennemi le plus sain.
+Forma Bestial	Forme bestiale
+Al caer por debajo del 35% de vida te transformas 6 s: +30% de velocidad de ataque y +20% de velocidad (cada 30 s).	Passer sous 35 % de vie vous transforme 6 s : +30 % de vitesse d'attaque et +20 % de vitesse (toutes les 30 s).
+Forma Espectral	Forme spectrale
+Cada parry te vuelve espectral: +25% de velocidad 3 s y maldices al enemigo más sano.	Chaque parade vous rend spectral : +25 % de vitesse pendant 3 s et maudit l'ennemi le plus sain.
+Vacío Voraz	Vide vorace
+Cada baja carga un 3% de tu definitiva y, al terminar la definitiva, te curas el 10%.	Chaque kill charge 3 % de votre ultime et, à la fin de l'ultime, vous soignez 10 %.
+Corrupción	Corruption
+30% de envenenar al golpear a un enemigo maldito.	30 % d'empoisonner en frappant un ennemi maudit.
+Aura de Penumbra	Aura de pénombre
+Al rodar dejas dos charcos de sombra que maldicen a los enemigos que los pisan.	En roulant, vous laissez deux flaques d'ombre qui maudissent les ennemis qui marchent dessus.
+Fuego y Rayo	Feu et foudre
+Los críticos contra enemigos en llamas sueltan un rayo de 2 saltos (cada 0,5 s).	Les critiques contre les ennemis en flammes libèrent un éclair à 2 sauts (toutes les 0,5 s).
+Estallido Helado	Éclat glacé
+Golpear a un enemigo congelado: 20% de causar un estallido (70% de daño, cada 1 s).	Frapper un ennemi gelé : 20 % de provoquer un éclat (70 % de dégâts, toutes les 1 s).
+Choque Térmico	Choc thermique
+Golpear a un enemigo en llamas y ralentizado a la vez provoca una explosión de vapor (120% de daño, cada 2 s).	Frapper un ennemi à la fois en flammes et ralenti provoque une explosion de vapeur (120 % de dégâts, toutes les 2 s).
+Conducción Tóxica	Conduction toxique
+Golpear a un enemigo envenenado y electrizado provoca una explosión tóxica (80% de daño, cada 1,5 s).	Frapper un ennemi empoisonné et électrisé provoque une explosion toxique (80 % de dégâts, toutes les 1,5 s).
+Sangre Hirviente	Sang bouillant
+Los enemigos que sangran y arden a la vez reciben +30% de daño.	Les ennemis qui saignent et brûlent à la fois subissent +30 % de dégâts.
+Parry Ardiente	Parade ardente
+Cada parry prende fuego a los enemigos cercanos durante 3 s.	Chaque parade enflamme les ennemis proches pendant 3 s.
+Parry Glacial	Parade glaciale
+Cada parry congela 1,2 s a los enemigos cercanos (los jefes solo se ralentizan).	Chaque parade gèle les ennemis proches pendant 1,2 s (les boss sont seulement ralentis).
+Hechizo Certero	Sort précis
+Tras lanzar una habilidad, +25% de probabilidad de crítico durante 5 s.	Après avoir lancé une compétence, +25 % de chance de critique pendant 5 s.
+Toxina Crítica	Toxine critique
++18% de probabilidad de crítico contra enemigos envenenados.	+18 % de chance de critique contre les ennemis empoisonnés.
+Frasco Explosivo	Fiole explosive
+Beber un frasco provoca una explosión a tu alrededor (150% de daño).	Boire une fiole provoque une explosion autour de vous (150 % de dégâts).
+Triple Filo	Triple tranchant
+Cada 7 golpes lanzas 3 cuchillas (50% de daño).	Tous les 7 coups, vous lancez 3 lames (50 % de dégâts).
+Corazón Ardiente	Coeur ardent
+Los enemigos en llamas pueden soltar un corazón al morir (cada 25 s).	Les ennemis en flammes peuvent lâcher un coeur à leur mort (toutes les 25 s).
+Convergencia Elemental	Convergence élémentaire
+En combate, cada 8 s un anillo de fuego y uno de hielo salen de ti y caen 2 rayos.	En combat, toutes les 8 s un anneau de feu et un de glace jaillissent de vous et 2 éclairs frappent.
+Infierno	Enfer
+Tus golpes contra enemigos en llamas propagan el fuego a los cercanos (cada 0,6 s) y los quemados reciben +10% de daño.	Vos coups sur des ennemis en flammes propagent le feu aux proches (toutes les 0,6 s) et les ennemis en flammes subissent +10 % de dégâts.
+Cripta de Hielo	Crypte de glace
+Tus críticos contra enemigos ralentizados o congelados estallan en escarcha (70% de daño, cada 0,8 s).	Vos critiques contre les ennemis ralentis ou gelés explosent en givre (70 % de dégâts, toutes les 0,8 s).
+Tormenta Viva	Tempête vivante
+Cada descarga arcana te da +15% de velocidad de ataque 4 s y carga un 6% de tu definitiva.	Chaque décharge arcanique donne +15 % de vitesse d'attaque pendant 4 s et charge 6 % de votre ultime.
+Muerte Lenta	Mort lente
+El daño periódico hace +25% y los enemigos con 2 o más estados alterados reciben +15% de daño.	Les dégâts sur la durée font +25 % et les ennemis avec 2 états altérés ou plus subissent +15 % de dégâts.
+Contragolpe Perfecto	Contre parfait
+Cada parry reduce 1 s tus habilidades y te da +20% de velocidad de ataque durante 4 s.	Chaque parade réduit vos recharges de 1 s et donne +20 % de vitesse d'attaque pendant 4 s.
+Muro Viviente	Mur vivant
+Mientras tengas escudo haces +15% de daño, y cuando absorbe un golpe te curas el 3%.	Tant que vous avez un bouclier, vous infligez +15 % de dégâts, et quand il absorbe un coup, vous vous soignez de 3 %.
+Sangre y Furia	Sang et fureur
+Con poca vida: +15% de velocidad de ataque; matar cura el 4% y al ser herido tu siguiente golpe hace +50%.	À faible vie : +15 % de vitesse d'attaque ; tuer soigne 4 % et, si vous êtes blessé, votre prochain coup inflige +50 %.
+Ritmo Imparable	Rythme inarrêtable
+Cada crítico da +8% de velocidad de ataque durante 3 s (hasta 3 cargas) y +6% de probabilidad de crítico.	Chaque critique donne +8 % de vitesse d'attaque pendant 3 s (jusqu'à 3 cumuls) et +6 % de chance de critique.
+Artillería	Artillerie
+Tus proyectiles hacen +20% de daño y explotan al terminar (35% de daño).	Vos projectiles infligent +20 % de dégâts et explosent à la fin de leur trajet (35 % de dégâts).
+Danza Etérea	Danse éthérée
+Cada esquiva carga un 8% de tu definitiva y potencia tu siguiente habilidad un 40% (5 s).	Chaque esquive charge 8 % de votre ultime et renforce votre prochaine compétence de 40 % (5 s).
+Alquimia Mayor	Grande alchimie
+Cada moneda carga 1,5% de tu definitiva y cada alma 3%; con 100 de oro o más haces +8% de daño.	Chaque pièce charge 1,5 % de votre ultime et chaque âme 3 % ; avec 100 d'or ou plus, vous infligez +8 % de dégâts.
+Legión del Más Allá	Légion de l'au-delà
+Mientras tengas espíritus haces +10% de daño; al ser herido uno te protege con 12 de escudo (cada 8 s).	Tant que vous avez des esprits, vous infligez +10 % de dégâts ; si vous êtes blessé, l'un d'eux vous protège avec 12 de bouclier (toutes les 8 s).
+Oscuridad Total	Ténèbres totales
+Los enemigos malditos reciben +15% de daño extra y al morir cargan un 5% de tu definitiva.	Les ennemis maudits subissent +15 % de dégâts supplémentaires et chargent 5 % de votre ultime à leur mort.
+Pacto del Riesgo	Pacte du risque
+Limpiar una sala sin recibir daño da +15% de daño durante 25 s y 10 de oro.	Nettoyer une salle sans être blessé donne +15 % de dégâts pendant 25 s et 10 d'or.
+Hechicero Supremo	Sorcier suprême
+Cada habilidad reduce 0,8 s las demás y tu definitiva potencia tus habilidades un 30% durante 8 s.	Chaque compétence réduit les autres de 0,8 s et votre ultime renforce vos compétences de 30 % pendant 8 s.
+Cazador de Élites	Chasseur d'élite
++15% de probabilidad de crítico contra mini-jefes y jefes; matarlos te cura el 5%.	+15 % de chance de critique contre les mini-boss et boss ; les tuer vous soigne de 5 %.
+Terremoto	Séisme
+Al aterrizar de una caída larga ganas +20% de daño 4 s y cada salto en el aire te da 8 de escudo (cada 2 s).	Atterrir d'une longue chute donne +20 % de dégâts pendant 4 s et chaque saut en l'air donne 8 de bouclier (toutes les 2 s).
+Reacción en Cadena	Réaction en chaîne
+Tus golpes a enemigos rodeados tienen 15% de provocar una explosión (40% de daño, cada 1 s).	Vos coups sur des ennemis entourés ont 15 % de chance de provoquer une explosion (40 % de dégâts, toutes les 1 s).
+Resonancia Elemental	Résonance élémentaire
+Golpear a un enemigo con 2 o más estados alterados lanza un rayo de 2 saltos (cada 1,2 s).	Frapper un ennemi avec 2 états altérés ou plus lance un éclair à 2 sauts (toutes les 1,2 s).
+Frasco de Vida	Fiole de vie
+Toda curación recibida es un 25% mayor y beber un frasco te da 25 de escudo.	Tous les soins reçus sont 25 % plus importants et boire une fiole vous donne 25 de bouclier.
+Reúne {} de sus bendiciones para activarla.	Réunissez {} de ses bénédictions pour l'activer.
+Sinergia activa	Synergie active
+Sinergia {}/{}	Synergie {}/{}
+Bendiciones y sinergias	Bénédictions et synergies
+Bendiciones	Bénédictions
+Bendiciones *	Bénédictions *
+Sinergias	Synergies
+Sinergias *	Synergies *
+BENDICIONES ACTIVAS	BÉNÉDICTIONS ACTIVES
+SINERGIAS	SYNERGIES
+Pág. {}/{}	Page {}/{}
+Aún no tienes ninguna sinergia en marcha.	Aucune synergie en cours pour l'instant.
+ACTIVA {}/{}	ACTIVE {}/{}
+Nv {}/{}	Niv {}/{}
++{} más	+{} de plus
+¡Sinergia activada!	Synergie activée !
+Aparece con {} bendiciones de su categoría	Apparaît avec {} bénédictions de sa catégorie
+Aparece con {} bendiciones de su familia	Apparaît avec {} bénédictions de sa famille
+Daño físico	Dégâts physiques
+Magia y elementos	Magie et éléments
+Defensa y supervivencia	Défense et survie
+Velocidad y evasión	Vitesse et esquive
+Proyectiles	Projectiles
+Recursos y recompensas	Ressources et récompenses
+Invocaciones y compañeros	Invocations et compagnons
+Riesgo y recompensa	Risque et récompense
+Maldiciones y transformaciones	Malédictions et transformations
+Híbridas	Hybrides
+común	commune
+poco común	peu commune
+rara	rare
+épica	épique
+legendaria	légendaire
 MEJORAS	AMÉLIORATIONS
 ARMAMENTO	ARMEMENT
 ARSENAL	ARSENAL
@@ -321,7 +738,6 @@ Esquirlas Glaciales	Éclats glaciaires
 Abanico de lanzas de hielo que ralentiza y congela.	Un éventail de lances de glace qui ralentit et gèle.
 Prisión de Hielo	Prison de glace
 Encierra a un enemigo en hielo que luego estalla.	Enferme un ennemi dans la glace, qui éclate ensuite.
-Ventisca	Blizzard
 Un torbellino de nieve cortante que arrastra y congela.	Un tourbillon de neige tranchante qui entraîne et gèle.
 Cero Absoluto	Zéro absolu
 Todo se congela y luego se hace añicos.	Tout gèle puis vole en éclats.
@@ -345,7 +761,6 @@ Guadaña de hoja roja	Faux à lame rouge
 Sangre: roba 7% del daño como vida.	Sang : vole 7 % des dégâts sous forme de vie.
 Tajo Sangriento	Entaille sanglante
 Embestida y triple tajo que te cura por cada enemigo golpeado.	Une charge suivie d'un triple coup qui vous soigne pour chaque ennemi touché.
-Pacto de Sangre	Pacte de sang
 Drena la vida de los enemigos cercanos con hilos de sangre.	Draine la vie des ennemis proches avec des filaments de sang.
 Hoz Giratoria	Faucille tournoyante
 Una tormenta de hoces gira a tu alrededor desgarrándolo todo.	Une tempête de faucilles tournoie autour de vous et déchire tout.
@@ -359,7 +774,6 @@ Roca: -20% de daño recibido, golpes con gran empuje.	Roc : -20 % de dégâts su
 Puño de Roca	Poing de roc
 Un golpe brutal que levanta una columna de roca frente a ti.	Un coup brutal qui dresse une colonne de roche devant vous.
 Gran resistencia: te vuelves inamovible.	Grande résistance : vous devenez inébranlable.
-Terremoto	Séisme
 Salto y estampida que parte el suelo en grietas.	Un bond et une ruée qui fendent le sol de crevasses.
 Cataclismo del Titán	Cataclysme du Titan
 Una lluvia de meteoritos arrasa el campo de batalla.	Une pluie de météorites ravage le champ de bataille.
@@ -759,10 +1173,8 @@ Envenena al golpear	Empoisonne au toucher
 sin munición	plus de munitions
 sin granadas	plus de grenades
 ¡Pociones de vida!	Potions de vie !
-Vitalidad	Vitalité
 Fuerza	Force
 Bolsa del Viajero	Bourse du voyageur
-Cosecha de Almas	Moisson d'âmes
 Frascos de Vida	Fioles de vie
 Agilidad	Agilité
 Temple	Trempe
@@ -1033,7 +1445,6 @@ Especial: {}	Spécial : {}
 2ª: {} x{}	2e : {} x{}
 2ª: {} x{}  Gran: x{}	2e : {} x{}  Gren : x{}
 {} (parry {}ms)	{} (parade {} ms)
-Bendiciones	Bénédictions
 Aún no tienes ninguna.	Vous n'en avez aucune pour l'instant.
 HAS CAÍDO	VOUS ÊTES TOMBÉ
 Revividas: {}/{} usadas	Réanimations : {}/{} utilisées
@@ -1273,7 +1684,6 @@ Silencio	Silence
 Voluntad	Volonté
 Libertad	Liberté
 Paciencia	Patience
-Sacrificio	Sacrifice
 Reliquia	Relique
 ¡Segunda oportunidad!	Seconde chance !
 ¡Reliquia obtenida!	Relique obtenue !

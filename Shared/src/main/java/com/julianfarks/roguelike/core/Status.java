@@ -26,6 +26,7 @@ final class Status {
             case "shock": return Ent.SHOCK;
             case "bleed": return Ent.BLEED;
             case "freeze": return Ent.FREEZE;
+            case "curse": return Ent.CURSE;
             default: return -1;
         }
     }
@@ -39,6 +40,7 @@ final class Status {
         if (e.st[Ent.BLEED] > 0 && r.chance(dt * 10)) lv.ps.spawn(cx + r.f(-4, 4), cy + r.f(-6, 8), r.f(-10, 10), r.f(10, 30), 0.5f, 2, 120, 0xC4122C, false);
         if (e.st[Ent.SHOCK] > 0 && r.chance(dt * 14)) lv.ps.spawn(cx + r.f(-8, 8), cy + r.f(-10, 10), r.f(-30, 30), r.f(-30, 30), 0.15f, 1, 0, 0xF0F060, true);
         if (e.st[Ent.FREEZE] > 0 && r.chance(dt * 8)) lv.ps.spawn(cx + r.f(-8, 8), cy + r.f(-10, 10), 0, 6, 0.5f, 2, 0, 0xBFEFFF, true);
+        if (e.st[Ent.CURSE] > 0 && r.chance(dt * 9)) lv.ps.spawn(cx + r.f(-6, 6), cy - 12 + r.f(-4, 4), r.f(-4, 4), -r.f(12, 26), 0.5f, 2, 0, 0xB070FF, true);
         if (e.st[Ent.SLOW] > 0 && r.chance(dt * 5)) lv.ps.spawn(cx + r.f(-6, 6), cy + r.f(-10, 10), 0, 8, 0.5f, 1, 0, 0x7AB8FF, true);
     }
 
@@ -48,6 +50,7 @@ final class Status {
         if (e.st[Ent.SLOW] > 0) return 0xB8D4FF;
         if (e.st[Ent.POISON] > 0) return 0xB8FFB8;
         if (e.st[Ent.ROOT] > 0) return 0xB8E090;
+        if (e.st[Ent.CURSE] > 0) return 0xD8B8FF;
         return 0;
     }
 }

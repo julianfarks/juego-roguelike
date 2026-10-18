@@ -11,7 +11,8 @@ public final class UI {
 
     public static Font small, big;
     public static Platform.Img panel, panelLight, panelRed, btn, btnRound, hpFrame, hpFill, ultFrame, ultFill, bossFrame, bossFill,
-            cursor, arrow, vignette, icons, logo;
+            cursor, arrow, vignette, icons, logo, bxIcons;
+    private static final Map<String, Integer> bxIdx = new HashMap<>();
     private static final Map<String, Integer> iconIdx = new HashMap<>();
     private static int iconCols = 16;
     public static Platform.Img glow32, glow64, glow128;
@@ -42,6 +43,12 @@ public final class UI {
             java.util.List<Object> names = Json.arr(d, "names");
             if (names != null) for (int i = 0; i < names.size(); i++) iconIdx.put((String) names.get(i), i);
         }
+        bxIcons = Assets.img("ui/bless_icons.png");
+        Map<String, Object> d2 = Json.parseObj(Assets.P.loadText("ui/bless_icons.json"));
+        if (d2 != null) {
+            java.util.List<Object> n2 = Json.arr(d2, "names");
+            if (n2 != null) for (int i = 0; i < n2.size(); i++) bxIdx.put((String) n2.get(i), i);
+        }
         glow32 = makeGlow(32);
         glow64 = makeGlow(64);
         glow128 = makeGlow(128);
@@ -70,10 +77,15 @@ public final class UI {
         g.image(im, 0, 0, im.w, im.h, Math.round(cx - r), Math.round(cy - r), r * 2, r * 2, Platform.ADD | Platform.TINT, color, alpha);
     }
 
-    public static boolean hasIcon(String n) { return iconIdx.containsKey(n); }
+    public static boolean hasIcon(String n) { return iconIdx.containsKey(n) || bxIdx.containsKey(n); }
 
     /** Dibuja el icono por nombre con su esquina superior izquierda en (x,y). */
     public static void icon(Platform.Gfx g, String name, float x, float y, float scale, int flags, int tint, float alpha) {
+        Integer bi = bxIdx.get(name);
+        if (bi != null && bxIcons != null) {
+            g.image(bxIcons, (bi % 16) * 16, (bi / 16) * 16, 16, 16, Math.round(x), Math.round(y), 16 * scale, 16 * scale, flags, tint, alpha);
+            return;
+        }
         Integer i = iconIdx.get(name);
         if (i == null || icons == null) return;
         g.image(icons, (i % iconCols) * 16, (i / iconCols) * 16, 16, 16, Math.round(x), Math.round(y), 16 * scale, 16 * scale, flags, tint, alpha);

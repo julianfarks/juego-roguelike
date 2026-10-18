@@ -184,7 +184,7 @@ public final class Player extends Ent {
         boolean ctl = !lv.cinematic && hurtT <= 0 && state != ULT;
         float mx = ctl ? in.moveX() : 0;
         if (ctl && mx == 0 && !in.held(Input.B_LEFT) && !in.held(Input.B_RIGHT)) mx = 0;
-        float spd = 135f * s.speedMul * speedMul();
+        float spd = 135f * s.speedMul * speedMul() * BlessFx.speedMul(lv);
         boolean frozenNow = frozen();
         guarding = ctl && !frozenNow && alive && in.held(Input.B_GUARD) && (state == IDLE || state == RUN || state == AIR) && dashT <= 0;
         if (parryCd > 0) parryCd -= dt;
@@ -287,6 +287,7 @@ public final class Player extends Ent {
         if (onGround && !wasGround && pvy > 180) {
             sq = Mth.clamp(pvy / 420f, 0.14f, 0.32f);
             Snd.sfxv("land", Mth.clamp(pvy / 400f, 0.3f, 0.9f));
+            BlessFx.onLand(lv, pvy);
             lv.fx("fx_dust", "land", x, y - 2, 1f, 0, 0);
             if (state == AIR) state = IDLE;
         }
@@ -389,6 +390,7 @@ public final class Player extends Ent {
         if (state == ATK) { state = AIR; }
         onGround = false; jumping = true; jumpBuf = 0; coyote = 0;
         animT = 0;
+        BlessFx.onJump(lv, air);
         sq = air ? -0.16f : -0.24f;
         if (air) {
             Snd.sfx("double_jump", 0.8f);
@@ -411,13 +413,15 @@ public final class Player extends Ent {
         Snd.sfxv("roll", 0.8f);
         lv.fx("fx_dust", "roll", x, y - 2, 1f, 0, 0).right = right;
         atkBuf = 0;
+        BlessFx.onRoll(lv, false);
         return true;
     }
 
     private void updateRoll(Level lv, float dt) {
         Stats s = lv.rs.stats;
-        animT += dt;
-        vx = dir() * 215f * Math.max(0.9f, s.speedMul) * (animT < 0.25f ? 1f : 0.6f);
+        float rk = 1f + Math.min(0.6f, BlessFx.sv(lv.rs, BRule.M_ROLLCDR));   // bendiciones: rodada mas rapida
+        animT += dt * rk;
+        vx = dir() * 215f * Math.max(0.9f, s.speedMul) * (animT < 0.25f ? 1f : 0.6f) * rk;
         if (!onGround) vx *= 0.9f;
         lv.breakRect(x + dir() * 8 - 8, y - bh, 16, bh, 1);
         trailT -= dt;
@@ -441,6 +445,7 @@ public final class Player extends Ent {
         if (a.done(animT)) {
             state = onGround ? IDLE : AIR;
             vx *= 0.4f;
+            BlessFx.onRoll(lv, true);
             if (s.egida > 0) { shield = Math.min(40, shield + 9 * s.egida); lv.fx("fx_shield", "bubble", x, y - 20, 0.8f, 0, 0); }
             comboWin = 0;
         }
@@ -452,6 +457,7 @@ public final class Player extends Ent {
         rs.potions--;
         Snd.sfx("potion", 0.9f);
         lv.healPlayer(rs.stats.maxHp * 0.4f);
+        BlessFx.onPotion(lv);
         lv.fx("fx_heal", "rise", x, y - 12, 1f, 0, 0);
         lv.ps.burst(lv.rng, x, y - 14, 0x6AE08A, 14, 70, 0.6f, 2, 0, true);
     }
@@ -479,7 +485,7 @@ public final class Player extends Ent {
         Snd.sfxv(sfx, 0.85f);
     }
 
-    private float atkSpeed(Level lv) { return cls.atkSpeed * lv.rs.stats.atkSpd * (1f + 0.03f * Math.min(furia, 6)); }
+    private float atkSpeed(Level lv) { return cls.atkSpeed * lv.rs.stats.atkSpd * BlessFx.atkSpdMul(lv) * (1f + 0.03f * Math.min(furia, 6)); }
 
     private void updateAttack(Level lv, float dt, float mx, float spd) {
         Anim a = sheet.anim(animName);
@@ -535,12 +541,15 @@ public final class Player extends Ent {
 
     private void hitBox(Level lv, Anim a) {
         RunState rs = lv.rs; Stats s = rs.stats;
+        float rch = BlessFx.reach(lv);
+        if (rch != 1f) { float cxb = right ? box[0] : box[0] + box[2]; float nw = box[2] * rch; if (right) { box[2] = nw; } else { box[0] = cxb - nw; box[2] = nw; } }
         lv.breakRect(box[0], box[1], box[2], box[3], 1);
         List<Ent> list = lv.enemiesInBox(box[0], box[1], box[2], box[3]);
+        lv.dmgSrc = BlessFx.SRC_W;
         for (Ent e : list) {
             if (swingHit.contains(e)) continue;
             swingHit.add(e);
-            float mul = animName.equals("airatk") ? 1.0f : (combo == 3 ? 1.5f : (combo == 2 ? 1.1f : 1f));
+            float mul = animName.equals("airatk") ? 1.0f : (combo == 3 ? 1.5f * BlessFx.finishMul(lv) : (combo == 2 ? 1.1f : 1f));
             if (combo == 3 && s.giant > 0) mul *= 1 + 0.4f * s.giant;
             float dmg = baseDmg(lv) * mul;
             if (cls.id == 1) {   // Acechador: por la espalda
@@ -548,8 +557,8 @@ public final class Player extends Ent {
                 if (away) { dmg *= 1.5f; lv.text(e.x, e.y - e.bh - 12, "¡Espalda!", 0xC08CFF, false); }
             }
             if (s.eclipseCd > 0 && eclipseT <= 0) { dmg *= 2.5f; eclipseT = s.eclipseCd; lv.fx("fx_ring", "pulse", e.cx(), e.cy(), 0.6f, 0xFFE8A0, Platform.ADD | Platform.TINT); lv.text(e.x, e.y - e.bh - 20, "¡Eclipse!", 0xFFD25A, true); }
-            boolean crit = lv.rng.chance(s.critChance);
-            if (crit) dmg *= s.critMul;
+            boolean crit = lv.rollCrit(e);
+            if (crit) dmg *= lv.critMulOf(e);
             float kb = (cls.id == 7 ? 230f : 120f) * (combo == 3 ? 1.6f : 1f);
             lv.damageEnemy(e, dmg, crit, dir() * kb, combo == 3 ? -140 : -50);
             lv.onWeaponHit(e, dmg, crit, combo);
@@ -578,6 +587,7 @@ public final class Player extends Ent {
                 p.special = 1; p.pierce = 4; p.life = 0.7f;
             }
         }
+        lv.dmgSrc = 0;
         // vasijas
         for (Prop pr : lv.props) {
             if (pr.kind.equals("pot") && !pr.open && Mth.overlap(pr.x - 6, pr.y - 14, 12, 14, box[0], box[1], box[2], box[3])) lv.breakPot(pr);
@@ -592,9 +602,11 @@ public final class Player extends Ent {
             if (dashHit.contains(e)) continue;
             dashHit.add(e);
             float dmg = skillBase(lv) * dashDmg;
-            boolean crit = lv.rng.chance(lv.rs.stats.critChance);
-            if (crit) dmg *= lv.rs.stats.critMul;
+            lv.dmgSrc = BlessFx.SRC_S;
+            boolean crit = lv.rollCrit(e);
+            if (crit) dmg *= lv.critMulOf(e);
             lv.damageEnemy(e, dmg, crit, dashDir * 150, -70);
+            lv.dmgSrc = 0;
             if (dashStatus >= 0) e.applyStatus(dashStatus, dashSDur, 6f);
             if (dashHeal) lv.healPlayer(lv.rs.stats.maxHp * 0.04f);
             Snd.sfxv(cls.key.equals("storm") ? "hit_shock" : "hit_metal_" + (1 + lv_i(2)), 0.8f);
@@ -618,6 +630,7 @@ public final class Player extends Ent {
         atkBuf = 0;
         if (onGround) vx *= 0.3f;
         Snd.sfx(sk.sfx, 0.9f);
+        BlessFx.onSkill(lv, i);
         return 0;
     }
 
@@ -638,7 +651,17 @@ public final class Player extends Ent {
         lv.shake(3f, 0.4f);
         lv.camTargetX = x; lv.camTargetY = y - 40; lv.camTargetZoom = 1.18f;
         lv.fxAdd("fx_ring", "pulse", x, y - 22, 1.2f, cls.color1);
+        BlessFx.onUlt(lv, false);
         return 0;
+    }
+
+    /** Lanza la habilidad o definitiva en curso; todo el dano que cause cuenta como dano de habilidad para las bendiciones. */
+    private void castSkills(Level lv) {
+        int pv = lv.dmgSrc;
+        lv.dmgSrc = BlessFx.SRC_S;
+        try {
+            if (state == ULT) Skills.ult(lv, this); else Skills.cast(lv, this, skillIdx);
+        } finally { lv.dmgSrc = pv; }
     }
 
     private void updateCast(Level lv, float dt) {
@@ -647,13 +670,13 @@ public final class Player extends Ent {
         if (state == ULT) { vx = 0; }
         if (!skillFired && a.rel >= 0 && a.frameAt(animT) >= a.rel) {
             skillFired = true;
-            if (state == ULT) Skills.ult(lv, this);
-            else Skills.cast(lv, this, skillIdx);
+            castSkills(lv);
         }
         if (state == SKILL && onGround && dashT <= 0) vx *= 0.85f;
         if (a.done(animT)) {
-            if (!skillFired) { skillFired = true; if (state == ULT) Skills.ult(lv, this); else Skills.cast(lv, this, skillIdx); }
+            if (!skillFired) { skillFired = true; castSkills(lv); }
             if (state == ULT) {
+                BlessFx.onUlt(lv, true);
                 lv.cinematic = false;
                 lv.camTargetX = Float.NaN; lv.camTargetY = Float.NaN; lv.camTargetZoom = 1f;
                 invuln = Math.max(invuln, 0.6f);

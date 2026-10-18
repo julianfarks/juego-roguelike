@@ -162,7 +162,7 @@ public final class Enemy extends Ent {
         Status.fx(lv, this, dt);
         if (dps > 0) {
             dotAcc += dps * dt;
-            if (dotAcc >= 2f) { int d = (int) dotAcc; dotAcc -= d; lv.damageEnemy(this, d, false, 0, 0); if (!alive) return; }
+            if (dotAcc >= 2f) { int d = (int) dotAcc; dotAcc -= d; int pv = lv.dmgSrc; lv.dmgSrc = BlessFx.SRC_DOT; try { lv.damageEnemy(this, d, false, 0, 0); } finally { lv.dmgSrc = pv; } if (!alive) return; }
         }
         Player p = lv.pl;
         boolean paused = frozen() || p == null || !p.alive;

@@ -36,6 +36,8 @@ public final class RunState {
     public int curEvent;                // suceso de la sala actual (Events.*)
     public int startBless = -1;          // bendicion inicial elegida en la preparacion (-1 = ninguna)
     public int damageTaken;
+    /** Estado de ejecucion de las bendiciones (no se guarda; se reconstruye desde bless[]). */
+    public BlessRt bx = new BlessRt();
     public int streak, perfectStreak, roundsThisRun;   // rondas seguidas / perfectas seguidas (estadisticas)
     public final boolean[] relicsThisRun = new boolean[8];
     public boolean won, finalRun;
@@ -96,7 +98,7 @@ public final class RunState {
     public float diffHp() { return diff == 0 ? 0.72f : (diff == 2 ? 1.35f : 1f); }
     public float diffDmg() { return diff == 0 ? 0.6f : (diff == 2 ? 1.4f : 1f); }
     public float diffSouls() { return diff == 0 ? 0.7f : (diff == 2 ? 1.4f : 1f); }
-    public float enemyHpMul() { return (1f + 0.16f * power() + 0.10f * asc) * diffHp(); }
+    public float enemyHpMul() { return (1f + 0.16f * power() + 0.10f * asc) * diffHp() * (1f + Math.max(-0.5f, BlessFx.sv(this, BRule.M_ENEMYHP))); }
     public float enemyDmgMul() { return (1f + 0.06f * power() + 0.06f * asc) * diffDmg(); }
 
     /** Tipos de sala para las puertas: combate normal o mini-jefe (élite). */

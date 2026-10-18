@@ -24,6 +24,20 @@ final class Proj {
     String hitSfx = "proj_hit";
     java.util.HashSet<Object> hit;      // enemigos ya golpeados (perforantes)
     boolean trail = true;
+    // ---- bendiciones (ver BlessFx)
+    int src;                            // origen del dano: BlessFx.SRC_P (arma), SRC_S (habilidad) o SRC_X (efecto de bendicion)
+    int bounces;                        // rebotes que le quedan
+    float pierceGrow;                   // dano extra por enemigo atravesado
+    boolean copyMade;                   // ya se duplico (evita bucles)
+
+    Proj copy() {
+        Proj c = new Proj();
+        c.x = x; c.y = y; c.vx = vx; c.vy = vy; c.grav = grav; c.dmg = dmg; c.life = life; c.radius = radius; c.friendly = friendly; c.sprite = sprite;
+        c.pierce = pierce; c.status = status; c.statusDur = statusDur; c.statusPow = statusPow; c.explode = explode; c.homing = homing; c.color = color; c.add = add;
+        c.scale = scale; c.spin = spin; c.spinRate = spinRate; c.special = special; c.knock = knock; c.passWalls = passWalls; c.explodeFx = explodeFx; c.hitSfx = hitSfx;
+        c.trail = trail; c.src = src; c.bounces = bounces; c.pierceGrow = pierceGrow; c.copyMade = true;
+        return c;
+    }
 }
 
 /** Efecto visual animado de una hoja de fx. */

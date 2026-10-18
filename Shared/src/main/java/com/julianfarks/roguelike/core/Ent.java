@@ -2,8 +2,8 @@ package com.julianfarks.roguelike.core;
 
 /** Entidad con cuerpo fisico (jugador, enemigo, jefe). x,y = pivote (centro de los pies). */
 public abstract class Ent {
-    public static final int BURN = 0, FREEZE = 1, SLOW = 2, POISON = 3, SHOCK = 4, BLEED = 5, ROOT = 6, STUN = 7, ST_COUNT = 8;
-    public static final int[] ST_COLOR = {0xFF7A1A, 0x9AE0FF, 0x7AB8FF, 0x6AE08A, 0xF0F060, 0xD0203A, 0x6AA040, 0xFFFFFF};
+    public static final int BURN = 0, FREEZE = 1, SLOW = 2, POISON = 3, SHOCK = 4, BLEED = 5, ROOT = 6, STUN = 7, CURSE = 8, ST_COUNT = 9;
+    public static final int[] ST_COLOR = {0xFF7A1A, 0x9AE0FF, 0x7AB8FF, 0x6AE08A, 0xF0F060, 0xD0203A, 0x6AA040, 0xFFFFFF, 0xB070FF};
 
     public float x, y, vx, vy;
     public float bw = 12, bh = 28;
@@ -14,6 +14,7 @@ public abstract class Ent {
     public float[] st = new float[ST_COUNT];
     public float[] stPow = new float[ST_COUNT];   // daño por segundo del estado
     public float dotAcc, dotTick;
+    public float focusT; public int focusN;   // Enfoque (bendiciones): golpes consecutivos al mismo objetivo
     public Sheet sheet = Sheet.EMPTY;
     public String animName = "idle";
     public float animT;

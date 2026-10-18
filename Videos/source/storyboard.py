@@ -30,10 +30,10 @@ S = [
     ('b5_storm', 0.1, 0.8, dict(flash=(WHITE, .35))),
     ('b7_earth', 0.1, 0.8, dict(flash=(WHITE, .35))),
     # ---- PROGRESION 18.4-22.4
-    ('s_bless', 2.1, 1.2, dict(flash=(WHITE, .4))),
-    ('s_shop', 2.2, 0.8, dict()),
-    ('s_forge', 2.3, 0.8, dict()),
-    ('s_ev4', 2.3, 1.2, dict()),
+    ('s_bless', 4.1, 1.2, dict(flash=(WHITE, .4))),
+    ('s_shop', 4.2, 0.8, dict()),
+    ('s_forge', 4.3, 0.8, dict()),
+    ('s_ev4', 4.7, 1.2, dict()),
     # ---- CLIMAX 22.4-27.2
     ('b7_earth', 10.0, 0.8, dict(flash=(ORANGE, .6), shake=18, zoom=(1.0, 1.15))),
     ('b6_blood', 8.4, 0.8, dict(flash=(RED, .6), shake=14, zoom=(1.0, 1.15))),

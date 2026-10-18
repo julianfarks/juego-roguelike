@@ -104,8 +104,11 @@ final class PcAudio implements Platform.Audio {
             AudioFormat fm = in.getFormat();
             ByteArrayOutputStream bo = new ByteArrayOutputStream(1 << 16);
             byte[] buf = new byte[16384];
-            int n;
-            while ((n = in.read(buf)) > 0) bo.write(buf, 0, n);
+            int n, zeros = 0;
+            while ((n = in.read(buf, 0, buf.length)) != -1) {      // el decodificador OGG puede devolver 0 sin haber terminado
+                if (n > 0) { bo.write(buf, 0, n); zeros = 0; }
+                else if (++zeros > 2000) break;
+            }
             byte[] b = bo.toByteArray();
             short[] s = new short[b.length / 2];
             for (int i = 0; i < s.length; i++) s[i] = (short) ((b[2 * i] & 0xFF) | (b[2 * i + 1] << 8));
@@ -201,11 +204,12 @@ final class PcAudio implements Platform.Audio {
             // fundido
             if (gain < target) gain = Math.min(target, gain + rate * dt);
             else if (gain > target) gain = Math.max(target, gain - rate * dt);
-            int need = frames * ch * 2, got = 0, reopens = 0;
+            int need = frames * ch * 2, got = 0, reopens = 0, zeros = 0;
             try {
                 while (got < need) {
                     int n = in.read(bytes, got, need - got);
-                    if (n <= 0) {
+                    if (n == 0) { if (++zeros > 2000) { dead = true; break; } continue; }   // sin datos aun (decodificador): reintenta
+                    if (n < 0) {
                         if (loop && reopens++ < 2) { reopen(); if (dead) return; continue; }     // bucle: vuelve al principio
                         dead = true;
                         break;

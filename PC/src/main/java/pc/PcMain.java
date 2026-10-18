@@ -192,6 +192,11 @@ public final class PcMain implements PcWindow.Host {
             // 2. decodificacion OGG (efectos y musica)
             File sfx = new File(assetsDir, "audio/sfx/ui_click.ogg"), mus = new File(assetsDir, "audio/music/mus_menu.ogg");
             try {
+                javax.sound.sampled.AudioInputStream pi = PcAudio.openPcm(sfx);
+                rep.append("info OGG ").append(pi.getFormat()).append(" longitud=").append(pi.getFrameLength()).append('\n');
+                byte[] pb = new byte[4096];
+                rep.append("info primera lectura: ").append(pi.read(pb, 0, pb.length)).append(" bytes\n");
+                pi.close();
                 PcAudio.Pcm a = PcAudio.decode(sfx), b = PcAudio.decode(mus);
                 boolean g = a.frames > 100 && b.frames > 44100 && b.ch == 2;
                 rep.append(g ? "ok   " : "FAIL ").append("OGG decodificado: sfx ").append(a.frames).append(" fotogramas, musica ").append(b.frames).append(" (").append(b.ch).append(" canales)\n");

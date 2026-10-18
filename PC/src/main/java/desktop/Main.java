@@ -52,6 +52,9 @@ public final class Main {
     static String gameClass = "com.julianfarks.roguelike.core.Game";
     static boolean headless, bot, keepGoing, audioLog, pcMode;
     static String storeFile;
+    static String recFile;                 // --record FILE.mp4 : graba el juego (sin entradas tactiles ni depuracion) via ffmpeg
+    static int recFrom = 0, recTo = Integer.MAX_VALUE;
+    static int curFrame = 0;
 
     public static void main(String[] args) throws Exception {
         for (int i = 0; i < args.length; i++) {
@@ -59,6 +62,9 @@ public final class Main {
             switch (a) {
                 case "--headless": headless = true; break;
                 case "--bot": bot = true; break;
+                case "--record": recFile = args[++i]; break;
+                case "--rec-from": recFrom = Integer.parseInt(args[++i]); break;
+                case "--rec-to": recTo = Integer.parseInt(args[++i]); break;
                 case "--pc": pcMode = true; break;      // plataforma de PC (isDesktop, menu de video, sin controles tactiles)
                 case "--keep-going": keepGoing = true; break;
                 case "--audio-log": audioLog = true; break;
@@ -241,7 +247,19 @@ public final class Main {
         List<Ev> inputs = new ArrayList<Ev>(), shots = new ArrayList<Ev>();
         for (Ev e : script) (e.type.equals("shot") ? shots : inputs).add(e);
         int si = 0;
+        Process ff = null; java.io.OutputStream ffo = null; java.io.PrintWriter aud = null;
+        if (recFile != null) {
+            ff = new ProcessBuilder("ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "bgr24", "-s", viewW + "x" + Platform.VIEW_H,
+                    "-r", "60", "-i", "-", "-vf", "scale=1920:1080:flags=neighbor", "-c:v", "libx264", "-preset", "fast", "-crf", "8", "-pix_fmt", "yuv420p", recFile)
+                    .redirectError(ProcessBuilder.Redirect.INHERIT).start();
+            ffo = new java.io.BufferedOutputStream(ff.getOutputStream(), 1 << 20);
+            final java.io.PrintWriter aw = new java.io.PrintWriter(new java.io.FileWriter(recFile + ".audio.tsv"));
+            aud = aw;
+            DesktopPlatform.audioHook = ev -> aw.println((curFrame - recFrom) + "\t" + ev);
+        }
+        byte[] rec = new byte[viewW * Platform.VIEW_H * 3];
         for (int fr = 0; fr < frames; fr++) {
+            curFrame = fr;
             plat.virtualMs = 1000L + fr * 1000L / 60L;
             // entradas del guion
             while (si < inputs.size() && inputs.get(si).frame <= fr) {
@@ -281,6 +299,12 @@ public final class Main {
             st.rndMax = Math.max(st.rndMax, t2 - t1);
             done = fr + 1;
 
+            if (ffo != null && fr >= recFrom && fr < recTo) {
+                int[] px = screen.getRGB(0, 0, viewW, Platform.VIEW_H, null, 0, viewW);
+                for (int i = 0, o = 0; i < px.length; i++) { rec[o++] = (byte) px[i]; rec[o++] = (byte) (px[i] >> 8); rec[o++] = (byte) (px[i] >> 16); }
+                try { ffo.write(rec); } catch (IOException ioe) { ffo = null; }
+            }
+            if (fr >= recTo) break;
             // capturas de este frame (despues del render)
             for (Ev e : shots) if (e.frame == fr) saveShot(screen, e.name);
             if (plat.quitRequested) {
@@ -288,6 +312,7 @@ public final class Main {
                 break;
             }
         }
+        if (ff != null) { try { ffo.close(); ff.waitFor(); } catch (Throwable ignored) { } aud.close(); }
         try { plat.store().commit(); } catch (Throwable ignored) { }
         saveShot(screen, "final");
         printSummary(plat, st, done, aborted);

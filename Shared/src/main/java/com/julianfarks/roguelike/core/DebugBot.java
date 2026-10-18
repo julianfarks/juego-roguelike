@@ -546,6 +546,7 @@ public final class DebugBot {
         if (near || ranged) { if (frame % 6 == 0) tap(g, 'J'); }
         else hold(g, 'J', false);
         // habilidades
+        if (fight && System.getenv("BOT_ULT") != null && frame % 300 == 100 && rs.rs.ult < 100) rs.rs.ult = 100;   // solo para grabar trailers
         if (fight && bd < 160) {
             for (int i = 0; i < 3; i++) if (rs.rs.cd[i] <= 0 && frame % 30 == i * 8) tap(g, new int[]{'U', 'I', 'O'}[i]);
             if (rs.rs.ult >= 100 && frame % 40 == 0) tap(g, 'P');

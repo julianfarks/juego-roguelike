@@ -29,6 +29,8 @@ public class DesktopPlatform implements Platform {
     public boolean quitRequested;
     public long virtualMs = 1000;
     public boolean verboseAudio;
+    /** Si no es null recibe cada sfx/musica pedido (para componer el audio de los trailers fuera del juego). */
+    public static java.util.function.Consumer<String> audioHook;
 
     private final FileStore store;
 
@@ -135,6 +137,7 @@ public class DesktopPlatform implements Platform {
             if (name == null) return;
             count(sfxPlayed, name);
             if (!f("audio/sfx/" + name + ".ogg").isFile()) miss("MISSING audio: sfx/" + name);
+            if (audioHook != null) audioHook.accept("sfx\t" + name + "\t" + vol + "\t" + pitch + "\t" + pan);
             if (verboseAudio) log("sfx " + name + " v=" + vol + " p=" + pitch + " pan=" + pan);
         }
 
@@ -143,6 +146,7 @@ public class DesktopPlatform implements Platform {
             if (name == null) return;
             count(musicPlayed, name);
             if (!f("audio/music/" + name + ".ogg").isFile()) miss("MISSING audio: music/" + name);
+            if (audioHook != null) audioHook.accept("music\t" + name + "\t" + (loop ? 1 : 0) + "\t" + vol + "\t" + fadeMs);
             if (verboseAudio) log("music " + name + " loop=" + loop + " v=" + vol + " fade=" + fadeMs);
         }
 

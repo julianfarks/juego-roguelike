@@ -8,3 +8,6 @@ __pycache__/
 # PC
 PC/build/
 *.class
+Videos/*.audio.raw
+Videos/source/clips/
+Videos/source/__pycache__/

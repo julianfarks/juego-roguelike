@@ -66,8 +66,8 @@ TEXTS = [
     dict(t0=20.4, t1=22.3, y=925, scale=5, band=.7, es='MEJORA · COMPRA · DESCUBRE', en='UPGRADE · SHOP · DISCOVER'),
     dict(t0=22.6, t1=24.6, y=235, scale=7, band=.5, es='DESATA TUS DEFINITIVAS', en='UNLEASH YOUR ULTIMATES'),
     dict(t0=24.8, t1=27.0, y=235, scale=6, band=.5, es='LLEGA HASTA EL CAZADOR PÁLIDO', en='REACH THE PALE HUNTER'),
-    dict(t0=28.3, t1=30.0, y=830, scale=6, band=0, es='DESAFÍA EL ABISMO', en='DARE TO DESCEND'),
-    dict(t0=28.7, t1=30.0, y=925, scale=4, band=0, anim='rise', es='PC · ANDROID', en='PC · ANDROID'),
+    dict(t0=28.3, t1=30.0, y=815, scale=6, band=0, es='DESAFÍA EL ABISMO', en='DARE TO DESCEND'),
+    dict(t0=28.7, t1=30.0, y=935, scale=4, band=0, anim='rise', es='PC · ANDROID', en='PC · ANDROID'),
 ]
 
 _logo = np.array(Image.open(pixtext.ROOT + '/Shared/assets/ui/ui_logo.png').convert('RGBA'))

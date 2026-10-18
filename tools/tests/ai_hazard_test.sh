@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Prueba de IA ante peligros (pinchos, fosos, puentes) con enemigos REALES en una zona construida de la sala (banco headless, sin hardware real).
 # Un escenario por ejecucion (nunca en paralelo). Falla (exit 1) si algun enemigo se mata en pinchos, no persigue, se queda sin ruta valida o el pincho no daña en contacto real.
-RUN=${RUN:-/tmp/run2.sh}
+RUN=${RUN:-/tmp/run2.sh}; [ -x "$RUN" ] || RUN=PC/run.sh
 ROOT=$(cd "$(dirname "$0")/../.." && pwd); cd "$ROOT"
 fail=0
 run() { # escenario ids frames

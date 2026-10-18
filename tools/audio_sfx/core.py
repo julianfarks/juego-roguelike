@@ -4,7 +4,7 @@ from scipy.ndimage import maximum_filter1d, uniform_filter1d
 from dsp import SR, hp
 import reg
 
-OUT = '/home/claude/juego-roguelike/app/src/main/assets/audio/sfx'
+OUT = '/home/claude/juego-roguelike/Shared/assets/audio/sfx'
 PEAK_DB = -3.0
 
 

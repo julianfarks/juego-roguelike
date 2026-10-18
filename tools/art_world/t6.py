@@ -1,6 +1,6 @@
 import sys
 from PIL import Image
-A='/home/claude/juego-roguelike/app/src/main/assets/bg/bg_%s_%d.png'
+A='/home/claude/juego-roguelike/Shared/assets/bg/bg_%s_%d.png'
 names=sys.argv[1:]
 out=Image.new('RGBA',(1536,288*len(names)))
 for j,b in enumerate(names):

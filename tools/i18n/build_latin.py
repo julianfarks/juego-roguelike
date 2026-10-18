@@ -3,7 +3,7 @@
 Se construyen sobre el glifo base con acentos de pixel-art coherentes con los de 'é'/'É'. Idempotente. Œ/œ se escriben 'OE'/'oe'."""
 import json, os
 from PIL import Image
-A = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'app', 'src', 'main', 'assets', 'font')
+A = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'Shared', 'assets', 'font')
 BASES = {'À': ('A', 'grave'), 'Â': ('A', 'circ'), 'Ä': ('A', 'diae'), 'È': ('E', 'grave'), 'Ê': ('E', 'circ'), 'Ë': ('E', 'diae'),
          'Î': ('I', 'circ'), 'Ï': ('I', 'diae'), 'Ô': ('O', 'circ'), 'Ù': ('U', 'grave'), 'Û': ('U', 'circ'), 'Ç': ('C', 'cedil'),
          'à': ('a', 'grave'), 'â': ('a', 'circ'), 'ä': ('a', 'diae'), 'è': ('e', 'grave'), 'ê': ('e', 'circ'), 'ë': ('e', 'diae'),

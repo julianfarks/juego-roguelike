@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """build_all.py - regenera TODA la musica y los ambientes.
 Uso:  python3 tools/audio_music/build_all.py [--only nombre ...] [--jobs 2] [--no-preview]
-Salida: app/src/main/assets/audio/music/*.ogg, audio/sfx/amb_*.ogg, tools/audio_music/music_manifest.json
+Salida: Shared/assets/audio/music/*.ogg, audio/sfx/amb_*.ogg, tools/audio_music/music_manifest.json
 """
 import argparse, json, os, subprocess, sys, tempfile, time
 import numpy as np
@@ -9,8 +9,8 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
-OUT_MUSIC = os.path.join(ROOT, "app", "src", "main", "assets", "audio", "music")
-OUT_SFX = os.path.join(ROOT, "app", "src", "main", "assets", "audio", "sfx")
+OUT_MUSIC = os.path.join(ROOT, "Shared", "assets", "audio", "music")
+OUT_SFX = os.path.join(ROOT, "Shared", "assets", "audio", "sfx")
 PREV = os.path.join(ROOT, "tools", "previews", "audio_music")
 NOLOOP = {"mus_victory", "mus_gameover"}
 

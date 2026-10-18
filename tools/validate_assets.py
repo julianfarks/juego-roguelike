@@ -8,7 +8,7 @@ import json, os, sys
 from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-A = os.path.join(ROOT, 'app/src/main/assets')
+A = os.path.join(ROOT, 'Shared/assets')
 
 CLASSES = ['paladin', 'shadow', 'flame', 'storm', 'frost', 'verdant', 'blood', 'earth', 'astral', 'steel']
 BIOMES = ['catacumbas', 'forja', 'helado', 'vacio', 'bosque', 'tormenta', 'sangre', 'eclipse', 'cazador']

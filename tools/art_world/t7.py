@@ -1,6 +1,6 @@
 import sys
 from PIL import Image
-A='/home/claude/juego-roguelike/app/src/main/assets/tiles/tiles_%s.png'
+A='/home/claude/juego-roguelike/Shared/assets/tiles/tiles_%s.png'
 names=sys.argv[1:]
 Z=4
 out=Image.new('RGBA',(256*Z,64*Z*len(names)))

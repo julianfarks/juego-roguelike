@@ -1,0 +1,41 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.julianfarks.roguelike'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.julianfarks.roguelike'
+        minSdk 24
+        targetSdk 34
+        versionCode 4
+        versionName '2.1'
+    }
+    signingConfigs {
+        fijo {
+            storeFile file('keystore/swordman.jks')
+            storePassword 'swordman123'
+            keyAlias 'swordman'
+            keyPassword 'swordman123'
+        }
+    }
+    buildTypes {
+        debug { debuggable false; signingConfig signingConfigs.fijo }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    lint { abortOnError false }
+    androidResources { noCompress 'ogg' }
+
+    // El motor (Java puro) y los recursos viven en Shared/ y los comparten Android y PC.
+    sourceSets {
+        main {
+            java.srcDirs = ['src/main/java', '../../Shared/src/main/java']
+            assets.srcDirs = ['../../Shared/assets']
+        }
+    }
+}

@@ -2,7 +2,7 @@ import sys, os
 import numpy as np
 from bgkit import *
 from bgs import BGS
-OUT = '/home/claude/juego-roguelike/app/src/main/assets/bg'
+OUT = '/home/claude/juego-roguelike/Shared/assets/bg'
 BIO = ['catacumbas', 'forja', 'helado', 'vacio', 'bosque', 'tormenta', 'sangre', 'eclipse', 'cazador']
 
 

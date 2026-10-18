@@ -4,7 +4,7 @@ Uso: python3 tools/i18n/build_cjk.py   (hay que repetirlo cuando cambie assets/i
 import json, os, sys
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 HERE = os.path.dirname(__file__)
-A = os.path.join(HERE, '..', '..', 'app', 'src', 'main', 'assets')
+A = os.path.join(HERE, '..', '..', 'Shared', 'assets')
 FONT = os.environ.get('CJK_FONT', '/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc')
 OUTLINE = (22, 12, 28, 255)
 

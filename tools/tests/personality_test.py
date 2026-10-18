@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Animaciones de personalidad de los espadachines: recursos, comportamiento propio de cada clase, activacion natural en
 la inactividad, interrupcion inmediata al actuar y reacciones a sucesos del juego (cofre, puerta, reliquia, jefe, poca vida).
-Uso: python3 tools/tests/personality_test.py   (usa /tmp/run2.sh o tools/desktop/run.sh)"""
+Uso: python3 tools/tests/personality_test.py   (usa /tmp/run2.sh o PC/run.sh)"""
 import os, re, subprocess, sys, json, hashlib
 from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.chdir(ROOT)
-RUN = '/tmp/run2.sh' if os.path.exists('/tmp/run2.sh') else 'tools/desktop/run.sh'
+RUN = '/tmp/run2.sh' if os.path.exists('/tmp/run2.sh') else 'PC/run.sh'
 CLASSES = ['paladin', 'shadow', 'flame', 'storm', 'frost', 'verdant', 'blood', 'earth', 'astral', 'steel']
 IDLES = [f'idle{i}' for i in range(1, 11)]
 fails = 0
@@ -36,7 +36,7 @@ def run(cls, mode, frames, script=None):
 
 
 # ---- 1) recursos: hoja de personalidad por clase, comportamientos propios (siluetas distintas), nada recortado
-A = 'app/src/main/assets/sprites'
+A = 'Shared/assets/sprites'
 sig = {}
 for c in CLASSES:
     png, js = f'{A}/plx_{c}.png', f'{A}/plx_{c}.json'

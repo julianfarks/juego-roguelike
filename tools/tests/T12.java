@@ -81,7 +81,7 @@ public class T12 {
     }
 
     static boolean allSprites() {
-        java.io.File dir = new java.io.File("app/src/main/assets/");
+        java.io.File dir = new java.io.File("Shared/assets/");
         for (EnemyDef d : EnemyDef.all()) if (!new java.io.File(dir, d.sheet + ".png").exists()) { System.out.println("falta " + d.sheet); return false; }
         for (BossDef b : BossDef.ALL) if (!new java.io.File(dir, b.sheet + ".png").exists()) { System.out.println("falta " + b.sheet); return false; }
         for (String s : Companions.SHEET) if (!new java.io.File(dir, "sprites/" + s + ".png").exists()) return false;

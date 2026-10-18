@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 ROOT = '/home/claude/juego-roguelike'
-A = ROOT + '/app/src/main/assets'
+A = ROOT + '/Shared/assets'
 PREV = ROOT + '/tools/previews/art_bosses'
 ORDER = [('idle', 6, 8, True), ('walk', 8, 10, True), ('windup1', 5, 12, False), ('attack1', 8, 16, False),
          ('windup2', 5, 12, False), ('attack2', 8, 16, False), ('windup3', 6, 12, False), ('attack3', 9, 14, False),

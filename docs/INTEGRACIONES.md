@@ -16,7 +16,7 @@ Estado: **nada de esto cobra dinero ni muestra anuncios todavía.** Lo implement
 ## Cómo conectar AdMob / Play Billing (cuando se decida)
 El proyecto real es **Java/Android** (no Python/Pygame), así que se usa el SDK nativo directamente:
 1. En `app/build.gradle` añadir `com.google.android.gms:play-services-ads` (y `com.android.billingclient:billing`). Comprobar compatibilidad con `minSdk`/`targetSdk` actuales.
-2. Escribir un adaptador en `app/src/main/java/com/julianfarks/roguelike/android/` que implemente `Services.AdProvider` / `Services.BillingProvider`.
+2. Escribir un adaptador en `Android/app/src/main/java/com/julianfarks/roguelike/android/` que implemente `Services.AdProvider` / `Services.BillingProvider`.
 3. Asignarlo al arrancar: `Services.ads = new AdMobProvider(...)`. No hay que tocar revividas ni recompensas.
 4. AdMob: usar IDs de prueba hasta publicar; llamar al callback `COMPLETED` solo en `onUserEarnedReward`.
 5. Billing: consumir/confirmar la compra **solo después** de que el servidor la verifique; crear `PurchaseReceipt(orderId, productId, gemas, verified=true)` y llamar `Services.fulfill`.

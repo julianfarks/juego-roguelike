@@ -11,7 +11,7 @@ from rig import skeleton, simulate
 from common import render_frame
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-OUT = os.path.join(ROOT, 'app/src/main/assets/sprites')
+OUT = os.path.join(ROOT, 'Shared/assets/sprites')
 PREV = os.path.join(ROOT, 'tools/previews/art_players')
 CLASSES = ['paladin', 'shadow', 'flame', 'storm', 'frost', 'verdant', 'blood', 'earth', 'astral', 'steel']
 CELL = (64, 48)

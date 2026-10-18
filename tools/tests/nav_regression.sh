@@ -3,7 +3,7 @@
 # La coleccion (CodexScr) solo se abre al pulsar Aceptar sobre su estacion. Ejecuta el banco de pruebas de escritorio.
 set -u
 cd "$(dirname "$0")/../.."
-RUN=/tmp/run2.sh; [ -x "$RUN" ] || RUN=tools/desktop/run.sh
+RUN=/tmp/run2.sh; [ -x "$RUN" ] || RUN=PC/run.sh
 S=/tmp/nav_test.script; : > $S
 f=40
 k() { echo "$f key $1 down" >> $S; echo "$((f+3)) key $1 up" >> $S; f=$((f+${2:-12})); }

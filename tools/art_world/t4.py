@@ -1,6 +1,6 @@
 import sys
 from PIL import Image
-A='/home/claude/juego-roguelike/app/src/main/assets/tiles/tiles_%s.png'
+A='/home/claude/juego-roguelike/Shared/assets/tiles/tiles_%s.png'
 b=sys.argv[1]; Z=int(sys.argv[2]) if len(sys.argv)>2 else 4
 rows=sys.argv[3] if len(sys.argv)>3 else '0-7'
 r0,r1=map(int,rows.split('-'))

@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw
 from scipy import ndimage as ndi
 
 ROOT = '/home/claude/juego-roguelike'
-A = ROOT + '/app/src/main/assets'
+A = ROOT + '/Shared/assets'
 PREV = ROOT + '/tools/previews/art_fx_ui'
 
 

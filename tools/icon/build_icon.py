@@ -5,7 +5,7 @@ import os
 from PIL import Image, ImageDraw
 from collections import deque
 HERE = os.path.dirname(__file__)
-RES = os.path.join(HERE, '..', '..', 'app', 'src', 'main', 'res')
+RES = os.path.join(HERE, '..', '..', 'Android', 'app', 'src', 'main', 'res')
 src = Image.open(os.path.join(HERE, 'icon_source.png')).convert('RGB')
 W, H = src.size
 

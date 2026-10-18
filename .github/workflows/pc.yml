@@ -1,0 +1,58 @@
+name: Build EXE (Windows PC)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'PC/**'
+      - 'Shared/**'
+      - '.github/workflows/pc.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  engine-smoke:            # el mismo motor con el comportamiento de PC, sin ventana (rapido, en Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - name: Motor en modo PC (600 fotogramas, sin ventana)
+        run: PC/run.sh --headless --pc --frames 600 --store /tmp/pc_store.properties
+  windows:
+    runs-on: windows-latest
+    needs: engine-smoke
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - name: Compilar y empaquetar (javac + jpackage)
+        shell: bash
+        run: bash PC/build.sh
+      - name: Prueba de arranque del EXE (recursos, OGG, motor)
+        shell: pwsh
+        run: |
+          $exe = "PC/build/dist/SwordsmanMagic/SwordsmanMagic.exe"
+          $p = Start-Process -FilePath $exe -ArgumentList "--selftest" -Wait -PassThru
+          $dir = Join-Path $env:APPDATA "SwordsmanMagic-EternalAbyss"
+          if (Test-Path "$dir/selftest.txt") { Get-Content "$dir/selftest.txt" }
+          if (Test-Path "$dir/log.txt") { Write-Host "---- log.txt ----"; Get-Content "$dir/log.txt" }
+          if ($p.ExitCode -ne 0) { throw "selftest fallo (codigo $($p.ExitCode))" }
+      - name: Comprimir
+        shell: pwsh
+        run: Compress-Archive -Path "PC/build/dist/SwordsmanMagic" -DestinationPath SwordsmanMagic-Windows.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SwordsmanMagic-windows
+          path: SwordsmanMagic-Windows.zip
+      - name: Publicar Release (latest-pc)
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest-pc -y --cleanup-tag || true
+          gh release create latest-pc SwordsmanMagic-Windows.zip --title "SwordsmanMagic para Windows (última versión)" --notes "Descomprime el ZIP y ejecuta SwordsmanMagic.exe (no hace falta instalar Java). Commit: ${{ github.sha }}"

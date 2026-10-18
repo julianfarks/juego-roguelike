@@ -10,7 +10,7 @@ public class T14 {
     static void ck(String n, boolean ok) { System.out.println((ok ? "ok   " : "FAIL ") + n); if (!ok) f++; }
     static final Map<String, String> disk = new HashMap<>();
     static final List<String> logs = new ArrayList<>();
-    static final String ASSETS = "app/src/main/assets/";
+    static final String ASSETS = "Shared/assets/";
 
     static Platform plat() {
         final Platform.Store st = new Platform.Store() {

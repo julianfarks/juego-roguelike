@@ -6,8 +6,8 @@ encadenar parries y que con jefes reales tambien se logran parries."""
 import os, re, subprocess, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.chdir(ROOT)
-RUN = '/tmp/run2.sh' if os.path.exists('/tmp/run2.sh') else 'tools/desktop/run.sh'
-src = open('app/src/main/java/com/julianfarks/roguelike/core/Items.java', encoding='utf-8').read()
+RUN = '/tmp/run2.sh' if os.path.exists('/tmp/run2.sh') else 'PC/run.sh'
+src = open('Shared/src/main/java/com/julianfarks/roguelike/core/Items.java', encoding='utf-8').read()
 WIN = [float(x.rstrip('f')) for x in re.search(r'SH_WIN = \{([^}]*)\}', src).group(1).replace(' ', '').split(',')]
 CD = [float(x.rstrip('f')) for x in re.search(r'SH_CD = \{([^}]*)\}', src).group(1).replace(' ', '').split(',')]
 NAMES = ['madera (basico)', 'acero (intermedio)', 'runico (superior)', 'espinas (superior)']

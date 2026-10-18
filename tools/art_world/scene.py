@@ -2,7 +2,7 @@
 import sys, os
 import numpy as np
 from PIL import Image
-A = '/home/claude/juego-roguelike/app/src/main/assets'
+A = '/home/claude/juego-roguelike/Shared/assets'
 PREV = '/home/claude/juego-roguelike/tools/previews/art_world'
 N, E, S, W = 1, 2, 4, 8
 

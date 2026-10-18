@@ -2,7 +2,7 @@
 """Une tools/i18n/parts/*.tsv (es<TAB>en<TAB>fr<TAB>zh) en assets/i18n/{en,fr,zh-Hans}.tsv y valida."""
 import glob, os, re, sys
 root = os.path.dirname(os.path.abspath(__file__))
-out = os.path.join(root, '..', '..', 'app', 'src', 'main', 'assets', 'i18n')
+out = os.path.join(root, '..', '..', 'Shared', 'assets', 'i18n')
 langs = ['en', 'fr', 'zh-Hans']
 data = {l: {} for l in langs}
 errs = 0

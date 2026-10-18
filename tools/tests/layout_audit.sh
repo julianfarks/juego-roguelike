@@ -3,7 +3,7 @@
 # en es/en/fr/zh y anchos 480/640. Cada texto que no cabe en su zona imprime "FIT ..."; la prueba falla si hay alguno o excepciones.
 set -u
 cd "$(dirname "$0")/../.."
-RUN=/tmp/run2.sh; [ -x "$RUN" ] || RUN=tools/desktop/run.sh
+RUN=/tmp/run2.sh; [ -x "$RUN" ] || RUN=PC/run.sh
 T=${TMPDIR:-/tmp}/layout_audit; mkdir -p $T
 fails=0
 run() { # lang width names tag

@@ -7,7 +7,7 @@ El motor lee los tamaños de celda, pivotes y tiempos desde los JSON, así que r
 
 ## 0. Reglas generales para quien genere assets
 
-* Raíz de salida: `/home/claude/juego-roguelike/app/src/main/assets/` (en adelante `A/`).
+* Raíz de salida: `/home/claude/juego-roguelike/Shared/assets/` (en adelante `A/`).
 * Cada generador vive en SU carpeta `/home/claude/juego-roguelike/tools/<tu_carpeta>/` (Python 3 + Pillow + numpy + scipy; ffmpeg con libvorbis disponible).
   No toques carpetas de otros agentes. NO ejecutes git (el coordinador hace los commits). Genera previews (PNG ampliados, hojas de contacto, GIFs)
   en `/home/claude/juego-roguelike/tools/previews/<tu_carpeta>/` (NO dentro de `A/`) y MÍRALOS tú mismo (herramienta Read sobre el PNG) para juzgar calidad y corregir.

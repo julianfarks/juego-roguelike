@@ -1,7 +1,7 @@
 """Anade (idempotente) el icono 'gem' (moneda premium morada) al atlas ui/icons.png en la ultima casilla libre (127)."""
 import json, os
 from PIL import Image
-A = os.path.join(os.path.dirname(__file__), '..', '..', 'app', 'src', 'main', 'assets', 'ui')
+A = os.path.join(os.path.dirname(__file__), '..', '..', 'Shared', 'assets', 'ui')
 PAL = {
     'o': (24, 8, 48, 255),      # contorno
     'd': (74, 30, 140, 255),    # sombra

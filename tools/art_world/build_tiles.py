@@ -4,7 +4,7 @@ from kit import *
 import biome_specs as S
 from tiles_special import build_sheet
 from biomes import BIOMES
-OUT = '/home/claude/juego-roguelike/app/src/main/assets/tiles'
+OUT = '/home/claude/juego-roguelike/Shared/assets/tiles'
 
 
 def main(names=None):

@@ -1,0 +1,45 @@
+VÍDEO Y GRÁFICOS	VIDEO & GRAPHICS	VIDÉO ET GRAPHISMES	视频与图形
+Vídeo y gráficos	Video & graphics	Vidéo et graphismes	视频与图形
+Pantalla	Display	Affichage	显示
+Rendimiento	Performance	Performances	性能
+Calidad	Quality	Qualité	画质
+Ventana	Windowed	Fenêtré	窗口
+Pantalla completa	Fullscreen	Plein écran	全屏
+Ventana sin bordes	Borderless window	Fenêtre sans bordures	无边框窗口
+Resolución: {}	Resolution: {}	Résolution : {}	分辨率：{}
+Límite de FPS: {}	FPS limit: {}	Limite de FPS : {}	帧率上限：{}
+V-Sync: {}	V-Sync: {}	V-Sync : {}	垂直同步：{}
+Mostrar FPS: {}	Show FPS: {}	Afficher les FPS : {}	显示帧率：{}
+Escalado: {}	Scaling: {}	Mise à l'échelle : {}	缩放：{}
+Entero (nítido)	Integer (sharp)	Entière (nette)	整数（清晰）
+Ajustado a la ventana	Fit to window	Ajustée à la fenêtre	适应窗口
+Calidad: {}	Quality: {}	Qualité : {}	画质：{}
+Baja	Low	Basse	低
+Media	Medium	Moyenne	中
+Alta	High	Élevée	高
+Personalizada	Custom	Personnalisée	自定义
+Partículas: {}	Particles: {}	Particules : {}	粒子：{}
+Brillos e iluminación: {}	Glows & lighting: {}	Lueurs et éclairage : {}	光晕与照明：{}
+Viñeta: {}	Vignette: {}	Vignette : {}	暗角：{}
+Aplicar	Apply	Appliquer	应用
+Predeterm.	Defaults	Défaut	默认
+Mantener	Keep	Garder	保留
+Revertir	Revert	Annuler	还原
+¿Mantener esta configuración?	Keep this setting?	Garder ce réglage ?	保留此设置？
+Se revertirá automáticamente en {} s	Reverting automatically in {} s	Retour automatique dans {} s	{} 秒后自动还原
+No se pudo aplicar; se mantiene la configuración anterior.	Could not apply; keeping the previous setting.	Impossible d'appliquer ; réglage précédent conservé.	无法应用，保留之前的设置。
+Configuración guardada.	Settings saved.	Réglages enregistrés.	设置已保存。
+Se restauró la configuración anterior.	Previous setting restored.	Réglage précédent rétabli.	已恢复之前的设置。
+Ajustes predeterminados restaurados.	Default settings restored.	Réglages par défaut rétablis.	已恢复默认设置。
+Pantalla completa: {}	Fullscreen: {}	Plein écran : {}	全屏：{}
+Resolución: nativa ({}x{})	Resolution: native ({}x{})	Résolution : native ({}x{})	分辨率：原生（{}x{}）
+Monitor: {}x{} · {} Hz	Monitor: {}x{} · {} Hz	Écran : {}x{} · {} Hz	显示器：{}x{} · {} Hz
+Completa cambia la resolución del monitor.	Fullscreen changes the monitor resolution.	Le plein écran change la résolution de l'écran.	全屏会更改显示器分辨率。
+Sin bordes usa la resolución nativa.	Borderless uses the native resolution.	Sans bordures utilise la résolution native.	无边框使用原生分辨率。
+El juego simula a 60 pasos por segundo:	The game simulates at 60 steps per second:	Le jeu simule à 60 pas par seconde :	游戏以每秒 60 步模拟：
+más de 60 FPS no añadirían fluidez.	more than 60 FPS would not add smoothness.	plus de 60 FPS n'ajouteraient aucune fluidité.	超过 60 帧不会更流畅。
+Escalado entero = píxeles perfectos.	Integer scaling = perfect pixels.	Échelle entière = pixels parfaits.	整数缩放 = 完美像素。
+El motor no usa sombras dinámicas,	The engine has no dynamic shadows,	Le moteur n'a pas d'ombres dynamiques,	引擎没有动态阴影，
+así que no hay opción de sombras.	so there is no shadow option.	donc pas d'option d'ombres.	所以没有阴影选项。
+Los píxeles nunca se suavizan.	Pixels are never smoothed.	Les pixels ne sont jamais lissés.	像素从不平滑处理。
+Teclado, ratón y mando	Keyboard, mouse and gamepad	Clavier, souris et manette	键盘、鼠标与手柄

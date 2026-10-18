@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw
 from scipy import ndimage as ndi
 from px import R, rgb, mix, BAY
 
-OUT = '/home/claude/juego-roguelike/app/src/main/assets/sprites'
+OUT = '/home/claude/juego-roguelike/Shared/assets/sprites'
 PREV = '/home/claude/juego-roguelike/tools/previews/art_enemies'
 INK = (16, 12, 26)
 

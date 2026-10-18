@@ -1,7 +1,7 @@
 import math
 from px import *
 
-OUT = '/home/claude/juego-roguelike/app/src/main/assets/sprites'
+OUT = '/home/claude/juego-roguelike/Shared/assets/sprites'
 PREV = '/home/claude/juego-roguelike/tools/previews/art_enemies'
 
 WHITE = (255, 255, 255)

@@ -3,7 +3,7 @@
 # al empezar la run vuelve la musica original de partida; al volver al menu regresa mus_menu. Los efectos no se tocan.
 set -u
 cd "$(dirname "$0")/../.."
-RUN=/tmp/run2.sh; [ -x "$RUN" ] || RUN=tools/desktop/run.sh
+RUN=/tmp/run2.sh; [ -x "$RUN" ] || RUN=PC/run.sh
 fails=0; chk() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1 (esperado '$3', fue '$2')"; fails=$((fails+1)); fi; }
 # 1) recorrer todos los menus
 L=/tmp/menu_music1.log
@@ -29,8 +29,8 @@ seq3=$(grep -o "music [a-z_0-9]*" $L3 | awk '{print $2}' | tr '\n' ' ')
 echo "musica partida->menu: $seq3"
 pre=$(echo $seq3 | awk '{print $1" "$3}'); chk "al volver al menu suena mus_menu justo despues de la musica de partida (el bot reinicia otra run despues)" "$pre" "mus_menu mus_menu"; chk "entre medias solo la musica de partida" "$(echo $seq3 | awk '{print ($2 != "mus_menu" && $2 != "") ? "ok" : "no"}')" ok
 # 3) los efectos de sonido siguen igual: el manifiesto de sfx y los .ogg de sfx no cambian respecto a git
-chk "efectos de sonido sin modificar (git)" "$(git status --porcelain app/src/main/assets/audio/sfx | wc -l)" 0
-chk "sfx del manifiesto intactos" "$(git diff HEAD -- app/src/main/assets/audio/manifest.json | grep '^[-+]' | grep -v '^+++\|^---' | grep -vc 'mus_menu\|"dur": 178.4\|"loop": true\|^+},\|^+$')" 0
+chk "efectos de sonido sin modificar (git)" "$(git status --porcelain Shared/assets/audio/sfx | wc -l)" 0
+chk "sfx del manifiesto intactos" "$(git diff HEAD -- Shared/assets/audio/manifest.json | grep '^[-+]' | grep -v '^+++\|^---' | grep -vc 'mus_menu\|"dur": 178.4\|"loop": true\|^+},\|^+$')" 0
 chk "efectos suenan con la musica (sfx registrados en la partida)" "$([ "$(grep -c '^sfx\|sfx ' $L2)" -gt 20 ] && echo si || echo no)" si
 [ $fails -eq 0 ] && echo "menu_music OK" || echo "menu_music FALLOS: $fails"
 exit $fails

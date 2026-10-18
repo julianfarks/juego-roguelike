@@ -197,9 +197,14 @@ public final class PcMain implements PcWindow.Host {
                 byte[] pb = new byte[4096];
                 rep.append("info primera lectura: ").append(pi.read(pb, 0, pb.length)).append(" bytes\n");
                 pi.close();
+                java.util.Map<String, Object> man = com.julianfarks.roguelike.core.Json.parseObj(java.nio.file.Files.readString(new File(assetsDir, "audio/manifest.json").toPath()));
+                @SuppressWarnings("unchecked") java.util.Map<String, Object> durs = (java.util.Map<String, Object>) man.get("sfx");
                 for (String nm : new String[]{"ui_click", "jump", "land", "block", "hurt_1", "explosion_big"}) {
                     PcAudio.Pcm t = PcAudio.decode(new File(assetsDir, "audio/sfx/" + nm + ".ogg"));
-                    rep.append("info sfx ").append(nm).append(": ").append(t.frames).append(" fotogramas (").append(PcAudio.lastPath).append(")\n");
+                    double want = ((Number) durs.get(nm)).doubleValue(), got = t.frames / (double) t.rate;
+                    boolean g = Math.abs(got - want) <= Math.max(0.03, want * 0.12);
+                    rep.append(g ? "ok   " : "FAIL ").append("sfx ").append(nm).append(": ").append(String.format("%.3f", got)).append(" s (manifiesto ").append(want).append(" s, ").append(PcAudio.lastPath).append(")\n");
+                    ok &= g;
                 }
                 PcAudio.Pcm a = PcAudio.decode(sfx), b = PcAudio.decode(mus);
                 boolean g = a.frames > 100 && b.frames > 44100 && b.ch == 2;

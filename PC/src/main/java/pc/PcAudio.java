@@ -117,21 +117,46 @@ final class PcAudio implements Platform.Audio {
         } finally { in.close(); }
     }
 
-    static Pcm decode(File f) throws Exception {
-        // 1) desde archivo; 2) desde bytes en memoria con bufer grande (algunos OGG cortos/mono devuelven 0 bytes por el primer camino)
-        AudioFormat fm = null;
-        byte[] b = null;
-        AudioInputStream in = openPcm(f);
-        fm = in.getFormat();
-        b = readAll(in, 16384);
-        lastPath = "archivo";
-        if (b.length == 0) {
-            byte[] raw = java.nio.file.Files.readAllBytes(f.toPath());
-            in = toPcm(AudioSystem.getAudioInputStream(new java.io.BufferedInputStream(new java.io.ByteArrayInputStream(raw))));
-            fm = in.getFormat();
-            b = readAll(in, 65536);
-            lastPath = "memoria";
+    /**
+     * Decodifica un OGG completo con JOrbis (via reflexion, para no depender de la libreria al compilar). El SPI de Java Sound pierde
+     * los efectos MUY cortos (devuelve 0 bytes), JOrbis directo no. Devuelve null si JOrbis no esta o falla.
+     */
+    private static Pcm decodeJorbis(File f) {
+        try {
+            Class<?> vfC = Class.forName("com.jcraft.jorbis.VorbisFile");
+            java.io.InputStream is = new java.io.BufferedInputStream(new java.io.FileInputStream(f), 1 << 16);
+            Object vf = vfC.getConstructor(java.io.InputStream.class, byte[].class, int.class).newInstance(is, null, -1);
+            Object info = vfC.getMethod("getInfo", int.class).invoke(vf, 0);
+            int ch = info.getClass().getField("channels").getInt(info);
+            int rate = info.getClass().getField("rate").getInt(info);
+            java.lang.reflect.Method rd = vfC.getMethod("read", byte[].class, int.class, int.class, int.class, int.class, int[].class);
+            ByteArrayOutputStream bo = new ByteArrayOutputStream(1 << 16);
+            byte[] buf = new byte[4096];
+            int[] bit = new int[1];
+            for (int guard = 0; guard < 5_000_000; guard++) {
+                int n = (Integer) rd.invoke(vf, buf, buf.length, 0, 2, 1, bit);   // little endian, 16 bits, con signo
+                if (n == 0) break;                                              // fin
+                if (n < 0) continue;                                            // salto en el flujo: sigue
+                bo.write(buf, 0, n);
+            }
+            try { vfC.getMethod("close").invoke(vf); } catch (Throwable ignored) { }
+            byte[] b = bo.toByteArray();
+            if (b.length == 0) return null;
+            short[] s = new short[b.length / 2];
+            for (int i = 0; i < s.length; i++) s[i] = (short) ((b[2 * i] & 0xFF) | (b[2 * i + 1] << 8));
+            return new Pcm(s, Math.max(1, Math.min(2, ch)), rate);
+        } catch (Throwable t) {
+            return null;
         }
+    }
+
+    static Pcm decode(File f) throws Exception {
+        Pcm j = decodeJorbis(f);
+        if (j != null) { lastPath = "jorbis"; return j; }
+        AudioInputStream in = openPcm(f);                 // sin JOrbis directo: el SPI de Java Sound
+        AudioFormat fm = in.getFormat();
+        byte[] b = readAll(in, 16384);
+        lastPath = "spi";
         short[] s = new short[b.length / 2];
         for (int i = 0; i < s.length; i++) s[i] = (short) ((b[2 * i] & 0xFF) | (b[2 * i + 1] << 8));
         return new Pcm(s, Math.max(1, Math.min(2, fm.getChannels())), fm.getSampleRate());

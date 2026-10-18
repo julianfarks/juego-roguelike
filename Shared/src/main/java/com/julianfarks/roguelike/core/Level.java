@@ -269,6 +269,8 @@ public final class Level {
     /** Daño base a enemigo/jefe. Devuelve el daño aplicado. */
     /** Los pinchos tambien danan a los enemigos: 30% de su vida maxima (minimo 20) cada 0.6 s mientras sigan en contacto. */
     static final float SPIKE_CD = 0.6f;
+    /** Contadores para pruebas: golpes de pinchos a enemigos y golpes al jugador. */
+    public static int dbgTrapHits, dbgHurt;
     void trapDamage(Enemy e, float dt) {
         if (!e.alive || e.untargetable()) { e.prevY = e.y; return; }
         if (e.trapCd > 0) e.trapCd -= dt;
@@ -288,6 +290,7 @@ public final class Level {
         if (!hit && (room.hazardAt(e.x, y1 - 4) || room.hazardAt(e.x, y1 - e.bh + 3))) hit = true;
         if (!hit) return;
         e.trapCd = SPIKE_CD;
+        dbgTrapHits++;
         float dmg = Math.max(20f, e.maxHp * 0.30f);
         Snd.sfxAt("spikes", e.x, camX + viewW / 2, 0.8f);
         ps.burst(rng, e.x, e.y - 6, 0xC03040, 8, 90, 0.4f, 2, 200, false);
@@ -404,6 +407,7 @@ public final class Level {
         Player p = pl;
         if (p == null || !p.alive || cinematic) return false;
         if (p.invuln > 0 || p.rolling()) return false;
+        dbgHurt++;
         Stats s = rs.stats;
         boolean blocked = false;
         if (p.guarding && (srcX - p.x) * p.dir() > -6) {
@@ -574,6 +578,15 @@ public final class Level {
         float nx = e.x + dx, edge = nx + Math.signum(dx) * e.bw / 2f;
         for (int k = 1; k <= 2; k++) {
             if (Room.isSolid(room.tile((int) Math.floor(edge / Room.TS), (int) Math.floor((e.y - k * 8f) / Room.TS)))) return;
+        }
+        if (!e.flying) {                     // un empujon entre enemigos nunca los mete en pinchos ni los saca del suelo
+            float hw = Math.max(2f, e.bw * 0.4f) + 3f, sg = Math.signum(dx);
+            float fx = nx + sg * hw;
+            int r0 = (int) Math.floor((e.y - e.bh + 1) / Room.TS), r1 = (int) Math.floor((e.y - 1) / Room.TS);
+            int tx = (int) Math.floor(fx / Room.TS);
+            for (int ty = r0; ty <= r1; ty++) if (EnemyNav.hazard(room.tile(tx, ty))) return;
+            int below = room.tile((int) Math.floor((nx + sg * e.bw / 2f) / Room.TS), (int) Math.floor((e.y + 4) / Room.TS));
+            if (!(Room.isSolid(below) || below == Room.ONEWAY) && e.onGround) return;
         }
         e.x = nx;
     }

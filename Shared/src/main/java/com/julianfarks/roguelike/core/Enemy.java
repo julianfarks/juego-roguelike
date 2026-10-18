@@ -204,10 +204,143 @@ public final class Enemy extends Ent {
         }
     }
 
+    /**
+     * Camino seguro por delante: hay suelo bajo el siguiente paso Y no hay pinchos en las filas del cuerpo dentro del alcance de frenado.
+     * Todas las IA de suelo ya condicionaban su avance a esta funcion (borde de plataforma), asi que ahora tambien frenan ante los pinchos.
+     * El alcance crece con la velocidad (v^2 / 2a con a ~ 1200 px/s^2) para que las embestidas y saltos de elite tampoco lleguen a tocarlos.
+     */
     private boolean groundAhead(Level lv, float dir) {
         float fx = x + dir * (bw / 2 + 5);
         int t = lv.room.tile((int) Math.floor(fx / Room.TS), (int) Math.floor((y + 4) / Room.TS));
-        return Room.isSolid(t) || t == Room.ONEWAY;
+        if (!(Room.isSolid(t) || t == Room.ONEWAY)) return false;
+        if (flying) return true;
+        float reach = 8f + (vx * dir > 0 ? vx * vx / 2400f : 0f);
+        return !hazardAhead(lv, dir, reach);
+    }
+
+    /** Pinchos en las filas que ocupa el cuerpo, entre el borde delantero y `reach` px mas alla. Si ya esta sobre pinchos no bloquea (puede salir). */
+    private boolean hazardAhead(Level lv, float dir, float reach) {
+        Room r = lv.room;
+        int r0 = (int) Math.floor((y - bh + 1) / Room.TS), r1 = (int) Math.floor((y - 1) / Room.TS);
+        for (int ty = r0; ty <= r1; ty++) if (EnemyNav.hazard(r.tile((int) Math.floor(x / Room.TS), ty))) return false;
+        float hw = bw / 2;
+        for (float d = 0; d <= reach; d += 4f) {
+            int tx = (int) Math.floor((x + dir * (hw + d)) / Room.TS);
+            for (int ty = r0; ty <= r1; ty++) if (EnemyNav.hazard(r.tile(tx, ty))) return true;
+        }
+        return false;
+    }
+
+    /** Hay pinchos entre el enemigo y la coordenada px (a la altura de su cuerpo), como mucho a 220 px. */
+    private boolean hazardBetween(Level lv, float px) {
+        float dir = Mth.sign(px - x);
+        if (dir == 0) return false;
+        float dist = Math.min(220f, Math.abs(px - x));
+        Room r = lv.room;
+        int r0 = (int) Math.floor((y - bh + 1) / Room.TS), r1 = (int) Math.floor((y - 1) / Room.TS);
+        for (float d = 0; d <= dist; d += 4f) {
+            int tx = (int) Math.floor((x + dir * d) / Room.TS);
+            for (int ty = r0; ty <= r1; ty++) if (EnemyNav.hazard(r.tile(tx, ty))) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Simula un salto/embestida aerea con las leyes reales de movimiento y devuelve false si en algun punto el cuerpo tocaria pinchos
+     * (mismos puntos de contacto que Level.trapDamage) o si aterriza sobre ellos. Se usa para no lanzar saltos que acaban en una trampa.
+     */
+    private boolean trajectorySafe(Level lv, float vx0, float vy0) {
+        Room r = lv.room;
+        float px = x, py = y, pvx = vx0, pvy = vy0, hw = Math.max(2f, bw * 0.4f), dt = 1f / 60f;
+        for (int i = 0; i < 90; i++) {
+            pvy = Math.min(Level.FALL_MAX, pvy + Level.GRAV * dt);
+            float nx = px + pvx * dt, ny = py + pvy * dt;
+            float edge = nx + (pvx > 0 ? bw / 2 : -bw / 2);
+            if (pvx != 0 && Room.isSolid(r.tile((int) Math.floor(edge / Room.TS), (int) Math.floor((py - bh * 0.5f) / Room.TS)))) { nx = px; pvx = 0; }
+            if (pvy > 0) {
+                int tx = (int) Math.floor(nx / Room.TS), ty = (int) Math.floor(ny / Room.TS);
+                int t = r.tile(tx, ty);
+                if ((Room.isSolid(t) || t == Room.ONEWAY) && ny >= ty * Room.TS) {
+                    float gy = ty * Room.TS;
+                    for (int k = -1; k <= 1; k++) if (r.hazardAt(nx + k * hw, gy - 4) || r.hazardAt(nx + k * hw, gy - bh * 0.5f)) return false;
+                    return true;
+                }
+            }
+            px = nx; py = ny;
+            for (int k = -1; k <= 1; k++) if (r.hazardAt(px + k * hw, py - 4) || r.hazardAt(px + k * hw, py - bh * 0.5f)) return false;
+        }
+        return true;
+    }
+
+    /** Escala vx0 hasta que la trayectoria sea segura (1, .75, .5, .3). Devuelve la escala o 0 si ninguna lo es (cancelar el salto). */
+    private float safeLeapScale(Level lv, float vx0, float vy0) {
+        float[] ks = {1f, 0.75f, 0.5f, 0.3f};
+        for (float k : ks) if (trajectorySafe(lv, vx0 * k, vy0)) return k;
+        return 0f;
+    }
+
+    // ------------------------------------------------------------------ navegacion segura (ver EnemyNav)
+    /** Contadores para las pruebas de IA/rendimiento. */
+    public static int dbgPlans, dbgHops, dbgBlocked;
+    private boolean navActive, navOk, navWait;
+    private float navT, navTime, navFlipT, hopT, hopVx;
+    private int navDir, navType;
+
+    String dbgNav() { return "nav=" + navActive + "/" + navOk + "/" + navWait + " type=" + navType + " dir=" + navDir + " hopT=" + hopT + " bw=" + bw; }
+    private boolean canHop() { return def.role == EnemyDef.MELEE || def.role == EnemyDef.EXPLODER || def.role == EnemyDef.POUNCER; }
+    private float hopSpeed(float sp) { return Math.min(sp * 1.8f, 150f); }
+
+    /** true mientras dura un salto de la navegacion: la IA no debe tocar vx (si no, frenaria en el aire y caeria en los pinchos). */
+    private boolean hopping(float dt) {
+        if (hopT <= 0) return false;
+        hopT -= dt;
+        if (onGround && hopT < 0.5f) { hopT = 0; return false; }
+        if (hopT > 0 && !onGround) vx = hopVx;          // en el aire mantiene el impulso (si no, un escalon lo frenaria contra la pared)
+        return hopT > 0;
+    }
+
+    /**
+     * Direccion de persecucion en suelo: +-1, o 0 = esperar. Con camino libre es exactamente signo(dx) (comportamiento de siempre). Si el camino esta
+     * cortado por pinchos o un borde, planifica una ruta segura (andar / caer / saltar); si no existe, se queda en el borde mirando al jugador.
+     */
+    private float chaseDir(Level lv, float dt, Player p, float dx, float sp) {
+        float d = Mth.sign(dx);
+        navWait = false;
+        if (d == 0) d = right ? 1 : -1;
+        if (flying || !onGround) return d;
+        boolean direct = groundAhead(lv, d) && !(hitWall && Math.abs(vx) < 5f && p.y > y - 24);   // pared delante y el jugador no esta mas arriba (ese caso ya salta)
+        if (!navActive) {
+            if (direct) return d;
+            navActive = true; navT = 0; navOk = false; navTime = 0; navFlipT = 0; dbgBlocked++;
+        } else {
+            navTime += dt; navFlipT = Math.max(0, navFlipT - dt);
+            if ((direct && !hazardBetween(lv, p.x)) || navTime > 10f) { navActive = false; return d; }
+        }
+        navT -= dt;
+        if (navT <= 0) {
+            navT = 0.4f;
+            int c = Math.max(1, Math.min(3, (int) Math.ceil(bh / Room.TS)));
+            boolean hop = canHop();
+            int sx = (int) Math.floor(x / Room.TS), sy = (int) Math.floor((y - 1) / Room.TS);
+            int gap = hop ? EnemyNav.maxGap(bw, bh, hopSpeed(sp), -300f) : 0;
+            EnemyNav.plan(lv.room, sx, sy, c, p.x, p.y, hop, gap);
+            dbgPlans++;
+            if (EnemyNav.ok) {
+                if (navOk && EnemyNav.dir != navDir && navFlipT > 0) { /* histeresis: no cambiar de sentido a cada replanificacion */ }
+                else { navOk = true; navDir = EnemyNav.dir; navType = EnemyNav.type; navFlipT = 0.8f; }
+            } else navOk = false;
+        }
+        if (!navOk) { navWait = true; return 0; }
+        if (navType == EnemyNav.T_HOP) {
+            float u = x - (float) Math.floor(x / Room.TS) * Room.TS;
+            boolean at = navDir > 0 ? u >= EnemyNav.HOP_U : u <= Room.TS - EnemyNav.HOP_U;
+            if (at && onGround) {
+                vy = -300f; vx = hopVx = navDir * hopSpeed(sp); hopT = 0.6f; onGround = false; dbgHops++;
+                Snd.sfxAt("en_dash", x, lv.camX + lv.viewW / 2, 0.3f);
+            }
+        }
+        if (navType != EnemyNav.T_HOP && hazardAhead(lv, navDir, 8f)) { navWait = true; return 0; }   // la celda destino es segura pero el cuerpo ya roza el peligro: espera
+        return navDir;
     }
 
     private void face(float dx) { if (Math.abs(dx) > 3) right = dx > 0; }
@@ -239,10 +372,13 @@ public final class Enemy extends Ent {
         switch (state) {
             case PATROL: patrol(lv, dt, sp); return;
             case CHASE: {
+                if (hopping(dt)) break;
                 face(dx);
                 float stop = def.range * 0.8f;
                 boolean near = Math.abs(dx) <= def.range && Math.abs(dy) < 30;
-                if (Math.abs(dx) > stop && groundAhead(lv, Mth.sign(dx))) { vx = Mth.approach(vx, Mth.sign(dx) * sp, 900 * dt); animName = "walk"; }
+                float md = Math.abs(dx) > stop ? chaseDir(lv, dt, p, dx, sp) : 0;
+                if (md == 0 && !navWait) navActive = false;
+                if (md != 0) { vx = Mth.approach(vx, md * sp, 900 * dt); animName = "walk"; if (md != Mth.sign(dx)) right = md > 0; }
                 else { vx = Mth.approach(vx, 0, 900 * dt); if (animName.equals("walk")) animName = "idle"; }
                 if (hitWall && p.y < y - 24 && onGround) { vy = -300; }   // salta obstaculos si el jugador esta arriba
                 if (near && atkCd <= 0) { startState(WINDUP, "windup"); vx = 0; Snd.sfxAt("en_alert", x, lv.camX + lv.viewW / 2, 0.25f); }
@@ -252,7 +388,7 @@ public final class Enemy extends Ent {
                 vx = Mth.approach(vx, 0, 900 * dt);
                 if (heavy) animT -= dt * 0.25f;
                 face(dx * (stateT < 0.15f ? 1 : 0));
-                if (finishedAnim()) { startState(ATTACK, "attack"); vx = (right ? 1 : -1) * (heavy ? 60 : 110); Snd.sfxAt(heavy ? "en_step_heavy" : "en_attack_melee", x, lv.camX + lv.viewW / 2, 0.6f); }
+                if (finishedAnim()) { startState(ATTACK, "attack"); vx = (right ? 1 : -1) * (heavy ? 60 : 110); if (hazardAhead(lv, right ? 1 : -1, 22f)) vx = 0; Snd.sfxAt(heavy ? "en_step_heavy" : "en_attack_melee", x, lv.camX + lv.viewW / 2, 0.6f); }
                 break;
             }
             case ATTACK: {
@@ -453,7 +589,9 @@ public final class Enemy extends Ent {
             case PATROL: patrol(lv, dt, sp); return;
             case CHASE: {
                 face(dx);
-                if (Math.abs(dx) > 50 && groundAhead(lv, Mth.sign(dx))) { vx = Mth.approach(vx, Mth.sign(dx) * sp, 900 * dt); animName = "walk"; }
+                float md = Math.abs(dx) > 50 ? chaseDir(lv, dt, p, dx, sp) : 0;
+                if (md == 0 && !navWait) navActive = false;
+                if (md != 0) { vx = Mth.approach(vx, md * sp, 900 * dt); animName = "walk"; if (md != Mth.sign(dx)) right = md > 0; }
                 else { vx = Mth.approach(vx, 0, 900 * dt); animName = "idle"; }
                 if (Math.abs(dx) < def.range && Math.abs(dy) < 36 && atkCd <= 0) { startState(WINDUP, "windup"); vx = 0; Snd.sfxAt("en_alert", x, lv.camX + lv.viewW / 2, 0.5f); }
                 break;
@@ -507,9 +645,13 @@ public final class Enemy extends Ent {
                 vx = 0;
                 face(dx);
                 if (finishedAnim() || stateT > 0.35f) {
+                    float jvy = -270f - Math.min(60f, Math.max(0, -dy) * 0.6f);
+                    float jvx = (right ? 1 : -1) * Math.min(sp * 1.9f, Math.max(60f, Math.abs(dx) * 1.3f));
+                    float jk = safeLeapScale(lv, jvx, jvy);
+                    if (jk == 0f) { state = CHASE; stateT = 0; animName = "idle"; atkCd = 0.5f; dbgBlocked++; break; }   // acabaria en pinchos: espera
                     startState(ATTACK, "attack");
-                    vy = -270f - Math.min(60f, Math.max(0, -dy) * 0.6f);
-                    vx = (right ? 1 : -1) * Math.min(sp * 1.9f, Math.max(60f, Math.abs(dx) * 1.3f));
+                    vy = jvy;
+                    vx = jvx * jk;
                     onGround = false;
                     Snd.sfxAt("en_dash", x, lv.camX + lv.viewW / 2, 0.4f);
                 }
@@ -642,8 +784,11 @@ public final class Enemy extends Ent {
         switch (state) {
             case PATROL: patrol(lv, dt, sp); return;
             case CHASE: {
+                if (hopping(dt)) break;
                 face(dx);
-                if (Math.abs(dx) > 30 && groundAhead(lv, Mth.sign(dx))) { vx = Mth.approach(vx, Mth.sign(dx) * sp * 1.55f, 1100 * dt); animName = "walk"; }
+                float md = Math.abs(dx) > 30 ? chaseDir(lv, dt, p, dx, sp * 1.55f) : 0;
+                if (md == 0 && !navWait) navActive = false;
+                if (md != 0) { vx = Mth.approach(vx, md * sp * 1.55f, 1100 * dt); animName = "walk"; if (md != Mth.sign(dx)) right = md > 0; }
                 else { vx = Mth.approach(vx, 0, 1100 * dt); animName = "idle"; }
                 if (hitWall && p.y < y - 24 && onGround) vy = -300;
                 if (Math.abs(dx) < 50 && Math.abs(dy) < 36 && atkCd <= 0) { startState(FUSE, "windup"); vx = 0; Snd.sfxAt("en_alert", x, lv.camX + lv.viewW / 2, 0.6f); }
@@ -719,9 +864,13 @@ public final class Enemy extends Ent {
         switch (state) {
             case PATROL: patrol(lv, dt, sp); return;
             case CHASE: {
+                if (hopping(dt)) break;
                 face(dx);
                 float ad = Math.abs(dx);
-                if (ad > 130 && groundAhead(lv, Mth.sign(dx))) { vx = Mth.approach(vx, Mth.sign(dx) * sp * 1.3f, 1100 * dt); animName = "walk"; }
+                float md = ad > 130 ? chaseDir(lv, dt, p, dx, sp * 1.3f) : 0;
+                if (ad <= 130 && !navWait) navActive = false;
+                if (md != 0) { vx = Mth.approach(vx, md * sp * 1.3f, 1100 * dt); animName = "walk"; if (md != Mth.sign(dx)) right = md > 0; }
+                else if (ad > 130) { vx = Mth.approach(vx, 0, 1100 * dt); animName = "idle"; }
                 else if (ad < 70 && groundAhead(lv, -Mth.sign(dx)) && !hitWall) { vx = Mth.approach(vx, -Mth.sign(dx) * sp * 0.7f, 1100 * dt); animName = "walk"; }
                 else { vx = Mth.approach(vx, 0, 1100 * dt); animName = "idle"; }
                 if (hitWall && p.y < y - 24 && onGround) vy = -300;
@@ -732,9 +881,12 @@ public final class Enemy extends Ent {
                 vx = Mth.approach(vx, 0, 1400 * dt);
                 if (stateT < 0.25f) face(dx);
                 if (finishedAnim() && stateT > 0.42f) {
+                    float lvx = (right ? 1 : -1) * Math.min(320f, Math.max(200f, Math.abs(dx) * 2.4f));
+                    float k = safeLeapScale(lv, lvx, -205f);
+                    if (k == 0f) { state = RECOVER; stateT = 0; animName = "idle"; atkCd = 0.5f; dbgBlocked++; break; }   // el salto acabaria en pinchos: no se lanza
                     startState(LEAP, "attack");
                     vy = -205f;
-                    vx = (right ? 1 : -1) * Math.min(320f, Math.max(200f, Math.abs(dx) * 2.4f));
+                    vx = lvx * k;
                     onGround = false;
                     Snd.sfxAt("en_dash", x, lv.camX + lv.viewW / 2, 0.6f);
                 }
@@ -813,13 +965,15 @@ public final class Enemy extends Ent {
             case PATROL: patrol(lv, dt, sp); return;
             case CHASE: {
                 face(dx);
-                if (Math.abs(dx) > 60 && groundAhead(lv, Mth.sign(dx))) { vx = Mth.approach(vx, Mth.sign(dx) * sp * 1.1f, 900 * dt); animName = "walk"; }
+                float md = Math.abs(dx) > 60 ? chaseDir(lv, dt, p, dx, sp * 1.1f) : 0;
+                if (md == 0 && !navWait) navActive = false;
+                if (md != 0) { vx = Mth.approach(vx, md * sp * 1.1f, 900 * dt); animName = "walk"; if (md != Mth.sign(dx)) right = md > 0; }
                 else { vx = Mth.approach(vx, 0, 900 * dt); animName = "idle"; }
                 if (dist < 200 && Math.abs(dy) < 90 && atkCd <= 0 && p.onGround) {
                     startState(VANISH, "idle");
                     float bx = p.x - p.dir() * 30;
-                    if (lv.solidAtPx(bx, p.y - 8) || !groundBehind(lv, bx, p.y)) bx = p.x + p.dir() * 30;
-                    if (lv.solidAtPx(bx, p.y - 8) || !groundBehind(lv, bx, p.y)) bx = p.x;
+                    if (lv.solidAtPx(bx, p.y - 8) || lv.room.hazardAt(bx, p.y - 4) || !groundBehind(lv, bx, p.y)) bx = p.x + p.dir() * 30;
+                    if (lv.solidAtPx(bx, p.y - 8) || lv.room.hazardAt(bx, p.y - 4) || !groundBehind(lv, bx, p.y)) bx = p.x;
                     tx = bx; ty = p.y;
                     lv.fxAdd("fx_ring", "pulse", tx, ty - 3, 0.8f, def.color);
                     lv.fxAdd("fx_tele", "in", tx, ty - 14, 0.8f, def.color);
@@ -882,8 +1036,8 @@ public final class Enemy extends Ent {
         if (is("segador_vacio") && atk == 1) {          // se desvanece y reaparece junto al jugador
             startState(VANISH, "idle");
             float bx = p.x - p.dir() * 34;
-            if (lv.solidAtPx(bx, p.y - 8) || !groundBehind(lv, bx, p.y)) bx = p.x + p.dir() * 34;
-            if (lv.solidAtPx(bx, p.y - 8) || !groundBehind(lv, bx, p.y)) bx = p.x;
+            if (lv.solidAtPx(bx, p.y - 8) || lv.room.hazardAt(bx, p.y - 4) || !groundBehind(lv, bx, p.y)) bx = p.x + p.dir() * 34;
+            if (lv.solidAtPx(bx, p.y - 8) || lv.room.hazardAt(bx, p.y - 4) || !groundBehind(lv, bx, p.y)) bx = p.x;
             tx = bx; ty = p.y;
             marker(lv, tx, ty, def.color);
             Snd.sfxAt("en_alert", x, lv.camX + lv.viewW / 2, 0.7f);
@@ -912,7 +1066,8 @@ public final class Enemy extends Ent {
         startState(ATTACK, atk == 2 ? "attack2" : "attack");
         shot = false; hitDone = false;
         float dir = right ? 1 : -1;
-        if (is("caballero_osario") && atk == 2) { vx = dir * 300f; Snd.sfxAt("en_dash", x, lv.camX + lv.viewW / 2, 0.8f); }
+        if (!flying && atk == 2 && (is("caballero_osario") || is("capitan_trueno")) && (!groundAhead(lv, dir) || hazardAhead(lv, dir, 8f + 300f * 300f / 1800f))) { vx = 0; }   // no embiste hacia pinchos ni vacio
+        else if (is("caballero_osario") && atk == 2) { vx = dir * 300f; Snd.sfxAt("en_dash", x, lv.camX + lv.viewW / 2, 0.8f); }
         else if (is("capitan_trueno") && atk == 2) { vx = dir * 270f; Snd.sfxAt("en_dash", x, lv.camX + lv.viewW / 2, 0.8f); }
         else if (is("ventisca") && atk == 2) {
             float ddx = aimX - x, ddy = aimY - cy(), d = (float) Math.sqrt(ddx * ddx + ddy * ddy) + 0.01f;
@@ -1059,8 +1214,12 @@ public final class Enemy extends Ent {
                     bob += dt * 2.4f;
                     flyMove(lv, dt, p.x + (dx > 0 ? -1 : 1) * want, p.y - 78 + (float) Math.sin(bob) * 9, sp, 480);
                     animName = "walk"; moved = true;
-                } else if (ad > want && groundAhead(lv, Mth.sign(dx))) { vx = Mth.approach(vx, Mth.sign(dx) * sp, 900 * dt); animName = "walk"; }
-                else { vx = Mth.approach(vx, 0, 900 * dt); animName = "idle"; }
+                } else {
+                    float md = ad > want ? chaseDir(lv, dt, p, dx, sp) : 0;
+                    if (md == 0 && !navWait) navActive = false;
+                    if (md != 0) { vx = Mth.approach(vx, md * sp, 900 * dt); animName = "walk"; if (md != Mth.sign(dx)) right = md > 0; }
+                    else { vx = Mth.approach(vx, 0, 900 * dt); animName = "idle"; }
+                }
                 if (!flying && hitWall && p.y < y - 24 && onGround) vy = -300;
                 if (atkCd <= 0 && dist < def.range && (flying || Math.abs(dy) < 120)) { atk = chooseAtk(lv, ad); startElite(lv, p); }
                 break;
@@ -1095,7 +1254,7 @@ public final class Enemy extends Ent {
                     else vx = dir * (is("caballero_osario") ? 300f : 270f);
                     if ((int) (stateT * 30) % 2 == 0) lv.ps.spawn(x - dir * 8, y - (flying ? bh / 2 : 3), 0, -8, 0.3f, 3, 0, def.color, true);
                     if (!hitDone && p.alive && overlaps(p.x - p.bw / 2, p.y - p.bh, p.bw, p.bh)) { hitDone = true; lv.hurtPlayer(dmgNow() * 1.15f, x, statusId, 3f); }
-                    if (!flying && !groundAhead(lv, dir)) vx = 0;
+                    if (!flying && (!groundAhead(lv, dir) || hazardAhead(lv, dir, 8f + vx * vx / 1800f))) vx = 0;   // frena con el recorrido real del embestido
                 }
                 int rel = a.rel >= 0 ? a.rel : (a.h0 >= 0 ? a.h0 : a.n / 2);
                 if (!shot && a.frameAt(animT) >= rel) { shot = true; eliteRelease(lv, p); }

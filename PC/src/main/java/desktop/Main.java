@@ -46,7 +46,9 @@ public final class Main {
     // ------------------------------------------------------------------ argumentos
     static String assetsDir = "Shared/assets";
     static int viewW = 576;
-    static int viewH = 270;          // --h N: alto virtual 270..320 (pruebas de monitores 16:10 / escala entera ampliada)
+    static int viewH = 270;
+    /** Solo pruebas: BOT_SLOW=ms imprime los fotogramas cuyo update o render superan ese tiempo. */
+    static final long SLOW_MS = System.getenv("BOT_SLOW") != null ? Long.parseLong(System.getenv("BOT_SLOW")) : 0;          // --h N: alto virtual 270..320 (pruebas de monitores 16:10 / escala entera ampliada)
     static int frames = 600;
     static String scriptFile;
     static String shotsDir = "/tmp/swr_shots";
@@ -301,6 +303,7 @@ public final class Main {
             st.rndNs += t2 - t1;
             st.updMax = Math.max(st.updMax, t1 - t0);
             st.rndMax = Math.max(st.rndMax, t2 - t1);
+            if (SLOW_MS > 0 && fr > 200 && (t1 - t0 > SLOW_MS * 1_000_000L || t2 - t1 > SLOW_MS * 1_000_000L)) System.out.printf("SLOW fr=%d upd=%.1fms rnd=%.1fms%n", fr, (t1 - t0) / 1e6, (t2 - t1) / 1e6);
             done = fr + 1;
 
             if (ffo != null && fr >= recFrom && fr < recTo) {

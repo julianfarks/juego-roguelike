@@ -33,9 +33,19 @@ public final class DesktopGfx implements Platform.Gfx {
     private float strokeW = -1;
     private BasicStroke stroke;
 
-    private final IdentityHashMap<BufferedImage, HashMap<Long, BufferedImage>> derived =
-            new IdentityHashMap<BufferedImage, HashMap<Long, BufferedImage>>();
-    private int derivedCount;
+    // Cache de recortes tintados/destellados (LRU con tope en BYTES). Antes se copiaba la hoja ENTERA de sprites por cada color distinto
+    // (millones de pixeles) y se guardaban hasta 600 copias: con tintes que cambian cada fotograma (jefe en fase 2, destellos de golpe,
+    // habilidades) eso generaba GB de basura, paradas del recolector y OutOfMemory. Ahora solo se deriva el rectangulo que se dibuja.
+    private static final long DERIVED_MAX_BYTES = 24L << 20;
+    private static final class DKey {
+        final BufferedImage src; final long a, b;
+        DKey(BufferedImage src, long a, long b) { this.src = src; this.a = a; this.b = b; }
+        @Override public boolean equals(Object o) { if (!(o instanceof DKey)) return false; DKey k = (DKey) o; return k.src == src && k.a == a && k.b == b; }
+        @Override public int hashCode() { return System.identityHashCode(src) * 31 + Long.hashCode(a) * 17 + Long.hashCode(b); }
+    }
+    private final java.util.LinkedHashMap<DKey, BufferedImage> derived = new java.util.LinkedHashMap<DKey, BufferedImage>(256, 0.75f, true);
+    private long derivedBytes;
+    public static long STAT_DERIVE, STAT_PX;
 
     public void bind(BufferedImage img) {
         if (g != null) g.dispose();
@@ -93,25 +103,15 @@ public final class DesktopGfx implements Platform.Gfx {
     }
 
     // ------------------------------------------------------------------ imagenes derivadas (TINT / FLASH)
-    private BufferedImage derive(BufferedImage src, int color, boolean flash) {
-        long key = (color & 0xFFFFFFL) | (flash ? (1L << 32) : 0L);
-        HashMap<Long, BufferedImage> m = derived.get(src);
-        if (m == null) {
-            m = new HashMap<Long, BufferedImage>();
-            derived.put(src, m);
-        }
-        BufferedImage out = m.get(key);
+    /** Recorte (x,y,w,h) de src con tinte multiplicativo o destello (color plano con el alfa original). */
+    private BufferedImage derive(BufferedImage src, int color, boolean flash, int x, int y, int w, int h) {
+        DKey key = new DKey(src, (color & 0xFFFFFFL) | (flash ? (1L << 32) : 0L), ((long) x << 48) | ((long) y << 32) | ((long) w << 16) | h);
+        BufferedImage out = derived.get(key);
         if (out != null) return out;
-        if (derivedCount > 600) {
-            derived.clear();
-            derivedCount = 0;
-            m = new HashMap<Long, BufferedImage>();
-            derived.put(src, m);
-        }
-        int w = src.getWidth(), h = src.getHeight();
+        STAT_DERIVE++; STAT_PX += (long) w * h;
         int tr = (color >> 16) & 255, tg = (color >> 8) & 255, tb = color & 255;
         out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        int[] px = src.getRGB(0, 0, w, h, null, 0, w);
+        int[] px = src.getRGB(x, y, w, h, null, 0, w);
         for (int i = 0; i < px.length; i++) {
             int p = px[i];
             int a = p >>> 24;
@@ -120,21 +120,29 @@ public final class DesktopGfx implements Platform.Gfx {
             } else {
                 int r = (((p >> 16) & 255) * tr + 127) / 255;
                 int gg = (((p >> 8) & 255) * tg + 127) / 255;
-                int b = ((p & 255) * tb + 127) / 255;
-                px[i] = (a << 24) | (r << 16) | (gg << 8) | b;
+                int bb = ((p & 255) * tb + 127) / 255;
+                px[i] = (a << 24) | (r << 16) | (gg << 8) | bb;
             }
         }
         out.setRGB(0, 0, w, h, px, 0, w);
-        m.put(key, out);
-        derivedCount++;
+        derived.put(key, out);
+        derivedBytes += (long) w * h * 4;
+        if (derivedBytes > DERIVED_MAX_BYTES) {       // expulsa los menos usados hasta volver bajo el tope
+            java.util.Iterator<java.util.Map.Entry<DKey, BufferedImage>> it = derived.entrySet().iterator();
+            while (derivedBytes > DERIVED_MAX_BYTES * 3 / 4 && it.hasNext()) {
+                BufferedImage v = it.next().getValue();
+                derivedBytes -= (long) v.getWidth() * v.getHeight() * 4;
+                it.remove();
+            }
+        }
         return out;
     }
 
-    private BufferedImage prepare(Platform.Img img, int flags, int tint) {
-        BufferedImage b = (BufferedImage) img.handle;
-        if ((flags & Platform.FLASH) != 0) return derive(b, tint, true);
-        if ((flags & Platform.TINT) != 0) return derive(b, tint, false);
-        return b;
+    /** Recorte listo para dibujar: el original o su version tintada/destellada. */
+    private BufferedImage cut(BufferedImage b, int flags, int tint, int x, int y, int w, int h) {
+        if ((flags & Platform.FLASH) != 0) return derive(b, tint, true, x, y, w, h);
+        if ((flags & Platform.TINT) != 0) return derive(b, tint, false, x, y, w, h);
+        return b.getSubimage(x, y, w, h);
     }
 
     // ------------------------------------------------------------------ Gfx
@@ -155,7 +163,7 @@ public final class DesktopGfx implements Platform.Gfx {
     public void image(Platform.Img img, int sx, int sy, int sw, int sh,
                       float dx, float dy, float dw, float dh, int flags, int tint, float alpha) {
         if (img == null || sw <= 0 || sh <= 0 || alpha <= 0f) return;
-        BufferedImage b = prepare(img, flags, tint);
+        BufferedImage b = (BufferedImage) img.handle;
         // recorta el origen a los limites de la imagen (ajustando el destino proporcionalmente)
         int x0 = Math.max(sx, 0), y0 = Math.max(sy, 0);
         int x1 = Math.min(sx + sw, b.getWidth()), y1 = Math.min(sy + sh, b.getHeight());
@@ -165,7 +173,7 @@ public final class DesktopGfx implements Platform.Gfx {
         dy += (y0 - sy) * fy;
         dw = (x1 - x0) * fx;
         dh = (y1 - y0) * fy;
-        BufferedImage sub = b.getSubimage(x0, y0, x1 - x0, y1 - y0);
+        BufferedImage sub = cut(b, flags, tint, x0, y0, x1 - x0, y1 - y0);
         AffineTransform at = new AffineTransform();
         if ((flags & Platform.FLIP_X) != 0) {
             at.translate(dx + dw, dy);
@@ -182,9 +190,9 @@ public final class DesktopGfx implements Platform.Gfx {
     public void imageRot(Platform.Img img, int sx, int sy, int sw, int sh,
                          float dx, float dy, float dw, float dh, float angle, int flags, int tint, float alpha) {
         if (img == null || sw <= 0 || sh <= 0 || alpha <= 0f) return;
-        BufferedImage b = prepare(img, flags, tint);
+        BufferedImage b = (BufferedImage) img.handle;
         if (sx < 0 || sy < 0 || sx + sw > b.getWidth() || sy + sh > b.getHeight()) return;
-        BufferedImage sub = b.getSubimage(sx, sy, sw, sh);
+        BufferedImage sub = cut(b, flags, tint, sx, sy, sw, sh);
         AffineTransform at = new AffineTransform();
         at.translate(dx + dw * 0.5, dy + dh * 0.5);
         at.rotate(angle);

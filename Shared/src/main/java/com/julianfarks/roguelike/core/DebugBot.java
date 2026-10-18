@@ -53,6 +53,113 @@ public final class DebugBot {
         }
     }
 
+    // ---- pruebas de IA ante peligros: BOT_AITEST="escenario:id1,id2" (BOT_AIFRAMES = duracion). Reconstruye una zona de la sala (suelo, pinchos, puentes,
+    // fosos), coloca enemigos reales a la izquierda y al jugador quieto a la derecha, y mide: golpes de pinchos, golpes al jugador, cercania, giros.
+    private float aiPX, aiPY; private boolean aiBuilt; private int aiT0, aiG, aiC0;
+    private final java.util.List<Enemy> aiEn = new java.util.ArrayList<>();
+    private float[] aiMinP, aiMinS, aiLastX; private int[] aiFlips, aiLastDir, aiAttacks, aiPrevState; private int aiTrap0, aiHurt0, aiPlans0, aiHops0, aiBlocked0;
+    private static void aiSet(Room rm, int x0, int y0, int x1, int y1, int t) { for (int x = x0; x <= x1; x++) for (int y = y0; y <= y1; y++) rm.set(x, y, t); }
+    private void aiStep(Game g, RunScreen rs, Level lv, Player p, int frame) {
+        String[] q = System.getenv("BOT_AITEST").split(":");
+        String scen = q[0]; String[] ids = q[1].split(",");
+        int dur = System.getenv("BOT_AIFRAMES") != null ? Integer.parseInt(System.getenv("BOT_AIFRAMES")) : 600;
+        if (godMode) rs.rs.hp = rs.rs.stats.maxHp;
+        Room rm = lv.room;
+        if (!aiBuilt) {
+            aiBuilt = true; aiT0 = frame;
+            int G = Math.max(10, Math.round(p.y / 16f) - 6);
+            int c0 = 4;
+            int x1 = Math.min(rm.w - 4, c0 + 60);
+            aiG = G; aiC0 = c0;
+            aiSet(rm, c0, 1, x1, G - 1, Room.AIR);
+            aiSet(rm, c0, G, x1, rm.h - 1, Room.SOLID);
+            int C = c0;
+            int pxTile = C + 28;
+            switch (scen) {
+                case "strip3": aiSet(rm, C + 20, G - 1, C + 22, G - 1, Room.SPIKE); break;
+                case "contact": aiSet(rm, C + 20, G - 1, C + 22, G - 1, Room.SPIKE); break;
+                case "strip1": aiSet(rm, C + 21, G - 1, C + 21, G - 1, Room.SPIKE); break;
+                case "strip8": aiSet(rm, C + 19, G - 1, C + 26, G - 1, Room.SPIKE); pxTile = C + 32; break;
+                case "bridge":
+                    aiSet(rm, C + 19, G - 1, C + 24, G - 1, Room.SPIKE);
+                    rm.set(C + 15, G - 1, Room.SOLID); aiSet(rm, C + 16, G - 2, C + 16, G - 1, Room.SOLID); aiSet(rm, C + 16, G - 2, C + 26, G - 2, Room.SOLID);
+                    pxTile = C + 31; break;
+                case "pit": aiSet(rm, C + 19, G, C + 27, G + 4, Room.AIR); aiSet(rm, C + 19, G + 5, C + 27, G + 5, Room.SPIKE); pxTile = C + 31; break;
+                case "ledge": aiSet(rm, C + 19, G, C + 40, G + 2, Room.AIR); aiSet(rm, C + 19, G + 3, C + 40, rm.h - 1, Room.SOLID); break;
+                case "safe": break;
+                default: break;
+            }
+            lv.enemies.clear(); lv.projs.clear(); lv.toKill = 0; lv.cleared = true;
+            p.x = pxTile * 16 + 8; p.y = G * 16; p.vx = p.vy = 0;
+            if ("ledge".equals(scen)) p.y = (G + 3) * 16;
+            aiPX = p.x; aiPY = p.y;
+            aiEn.clear();
+            for (int i = 0; i < ids.length; i++) {
+                Enemy en = new Enemy(EnemyDef.get(ids[i]), false, 1f, 1f);
+                en.x = (C + 14 - i * 3) * 16 + 8; en.y = G * 16; en.home = en.x;
+                en.onHit(lv, 0, 0, 0); en.state = Enemy.CHASE;
+                if ("contact".equals(scen)) { en.x = (C + 21) * 16 + 8; en.state = Enemy.PATROL; }
+                lv.enemies.add(en); lv.toKill++; aiEn.add(en);
+            }
+            int n = aiEn.size();
+            aiMinP = new float[n]; aiMinS = new float[n]; aiLastX = new float[n]; aiFlips = new int[n]; aiLastDir = new int[n]; aiAttacks = new int[n]; aiPrevState = new int[n];
+            java.util.Arrays.fill(aiMinP, 1e9f); java.util.Arrays.fill(aiMinS, 1e9f);
+            for (int i = 0; i < n; i++) aiLastX[i] = aiEn.get(i).x;
+            aiTrap0 = Level.dbgTrapHits; aiHurt0 = Level.dbgHurt; aiPlans0 = Enemy.dbgPlans; aiHops0 = Enemy.dbgHops; aiBlocked0 = Enemy.dbgBlocked;
+            rm.bake(g.P);
+            System.out.println("AIT build " + scen + " G=" + G + " roomW=" + rm.w + " player@" + pxTile);
+            return;
+        }
+        int t = frame - aiT0;
+        p.vx = 0; p.x = aiPX; p.y = aiPY; p.vy = 0;
+        for (int i = 0; i < aiEn.size(); i++) {
+            Enemy en = aiEn.get(i);
+            if (!en.alive) continue;
+            aiMinP[i] = Math.min(aiMinP[i], Math.abs(en.x - p.x));
+            float sx = 1e9f;
+            for (int tx = 0; tx < rm.w; tx++) for (int ty = aiG - 1; ty >= aiG - 2; ty--) if (rm.tile(tx, ty) == Room.SPIKE) sx = Math.min(sx, Math.abs(en.x - (tx * 16 + 8)));
+            aiMinS[i] = Math.min(aiMinS[i], sx);
+            float mv = en.x - aiLastX[i]; aiLastX[i] = en.x;
+            if (Math.abs(mv) > 0.15f) { int d = mv > 0 ? 1 : -1; if (aiLastDir[i] != 0 && d != aiLastDir[i]) aiFlips[i]++; aiLastDir[i] = d; }
+            if (en.state != aiPrevState[i] && (en.state == Enemy.ATTACK || en.state == Enemy.CHARGE || en.state == Enemy.LEAP || en.state == Enemy.WINDUP)) aiAttacks[i]++;
+            aiPrevState[i] = en.state;
+        }
+        if (System.getenv("BOT_AITRACE") != null && t % Integer.parseInt(System.getenv("BOT_AITRACE")) == 0) for (Enemy en : aiEn) System.out.println("AITR t=" + t + " " + en.def.id + " x=" + Math.round(en.x) + " vx=" + Math.round(en.vx) + " st=" + en.state + " g=" + en.onGround + " hp=" + Math.round(en.hp) + " " + en.dbgNav());
+        if (t == dur) {
+            for (int i = 0; i < aiEn.size(); i++) {
+                Enemy en = aiEn.get(i);
+                System.out.println("AIT " + scen + " id=" + ids[i] + " alive=" + en.alive + " hp=" + Math.round(en.hp) + "/" + Math.round(en.maxHp) + " x=" + Math.round(en.x / 16f) + " minDistPlayer=" + Math.round(aiMinP[i]) + " minDistSpike=" + Math.round(aiMinS[i]) + " flips=" + aiFlips[i] + " attacks=" + aiAttacks[i] + " state=" + en.state);
+            }
+            System.out.println("AIT " + scen + " TOTAL trapHits=" + (Level.dbgTrapHits - aiTrap0) + " playerHits=" + (Level.dbgHurt - aiHurt0) + " plans=" + (Enemy.dbgPlans - aiPlans0) + " hops=" + (Enemy.dbgHops - aiHops0) + " blocked=" + (Enemy.dbgBlocked - aiBlocked0) + " playerX=" + Math.round(p.x / 16f));
+        }
+    }
+
+    // ---- prueba de pausa bajo carga: BOT_PAUSETEST="f1,f2,..." pulsa Esc en esos fotogramas (durante el combate con muchos efectos), mide cuanto
+    // tarda en abrirse el menu, comprueba que la simulacion se detiene, guarda y recarga la partida (consistencia) y reanuda con Esc.
+    private int ptOpenF = -1, ptReqF = -1, ptKeyUp = -1; private float ptTime0; private int ptEnemyHp0;
+    private void pauseTestStep(Game g, RunScreen rs, Level lv, int frame) {
+        if (ptKeyUp == frame) { g.key(27, false); ptKeyUp = -1; }
+        int ov = rs.debugOv();
+        if (ptReqF < 0 && ptOpenF < 0) {
+            for (String q : System.getenv("BOT_PAUSETEST").split(",")) if (!q.isEmpty() && Integer.parseInt(q.trim()) == frame && ov == 0) { ptReqF = frame; g.key(27, true); ptKeyUp = frame + 2; }
+        }
+        if (ptReqF >= 0 && ov == RunScreen.OV_PAUSE) {
+            ptOpenF = frame; ptTime0 = lv.time;
+            System.out.println("PAUSE abre: pedida f=" + ptReqF + " abierta f=" + frame + " latencia=" + (frame - ptReqF) + " fotogramas particulas=" + lv.ps.count() + " fx=" + lv.fxs.size() + " proj=" + lv.projs.size());
+            long t0 = System.nanoTime();
+            boolean ok = RunSave.write(g.P, rs, 0);
+            long ms = (System.nanoTime() - t0) / 1_000_000L;
+            RunScreen ld = ok ? RunSave.load(g, 0) : null;
+            System.out.println("PAUSE guardado ok=" + ok + " ms=" + ms + " recargable=" + (ld != null) + (ld != null ? " oro=" + rs.rs.gold + "->" + ld.rs.gold + " hp=" + Math.round(rs.rs.hp) + "->" + Math.round(ld.rs.hp) : ""));
+            ptReqF = -1;
+        }
+        if (ptOpenF >= 0 && frame == ptOpenF + 60) {
+            System.out.println("PAUSE simulacion detenida=" + (Math.abs(lv.time - ptTime0) < 1e-4) + " ov=" + ov);
+            g.key(27, true); ptKeyUp = frame + 2;
+        }
+        if (ptOpenF >= 0 && frame == ptOpenF + 70) { System.out.println("PAUSE reanudada=" + (rs.debugOv() == 0) + " ov=" + rs.debugOv()); ptOpenF = -1; }
+    }
+
     // ---- parry contra un jefe REAL (BOT_PARRYBOSS=1 reactivo | =0 control sin guardia). El bot juega como una persona: no ataca,
     // se acerca al jefe mirandole y, al ver que el jefe empieza su ataque (telegrafia), pulsa el escudo C. Registra ataques y parries.
     private int pbAtk, pbPrevState = -1, pbHoldUntil = -1, pbHits, pbLastLog;
@@ -286,6 +393,9 @@ public final class DebugBot {
         if (rs.lv == null) return;
         Level lv = rs.lv;
         Player p = lv.pl;
+        if (System.getenv("BOT_PERF") != null && frame % 60 == 0) System.out.println("PERF f=" + frame + " en=" + lv.enemies.size() + " proj=" + lv.projs.size() + " fx=" + lv.fxs.size() + " txt=" + lv.texts.size() + " delayed=" + lv.delayed.size() + " part=" + lv.ps.count() + " props=" + lv.props.size() + " heapMB=" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576);
+        if (System.getenv("BOT_AITEST") != null && warped && frame > warpFrame + 30) { aiStep(g, rs, lv, p, frame); return; }
+        if (System.getenv("BOT_PAUSETEST") != null) pauseTestStep(g, rs, lv, frame);
         if (System.getenv("BOT_PERSONA") != null) { personaStep(rs, lv, p, frame); return; }
         if (System.getenv("BOT_PARRYTEST") != null) { parryStep(rs, lv, p, frame); return; }
         if (System.getenv("BOT_PARRYLOG") != null && frame % 300 == 0) System.out.println("PARRIES f=" + frame + " n=" + lv.parries + " hp=" + Math.round(rs.rs.hp) + " escudo=" + rs.rs.shield + " jefe=" + (lv.boss != null && lv.boss.alive));
@@ -528,7 +638,7 @@ public final class DebugBot {
                 }
                 return;
             case RunScreen.OV_PAUSE:
-                if (rs.ovT > 0.5f) rs.back();
+                if (rs.ovT > 0.5f && System.getenv("BOT_PAUSETEST") == null) rs.back();
                 return;
             case RunScreen.OV_NONE: break;
             default: return;

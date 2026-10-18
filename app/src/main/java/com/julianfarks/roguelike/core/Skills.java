@@ -624,8 +624,22 @@ final class Skills {
         lv.shake(3f, 3f);
         Snd.sfx("explosion_big", 0.5f);
         rep(lv, 18, 0.14f, 0.3f, k -> {
-            float sx = lv.camX + lv.rng.f(20, lv.viewW - 20);
-            Proj pr = lv.proj(sx, lv.camY - 30, lv.rng.f(-50, 50), 240, D(lv, p, 2.4f), true, "magma", 0xFF8A2A);
+            // objetivo: enemigos en pantalla (alternando); si no hay, un punto al azar de la vista
+            List<Ent> tg = lv.enemiesOnScreen();
+            float sx, ty;
+            if (!tg.isEmpty() && k % 3 != 2) {
+                Ent t = tg.get(lv.rng.i(tg.size()));
+                sx = t.x + lv.rng.f(-10, 10); ty = t.cy();
+            } else {
+                sx = lv.camX + lv.rng.f(20, lv.viewW - 20); ty = p.y - 10;
+            }
+            sx = Mth.clamp(sx, 20, lv.room.pixW - 20);
+            // nace bajo el techo (no contra el): sube desde el objetivo hasta el primer solido o el borde de la vista
+            float sy = Math.max(ty, lv.camY - 30);
+            float top = lv.camY - 30;
+            while (sy > top && !lv.solidAtPx(sx, sy - 14)) sy -= 8;
+            if (sy < 12) sy = 12;
+            Proj pr = lv.proj(sx, sy, lv.rng.f(-20, 20), 240, D(lv, p, 2.4f), true, "magma", 0xFF8A2A);
             pr.grav = 350; pr.scale = 2.2f; pr.explode = 50; pr.radius = 10; pr.life = 4f; pr.passWalls = false; pr.spin = true; pr.spinRate = 6f; pr.knock = 160;
             pr.status = Ent.BURN; pr.statusDur = 3f; pr.statusPow = 7f;
             if (k % 4 == 0) lv.shake(3f, 0.15f);

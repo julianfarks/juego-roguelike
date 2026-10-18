@@ -15,15 +15,22 @@ Descarga directa (archivos del repositorio, rama `main`):
 - **10 clases** (cada una con 3 habilidades + 1 definitiva), **9 biomas**, **9 jefes** (8 de bioma + El Cazador, con 3 formas), **28 bendiciones**.
 - Se muestran tienda del mercader, forja, bendiciones y cámara secreta. No se afirman cifras de enemigos, objetos ni fechas/tiendas/enlaces de lanzamiento.
 
-| Tiempo | Escena | Texto ES / EN |
+| Tiempo | Texto ES | Texto EN |
 |---|---|---|
-| 0–2,4 s | Gancho: aparición del Devorador del Vacío y definitivas (Señor de las Llamas, Vagabundo Estelar) | BAJA AL ABISMO / DESCEND INTO THE ABYSS |
-| 2,4–8 s | Presentación: Paladín vs. Rey Exánime, Reina de la Escarcha, Forja Infernal | ESPADA. MAGIA. ABISMO. / UN ROGUELIKE DE ACCIÓN EN PIXEL ART |
-| 8–15,2 s | Biomas y jefes (Vacío, Bosque Podrido, Ent Ancestral, Titán de la Tormenta, Matriarca de Sangre, Guardián del Eclipse) | 9 BIOMAS MORTALES / 9 JEFES COLOSALES |
-| 15,2–18,4 s | Pantalla de preparación de 4 clases | 10 CLASES |
-| 18,4–22,4 s | Elección de bendición, mercader, forja, cámara secreta | 28 BENDICIONES · TIENDAS · FORJA · SECRETOS |
-| 22,4–27,2 s | Clímax: definitivas contra jefes (Coloso de Roca, Segador, Guardián Glacial, Tempestad, Llamas, Estelar) | SOBREVIVE · DERROTA AL CAZADOR |
-| 27,2–30 s | Logo oficial (`ui_logo.png`) y llamada final | ¿TE ATREVES A BAJAR? / DARE TO DESCEND? |
+| 0,4–2,4 | CADA DESCENSO ES DISTINTO | NO TWO DESCENTS ALIKE |
+| 2,8–5,4 | EMPUÑA LA ESPADA. / DOMINA LA MAGIA. | WIELD THE SWORD. / MASTER THE MAGIC. |
+| 5,6–8,0 | ROGUELIKE DE ACCIÓN EN PIXEL ART | PIXEL-ART ACTION ROGUELIKE |
+| 8,2–11,4 | ATRAVIESA 9 BIOMAS | CROSS 9 BIOMES |
+| 11,6–15,0 | ENFRÉNTATE A 9 JEFES | FACE 9 BOSSES |
+| 15,2–18,4 | 10 ESPADACHINES / CADA UNO CON SU ESTILO | 10 SWORDSMEN / 10 WAYS TO FIGHT |
+| 18,4–20,2 | 28 BENDICIONES | 28 BLESSINGS |
+| 20,4–22,3 | MEJORA · COMPRA · DESCUBRE | UPGRADE · SHOP · DISCOVER |
+| 22,6–24,6 | DESATA TUS DEFINITIVAS | UNLEASH YOUR ULTIMATES |
+| 24,8–27,0 | LLEGA HASTA EL CAZADOR PÁLIDO | REACH THE PALE HUNTER |
+| 27,2–30 | Logo oficial + DESAFÍA EL ABISMO / PC · ANDROID | Logo + DARE TO DESCEND / PC · ANDROID |
+
+Los textos van arriba o sobre una banda oscura para no tapar al personaje ni los carteles del propio juego. El tráiler en inglés muestra la interfaz del juego en español (limitación honesta: el juego no tiene idioma inglés).
+
 
 Los cortes van sincronizados a la rejilla de 0,4 s de `mus_boss_a` (≈150 BPM, medido por análisis de onsets). Las entradas de texto/logo llevan zoom, temblor de pantalla y destellos.
 

@@ -42,7 +42,7 @@ S = [
     ('b1_flame', 9.4, 0.8, dict(flash=(ORANGE, .7), shake=16, zoom=(1.0, 1.15))),
     ('b8_astral', 11.2, 0.8, dict(flash=(PINK, .8), shake=22, zoom=(1.0, 1.18))),
     # ---- TITULO 27.2-30
-    ('b8_astral', 12.2, 2.8, dict(overlay='title')),
+    ('b8_astral', 11.4, 2.8, dict(overlay='title')),
 ]
 
 SHOTS = []

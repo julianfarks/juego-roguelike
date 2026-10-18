@@ -52,18 +52,22 @@ for c, ss, d, ex in S:
     SHOTS.append(sh); _t += d
 assert abs(_t - 30.0) < 1e-6, _t
 
+# Textos: cada idioma esta ESCRITO por separado (no es traduccion literal). "A|B" = linea principal + linea secundaria mas pequena.
+# y = centro del bloque. Arriba (y~235) no tapa ni a los jefes ni al aviso inferior del juego (nombre del jefe y subtitulo); en las
+# pantallas de interfaz (clases, bendiciones, forja) el texto va abajo sobre una placa oscura. band = opacidad de la placa.
 TEXTS = [
-    dict(t0=0.4, t1=2.4, y=330, scale=7, es='BAJA AL ABISMO', en='DESCEND INTO THE ABYSS'),
-    dict(t0=2.8, t1=5.2, y=330, scale=6, es='ESPADA. MAGIA. ABISMO.', en='SWORD. MAGIC. ABYSS.'),
-    dict(t0=5.6, t1=8.0, y=330, scale=4, anim='rise', es='UN ROGUELIKE DE ACCIÓN EN PIXEL ART', en='A PIXEL-ART ACTION ROGUELIKE'),
-    dict(t0=8.2, t1=11.4, y=300, scale=7, es='9 BIOMAS MORTALES', en='9 DEADLY BIOMES'),
-    dict(t0=11.6, t1=15.0, y=300, scale=7, es='9 JEFES COLOSALES', en='9 COLOSSAL BOSSES'),
-    dict(t0=15.2, t1=18.4, y=150, scale=9, es='10 CLASES', en='10 CLASSES'),
-    dict(t0=18.4, t1=19.6, y=900, scale=6, es='28 BENDICIONES', en='28 BLESSINGS'),
-    dict(t0=19.6, t1=22.2, y=900, scale=5, es='TIENDAS · FORJA · SECRETOS', en='SHOPS · FORGE · SECRETS'),
-    dict(t0=22.6, t1=24.6, y=300, scale=8, es='SOBREVIVE', en='SURVIVE'),
-    dict(t0=24.8, t1=27.0, y=300, scale=7, es='DERROTA AL CAZADOR', en='SLAY THE HUNTER'),
-    dict(t0=28.4, t1=30.0, y=830, scale=6, es='¿TE ATREVES A BAJAR?', en='DARE TO DESCEND?'),
+    dict(t0=0.4, t1=2.4, y=235, scale=6, band=.5, es='CADA DESCENSO ES DISTINTO', en='NO TWO DESCENTS ALIKE'),
+    dict(t0=2.8, t1=5.4, y=235, scale=6, band=.5, es='EMPUÑA LA ESPADA.|DOMINA LA MAGIA.', en='WIELD THE SWORD.|MASTER THE MAGIC.', ss=5),
+    dict(t0=5.6, t1=8.0, y=235, scale=4, band=.5, anim='rise', es='ROGUELIKE DE ACCIÓN EN PIXEL ART', en='PIXEL-ART ACTION ROGUELIKE'),
+    dict(t0=8.2, t1=11.4, y=235, scale=7, band=.5, es='ATRAVIESA 9 BIOMAS', en='CROSS 9 BIOMES'),
+    dict(t0=11.6, t1=15.0, y=235, scale=7, band=.5, es='ENFRÉNTATE A 9 JEFES', en='FACE 9 BOSSES'),
+    dict(t0=15.2, t1=18.4, y=905, scale=8, band=.85, es='10 ESPADACHINES|CADA UNO CON SU ESTILO', en='10 SWORDSMEN|10 WAYS TO FIGHT', ss=4),
+    dict(t0=18.4, t1=20.2, y=925, scale=6, band=.7, es='28 BENDICIONES', en='28 BLESSINGS'),
+    dict(t0=20.4, t1=22.3, y=925, scale=5, band=.7, es='MEJORA · COMPRA · DESCUBRE', en='UPGRADE · SHOP · DISCOVER'),
+    dict(t0=22.6, t1=24.6, y=235, scale=7, band=.5, es='DESATA TUS DEFINITIVAS', en='UNLEASH YOUR ULTIMATES'),
+    dict(t0=24.8, t1=27.0, y=235, scale=6, band=.5, es='LLEGA HASTA EL CAZADOR PÁLIDO', en='REACH THE PALE HUNTER'),
+    dict(t0=28.3, t1=30.0, y=830, scale=6, band=0, es='DESAFÍA EL ABISMO', en='DARE TO DESCEND'),
+    dict(t0=28.7, t1=30.0, y=925, scale=4, band=0, anim='rise', es='PC · ANDROID', en='PC · ANDROID'),
 ]
 
 _logo = np.array(Image.open(pixtext.ROOT + '/Shared/assets/ui/ui_logo.png').convert('RGBA'))

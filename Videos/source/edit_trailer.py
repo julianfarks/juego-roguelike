@@ -63,29 +63,52 @@ def get_text(txt, scale, glow):
     return _tc[k]
 
 
+def draw_band(fr, cy, h, k):
+    """Placa oscura con bordes suaves (fundido vertical) detras del texto: separa el mensaje del juego sin tapar la interfaz."""
+    y0 = max(0, int(cy - h / 2)); y1 = min(H, int(cy + h / 2))
+    if y1 <= y0 or k <= 0:
+        return
+    n = y1 - y0
+    prof = np.minimum(np.linspace(0, 1, n), np.linspace(1, 0, n)) * 5
+    prof = np.clip(prof, 0, 1)[:, None, None] * k
+    reg = fr[y0:y1].astype(np.float32)
+    fr[y0:y1] = (reg * (1 - prof)).astype(np.uint8)
+
+
 def draw_texts(fr, t, lang):
     for tx in SB.TEXTS:
         s = tx['t0']; e = tx['t1']
         if not (s <= t < e):
             continue
-        txt = tx[lang]
+        parts = tx[lang].split('|')
         lt = t - s
-        a_in = min(lt / 0.12, 1.0)
-        a_out = min((e - t) / 0.18, 1.0)
+        a_in = min(lt / 0.15, 1.0)
+        a_out = min((e - t) / 0.25, 1.0)
         alpha = a_in * a_out
         sc = 1.0; dx = dy = 0
         if tx.get('anim', 'slam') == 'slam':
-            sc = 1.0 + 0.55 * (1 - ease_out(lt / 0.22))
-            if lt < 0.18:
-                amp = 14 * (1 - lt / 0.18)
+            sc = 1.0 + 0.3 * (1 - ease_out(lt / 0.22))
+            if lt < 0.14:
+                amp = 7 * (1 - lt / 0.14)
                 dx = random.randint(-int(amp), int(amp)); dy = random.randint(-int(amp), int(amp))
         elif tx.get('anim') == 'rise':
             dy = int(40 * (1 - ease_out(lt / 0.35)))
-        rgba = get_text(txt, tx['scale'], tx.get('glow', 10))
-        # maximo ancho de pantalla
-        if rgba.shape[1] * sc > W - 80:
-            sc = (W - 80) / rgba.shape[1]
-        pixtext.blit(fr, rgba, W // 2 + tx.get('x', 0), tx['y'], alpha, sc, dx, dy)
+        imgs = []
+        for pi, part in enumerate(parts):
+            r = get_text(part, tx['scale'] if pi == 0 else tx.get('ss', 3), tx.get('glow', 10) if pi == 0 else 4)
+            f = 1.0
+            if r.shape[1] * sc > W - 120:
+                f = (W - 120) / (r.shape[1] * sc)
+            imgs.append((r, f))
+        gap = 14
+        hs = [int(r.shape[0] * sc * f) for r, f in imgs]
+        total = sum(hs) + gap * (len(imgs) - 1)
+        if tx.get('band', 0) > 0:
+            draw_band(fr, tx['y'] + dy, total + 90, tx['band'] * alpha)
+        yy = tx['y'] - total / 2
+        for (r, f), h in zip(imgs, hs):
+            pixtext.blit(fr, r, W // 2 + tx.get('x', 0), yy + h / 2, alpha, sc * f, dx, dy)
+            yy += h + gap
 
 
 def build_frame(src, lt, shot, tl):

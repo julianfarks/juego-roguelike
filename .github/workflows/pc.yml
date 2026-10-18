@@ -31,7 +31,10 @@ jobs:
           java-version: 25
       - name: Compilar y empaquetar (javac + jpackage)
         shell: bash
-        run: bash PC/build.sh
+        run: |
+          bash PC/build.sh 2>&1 | tee build.log
+          rc=${PIPESTATUS[0]}
+          if [ "$rc" -ne 0 ]; then echo "::error title=PC/build.sh fallo::$(tail -n 25 build.log | tr '\n' '|' | cut -c1-1500)"; exit $rc; fi
       - name: Prueba de arranque del EXE (recursos, OGG, motor)
         shell: pwsh
         run: |

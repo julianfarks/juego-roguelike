@@ -3,7 +3,7 @@
 # Requisitos: JDK 22 o superior (con jpackage) y bash (Git Bash en Windows). Uso:  bash PC/build.sh
 # Resultado: PC/build/dist/SwordsmanMagic/SwordsmanMagic.exe  (en Linux/macOS genera la app equivalente para pruebas).
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/.." && { pwd -W 2>/dev/null || pwd; })"   # en Git Bash: ruta de Windows (javac no lee rutas /d/... dentro de @archivos)
 B="$ROOT/PC/build"
 rm -rf "$B/classes" "$B/input" "$B/dist"
 mkdir -p "$B/classes" "$B/lib" "$B/input" "$B/dist"

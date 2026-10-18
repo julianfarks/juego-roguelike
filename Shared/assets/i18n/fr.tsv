@@ -1319,8 +1319,8 @@ Límite de FPS: {}	Limite de FPS : {}
 V-Sync: {}	V-Sync : {}
 Mostrar FPS: {}	Afficher les FPS : {}
 Escalado: {}	Mise à l'échelle : {}
-Entero (nítido)	Entière (nette)
-Ajustado a la ventana	Ajustée à la fenêtre
+Llenar pantalla (nítido)	Remplir l'écran (net)
+Entero (con franjas)	Entière (avec bandes)
 Calidad: {}	Qualité : {}
 Baja	Basse
 Media	Moyenne
@@ -1346,7 +1346,7 @@ Completa cambia la resolución del monitor.	Le plein écran change la résolutio
 Sin bordes usa la resolución nativa.	Sans bordures utilise la résolution native.
 El juego simula a 60 pasos por segundo:	Le jeu simule à 60 pas par seconde :
 más de 60 FPS no añadirían fluidez.	plus de 60 FPS n'ajouteraient aucune fluidité.
-Escalado entero = píxeles perfectos.	Échelle entière = pixels parfaits.
+Llenar = sin franjas negras y píxeles nítidos.	Remplir = sans bandes noires et pixels nets.
 El motor no usa sombras dinámicas,	Le moteur n'a pas d'ombres dynamiques,
 así que no hay opción de sombras.	donc pas d'option d'ombres.
 Los píxeles nunca se suavizan.	Les pixels ne sont jamais lissés.

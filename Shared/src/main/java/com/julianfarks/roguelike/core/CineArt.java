@@ -78,7 +78,7 @@ final class CineArt {
 
     static void sky(Platform.Gfx g, int w, int top, int bot) {
         int n = 30;
-        float h = Platform.VIEW_H / (float) n;
+        float h = ViewSize.h / (float) n;
         for (int i = 0; i < n; i++) g.rect(0, Math.round(i * h), w, Math.round(h) + 1, mix(top, bot, i / (float) (n - 1)), false);
     }
 
@@ -97,7 +97,7 @@ final class CineArt {
             float wx = (x - w / 2f) / c.zoom + w / 2f + c.x * d;
             float hgt = base - ((float) Math.sin(wx * 0.011f + seed) * 0.6f + (float) Math.sin(wx * 0.027f + seed * 2.3f) * 0.3f + (float) Math.sin(wx * 0.061f + seed) * 0.1f + 0.7f) * amp;
             float sy = c.Y(hgt, d);
-            g.rect(x, Math.round(sy), 4, Math.round(Math.max(0, Platform.VIEW_H - sy)), color, false);
+            g.rect(x, Math.round(sy), 4, Math.round(Math.max(0, ViewSize.h - sy)), color, false);
             if (rim != 0) g.rect(x, Math.round(sy), 4, 1, rim, true);
         }
     }
@@ -215,7 +215,7 @@ final class CineArt {
                 // el cielo se parte (diapositiva 0), grietas crecen, destello blanco
                 float cr = k == 0 ? ss(st / 5f) : 1f;
                 for (int i = 0; i < 4; i++) crack(g, c, cx + (i - 1.5f) * 70, -20, 1.5f + hash(i * 3) * 0.3f, 180 + 40 * i, cr, 1.3f, 0xFFFFD0C0, 0.1f, 11 + i * 17, true);
-                if (k == 0) { float f = seg(st, 4.6f, 5.0f) * (1 - seg(st, 5.0f, 6.2f)); if (f > 0) g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0xFFE0D0, (int) (f * 150)), true); }
+                if (k == 0) { float f = seg(st, 4.6f, 5.0f) * (1 - seg(st, 5.0f, 6.2f)); if (f > 0) g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0xFFE0D0, (int) (f * 150)), true); }
                 ridge(g, c, 232, 60, 1.0f, 0.3f, 0xFF1A0A18, 0x50A02030);
                 ridge(g, c, 246, 50, 4.0f, 0.6f, 0xFF10060E, 0x30801828);
                 // reinos que caen (diapositiva 2): torres inclinandose y hundiendose, con fuego
@@ -320,7 +320,7 @@ final class CineArt {
                 }
                 circle(g, c, sxp, syp, sr * 0.82f, Mth.withAlpha(0xFF2040, (int) (50 * rup + 10)), true, 0.1f);
                 for (int i = 0; i < 5; i++) crack(g, c, sxp, syp, i * 1.26f + 0.3f, 80 * rup + 6, rup, 1.4f, 0xFFFF4050, 0.1f, 40 + i * 9, true);
-                if (k == 0 && st > 2.2f && st < 2.5f) g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0xFF3040, (int) ((2.5f - st) * 3.3f * 90)), true);
+                if (k == 0 && st > 2.2f && st < 2.5f) g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0xFF3040, (int) ((2.5f - st) * 3.3f * 90)), true);
                 // brasas del horizonte
                 light(g, c, w * 0.72f, 250, 110, 0xFF7A2A, 0.35f + 0.1f * (float) Math.sin(t * 2.2f), 0.5f);
                 ridge(g, c, 255, 44, 3.0f, 0.4f, 0xFF0C0A14, 0x30502030);
@@ -396,7 +396,7 @@ final class CineArt {
                     // onda expansiva
                     float ring = seg(t, 3.3f, 5.4f); if (ring < 1) g.circle(c.X(mx, 0.1f), c.Y(my, 0.1f), c.S(30 + ring * 420), Mth.withAlpha(0xFFFFFF, (int) (70 * (1 - ring))), true);
                 }
-                if (t > 2.9f && t < 3.7f) g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0xFFFFFF, (int) (Mth.clamp(1 - Math.abs(t - 3.2f) * 2.2f, 0, 1) * 235)), true);
+                if (t > 2.9f && t < 3.7f) g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0xFFFFFF, (int) (Mth.clamp(1 - Math.abs(t - 3.2f) * 2.2f, 0, 1) * 235)), true);
                 ridge(g, c, 252, 36, 2.0f, 0.7f, 0xFF0A0610, mix(0xFF000000, 0xFF405070, after) & 0xFFFFFF | 0x30000000);
                 // el Cazador mirando sus manos (slide 1): silueta que baja la cabeza
                 hunter(g, c, cx, 262, 2.9f, 1f, t, (k >= 1 ? ss(st / 6f) * 0.25f : 0), 0f, false);
@@ -484,7 +484,7 @@ final class CineArt {
     // ------------------------------------------------------------------ particulas ambientales (tiempo real)
     static void update(float dt, Particles ps, Rng rng, int w, int style, float t, int k, float st) {
         Cam c = camera(w, style, t, k, st);
-        int H = Platform.VIEW_H;
+        int H = ViewSize.h;
         switch (style) {
             case Story.BG_ABYSS:
                 if (rng.chance(dt * 14)) ps.spawn(rng.f(0, w), -4, rng.f(-8, 14), rng.f(10, 28), rng.f(5, 9), 1, 0, rng.chance(0.5f) ? 0xAA8890 : 0xD04050, false);

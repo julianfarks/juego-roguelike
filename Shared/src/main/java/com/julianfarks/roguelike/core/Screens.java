@@ -18,14 +18,14 @@ final class Screens {
 
         void update(float dt, int w) {
             t += dt;
-            if (rng.chance(dt * 18)) ps.spawn(rng.f(0, w + 80), Platform.VIEW_H + 4, rng.f(-30, -6), -rng.f(14, 44), rng.f(3, 7), rng.chance(0.3f) ? 2 : 1, 0, rng.chance(0.5f) ? 0xFF5A30 : 0xFFB070, true);
+            if (rng.chance(dt * 18)) ps.spawn(rng.f(0, w + 80), ViewSize.h + 4, rng.f(-30, -6), -rng.f(14, 44), rng.f(3, 7), rng.chance(0.3f) ? 2 : 1, 0, rng.chance(0.5f) ? 0xFF5A30 : 0xFFB070, true);
             ps.update(dt);
         }
 
         void render(Platform.Gfx g, int w, float dim) {
-            float s = Math.max(w / 512f, Platform.VIEW_H / 288f);
+            float s = Math.max(w / 512f, ViewSize.h / 288f);
             float dw = 512 * s, dh = 288 * s;
-            float y = (Platform.VIEW_H - dh) / 2f;
+            float y = (ViewSize.h - dh) / 2f;
             float[] speed = {0f, 3f, 8f, 16f};
             g.clear(0xFF0A0408);
             for (int i = 0; i < 4; i++) {
@@ -42,8 +42,8 @@ final class Screens {
                 }
             }
             ps.render(g, 0, 0);
-            if (dim > 0) g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0x000000, (int) (dim * 255)), false);
-            if (UI.vignette != null) g.image(UI.vignette, 0, 0, UI.vignette.w, UI.vignette.h, 0, 0, w, Platform.VIEW_H, 0, 0, 0.75f);
+            if (dim > 0) g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x000000, (int) (dim * 255)), false);
+            if (UI.vignette != null) g.image(UI.vignette, 0, 0, UI.vignette.w, UI.vignette.h, 0, 0, w, ViewSize.h, 0, 0, 0.75f);
         }
     }
 
@@ -246,10 +246,10 @@ final class Screens {
         @Override void render(Platform.Gfx g) {
             int w = W();
             bg.render(g, w, 0.5f);
-            float y = Platform.VIEW_H - scroll + 20;
+            float y = ViewSize.h - scroll + 20;
             for (String l : LINES) {
-                if (y > -20 && y < Platform.VIEW_H + 10) {
-                    float a = Mth.clamp(Math.min(y / 40f, (Platform.VIEW_H - y) / 40f), 0, 1);
+                if (y > -20 && y < ViewSize.h + 10) {
+                    float a = Mth.clamp(Math.min(y / 40f, (ViewSize.h - y) / 40f), 0, 1);
                     if (l.startsWith("#")) UI.big.center(g, l.substring(1), w / 2f, y, UI.GOLD, a);
                     else if (l.startsWith("-")) UI.small.center(g, l.substring(1), w / 2f, y, 0xFF7A8A, a);
                     else UI.small.center(g, l, w / 2f, y, 0xE8E0E0, a);

@@ -280,7 +280,7 @@ final class ControlsScreen extends Screen {
     }
 
     private void renderModal(Platform.Gfx g, int w) {
-        g.rect(0, 0, w, Platform.VIEW_H, 0xB0000008, false);
+        g.rect(0, 0, w, ViewSize.h, 0xB0000008, false);
         float bw = Math.min(360, w - 30), bx = w / 2f - bw / 2f;
         UI.panel(g, 1, bx, 70, bw, 130, 1f);
         if (conflict) {

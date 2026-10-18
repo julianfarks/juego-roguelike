@@ -935,7 +935,7 @@ final class RunScreen extends Screen implements Level.Listener {
             }
             case OV_TALK: {
                 float bw = Math.min(w - 40, 430), bx = w / 2f - bw / 2f;
-                add(0, 0, w, Platform.VIEW_H, null, this::talkTap).plain = true;
+                add(0, 0, w, ViewSize.h, null, this::talkTap).plain = true;
                 if (tphase == 1 && talk != null) {
                     for (int i = 0; i < talk.choices.size(); i++) {
                         final Story.Choice c = talk.choices.get(i);
@@ -1244,15 +1244,15 @@ final class RunScreen extends Screen implements Level.Listener {
         renderBanner(g, w);
         renderOverlay(g, w);
         // pantalla roja al morir
-        if (deadT >= 0) g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0x500000, (int) (Mth.clamp(deadT / 1.5f, 0, 1) * 150)), false);
-        if (fadeA > 0.001f) g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0x000000, (int) (Mth.clamp(fadeA, 0, 1) * 255)), false);
+        if (deadT >= 0) g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x500000, (int) (Mth.clamp(deadT / 1.5f, 0, 1) * 150)), false);
+        if (fadeA > 0.001f) g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x000000, (int) (Mth.clamp(fadeA, 0, 1) * 255)), false);
     }
 
     private void renderCinema(Platform.Gfx g, int w) {
         if (lv.cineBars > 0.01f) {
             float h = 30 * lv.cineBars;
             g.rect(0, 0, w, h, 0xFF000000, false);
-            g.rect(0, Platform.VIEW_H - h, w, h, 0xFF000000, false);
+            g.rect(0, ViewSize.h - h, w, h, 0xFF000000, false);
         }
         // tarjeta del jefe
         if (bossCardT >= 0 && lv.boss != null) {
@@ -1261,7 +1261,7 @@ final class RunScreen extends Screen implements Level.Listener {
             if (t > 0.5f && t < 4.2f) {
                 float a = Mth.clamp(Math.min((t - 0.5f) / 0.5f, (4.2f - t) / 0.6f), 0, 1);
                 if (t > 0.5f && t < 0.56f) Snd.sfx("boss_title", 0.9f);
-                float cy = Platform.VIEW_H - 76;
+                float cy = ViewSize.h - 76;
                 g.rect(0, cy - 4, w, 1, Mth.withAlpha(d.color, (int) (a * 200)), true);
                 g.rect(0, cy + 44, w, 1, Mth.withAlpha(d.color, (int) (a * 200)), true);
                 UI.big.center(g, d.name, w / 2f, cy + 4, 0xFFE8D0C0, a);
@@ -1422,7 +1422,7 @@ final class RunScreen extends Screen implements Level.Listener {
         if (hr < 0.3f && lv.pl.alive) {
             int al = (int) (40 + 30 * Math.sin(lv.time * 6));
             g.rect(0, 0, w, 3, Mth.withAlpha(0xC00020, al), false);
-            g.rect(0, Platform.VIEW_H - 3, w, 3, Mth.withAlpha(0xC00020, al), false);
+            g.rect(0, ViewSize.h - 3, w, 3, Mth.withAlpha(0xC00020, al), false);
         }
     }
 
@@ -1504,7 +1504,7 @@ final class RunScreen extends Screen implements Level.Listener {
         if (hr < 0.3f && lv.pl.alive) {
             int a = (int) (40 + 30 * Math.sin(lv.time * 6));
             g.rect(0, 0, w, 3, Mth.withAlpha(0xC00020, a), false);
-            g.rect(0, Platform.VIEW_H - 3, w, 3, Mth.withAlpha(0xC00020, a), false);
+            g.rect(0, ViewSize.h - 3, w, 3, Mth.withAlpha(0xC00020, a), false);
         }
     }
 
@@ -1526,7 +1526,7 @@ final class RunScreen extends Screen implements Level.Listener {
         UI.roundButton(g, cx + kx, cy + ky, R * 0.46f, on ? 1 : 0, on ? 0.95f : 0.6f);
     }
 
-    private void dim(Platform.Gfx g, int w, float a) { g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0x000008, (int) (a * 255)), false); }
+    private void dim(Platform.Gfx g, int w, float a) { g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x000008, (int) (a * 255)), false); }
 
     private void renderOverlay(Platform.Gfx g, int w) {
         if (ov == OV_NONE) return;

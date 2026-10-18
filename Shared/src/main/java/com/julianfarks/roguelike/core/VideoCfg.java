@@ -23,7 +23,7 @@ public final class VideoCfg {
     public int fps = 60;                     // limite de FPS (30 o 60)
     public boolean vsync = true;
     public boolean showFps = false;
-    public int scaleMode = 0;                // 0 = entero (pixel art nitido), 1 = ajustado a la ventana (fraccional)
+    public int scaleMode = 0;                // 0 = llenar pantalla sin franjas (entero con alto ampliado, o fraccional nitido), 1 = solo multiplos enteros (con franjas)
     public int quality = Q_HIGH;
     public int particles = 100;              // % de particulas
     public boolean light = true, vig = true;

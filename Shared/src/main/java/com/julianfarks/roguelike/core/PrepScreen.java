@@ -179,20 +179,20 @@ final class PrepScreen extends Screen {
         for (int i = 0; i < 3; i++) {
             Platform.Img im = bgl[i];
             if (im == null) continue;
-            float sc = Math.max(1f, Platform.VIEW_H / (float) im.h);
+            float sc = Math.max(1f, ViewSize.h / (float) im.h);
             float dw = im.w * sc, dh = im.h * sc;
             float off = (t * fac[i]) % dw;
-            for (float x = -off; x < w; x += dw) g.image(im, 0, 0, im.w, im.h, Math.round(x), Math.round(Platform.VIEW_H - dh), Math.round(dw), Math.round(dh), 0, 0, 1f);
+            for (float x = -off; x < w; x += dw) g.image(im, 0, 0, im.w, im.h, Math.round(x), Math.round(ViewSize.h - dh), Math.round(dw), Math.round(dh), 0, 0, 1f);
         }
         if (baked != null) g.image(baked, 0, 0, baked.w, baked.h, Math.round((w - 640) / 2f), 0, baked.w, baked.h, 0, 0, 1f);
-        g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0x0A0408, 150), false);
+        g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x0A0408, 150), false);
         ClassDef c = cls();
         drawShowcase(g, c);
         drawInfo(g, c, w);
         drawCards(g, w);
         drawSummary(g, c, w);
         ps.render(g, 0, 0);
-        if (UI.vignette != null) g.image(UI.vignette, 0, 0, UI.vignette.w, UI.vignette.h, 0, 0, w, Platform.VIEW_H, 0, 0, 0.6f);
+        if (UI.vignette != null) g.image(UI.vignette, 0, 0, UI.vignette.w, UI.vignette.h, 0, 0, w, ViewSize.h, 0, 0, 0.6f);
         UI.big.center(g, "PREPARACIÓN", (156 + w) / 2f, 4, UI.GOLD, 1f);
         drawButtons(g);
         if (!Save.S.finalBeaten && modeBtn != null) UI.icon(g, "lock", modeBtn.x + modeBtn.w - 13, modeBtn.y - 4, 1f);   // candado en la esquina: no pisa el texto
@@ -204,7 +204,7 @@ final class PrepScreen extends Screen {
         }
         if (toastT > 0) { UI.panel(g, 0, w / 2f - 160, 120, 320, 18, 0.95f); UI.small.center(g, toast, w / 2f, 124, UI.GOLD, Mth.clamp(toastT, 0, 1)); }
         float fin = Mth.clamp(enterT / 0.5f, 0, 1);
-        if (fin < 1) g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0x000000, (int) ((1 - fin) * 255)), false);
+        if (fin < 1) g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x000000, (int) ((1 - fin) * 255)), false);
         if (launchT >= 0) drawLaunch(g, w, c);
     }
 
@@ -382,7 +382,7 @@ final class PrepScreen extends Screen {
         // el portal se abre: destello radial creciente
         float r = 20 + k * k * 700;
         UI.light(g, 78, 150, r, 0xFFE0B0, Mth.clamp(k * 1.4f, 0, 0.85f));
-        if (k > 0.35f) g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0x120408, (int) (Mth.clamp((k - 0.35f) / 0.5f, 0, 1) * 255)), false);
+        if (k > 0.35f) g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x120408, (int) (Mth.clamp((k - 0.35f) / 0.5f, 0, 1) * 255)), false);
         if (k > 0.5f) {
             float a = Mth.clamp((k - 0.5f) / 0.3f, 0, 1);
             UI.big.center(g, "ENTRANDO AL ABISMO", w / 2f, 112, UI.GOLD, a);

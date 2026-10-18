@@ -1,6 +1,7 @@
 import com.julianfarks.roguelike.core.*;
 import desktop.DesktopPlatform;
 import pc.PcPlatform;
+import pc.ViewLayout;
 import java.io.File;
 
 /** Pruebas de la adaptacion a PC: plataforma, controles tactiles, ajustes de video (guardado/recuperacion/aislamiento) y calidad. */
@@ -50,6 +51,28 @@ public class PcTest {
         Particles ps2 = new Particles();
         for (int i = 0; i < 400; i++) ps2.spawn(0, 0, 0, 0, 5f, 1, 0, 0xFFFFFF, false);
         chk("calidad Alta: todas las particulas (400)", ps2.count() == 400);
+
+        // pantalla completa / escalado: sin franjas negras causadas por el escalado (antes: 45 px arriba y abajo en 1440p, 114 px en 1366x768)
+        int[][] mons = {{1920,1080},{2560,1440},{3840,2160},{1600,900},{1366,768},{1280,720},{1920,1200},{2560,1600},{1680,1050},{1440,900},{3440,1440},{2560,1080},{1280,1024},{1024,768}};
+        for (int[] m : mons) {
+            ViewLayout fl = ViewLayout.compute(m[0], m[1], ViewLayout.FILL);
+            int barV = m[1] - fl.dstH, barH = m[0] - fl.dstW;
+            boolean inside = fl.dstX >= 0 && fl.dstY >= 0 && fl.dstX + fl.dstW <= m[0] && fl.dstY + fl.dstH <= m[1];
+            boolean sizeOk = fl.vw >= 480 && fl.vw <= 640 && fl.vh >= 270 && fl.vh <= 320;
+            double ar = m[0] / (double) m[1];
+            boolean noBars = ar >= 1.5 && ar <= 640 / 270.0 + 0.001 ? (barV <= 1 && barH <= (int) Math.ceil(fl.scale)) : true;
+            chk("llenar " + m[0] + "x" + m[1] + ": " + fl + " franjas " + barH + "x" + barV, inside && sizeOk && noBars);
+        }
+        ViewLayout i1440 = ViewLayout.compute(2560, 1440, ViewLayout.FILL), o1440 = ViewLayout.compute(2560, 1440, ViewLayout.INTEGER);
+        chk("1440p: llena con escala ENTERA 5 (pixeles todos iguales) y alto virtual 288; el modo entero antiguo dejaba 45+45 px", i1440.scale == 5f && i1440.vh == 288 && i1440.dstH == 1440 && o1440.dstH == 1350);
+        ViewLayout l720 = ViewLayout.compute(1280, 720, ViewLayout.FILL);
+        chk("720p: escala fraccional sin suavizado que llena el lienzo (270 de alto)", l720.dstH == 720 && l720.dstW == 1280 && l720.vh == 270);
+        ViewLayout t43 = ViewLayout.compute(1280, 1024, ViewLayout.FILL);
+        chk("4:3 / 5:4: limite honesto (alto virtual 320 = sala mas baja), franjas arriba/abajo inevitables", t43.vh == 320 && t43.dstW == 1280 && t43.dstH < 1024);
+        Game gTall = new Game(); gTall.init(pc); gTall.resize(480, 300);
+        chk("Game.resize(ancho, alto) fija el alto virtual y se limita a 270..320", ViewSize.h == 300);
+        gTall.resize(480, 999); chk("alto virtual limitado a 320", ViewSize.h == 320);
+        gTall.resize(480, 270); chk("alto virtual vuelve a 270 (Android y 16:9 clasico no cambian)", ViewSize.h == 270);
 
         // resoluciones ofrecidas
         int[][] rs = pc.video().resolutions();

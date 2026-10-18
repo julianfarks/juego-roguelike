@@ -73,7 +73,7 @@ final class VideoScreen extends Screen {
             add(x, y + st * r++, bw, 20, "Límite de FPS: " + pend.fps, () -> { pend.fps = pend.fps == 30 ? 60 : 30; layout(); });
             add(x, y + st * r++, bw, 20, "V-Sync: " + onOff(pend.vsync), () -> { pend.vsync = !pend.vsync; layout(); });
             add(x, y + st * r++, bw, 20, "Mostrar FPS: " + onOff(pend.showFps), () -> { pend.showFps = !pend.showFps; layout(); });
-            add(x, y + st * r++, bw, 20, "Escalado: " + (pend.scaleMode == 0 ? "Entero (nítido)" : "Ajustado a la ventana"), () -> { pend.scaleMode ^= 1; layout(); });
+            add(x, y + st * r++, bw, 20, "Escalado: " + (pend.scaleMode == 0 ? "Llenar pantalla (nítido)" : "Entero (con franjas)"), () -> { pend.scaleMode ^= 1; layout(); });
         } else {
             add(x, y + st * r++, bw, 20, "Calidad: " + qName(pend.quality), () -> { pend.applyPreset(pend.quality >= VideoCfg.Q_HIGH ? VideoCfg.Q_LOW : pend.quality + 1); layout(); });
             add(x, y + st * r++, bw, 20, "Partículas: " + pend.particles + "%", () -> {
@@ -188,7 +188,7 @@ final class VideoScreen extends Screen {
         } else if (tab == 1) {
             UI.small.center(g, "El juego simula a 60 pasos por segundo:", cx, ty, UI.GREY, 1f);
             UI.small.center(g, "más de 60 FPS no añadirían fluidez.", cx, ty + 12, UI.GREY, 1f);
-            UI.small.center(g, "Escalado entero = píxeles perfectos.", cx, ty + 28, UI.GREY, 1f);
+            UI.small.center(g, "Llenar = sin franjas negras y píxeles nítidos.", cx, ty + 28, UI.GREY, 1f);
         } else {
             UI.small.center(g, "El motor no usa sombras dinámicas,", cx, ty, UI.GREY, 1f);
             UI.small.center(g, "así que no hay opción de sombras.", cx, ty + 12, UI.GREY, 1f);

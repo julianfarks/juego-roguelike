@@ -72,6 +72,12 @@ public class Game implements Platform.GameLoop {
     }
 
     @Override
+    public void resize(int w, int h) {
+        ViewSize.h = ViewSize.clamp(h);
+        resize(w);
+    }
+
+    @Override
     public void resize(int w) {
         viewW = Math.max(480, Math.min(640, w));
         input.layout(viewW);
@@ -123,7 +129,7 @@ public class Game implements Platform.GameLoop {
             String s = "FPS " + P.video().measuredFps();
             UI.small.draw(g, s, viewW - UI.small.width(s) - 5, 4, UI.GREEN, 0.9f);
         }
-        if (fade > 0.001f) g.rect(0, 0, viewW, Platform.VIEW_H, Mth.withAlpha(0x000000, (int) (Mth.clamp(fade, 0, 1) * 255)), false);
+        if (fade > 0.001f) g.rect(0, 0, viewW, ViewSize.h, Mth.withAlpha(0x000000, (int) (Mth.clamp(fade, 0, 1) * 255)), false);
     }
 
     @Override

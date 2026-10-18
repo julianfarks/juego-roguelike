@@ -131,7 +131,7 @@ public final class PcMain implements PcWindow.Host {
         synchronized (lock) {
             game.init(plat);
             window.layoutSize();
-            game.resize(window.viewW());
+            game.resize(window.viewW(), window.viewH());
         }
 
         long next = System.nanoTime();
@@ -142,7 +142,7 @@ public final class PcMain implements PcWindow.Host {
             boolean render;
             synchronized (lock) {
                 try {
-                    if (window.layoutSize()) game.resize(window.viewW());
+                    if (window.layoutSize()) game.resize(window.viewW(), window.viewH());
                     game.update(1f / 60f);
                     render = VideoCfg.cur.fps >= 60 || (tick & 1) == 0;
                     if (render) {

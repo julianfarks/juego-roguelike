@@ -105,7 +105,7 @@ final class StoryScreens {
             hits.clear();
             int w = W();
             float bw = Math.min(w - 40, 430), bx = w / 2f - bw / 2f;
-            add(0, 0, w, Platform.VIEW_H, null, this::tap).plain = true;
+            add(0, 0, w, ViewSize.h, null, this::tap).plain = true;
             if (phase == 1) {
                 for (int i = 0; i < d.choices.size(); i++) {
                     final Story.Choice c = d.choices.get(i);

@@ -46,6 +46,7 @@ public final class Main {
     // ------------------------------------------------------------------ argumentos
     static String assetsDir = "Shared/assets";
     static int viewW = 576;
+    static int viewH = 270;          // --h N: alto virtual 270..320 (pruebas de monitores 16:10 / escala entera ampliada)
     static int frames = 600;
     static String scriptFile;
     static String shotsDir = "/tmp/swr_shots";
@@ -70,6 +71,7 @@ public final class Main {
                 case "--audio-log": audioLog = true; break;
                 case "--assets": assetsDir = args[++i]; break;
                 case "--w": viewW = Integer.parseInt(args[++i]); break;
+                case "--h": viewH = Integer.parseInt(args[++i]); break;
                 case "--frames": frames = Integer.parseInt(args[++i]); break;
                 case "--script": scriptFile = args[++i]; break;
                 case "--shots": shotsDir = args[++i]; break;
@@ -82,6 +84,8 @@ public final class Main {
         }
         if (viewW < 480) viewW = 480;
         if (viewW > 640) viewW = 640;
+        if (viewH < 270) viewH = 270;
+        if (viewH > 320) viewH = 320;
         if (headless) System.setProperty("java.awt.headless", "true");
 
         File sf = storeFile == null ? null : new File(storeFile);
@@ -213,14 +217,14 @@ public final class Main {
     static int runHeadless(DesktopPlatform plat, Platform.GameLoop game) throws Exception {
         List<Ev> script = parseScript(scriptFile);
         new File(shotsDir).mkdirs();
-        BufferedImage screen = new BufferedImage(viewW, Platform.VIEW_H, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage screen = new BufferedImage(viewW, viewH, BufferedImage.TYPE_INT_ARGB);
         Stats st = new Stats();
         int done = 0;
         boolean aborted = false;
 
         try {
             game.init(plat);
-            game.resize(viewW);
+            game.resize(viewW, viewH);
         } catch (Throwable t) {
             report(st, -1, "init", t);
             printSummary(plat, st, 0, true);
@@ -249,7 +253,7 @@ public final class Main {
         int si = 0;
         Process ff = null; java.io.OutputStream ffo = null; java.io.PrintWriter aud = null;
         if (recFile != null) {
-            ff = new ProcessBuilder("ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "bgr24", "-s", viewW + "x" + Platform.VIEW_H,
+            ff = new ProcessBuilder("ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "bgr24", "-s", viewW + "x" + viewH,
                     "-r", "60", "-i", "-", "-vf", "scale=1920:1080:flags=neighbor", "-c:v", "libx264", "-preset", "fast", "-crf", "8", "-pix_fmt", "yuv420p", recFile)
                     .redirectError(ProcessBuilder.Redirect.INHERIT).start();
             ffo = new java.io.BufferedOutputStream(ff.getOutputStream(), 1 << 20);
@@ -257,7 +261,7 @@ public final class Main {
             aud = aw;
             DesktopPlatform.audioHook = ev -> aw.println((curFrame - recFrom) + "\t" + ev);
         }
-        byte[] rec = new byte[viewW * Platform.VIEW_H * 3];
+        byte[] rec = new byte[viewW * viewH * 3];
         for (int fr = 0; fr < frames; fr++) {
             curFrame = fr;
             plat.virtualMs = 1000L + fr * 1000L / 60L;
@@ -300,7 +304,7 @@ public final class Main {
             done = fr + 1;
 
             if (ffo != null && fr >= recFrom && fr < recTo) {
-                int[] px = screen.getRGB(0, 0, viewW, Platform.VIEW_H, null, 0, viewW);
+                int[] px = screen.getRGB(0, 0, viewW, viewH, null, 0, viewW);
                 for (int i = 0, o = 0; i < px.length; i++) { rec[o++] = (byte) px[i]; rec[o++] = (byte) (px[i] >> 8); rec[o++] = (byte) (px[i] >> 16); }
                 try { ffo.write(rec); } catch (IOException ioe) { ffo = null; }
             }
@@ -361,16 +365,16 @@ public final class Main {
 
     // ------------------------------------------------------------------ ventana
     static void runWindow(final DesktopPlatform plat, final Platform.GameLoop game) throws Exception {
-        final BufferedImage screen = new BufferedImage(viewW, Platform.VIEW_H, BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage screen = new BufferedImage(viewW, viewH, BufferedImage.TYPE_INT_ARGB);
         game.init(plat);
-        game.resize(viewW);
+        game.resize(viewW, viewH);
         final int zoom = 2;
         final javax.swing.JPanel panel = new javax.swing.JPanel() {
             @Override protected void paintComponent(Graphics g) {
-                g.drawImage(screen, 0, 0, viewW * zoom, Platform.VIEW_H * zoom, null);
+                g.drawImage(screen, 0, 0, viewW * zoom, viewH * zoom, null);
             }
         };
-        panel.setPreferredSize(new Dimension(viewW * zoom, Platform.VIEW_H * zoom));
+        panel.setPreferredSize(new Dimension(viewW * zoom, viewH * zoom));
         panel.setFocusable(true);
         panel.addKeyListener(new KeyAdapter() {
             @Override public void keyPressed(KeyEvent e) { synchronized (game) { game.key(e.getKeyCode(), true); } }

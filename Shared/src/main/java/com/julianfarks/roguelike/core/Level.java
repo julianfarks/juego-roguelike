@@ -93,7 +93,7 @@ public final class Level {
         // salidas
         cleared = toKill == 0 && room.type != Room.BOSS;
         camX = Mth.clamp(pl.x - viewW / 2, 0, Math.max(0, room.pixW - viewW));
-        camY = Mth.clamp(pl.y - 160, 0, Math.max(0, room.pixH - Platform.VIEW_H));
+        camY = Mth.clamp(pl.y - 160, 0, Math.max(0, room.pixH - ViewSize.h));
     }
 
     public Prop addProp(Room.PropSpec ps) {
@@ -506,7 +506,7 @@ public final class Level {
         moteT -= dt;
         if (moteT <= 0) {
             moteT = 0.09f;
-            ps.spawn(camX + rng.f(0, viewW), camY + rng.f(0, Platform.VIEW_H), rng.f(-6, 6), -rng.f(4, 18), rng.f(2.2f, 4f), 1, 0, biome.color, true);
+            ps.spawn(camX + rng.f(0, viewW), camY + rng.f(0, ViewSize.h), rng.f(-6, 6), -rng.f(4, 18), rng.f(2.2f, 4f), 1, 0, biome.color, true);
         }
         if (pl.alive || timeScale < 1f) pl.update(this, dt);
         secrets.update(dt);
@@ -858,7 +858,7 @@ public final class Level {
     private void drawBreakTiles(Platform.Gfx g) {
         if (room.breakImg == null) return;
         int tx0 = Math.max(0, (int) camX / Room.TS), tx1 = Math.min(room.w - 1, (int) (camX + viewW) / Room.TS + 1);
-        int ty0 = Math.max(0, (int) camY / Room.TS), ty1 = Math.min(room.h - 1, (int) (camY + Platform.VIEW_H) / Room.TS + 1);
+        int ty0 = Math.max(0, (int) camY / Room.TS), ty1 = Math.min(room.h - 1, (int) (camY + ViewSize.h) / Room.TS + 1);
         for (int ty = ty0; ty <= ty1; ty++) for (int tx = tx0; tx <= tx1; tx++) {
             int i = ty * room.w + tx;
             if (room.t[i] != Room.BREAK && room.t[i] != Room.DOOR) continue;
@@ -907,7 +907,7 @@ public final class Level {
     private float anchorY = Float.NaN;
 
     private void updateCamera(float dt) {
-        float w = viewW, h = Platform.VIEW_H;
+        float w = viewW, h = ViewSize.h;
         float tx, ty;
         if (!Float.isNaN(camTargetX)) { tx = camTargetX - w / 2; ty = camTargetY - h / 2; }
         else {
@@ -932,12 +932,12 @@ public final class Level {
         updateCamera(1f);
         camX = Mth.clamp(pl.x - viewW / 2, 0, Math.max(0, room.pixW - viewW));
         anchorY = pl.y;
-        camY = Mth.clamp(pl.y - Platform.VIEW_H * 0.62f, 0, Math.max(0, room.pixH - Platform.VIEW_H));
+        camY = Mth.clamp(pl.y - ViewSize.h * 0.62f, 0, Math.max(0, room.pixH - ViewSize.h));
     }
 
     // ------------------------------------------------------------------ dibujo
     public void render(Platform.Gfx g) {
-        float w = viewW, h = Platform.VIEW_H;
+        float w = viewW, h = ViewSize.h;
         float sx = 0, sy = 0;
         if (shakeT > 0) { sx = rng.f(-shakeMag, shakeMag); sy = rng.f(-shakeMag, shakeMag); }
         drawBackground(g, sx, sy);
@@ -979,7 +979,7 @@ public final class Level {
     }
 
     private void drawBackground(Platform.Gfx g, float sx, float sy) {
-        float w = viewW, h = Platform.VIEW_H;
+        float w = viewW, h = ViewSize.h;
         float maxY = Math.max(1, room.pixH - h);
         float fy = Mth.clamp(camY / maxY, 0, 1);
         float[] fac = {0.12f, 0.30f, 0.62f};

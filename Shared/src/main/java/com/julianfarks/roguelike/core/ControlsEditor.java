@@ -69,9 +69,9 @@ final class ControlsEditor extends Screen {
 
     @Override void render(Platform.Gfx g) {
         int w = W();
-        g.rect(0, 0, w, Platform.VIEW_H, 0xFF0C0A12, false);
-        for (int x = 0; x < w; x += 24) g.rect(x, 0, 1, Platform.VIEW_H, 0x14FFFFFF, false);
-        for (int y = 0; y < Platform.VIEW_H; y += 24) g.rect(0, y, w, 1, 0x14FFFFFF, false);
+        g.rect(0, 0, w, ViewSize.h, 0xFF0C0A12, false);
+        for (int x = 0; x < w; x += 24) g.rect(x, 0, 1, ViewSize.h, 0x14FFFFFF, false);
+        for (int y = 0; y < ViewSize.h; y += 24) g.rect(0, y, w, 1, 0x14FFFFFF, false);
         UI.small.center(g, "Arrastra los botones donde quieras (izq+der = centro del joystick)", w / 2f, 34, UI.GREY, 1f);
         UI.small.center(g, "Toca uno para elegirlo y cambia su tamaño", w / 2f, 46, UI.GREY, 1f);
         for (int i = 0; i < Input.B_COUNT; i++) {

@@ -1319,8 +1319,8 @@ Límite de FPS: {}	FPS limit: {}
 V-Sync: {}	V-Sync: {}
 Mostrar FPS: {}	Show FPS: {}
 Escalado: {}	Scaling: {}
-Entero (nítido)	Integer (sharp)
-Ajustado a la ventana	Fit to window
+Llenar pantalla (nítido)	Fill screen (sharp)
+Entero (con franjas)	Integer (with bars)
 Calidad: {}	Quality: {}
 Baja	Low
 Media	Medium
@@ -1346,7 +1346,7 @@ Completa cambia la resolución del monitor.	Fullscreen changes the monitor resol
 Sin bordes usa la resolución nativa.	Borderless uses the native resolution.
 El juego simula a 60 pasos por segundo:	The game simulates at 60 steps per second:
 más de 60 FPS no añadirían fluidez.	more than 60 FPS would not add smoothness.
-Escalado entero = píxeles perfectos.	Integer scaling = perfect pixels.
+Llenar = sin franjas negras y píxeles nítidos.	Fill = no black bars and sharp pixels.
 El motor no usa sombras dinámicas,	The engine has no dynamic shadows,
 así que no hay opción de sombras.	so there is no shadow option.
 Los píxeles nunca se suavizan.	Pixels are never smoothed.

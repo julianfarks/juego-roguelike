@@ -266,10 +266,10 @@ final class Ops extends Screen {
         for (int i = 0; i < 3; i++) {
             Platform.Img im = bgl[i];
             if (im == null) continue;
-            float sc = Math.max(1f, Platform.VIEW_H / (float) im.h);
+            float sc = Math.max(1f, ViewSize.h / (float) im.h);
             float dw = im.w * sc, dh = im.h * sc;
             float off = (t * fac[i] + cam * par[i] * 4f) % dw;
-            for (float x = -off; x < w; x += dw) g.image(im, 0, 0, im.w, im.h, Math.round(x), Math.round(Platform.VIEW_H - dh), Math.round(dw), Math.round(dh), 0, 0, 1f);
+            for (float x = -off; x < w; x += dw) g.image(im, 0, 0, im.w, im.h, Math.round(x), Math.round(ViewSize.h - dh), Math.round(dw), Math.round(dh), 0, 0, 1f);
         }
         if (baked != null) g.image(baked, 0, 0, baked.w, baked.h, -ci, 0, baked.w, baked.h, 0, 0, 1f);
         g.rect(0, FLOOR, w, 6, 0x40000000, false);
@@ -289,8 +289,8 @@ final class Ops extends Screen {
         drawStations(g, w);
         ps.render(g, ci, 0);
         UI.light(g, SX[PORTAL] - ci, FLOOR - 50, 100, 0xFF5A30, 0.12f + 0.05f * (float) Math.sin(pulse * 2));
-        g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0x120408, 40), false);
-        if (UI.vignette != null) g.image(UI.vignette, 0, 0, UI.vignette.w, UI.vignette.h, 0, 0, w, Platform.VIEW_H, 0, 0, 0.7f);
+        g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x120408, 40), false);
+        if (UI.vignette != null) g.image(UI.vignette, 0, 0, UI.vignette.w, UI.vignette.h, 0, 0, w, ViewSize.h, 0, 0, 0.7f);
         drawChevrons(g, w);
         drawButtons(g);
         if (!Save.S.finalBeaten && infBtn != null) UI.icon(g, "lock", infBtn.x + infBtn.w - 15, infBtn.y + 3, 1f);
@@ -311,8 +311,8 @@ final class Ops extends Screen {
             g.rect(h.x - 2, h.y - 2, 1, h.h + 4, c, false); g.rect(h.x + h.w + 1, h.y - 2, 1, h.h + 4, c, false);
         }
         if (toastT > 0) { UI.panel(g, 0, w / 2f - 160, 76, 320, 18, 0.95f); UI.small.center(g, toast, w / 2f, 80, UI.GOLD, Mth.clamp(toastT, 0, 1)); }
-        if (k < 1) g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0x000000, (int) ((1 - k) * 255)), false);
-        if (flash > 0) g.rect(0, 0, w, Platform.VIEW_H, Mth.withAlpha(0xFFE8C0, (int) (Mth.clamp(flash * 4, 0, 1) * 70)), true);
+        if (k < 1) g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x000000, (int) ((1 - k) * 255)), false);
+        if (flash > 0) g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0xFFE8C0, (int) (Mth.clamp(flash * 4, 0, 1) * 70)), true);
     }
 
     private void drawChevrons(Platform.Gfx g, int w) {

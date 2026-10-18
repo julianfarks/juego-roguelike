@@ -65,7 +65,7 @@ final class PcWindow {
     private boolean fullscreenActive;
 
     // rectangulo de dibujo (en pixeles del lienzo) y tamano virtual; los lee el hilo de entrada y el de render
-    private volatile int dstX, dstY, dstW = 1, dstH = 1, viewW = 480;
+    private volatile int dstX, dstY, dstW = 1, dstH = 1, viewW = 480, viewH = Platform.VIEW_H;
     private volatile float scale = 1f;
     private BufferedImage screen;
 
@@ -138,11 +138,12 @@ final class PcWindow {
     VideoCfg config() { return cfg; }
 
     int viewW() { return viewW; }
+    int viewH() { return viewH; }
 
     // ------------------------------------------------------------------ crear / aplicar
     /** Crea la ventana con la configuracion dada (hilo principal, antes del bucle). */
     void open(final VideoCfg c) throws Exception {
-        if (headless) { cfg = c.copy(); viewW = 480; screen = new BufferedImage(480, VIEW_H, BufferedImage.TYPE_INT_ARGB); return; }
+        if (headless) { cfg = c.copy(); viewW = 480; viewH = VIEW_H; screen = new BufferedImage(480, VIEW_H, BufferedImage.TYPE_INT_ARGB); return; }
         if (SwingUtilities.isEventDispatchThread()) build(c); else SwingUtilities.invokeAndWait(new Runnable() { @Override public void run() { build(c); } });
     }
 
@@ -201,7 +202,8 @@ final class PcWindow {
             if (c.mode == VideoCfg.MODE_WINDOW) {
                 f.setUndecorated(false);
                 f.setResizable(true);
-                canvas.setPreferredSize(new java.awt.Dimension(c.resW, c.resH));
+                // una ventana guardada en otro monitor mas grande no debe salirse de esta pantalla
+                canvas.setPreferredSize(new java.awt.Dimension(Math.min(c.resW, n[0]), Math.min(c.resH, n[1])));
                 f.pack();
                 if (oldBounds != null && !first) f.setLocation(Math.max(0, oldBounds.x + (oldBounds.width - f.getWidth()) / 2), Math.max(0, oldBounds.y + (oldBounds.height - f.getHeight()) / 2));
                 else f.setLocationRelativeTo(null);
@@ -321,26 +323,16 @@ final class PcWindow {
         if (c == null) return false;
         int cw = c.getWidth(), ch = c.getHeight();
         if (cw < 16 || ch < 16) return false;
-        int vw;
-        float s;
-        if (cfg.scaleMode == 0) {
-            int k = Math.max(1, (int) Math.floor(Math.min(cw / 480f, ch / (float) VIEW_H)));
-            vw = Math.max(480, Math.min(640, cw / k));
-            s = k;
-        } else {
-            vw = Math.max(480, Math.min(640, Math.round(VIEW_H * (float) cw / ch)));
-            s = Math.min(cw / (float) vw, ch / (float) VIEW_H);
-        }
-        int dw = Math.round(vw * s), dh = Math.round(VIEW_H * s);
-        dstW = dw; dstH = dh; dstX = (cw - dw) / 2; dstY = (ch - dh) / 2; scale = s;
-        boolean changed = vw != viewW || screen == null;
-        viewW = vw;
+        ViewLayout L = ViewLayout.compute(cw, ch, cfg.scaleMode == 1 ? ViewLayout.INTEGER : ViewLayout.FILL);
+        dstW = L.dstW; dstH = L.dstH; dstX = L.dstX; dstY = L.dstY; scale = L.scale;
+        boolean changed = L.vw != viewW || L.vh != viewH || screen == null;
+        viewW = L.vw; viewH = L.vh;
         return changed;
     }
 
     /** Imagen virtual donde dibuja el motor (se recrea si cambia el ancho virtual). */
     BufferedImage screen() {
-        if (screen == null || screen.getWidth() != viewW) screen = new BufferedImage(viewW, VIEW_H, BufferedImage.TYPE_INT_ARGB);
+        if (screen == null || screen.getWidth() != viewW || screen.getHeight() != viewH) screen = new BufferedImage(viewW, viewH, BufferedImage.TYPE_INT_ARGB);
         return screen;
     }
 

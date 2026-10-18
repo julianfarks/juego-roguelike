@@ -1319,8 +1319,8 @@ Límite de FPS: {}	帧率上限：{}
 V-Sync: {}	垂直同步：{}
 Mostrar FPS: {}	显示帧率：{}
 Escalado: {}	缩放：{}
-Entero (nítido)	整数（清晰）
-Ajustado a la ventana	适应窗口
+Llenar pantalla (nítido)	填满屏幕（清晰）
+Entero (con franjas)	整数（有黑边）
 Calidad: {}	画质：{}
 Baja	低
 Media	中
@@ -1346,7 +1346,7 @@ Completa cambia la resolución del monitor.	全屏会更改显示器分辨率。
 Sin bordes usa la resolución nativa.	无边框使用原生分辨率。
 El juego simula a 60 pasos por segundo:	游戏以每秒 60 步模拟：
 más de 60 FPS no añadirían fluidez.	超过 60 帧不会更流畅。
-Escalado entero = píxeles perfectos.	整数缩放 = 完美像素。
+Llenar = sin franjas negras y píxeles nítidos.	填满 = 无黑边且像素清晰。
 El motor no usa sombras dinámicas,	引擎没有动态阴影，
 así que no hay opción de sombras.	所以没有阴影选项。
 Los píxeles nunca se suavizan.	像素从不平滑处理。

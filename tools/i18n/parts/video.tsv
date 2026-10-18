@@ -11,8 +11,8 @@ Límite de FPS: {}	FPS limit: {}	Limite de FPS : {}	帧率上限：{}
 V-Sync: {}	V-Sync: {}	V-Sync : {}	垂直同步：{}
 Mostrar FPS: {}	Show FPS: {}	Afficher les FPS : {}	显示帧率：{}
 Escalado: {}	Scaling: {}	Mise à l'échelle : {}	缩放：{}
-Entero (nítido)	Integer (sharp)	Entière (nette)	整数（清晰）
-Ajustado a la ventana	Fit to window	Ajustée à la fenêtre	适应窗口
+Llenar pantalla (nítido)	Fill screen (sharp)	Remplir l'écran (net)	填满屏幕（清晰）
+Entero (con franjas)	Integer (with bars)	Entière (avec bandes)	整数（有黑边）
 Calidad: {}	Quality: {}	Qualité : {}	画质：{}
 Baja	Low	Basse	低
 Media	Medium	Moyenne	中
@@ -38,7 +38,7 @@ Completa cambia la resolución del monitor.	Fullscreen changes the monitor resol
 Sin bordes usa la resolución nativa.	Borderless uses the native resolution.	Sans bordures utilise la résolution native.	无边框使用原生分辨率。
 El juego simula a 60 pasos por segundo:	The game simulates at 60 steps per second:	Le jeu simule à 60 pas par seconde :	游戏以每秒 60 步模拟：
 más de 60 FPS no añadirían fluidez.	more than 60 FPS would not add smoothness.	plus de 60 FPS n'ajouteraient aucune fluidité.	超过 60 帧不会更流畅。
-Escalado entero = píxeles perfectos.	Integer scaling = perfect pixels.	Échelle entière = pixels parfaits.	整数缩放 = 完美像素。
+Llenar = sin franjas negras y píxeles nítidos.	Fill = no black bars and sharp pixels.	Remplir = sans bandes noires et pixels nets.	填满 = 无黑边且像素清晰。
 El motor no usa sombras dinámicas,	The engine has no dynamic shadows,	Le moteur n'a pas d'ombres dynamiques,	引擎没有动态阴影，
 así que no hay opción de sombras.	so there is no shadow option.	donc pas d'option d'ombres.	所以没有阴影选项。
 Los píxeles nunca se suavizan.	Pixels are never smoothed.	Les pixels ne sont jamais lissés.	像素从不平滑处理。

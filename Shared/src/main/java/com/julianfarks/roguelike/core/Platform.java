@@ -125,6 +125,8 @@ public interface Platform {
         void init(Platform p);
         /** viewW en pixeles virtuales (480..640); el alto es siempre VIEW_H. */
         void resize(int viewW);
+        /** Igual, pero la plataforma tambien indica el alto virtual (270..320, ver ViewSize). Por defecto solo cambia el ancho. */
+        default void resize(int viewW, int viewH) { resize(viewW); }
         /** Paso fijo de 1/60 s. */
         void update(float dt);
         void render(Gfx g);

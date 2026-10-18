@@ -35,7 +35,7 @@ final class Cinematic extends Screen {
     @Override void layout() {
         hits.clear();
         int w = W();
-        add(0, 0, w, Platform.VIEW_H, null, this::tap).plain = true;
+        add(0, 0, w, ViewSize.h, null, this::tap).plain = true;
         Hit sk = add(w - 62, 6, 56, 16, "Saltar", this::skip);
         sk.noSound = false;
     }
@@ -118,7 +118,7 @@ final class Cinematic extends Screen {
     private int subIndex() { int k = 0, bg = cine.slides[slide].bg; for (int i = slide - 1; i >= 0 && cine.slides[i].bg == bg; i--) k++; return k; }
 
     private void transition(Platform.Gfx g, int w, float p) {
-        int H = Platform.VIEW_H;
+        int H = ViewSize.h;
         p = Mth.clamp(p, 0, 1);
         switch (transType) {
             case 1: g.rect(0, 0, w, H, Mth.withAlpha(0xFFFFFF, (int) (p * 255)), false); break;                         // destello blanco
@@ -146,8 +146,8 @@ final class Cinematic extends Screen {
         ps.render(g, 0, 0);
         // bandas de cine
         g.rect(0, 0, w, 26, 0xFF000000, false);
-        g.rect(0, Platform.VIEW_H - 26, w, 26, 0xFF000000, false);
-        if (UI.vignette != null) g.image(UI.vignette, 0, 0, UI.vignette.w, UI.vignette.h, 0, 0, w, Platform.VIEW_H, 0, 0, 0.6f);
+        g.rect(0, ViewSize.h - 26, w, 26, 0xFF000000, false);
+        if (UI.vignette != null) g.image(UI.vignette, 0, 0, UI.vignette.w, UI.vignette.h, 0, 0, w, ViewSize.h, 0, 0, 0.6f);
         // titulo de la cinematica al inicio
         if (slide == 0 && slideT < 3.2f) {
             float a = Mth.clamp(Math.min(slideT / 0.8f, (3.2f - slideT) / 0.8f), 0, 1);

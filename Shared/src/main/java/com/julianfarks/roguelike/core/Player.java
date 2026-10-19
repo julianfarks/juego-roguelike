@@ -210,7 +210,7 @@ public final class Player extends Ent {
             if (in.pressed(Input.B_WSEC)) { selWant = 2; swapBuf = 0.16f; }
             if (swapBuf > 0 && selWant != 0) {      // seleccion directa: nunca ataca ni reinicia nada; si ya esta elegida no hace nada
                 if (Arsenal.isSelected(lv.rs, selWant == 2)) { swapBuf = 0; selWant = 0; }
-                else if ((state == IDLE || state == RUN || state == AIR) && !guarding) { Arsenal.select(lv, this, selWant == 2); swapBuf = 0; selWant = 0; }
+                else if ((state == IDLE || state == RUN || state == AIR || state == SKILL) && !guarding) { Arsenal.select(lv, this, selWant == 2); swapBuf = 0; selWant = 0; }
             } else selWant = 0;
             if (state != HURT && state != ULT && state != ROLL) {
                 if (in.pressed(Input.B_SEC)) Items.useSecondary(lv, this);

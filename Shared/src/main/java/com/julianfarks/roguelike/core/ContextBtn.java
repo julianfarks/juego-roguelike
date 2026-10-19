@@ -75,7 +75,7 @@ final class ContextBtn {
         String cap = touch ? null : sc.glyphText(Input.B_INTERACT);
         float capW = cap == null ? 0 : UI.small.width(cap) + 8;
         float tw = UI.big.width(up);
-        float want = 10 + 22 + 6 + (cap == null ? 0 : capW + 6) + tw + (touch ? 22 : 12);
+        float want = Math.max(104, 10 + 22 + 6 + (cap == null ? 0 : capW + 6) + tw + (touch ? 22 : 12));
         float H0 = ViewSize.h;
         // jugador en pantalla (pies y cabeza)
         float z = lv.camZoom;

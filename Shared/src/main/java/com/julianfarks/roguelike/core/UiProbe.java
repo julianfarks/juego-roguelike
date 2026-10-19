@@ -30,6 +30,7 @@ final class UiProbe {
             for (int c : new int[]{'A', 'D', 'W', 'S', 37, 38, 39, 40, 'J', 'K', 'R', 'T', 'E', 32}) g.key(c, false);
             sc.rs.sec = Items.SEC_BOW; sc.rs.secAmmo = 12; sc.rs.wState[Items.SEC_BOW] = 1; sc.rs.secActive = false; sc.rs.gren = 1; sc.rs.grenCount = 3;
             lv.enemies.clear(); lv.toKill = 0; lv.cleared = true; p.invuln = 999;
+            p.state = Player.IDLE; p.animName = "idle"; p.animT = 0; p.vx = 0; lv.projs.clear();
             System.out.println("AT escena ui frame=" + frame + " ancho=" + sc.W() + " alto=" + ViewSize.h + " touchUi=" + g.touchUiVisible());
             return;
         }
@@ -54,18 +55,19 @@ final class UiProbe {
             for (int i = 0; i < Input.B_COUNT; i++) if (in.btn[i].visible && in.btn[i].r < 11 && i != Input.B_INV) small += " " + Input.NAMES[i];
             ck("botones con tamano tactil razonable (r>=11)" + small, small.isEmpty());
         }
+        if (f < 22 && System.getenv("UI_DBG") != null) System.out.println("DBG f=" + f + " st=" + p.state + " anim=" + p.animName + " projs=" + lv.projs.size() + " ammo=" + rs.secAmmo + " sec=" + rs.secActive);
         if (f == 5) { Input.Btn b = in.btn[Input.B_WSEC]; touch(sc, b.cx, b.cy); }
         if (f == 7) { Input.Btn b = in.btn[Input.B_WSEC]; release(sc, b.cx, b.cy); }
         if (f == 20) {
-            ck("2 tocar el espacio de la secundaria la selecciona" + (touchUi ? "" : " (clic)"), rs.secActive);
-            ck("2b seleccionar no dispara ni gasta municion", rs.secAmmo == 12 && lv.projs.isEmpty());
+            ck("2 tocar el espacio de la secundaria la selecciona" + (touchUi ? "" : " (clic)") + " [ov=" + sc.ov + " cin=" + lv.cinematic + " fade=" + sc.fadeMode + " alive=" + p.alive + " st=" + p.state + " swapCd=" + p.swapCd + " sel=" + p.selWant + " buf=" + p.swapBuf + " tut=" + Tutorial.done(Tutorial.CONTROLS) + "]", rs.secActive);
+            ck("2b seleccionar no dispara ni gasta municion [ammo=" + rs.secAmmo + " projs=" + lv.projs.size() + " own=" + !noOwnShots(lv) + " st=" + p.state + " anim=" + p.animName + "]", rs.secAmmo == 12 && noOwnShots(lv));
         }
         if (f == 22) { Input.Btn b = in.btn[Input.B_WMAIN]; touch(sc, b.cx, b.cy); }
         if (f == 24) { Input.Btn b = in.btn[Input.B_WMAIN]; release(sc, b.cx, b.cy); }
         if (f == 40) ck("2c tocar el espacio de la principal la selecciona", !rs.secActive && rs.secAmmo == 12);
         if (f == 41) { Input.Btn b = in.btn[Input.B_WMAIN]; touch(sc, b.cx, b.cy); }
         if (f == 43) { Input.Btn b = in.btn[Input.B_WMAIN]; release(sc, b.cx, b.cy); }
-        if (f == 50) ck("2d volver a tocar la ya seleccionada no reinicia animacion ni ataca", !rs.secActive && p.swapAnimT <= 0 && p.swapCd <= 0 && lv.projs.isEmpty());
+        if (f == 50) ck("2d volver a tocar la ya seleccionada no reinicia animacion ni ataca", !rs.secActive && p.swapAnimT <= 0 && p.swapCd <= 0 && noOwnShots(lv));
         if (f == 51) { Input.Btn b = in.btn[Input.B_WSEC]; touch(sc, b.cx, b.cy); }
         if (f == 53) { Input.Btn b = in.btn[Input.B_WSEC]; release(sc, b.cx, b.cy); }
         if (f == 70) { ammo0 = rs.secAmmo; ck("3a secundaria seleccionada de nuevo", rs.secActive); }
@@ -132,8 +134,8 @@ final class UiProbe {
                 ck("13 " + kind + ": una pulsacion = una sola interaccion (enfriamiento activo)", sc.ctx.cd > 0);
             }
             if (sub == 60) closeAll(sc);
-            if (sub == 62) { p.x = Math.min(lv.room.pixW - 40, p.x + 260); if (Math.abs(p.x - prop.x) < 100) p.x = Math.max(40, prop.x - 260); }
-            if (sub == 78) ck("9 " + kind + ": al alejarse el boton desaparece", !sc.ctx.vis && sc.ctx.cur == null);
+            if (sub == 62) { p.safeX = p.x; p.safeY = p.y; float r = Math.min(lv.room.pixW - 40, prop.x + 260), l = Math.max(40, prop.x - 260); p.x = Math.abs(r - prop.x) >= Math.abs(prop.x - l) ? r : l; p.vx = 0; p.safeX = p.x; p.safeY = p.y; }
+            if (sub == 78) ck("9 " + kind + ": al alejarse el boton desaparece [px=" + (int) p.x + " prop=" + (int) prop.x + " pw=" + lv.room.pixW + " cur=" + (sc.ctx.cur == null ? "null" : sc.ctx.cur.kind) + " ov=" + sc.ov + "]", !sc.ctx.vis && sc.ctx.cur == null);
         }
         if (f == c0 + 80 * KINDS.length + 2) {
             boolean bad = false;
@@ -151,6 +153,7 @@ final class UiProbe {
         if (touchUi(sc)) { touch(sc, c.x + c.w / 2f, c.y + c.h / 2f); release(sc, c.x + c.w / 2f, c.y + c.h / 2f); }
         else { touch(sc, c.x + c.w / 2f, c.y + c.h / 2f); release(sc, c.x + c.w / 2f, c.y + c.h / 2f); }
     }
+    static boolean noOwnShots(Level lv) { for (Proj q : lv.projs) if (q.friendly && !q.dead) return false; return true; }
     static boolean touchUi(RunScreen sc) { return sc.game.touchUiVisible(); }
 
     /** El boton debe estar dentro de la pantalla, abajo/centro, sin pisar botones tactiles, espacios de arma, vida ni al personaje. */

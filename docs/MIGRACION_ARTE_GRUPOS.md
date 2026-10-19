@@ -9,6 +9,14 @@ Referencia de calidad: Paladín del Alba con casco cerrado. Cada grupo se integr
 - Pruebas (headless, no Android/Windows reales): anim_sheets_check, anim_test (40/0), arsenal_test (254), combat_test, hud_test, ui_test: OK.
 - Para revertir: restaurar esos 4 PNG y `cls_paladin.py` del commit anterior.
 
+## Grupo 2 — Las otras 9 clases (INTEGRADO, un commit por clase)
+Orden: shadow, flame, storm, frost, verdant, blood, earth, astral, steel. Solo cambia `draw`/`init_mats` en cada `cls_*.py` (Dims, cintas, animaciones y ataques intactos).
+- Cada clase: placas/ropa con juntas y filos de luz, hombrera en laminas o charretera, yelmo/capucha/mascara con mas estructura, brazales, cinturon, y arma con guarda, bisel o abrazaderas propias de su tema.
+- Cadena por clase: `tools/art_players/regen_class.sh <clase>` (build_all -> smear -> unarmed -> polish y restaura el JSON funcional). Comparacion: `tools/art_players/cmp_class.py <clase>` -> `docs/capturas_arte/<clase>_grupo2_*.png`.
+- Los 10 `pl_*.json` son identicos al estado previo al grupo 2 (anclajes, cajas, tiempos). `anim_sheets_check` OK para las 10 clases.
+- Limite honesto: son mejoras de acabado (estructura, materiales, filos de luz), no cambios de silueta. Los smear de shadow y steel salen algo mas apagados porque se derivan de la paleta del sprite.
+- Revertir una clase: `git revert <commit de esa clase>`.
+- Pruebas headless: anim_test 40/0, combat, hud, ui OK. arsenal_test dio 253/254 una vez y 254/254 en 3 repeticiones siguientes (intermitente, no reproducido ni atribuido).
+
 ## Pendiente (sin tocar)
-- Clases: shadow, flame, storm, frost, verdant, blood, earth, astral, steel (`tools/art_players/cls_*.py`).
 - Enemigos (40, `tools/art_enemies/en_*.py`), minibosses/élites y jefes (`tools/art_bosses/boss_*.py`).

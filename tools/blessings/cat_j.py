@@ -39,5 +39,5 @@ B('J', U, 'corazon_ardiente', ('Corazón Ardiente', 'Burning Heart', 'Cœur arde
   ['KILL|v:burn|HEARTDROP|icd=25'], ic=('heart', 'flame', 'fire'))
 B('J', L, 'convergencia', ('Convergencia Elemental', 'Elemental Convergence', 'Convergence élémentaire', '元素汇聚'),
   ('En combate, cada 8 s un anillo de fuego y uno de hielo salen de ti y caen 2 rayos.', 'In combat, every 8 s a ring of fire and a ring of ice burst from you and 2 lightning bolts strike.', 'En combat, toutes les 8 s un anneau de feu et un de glace jaillissent de vous et 2 éclairs frappent.', '战斗中每8秒，火焰环和寒冰环从你身上迸发，并落下2道闪电。'),
-  ['TICK|r:combat|PROJ:ring,8,0.6,burn every=8', 'TICK|r:combat|PROJ:ring,8,0.6,slow every=8', 'TICK|r:combat|STRIKE:2,1.0 every=8'], stage=1,
+  ['TICK|r:combat|PROJ:ring,8,0.6,burn|every=8', 'TICK|r:combat|PROJ:ring,8,0.6,slow|every=8', 'TICK|r:combat|STRIKE:2,1.0|every=8'], stage=1,
   req=('has', 3, ['BRASAS', 'GLACIAL', 'CHISPA', 'llama_voraz', 'escarcha_quebradiza', 'carga_estatica', 'fuego_rayo', 'choque_termico']), ic=('orb', 'sun', 'white'))

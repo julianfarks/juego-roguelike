@@ -72,7 +72,7 @@ B('B', U, 'conductor', ('Conductor', 'Conductor', 'Conducteur', '导体'),
 B('B', L, 'tempestad_eterna', ('Tempestad Eterna', 'Eternal Tempest', 'Tempête éternelle', '永恒风暴'),
   ('En combate, cada 4 s caen 3 rayos sobre enemigos al azar.', 'In combat, every 4 s three lightning bolts strike random enemies.',
    'En combat, toutes les 4 s trois éclairs frappent des ennemis au hasard.', '战斗中每4秒有3道闪电劈向随机敌人。'),
-  ['TICK|r:combat|STRIKE:3,1.1 every=4'], stage=2, req=('has', 2, ['carga_estatica', 'pararrayos', 'voltio_arcano', 'bateria', 'descarga_mayor', 'conductor', 'CHISPA']),
+  ['TICK|r:combat|STRIKE:3,1.1|every=4'], stage=2, req=('has', 2, ['carga_estatica', 'pararrayos', 'voltio_arcano', 'bateria', 'descarga_mayor', 'conductor', 'CHISPA']),
   ic=('bolt', 'sun', 'yel'))
 B('B', U, 'ponzona_virulenta', ('Ponzoña Virulenta', 'Virulent Venom', 'Venin virulent', '剧毒'),
   ('Tus estados alterados duran 40% más.', 'Your status effects last 40% longer.', 'Vos états altérés durent 40 % plus longtemps.', '你的异常状态持续时间延长40%。'),

@@ -19,6 +19,7 @@ public final class BlessFx {
 
     public static final int SRC_NONE = 0, SRC_W = 1, SRC_S = 2, SRC_P = 3, SRC_DOT = 4, SRC_COMP = 5, SRC_X = 6;
     static final float DMG_CAP = 3.0f;
+    static long dbgNsUpdate, dbgNsDraw;                       // medicion de rendimiento (banco de pruebas)
 
     static BlessRt rt(RunState rs) { if (rs.bx == null) rs.bx = new BlessRt(); return rs.bx; }
 
@@ -546,7 +547,7 @@ public final class BlessFx {
         if (r.icd > 0 && bx.icd[r.idx] > bx.t) return;
         if (!check(lv, bx, r, v, src)) return;
         if (r.ch > 0 && !lv.rng.chance(r.ch)) return;
-        if (bx.perSecond > 90) return;
+        if (bx.perSecond >= 90) return;
         bx.perSecond++;
         if (r.icd > 0) bx.icd[r.idx] = bx.t + r.icd;
         bx.depth++;

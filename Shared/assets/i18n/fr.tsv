@@ -424,7 +424,7 @@ Contra enemigos malditos robas un 4% del daño como vida.	Contre les ennemis mau
 Crítico Maldito	Critique maudit
 +20% de probabilidad de crítico contra enemigos malditos.	+20 % de chance de critique contre les ennemis maudits.
 Forma de Sombra	Forme d'ombre
-Tu definitiva te transforma 8 s: +30% de daño, +25% de velocidad y -20% de daño recibido; dejas un rastro de sombra y maldices al enemigo más sano.	Votre ultime vous transforme 8 s : +30 % de dégâts, +25 % de vitesse et -20 % de dégâts reçus ; vous laissez une traînée d'ombre et maudissez l'ennemi le plus sain.
+Tu definitiva te transforma 8 s: +30% de daño, +25% de velocidad, -20% de daño recibido y rastro de sombra; maldice al enemigo más sano.	Votre ultime vous transforme 8 s : +30 % dégâts, +25 % vitesse, -20 % dégâts reçus et traînée d'ombre ; maudit l'ennemi le plus sain.
 Forma Bestial	Forme bestiale
 Al caer por debajo del 35% de vida te transformas 6 s: +30% de velocidad de ataque y +20% de velocidad (cada 30 s).	Passer sous 35 % de vie vous transforme 6 s : +30 % de vitesse d'attaque et +20 % de vitesse (toutes les 30 s).
 Forma Espectral	Forme spectrale
@@ -462,7 +462,7 @@ Los enemigos en llamas pueden soltar un corazón al morir (cada 25 s).	Les ennem
 Convergencia Elemental	Convergence élémentaire
 En combate, cada 8 s un anillo de fuego y uno de hielo salen de ti y caen 2 rayos.	En combat, toutes les 8 s un anneau de feu et un de glace jaillissent de vous et 2 éclairs frappent.
 Infierno	Enfer
-Tus golpes contra enemigos en llamas propagan el fuego a los cercanos (cada 0,6 s) y los quemados reciben +10% de daño.	Vos coups sur des ennemis en flammes propagent le feu aux proches (toutes les 0,6 s) et les ennemis en flammes subissent +10 % de dégâts.
+Tus golpes contra enemigos en llamas propagan el fuego a los cercanos (cada 0,6 s) y los quemados reciben +10% de daño.	Vos coups sur un ennemi en flammes propagent le feu aux proches (0,6 s) ; les ennemis en flammes subissent +10 % de dégâts.
 Cripta de Hielo	Crypte de glace
 Tus críticos contra enemigos ralentizados o congelados estallan en escarcha (70% de daño, cada 0,8 s).	Vos critiques contre les ennemis ralentis ou gelés explosent en givre (70 % de dégâts, toutes les 0,8 s).
 Tormenta Viva	Tempête vivante
@@ -484,7 +484,7 @@ Cada esquiva carga un 8% de tu definitiva y potencia tu siguiente habilidad un 4
 Alquimia Mayor	Grande alchimie
 Cada moneda carga 1,5% de tu definitiva y cada alma 3%; con 100 de oro o más haces +8% de daño.	Chaque pièce charge 1,5 % de votre ultime et chaque âme 3 % ; avec 100 d'or ou plus, vous infligez +8 % de dégâts.
 Legión del Más Allá	Légion de l'au-delà
-Mientras tengas espíritus haces +10% de daño; al ser herido uno te protege con 12 de escudo (cada 8 s).	Tant que vous avez des esprits, vous infligez +10 % de dégâts ; si vous êtes blessé, l'un d'eux vous protège avec 12 de bouclier (toutes les 8 s).
+Mientras tengas espíritus haces +10% de daño; al ser herido uno te protege con 12 de escudo (cada 8 s).	Avec des esprits, +10 % de dégâts ; si vous êtes blessé, l'un d'eux vous donne 12 de bouclier (toutes les 8 s).
 Oscuridad Total	Ténèbres totales
 Los enemigos malditos reciben +15% de daño extra y al morir cargan un 5% de tu definitiva.	Les ennemis maudits subissent +15 % de dégâts supplémentaires et chargent 5 % de votre ultime à leur mort.
 Pacto del Riesgo	Pacte du risque

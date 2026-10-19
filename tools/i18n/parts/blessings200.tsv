@@ -305,7 +305,7 @@ Contra enemigos malditos robas un 4% del daño como vida.	Against cursed enemies
 Crítico Maldito	Cursed Critical	Critique maudit	诅咒暴击
 +20% de probabilidad de crítico contra enemigos malditos.	+20% critical chance against cursed enemies.	+20 % de chance de critique contre les ennemis maudits.	对被诅咒的敌人暴击率+20%。
 Forma de Sombra	Shadow Form	Forme d'ombre	暗影形态
-Tu definitiva te transforma 8 s: +30% de daño, +25% de velocidad y -20% de daño recibido; dejas un rastro de sombra y maldices al enemigo más sano.	Your ultimate transforms you for 8 s: +30% damage, +25% speed and -20% damage taken; you leave a shadow trail and curse the healthiest enemy.	Votre ultime vous transforme 8 s : +30 % de dégâts, +25 % de vitesse et -20 % de dégâts reçus ; vous laissez une traînée d'ombre et maudissez l'ennemi le plus sain.	终极技能使你变身8秒：伤害+30%，速度+25%，受到伤害-20%；留下暗影轨迹并诅咒最健康的敌人。
+Tu definitiva te transforma 8 s: +30% de daño, +25% de velocidad, -20% de daño recibido y rastro de sombra; maldice al enemigo más sano.	Your ultimate transforms you for 8 s: +30% damage, +25% speed, -20% damage taken and a shadow trail; curses the healthiest enemy.	Votre ultime vous transforme 8 s : +30 % dégâts, +25 % vitesse, -20 % dégâts reçus et traînée d'ombre ; maudit l'ennemi le plus sain.	终极技能使你变身8秒：伤害+30%，速度+25%，受到伤害-20%；留下暗影轨迹并诅咒最健康的敌人。
 Forma Bestial	Beast Form	Forme bestiale	野兽形态
 Al caer por debajo del 35% de vida te transformas 6 s: +30% de velocidad de ataque y +20% de velocidad (cada 30 s).	Dropping below 35% health transforms you for 6 s: +30% attack speed and +20% speed (every 30 s).	Passer sous 35 % de vie vous transforme 6 s : +30 % de vitesse d'attaque et +20 % de vitesse (toutes les 30 s).	生命低于35%时变身6秒：攻击速度+30%，移动速度+20%（每30秒）。
 Forma Espectral	Spectral Form	Forme spectrale	幽魂形态
@@ -343,7 +343,7 @@ Los enemigos en llamas pueden soltar un corazón al morir (cada 25 s).	Burning e
 Convergencia Elemental	Elemental Convergence	Convergence élémentaire	元素汇聚
 En combate, cada 8 s un anillo de fuego y uno de hielo salen de ti y caen 2 rayos.	In combat, every 8 s a ring of fire and a ring of ice burst from you and 2 lightning bolts strike.	En combat, toutes les 8 s un anneau de feu et un de glace jaillissent de vous et 2 éclairs frappent.	战斗中每8秒，火焰环和寒冰环从你身上迸发，并落下2道闪电。
 Infierno	Inferno	Enfer	炼狱
-Tus golpes contra enemigos en llamas propagan el fuego a los cercanos (cada 0,6 s) y los quemados reciben +10% de daño.	Your hits on burning enemies spread the fire to nearby ones (every 0.6 s) and burning enemies take +10% damage.	Vos coups sur des ennemis en flammes propagent le feu aux proches (toutes les 0,6 s) et les ennemis en flammes subissent +10 % de dégâts.	你对燃烧敌人的攻击会将火焰传给附近敌人（每0.6秒），燃烧的敌人受到的伤害+10%。
+Tus golpes contra enemigos en llamas propagan el fuego a los cercanos (cada 0,6 s) y los quemados reciben +10% de daño.	Your hits on burning enemies spread the fire to nearby ones (every 0.6 s) and burning enemies take +10% damage.	Vos coups sur un ennemi en flammes propagent le feu aux proches (0,6 s) ; les ennemis en flammes subissent +10 % de dégâts.	你对燃烧敌人的攻击会将火焰传给附近敌人（每0.6秒），燃烧的敌人受到的伤害+10%。
 Cripta de Hielo	Ice Crypt	Crypte de glace	寒冰地窖
 Tus críticos contra enemigos ralentizados o congelados estallan en escarcha (70% de daño, cada 0,8 s).	Your critical hits against slowed or frozen enemies burst into frost (70% damage, every 0.8 s).	Vos critiques contre les ennemis ralentis ou gelés explosent en givre (70 % de dégâts, toutes les 0,8 s).	你对减速或冰冻敌人的暴击会爆发寒霜（70%伤害，每0.8秒）。
 Tormenta Viva	Living Storm	Tempête vivante	活风暴
@@ -365,7 +365,7 @@ Cada esquiva carga un 8% de tu definitiva y potencia tu siguiente habilidad un 4
 Alquimia Mayor	Grand Alchemy	Grande alchimie	大炼金术
 Cada moneda carga 1,5% de tu definitiva y cada alma 3%; con 100 de oro o más haces +8% de daño.	Each coin charges 1.5% of your ultimate and each soul 3%; with 100 gold or more you deal +8% damage.	Chaque pièce charge 1,5 % de votre ultime et chaque âme 3 % ; avec 100 d'or ou plus, vous infligez +8 % de dégâts.	每枚金币为终极技能充能1.5%，每个灵魂3%；持有100以上金币时伤害+8%。
 Legión del Más Allá	Legion Beyond	Légion de l'au-delà	彼岸军团
-Mientras tengas espíritus haces +10% de daño; al ser herido uno te protege con 12 de escudo (cada 8 s).	While you have spirits you deal +10% damage; when hurt, one shields you for 12 (every 8 s).	Tant que vous avez des esprits, vous infligez +10 % de dégâts ; si vous êtes blessé, l'un d'eux vous protège avec 12 de bouclier (toutes les 8 s).	拥有精灵时伤害+10%；受伤时一只精灵为你提供12点护盾（每8秒）。
+Mientras tengas espíritus haces +10% de daño; al ser herido uno te protege con 12 de escudo (cada 8 s).	While you have spirits you deal +10% damage; when hurt, one shields you for 12 (every 8 s).	Avec des esprits, +10 % de dégâts ; si vous êtes blessé, l'un d'eux vous donne 12 de bouclier (toutes les 8 s).	拥有精灵时伤害+10%；受伤时一只精灵为你提供12点护盾（每8秒）。
 Oscuridad Total	Total Darkness	Ténèbres totales	无尽黑暗
 Los enemigos malditos reciben +15% de daño extra y al morir cargan un 5% de tu definitiva.	Cursed enemies take +15% extra damage and charge 5% of your ultimate when they die.	Les ennemis maudits subissent +15 % de dégâts supplémentaires et chargent 5 % de votre ultime à leur mort.	被诅咒的敌人受到的伤害额外+15%，死亡时为终极技能充能5%。
 Pacto del Riesgo	Risk Pact	Pacte du risque	风险契约

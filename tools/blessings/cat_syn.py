@@ -9,7 +9,7 @@ def SS(key, names, descs, need, members, rules):
 
 SS('infierno', ('Infierno', 'Inferno', 'Enfer', '炼狱'),
    ('Tus golpes contra enemigos en llamas propagan el fuego a los cercanos (cada 0,6 s) y los quemados reciben +10% de daño.', 'Your hits on burning enemies spread the fire to nearby ones (every 0.6 s) and burning enemies take +10% damage.',
-    'Vos coups sur des ennemis en flammes propagent le feu aux proches (toutes les 0,6 s) et les ennemis en flammes subissent +10 % de dégâts.', '你对燃烧敌人的攻击会将火焰传给附近敌人（每0.6秒），燃烧的敌人受到的伤害+10%。'),
+    'Vos coups sur un ennemi en flammes propagent le feu aux proches (0,6 s) ; les ennemis en flammes subissent +10 % de dégâts.', '你对燃烧敌人的攻击会将火焰传给附近敌人（每0.6秒），燃烧的敌人受到的伤害+10%。'),
    3, 'BRASAS llama_voraz brasa_critica contagio_igneo pira aliento_dragon rastro_ardiente combustion llama_fatua disparo_incendiario parry_fuego corazon_ardiente fuego_rayo sangre_hirviente'.split(),
    ['HIT|v:burn|SPREAD:burn,70|icd=0.6', 'MOD|v:burn|DMG:0.10'])
 SS('cripta_hielo', ('Cripta de Hielo', 'Ice Crypt', 'Crypte de glace', '寒冰地窖'),
@@ -64,7 +64,7 @@ SS('alquimia_mayor', ('Alquimia Mayor', 'Grand Alchemy', 'Grande alchimie', '大
    ['PICK|-|ULT:1.5|what=gold', 'PICK|-|ULT:3|what=soul', 'MOD|p:gold>=100|DMG:0.08'])
 SS('legion_mas_alla', ('Legión del Más Allá', 'Legion Beyond', 'Légion de l\'au-delà', '彼岸军团'),
    ('Mientras tengas espíritus haces +10% de daño; al ser herido uno te protege con 12 de escudo (cada 8 s).', 'While you have spirits you deal +10% damage; when hurt, one shields you for 12 (every 8 s).',
-    'Tant que vous avez des esprits, vous infligez +10 % de dégâts ; si vous êtes blessé, l\'un d\'eux vous protège avec 12 de bouclier (toutes les 8 s).', '拥有精灵时伤害+10%；受伤时一只精灵为你提供12点护盾（每8秒）。'),
+    'Avec des esprits, +10 % de dégâts ; si vous êtes blessé, l\'un d\'eux vous donne 12 de bouclier (toutes les 8 s).', '拥有精灵时伤害+10%；受伤时一只精灵为你提供12点护盾（每8秒）。'),
    2, 'luciernaga llama_fatua espiritu_hielo espiritu_rayo espiritu_maldicion espiritu_curativo espiritu_guardian espiritu_veneno espiritu_sombra vinculo_espiritual sinfonia_espiritual pastor_almas legion_espectral'.split(),
    ['MOD|p:spirit|DMG:0.10', 'HURT|p:spirit|SHIELD:12|icd=8'])
 SS('oscuridad', ('Oscuridad Total', 'Total Darkness', 'Ténèbres totales', '无尽黑暗'),

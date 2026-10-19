@@ -42,6 +42,11 @@ Para probar el motor sin ventana (Linux/Windows/macOS): `PC/run.sh --headless --
 GitHub Actions hace lo mismo en cada push: `android.yml` (solo si cambian `Android/`, `Shared/`) y `pc.yml` (solo si cambian `PC/`, `Shared/`).
 Un cambio solo de PC no dispara ni afecta a la compilación de Android, y al revés.
 
+## Gran actualización: 200 bendiciones y sinergias
+- Los altares ofrecen ahora **200 bendiciones** (antes 28) en 10 categorías y 5 rarezas (común → legendaria), con **20 sinergias** que se activan al reunir varias bendiciones de una familia (fuego, hielo, electricidad, parry, escudos, proyectiles, esquivas, vida baja, recursos, compañeros, híbridas…).
+- Selección de ofertas con variedad, afinidad (sin garantías) y legendarias con condiciones de aparición; pantalla «Bendiciones activas» y «Sinergias» desde la pausa.
+- Todo es datos + reglas (`tools/blessings/`), con límites de seguridad anti-bucles. Detalle completo y tablas: [`docs/BENDICIONES.md`](docs/BENDICIONES.md). Pruebas: `tools/tests/bless_test.sh` y `tools/tests/bless_builds.sh`.
+
 ## Novedades v2.0
 - Arreglado el foso de pinchos (ya no te atrapa).
 - Doble salto de serie (triple con la bendición) y bajar de plataformas con el botón ↓.

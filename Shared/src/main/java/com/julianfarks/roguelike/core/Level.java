@@ -549,7 +549,9 @@ public final class Level {
         updateCompanion(dt);
         if (!pl.alive && timeScale < 1f) timeScale = Math.min(1f, timeScale + rawDt * 0.0f);
         if (freezeEnemies > 0) freezeEnemies -= dt;
+        long bt0 = System.nanoTime();
         BlessFx.update(this, dt);
+        BlessFx.dbgNsUpdate += System.nanoTime() - bt0;
         if (freezeEnemies <= 0) {
             float edt = BlessFx.enemyDt(this, dt);
             for (Enemy e : enemies) e.update(this, edt);
@@ -1031,7 +1033,9 @@ public final class Level {
         pl.render(g, this);
         drawSecretMarks(g);
         for (Proj p : projs) drawProj(g, p);
+        long bt1 = System.nanoTime();
         BlessFx.draw(this, g);
+        BlessFx.dbgNsDraw += System.nanoTime() - bt1;
         for (FxObj f : fxs) if (!f.behind) drawFx(g, f);
         for (float[] l : lines) g.line(l[0], l[1], l[2], l[3], 2f, Mth.withAlpha((int) l[5], 255), true);
         ps.render(g, 0, 0);

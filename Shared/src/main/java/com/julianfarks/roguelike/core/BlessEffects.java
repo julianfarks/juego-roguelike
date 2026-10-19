@@ -287,8 +287,13 @@ final class BlessEffects {
     }
 
     // ------------------------------------------------------------------ proyectiles creados por bendiciones
+    static final int MAX_BLESS_PROJ = 36;                       // tope de proyectiles de bendiciones vivos a la vez (rendimiento)
+
     private static void proj(Level lv, BRule r, Player p, Ent v, float vx, float vy) {
-        int kind = (int) r.a[0], n = Math.max(1, (int) r.a[1]);
+        int live = 0;
+        for (Proj q : lv.projs) if (q.src == BlessFx.SRC_X && !q.dead) live++;
+        if (live >= MAX_BLESS_PROJ) return;
+        int kind = (int) r.a[0], n = Math.min(MAX_BLESS_PROJ - live, Math.max(1, (int) r.a[1]));
         float dmg = base(lv) * r.a[2];
         int st = r.na > 3 ? (int) r.a[3] : -1;
         float dir = p.dir();
@@ -327,8 +332,9 @@ final class BlessEffects {
                 break;
             }
             case BRule.PK_RING: {
-                for (int i = 0; i < Math.max(6, n); i++) {
-                    float ang = (float) (Math.PI * 2 * i / Math.max(6, n));
+                int rn = Math.min(MAX_BLESS_PROJ - live, Math.max(6, n));
+                for (int i = 0; i < rn; i++) {
+                    float ang = (float) (Math.PI * 2 * i / rn);
                     Proj q = lv.proj(p.x, p.cy(), (float) Math.cos(ang) * 210f, (float) Math.sin(ang) * 210f, dmg, true, "star", col);
                     q.life = 0.6f; q.pierce = 1; q.src = BlessFx.SRC_X; q.scale = 0.8f;
                     if (st >= 0) { q.status = st; q.statusDur = 2f; q.statusPow = st == Ent.BURN ? 6f : 0f; }

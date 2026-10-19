@@ -696,6 +696,11 @@ final class RunScreen extends Screen implements Level.Listener {
         Snd.sfx("ui_back", 0.7f);
     }
 
+    /** Solo banco de pruebas (BlessProbe modo ui): muestra un altar o la lista con los datos dados. */
+    void dbgShowBless(int[] ids) { offer = ids; offerSel = 0; openOv(OV_BLESS); }
+    void dbgShowList(int tab, int page) { blTab = tab; blPage = page; ov = OV_BLESSLIST; ovT = 0.3f; layoutOverlay(); }
+    int dbgListPages() { return Math.max(1, (blRows.length + BL_PER_PAGE - 1) / BL_PER_PAGE); }
+
     private void openBlessing() {
         // opciones variadas con rareza, afinidad y condiciones de aparicion (ver BlessOffer)
         int[] pick = BlessOffer.pick(rs, 3 + BlessFx.offerExtra(rs), rs.rng);
@@ -876,7 +881,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 for (int i = 0; i < on; i++) {
                     if (offer[i] < 0) continue;
                     final int k = i;
-                    Hit h = add(x0 + i * (cw + gap), 40, cw, 196, null, () -> {
+                    Hit h = add(x0 + i * (cw + gap), 38, cw, 214, null, () -> {
                         if (ovT < 0.35f) return;
                         applyBless(offer[k]);
                         if (ovProp != null && ovProp.kind.equals("altar")) { ovProp.used = true; ovProp.anim = "used"; ovProp.label = null; }
@@ -1582,6 +1587,8 @@ final class RunScreen extends Screen implements Level.Listener {
         int lines = UI.small.wrap(b.desc, (int) h.w - 14).size();
         int step = (int) Math.max(8, Math.min(UI.small.lineHeight() + 1, (bottom - ty) / Math.max(1, lines)));
         UI.small.drawWrapped(g, b.desc, h.x + 7, ty, (int) h.w - 14, 0xE8E0E0, fadeIn, step);
+        PrepScreen.fitErr("carta " + b.key + " desc", ty + lines * step, bottom, 0);
+        PrepScreen.fitErr("carta " + b.key + " nombre(" + nm.size() + " lineas)", nm.size() * 10, 20, 0);
         if (sy != null) {
             BSyn s = BlessData.syns()[sy[0]];
             boolean on = sy[3] == 1 || sy[1] >= sy[2];
@@ -1602,7 +1609,7 @@ final class RunScreen extends Screen implements Level.Listener {
         layoutOverlay();
     }
 
-    private static final int BL_PER_PAGE = 5;
+    private static final int BL_PER_PAGE = 4;
 
     private void blPage(int d) {
         int pages = Math.max(1, (blRows.length + BL_PER_PAGE - 1) / BL_PER_PAGE);
@@ -1651,29 +1658,35 @@ final class RunScreen extends Screen implements Level.Listener {
         for (int k = 0; k < BL_PER_PAGE; k++) {
             int idx = blPage * BL_PER_PAGE + k;
             if (idx >= blRows.length) break;
-            float y = 34 + k * 38;
-            g.rect(px + 8, y + 35, pw - 16, 1, Mth.withAlpha(0x8A8AA0, 60), false);
+            float y = 34 + k * 47;
+            g.rect(px + 8, y + 44, pw - 16, 1, Mth.withAlpha(0x8A8AA0, 60), false);
             if (blTab == 0) {
                 Blessing b = Blessing.ALL[blRows[idx]];
                 int rc = Blessing.RAR_COLOR[b.rar];
-                UI.panel(g, 0, px + 10, y + 3, 24, 24, 1f);
-                UI.iconC(g, b.icon, px + 22, y + 15, 1f, 1f);
+                UI.panel(g, 0, px + 10, y + 6, 24, 24, 1f);
+                UI.iconC(g, b.icon, px + 22, y + 18, 1f, 1f);
                 UI.small.draw(g, b.name, px + 42, y + 2, rc, 1f);
                 UI.small.right(g, "Nv " + rs.bless[b.id] + "/" + b.max, px + pw - 12, y + 2, UI.CYAN, 1f);
                 float tx2 = px + 42 + Math.max(UI.small.width(b.name) + 8, 110);
                 UI.small.draw(g, RAR_ES[b.rar], tx2, y + 2, rc, 1f);
-                UI.small.draw(g, BlessData.CAT_ES[b.cat - 'A'], tx2 + UI.small.width(RAR_ES[b.rar]) + 8, y + 2, UI.GREY, 1f);
+                float limR = px + pw - 14 - UI.small.width("Nv " + rs.bless[b.id] + "/" + b.max);
+                if (tx2 + UI.small.width(RAR_ES[b.rar]) + 8 + UI.small.width(BlessData.CAT_ES[b.cat - 'A']) <= limR)       // la categoria solo se muestra si cabe
+                    UI.small.draw(g, BlessData.CAT_ES[b.cat - 'A'], tx2 + UI.small.width(RAR_ES[b.rar]) + 8, y + 2, UI.GREY, 1f);
                 UI.small.drawWrapped(g, b.desc, px + 42, y + 13, (int) pw - 60, 0xE8E0E0, 1f, 9);
+                PrepScreen.fitErr("lista " + b.key + " desc", y + 13 + UI.small.wrap(b.desc, (int) pw - 60).size() * 9, y + 44, 0);
+                PrepScreen.fitErr("lista " + b.key + " cabecera", tx2 + UI.small.width(RAR_ES[b.rar]), limR, 0);
             } else {
                 BSyn s = ss[blRows[idx]];
                 int have = 0;
                 for (int id : s.members) if (rs.bless[id] > 0) have++;
                 boolean on = have >= s.need;
                 int sc = on ? 0xFFE070 : 0x8AD8FF;
-                UI.iconC(g, "star", px + 22, y + 15, 1.5f, on ? 1f : 0.45f);
+                UI.iconC(g, "star", px + 22, y + 18, 1.5f, on ? 1f : 0.45f);
                 UI.small.draw(g, s.name, px + 42, y + 2, sc, 1f);
                 UI.small.right(g, on ? "ACTIVA " + have + "/" + s.need : have + "/" + s.need, px + pw - 12, y + 2, on ? UI.GREEN : UI.GREY, 1f);
                 UI.small.drawWrapped(g, on ? s.desc : s.desc, px + 42, y + 13, (int) pw - 60 - 0, on ? 0xE8E0E0 : 0xA09CA8, 1f, 9);
+                PrepScreen.fitErr("lista sinergia " + s.id + " nombre", px + 42 + UI.small.width(s.name), px + pw - 16 - UI.small.width(on ? "ACTIVA " + have + "/" + s.need : have + "/" + s.need), 0);
+                PrepScreen.fitErr("lista sinergia " + s.id + " desc", y + 13 + UI.small.wrap(s.desc, (int) pw - 60).size() * 9, y + 44, 0);
             }
         }
     }

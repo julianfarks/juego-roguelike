@@ -1,0 +1,21 @@
+# Pruebas de las 200 bendiciones — resultados
+
+Banco headless del motor (sin hardware real: **no** se ha probado en un teléfono Android ni en Windows físico). Todo se lanza con `tools/tests/bless_test.sh` (catálogo, sinergias, estrés, persistencia, interfaz y las 200 una a una) y `tools/tests/bless_builds.sh` (partidas del bot con builds; `BOSS=1` = duelo contra el jefe). Las ejecuciones del bot se hacen de una en una.
+
+| Prueba | Qué comprueba | Resultado |
+|---|---|---|
+| `BlessRuleCheck` | las 261 reglas (172 bendiciones + 20 sinergias) se interpretan con el analizador real | 261/261 válidas (la prueba destapó 5 reglas mal escritas, ya corregidas) |
+| `BlessCatalogTest` | 200 ids/claves/nombres/descripciones únicos, 200 iconos distintos y existentes, 10 legendarias (una por categoría, con condición y piso mínimo), 5 rarezas, 20 sinergias bien formadas, ≥ 50 bendiciones con sinergia (185), 257 combinaciones sinergia+miembro (activa con *need*, apagada con *need*-1), textos de bendiciones y sinergias traducidos en en/fr/zh-Hans, ofertas de altar (400 por piso: sin duplicados, solo elegibles, 163–200 bendiciones distintas ofrecidas, ≤ 2 ofertas seguidas con 2+ repetidas, sin legendarias sin su condición), partida antigua de 28 entradas | todo OK |
+| Sonda `single` | cada una de las 200 bendiciones por separado, con los eventos reales del juego (golpe, crítico, muerte, parry, esquiva, habilidades, recogidas, saltos, sala limpia, jefe…) y estados de enemigos/jugador variados: debe ejecutar un efecto real (o tener un modificador cuya condición se cumple) | **200/200** |
+| Sonda `syn` | cada sinergia con *need* miembros: se activa, produce efecto y con *need*-1 está apagada | **20/20** |
+| Estrés (`stress`) | las 200 bendiciones a nivel máximo durante 3000 fotogramas con golpes reales al jugador | multiplicador de daño máx. ×3,6 (tope ×3 de bendiciones × 1,2 de «maldito»); curación por sala 25 % (tope); 90 efectos/s (tope); invulnerable 7 % del tiempo; proyectiles de bendiciones ≤ 36 a la vez; sin excepciones ni cuelgues |
+| Persistencia (`persist`) | bendiciones intactas tras cambiar de sala, ir a jefe y cambiar de piso; sin espíritus duplicados; guardar/cargar; reglas y sinergias reconstruidas tras cargar; carga de una partida antigua de 28 entradas | 9/9 |
+| Interfaz (`ui`) | cartas del altar (50 pantallas de 4 cartas) y lista de bendiciones/sinergias (todas las páginas) sin texto cortado en es/en/fr/zh-Hans a 480 px y 640 px | 8/8 combinaciones sin desajustes (la prueba destapó textos largos y cabeceras que no cabían; se ajustaron cartas, filas y 4 descripciones) |
+| Builds del bot | 12 builds de 10 bendiciones (fuego, hielo, electricidad, crítico+velocidad, parry, escudos, proyectiles, esquiva, vida baja, recursos, compañeros, híbrida) | sin excepciones; los efectos se disparan |
+| Duelo contra jefe (bot, modo dios solo para no morir) | tiempo en derrotar al jefe del bioma 0 | base 47 s; builds 15–51 s (hielo 33, electricidad 33, crítico+velocidad 18, parry 51, escudos 30, proyectiles 30, esquiva 15, compañeros 16, híbrida 23, fuego 41, vida baja 41, recursos 40). Ninguna build trivializa el jefe (< 10 s); el bot es aleatorio, la variación entre ejecuciones es de ± 10 s |
+| Regresiones | `ai_hazard_test.sh`, `perf_stress_test.sh` | IA: TODO OK; rendimiento: igual o mejor que antes de la actualización (6 fotogramas lentos y pico de 490 ms antes; 1–2 y ~250 ms ahora) |
+
+## Notas honestas
+- Las medidas de tiempo por fotograma en el banco son ruidosas (2 núcleos compartidos, render por software). Con builds típicas de 10–12 bendiciones el coste por fotograma es igual al de la partida sin bendiciones (comparación en la misma ventana de tiempo: base 12,6–13,2 ms, build de proyectiles 11,7–12,4 ms). Con las 200 al máximo a la vez (escenario irreal) el fotograma sube y los picos llegan a ~60–80 ms en el banco.
+- Que cada descripción coincida con su efecto está garantizado por construcción (los números de la descripción y de las reglas salen de los mismos datos en `tools/blessings/cat_*.py`) y revisado a mano; no hay una comprobación automática texto↔regla.
+- La sonda comprueba que cada bendición **actúa**; el equilibrio fino (cuánto daño/curación) se ha comprobado con los límites globales y los duelos de jefe, no con una simulación estadística de partidas completas.

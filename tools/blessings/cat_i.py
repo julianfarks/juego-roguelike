@@ -6,7 +6,7 @@ B('I', U, 'marca_maldita', ('Marca Maldita', 'Cursed Mark', 'Marque maudite', '�
   ['HIT|!v:curse|STATUS:curse,6,1|ch=0.15'], ic=('skull', 'eye', 'purple'))
 B('I', R, 'sentencia_oscura', ('Sentencia Oscura', 'Dark Verdict', 'Verdict sombre', '黑暗判决'),
   ('En combate, cada 9 s maldices al enemigo con más vida.', 'In combat, every 9 s you curse the enemy with the most health.', 'En combat, toutes les 9 s vous maudissez l\'ennemi avec le plus de vie.', '战斗中每9秒诅咒生命最高的敌人。'),
-  ['TICK|r:combat|MARKTOP:8 every=9'], ic=('book', 'skull', 'dark'))
+  ['TICK|r:combat|MARKTOP:8|every=9'], ic=('book', 'skull', 'dark'))
 B('I', R, 'maldicion_expansiva', ('Maldición Contagiosa', 'Contagious Curse', 'Malédiction contagieuse', '蔓延诅咒'),
   ('Cuando muere un enemigo maldito, la maldición salta a los cercanos.', 'When a cursed enemy dies, the curse jumps to nearby enemies.', 'Quand un ennemi maudit meurt, la malédiction saute aux ennemis proches.', '被诅咒的敌人死亡时，诅咒传给附近的敌人。'),
   ['KILL|v:curse|SPREAD:curse,110'], ic=('skull', 'chain', 'purple'))
@@ -20,8 +20,8 @@ B('I', R, 'crit_maldito', ('Crítico Maldito', 'Cursed Critical', 'Critique maud
   ('+20% de probabilidad de crítico contra enemigos malditos.', '+20% critical chance against cursed enemies.', '+20 % de chance de critique contre les ennemis maudits.', '对被诅咒的敌人暴击率+20%。'),
   ['MOD|v:curse|CRIT:0.20'], ic=('star', 'skull', 'purple'))
 B('I', L, 'forma_sombra', ('Forma de Sombra', 'Shadow Form', 'Forme d\'ombre', '暗影形态'),
-  ('Tu definitiva te transforma 8 s: +30% de daño, +25% de velocidad y -20% de daño recibido; dejas un rastro de sombra y maldices al enemigo más sano.', 'Your ultimate transforms you for 8 s: +30% damage, +25% speed and -20% damage taken; you leave a shadow trail and curse the healthiest enemy.',
-   'Votre ultime vous transforme 8 s : +30 % de dégâts, +25 % de vitesse et -20 % de dégâts reçus ; vous laissez une traînée d\'ombre et maudissez l\'ennemi le plus sain.', '终极技能使你变身8秒：伤害+30%，速度+25%，受到伤害-20%；留下暗影轨迹并诅咒最健康的敌人。'),
+  ('Tu definitiva te transforma 8 s: +30% de daño, +25% de velocidad, -20% de daño recibido y rastro de sombra; maldice al enemigo más sano.', 'Your ultimate transforms you for 8 s: +30% damage, +25% speed, -20% damage taken and a shadow trail; curses the healthiest enemy.',
+   'Votre ultime vous transforme 8 s : +30 % dégâts, +25 % vitesse, -20 % dégâts reçus et traînée d\'ombre ; maudit l\'ennemi le plus sain.', '终极技能使你变身8秒：伤害+30%，速度+25%，受到伤害-20%；留下暗影轨迹并诅咒最健康的敌人。'),
   ['ULT||BUFF:dmg,0.30,8,1', 'ULT||BUFF:spd,0.25,8,1', 'ULT||BUFF:taken,-0.20,8,1', 'ULT||TRAIL:shadow,3,1.0', 'ULT||MARKTOP:10'], stage=1, req=('cat', 'I', 3), ic=('ghost', 'moon', 'dark'))
 B('I', R, 'forma_bestial', ('Forma Bestial', 'Beast Form', 'Forme bestiale', '野兽形态'),
   ('Al caer por debajo del 35% de vida te transformas 6 s: +30% de velocidad de ataque y +20% de velocidad (cada 30 s).', 'Dropping below 35% health transforms you for 6 s: +30% attack speed and +20% speed (every 30 s).', 'Passer sous 35 % de vie vous transforme 6 s : +30 % de vitesse d\'attaque et +20 % de vitesse (toutes les 30 s).', '生命低于35%时变身6秒：攻击速度+30%，移动速度+20%（每30秒）。'),

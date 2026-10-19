@@ -389,11 +389,13 @@ public final class DebugBot {
         if (!(s instanceof RunScreen)) return;
         RunScreen rs = (RunScreen) s;
         seenRun = true;
+        if (System.getenv("BOT_BLESSGRANT") != null) BlessProbe.buildStep(rs, frame);
         if (!classPrinted && System.getenv("BOT_PRINTCLASS") != null) { classPrinted = true; System.out.println("RUN clase=" + rs.cls.name + " bioma=" + (rs.rs.biome == null ? "?" : rs.rs.biome.name) + " stage=" + rs.rs.stage + " roomNo=" + rs.rs.roomNo + " kills=" + rs.rs.kills + " oro=" + rs.rs.gold + " infinite=" + rs.rs.infinite + " retos=" + rs.rs.mods + " revividas=" + rs.rs.revivesUsed + " streak=" + rs.rs.streak); }
         if (rs.lv == null) return;
         Level lv = rs.lv;
         Player p = lv.pl;
         if (System.getenv("BOT_PERF") != null && frame % 60 == 0) System.out.println("PERF f=" + frame + " en=" + lv.enemies.size() + " proj=" + lv.projs.size() + " fx=" + lv.fxs.size() + " txt=" + lv.texts.size() + " delayed=" + lv.delayed.size() + " part=" + lv.ps.count() + " props=" + lv.props.size() + " heapMB=" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576);
+        if (System.getenv("BOT_BLESSTEST") != null && warped && frame > warpFrame + 30) { if (BlessProbe.step(g, rs, lv, p, frame)) System.exit(BlessProbe.fails == 0 ? 0 : 1); return; }
         if (System.getenv("BOT_AITEST") != null && warped && frame > warpFrame + 30) { aiStep(g, rs, lv, p, frame); return; }
         if (System.getenv("BOT_PAUSETEST") != null) pauseTestStep(g, rs, lv, frame);
         if (System.getenv("BOT_PERSONA") != null) { personaStep(rs, lv, p, frame); return; }

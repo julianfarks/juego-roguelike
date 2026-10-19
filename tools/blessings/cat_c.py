@@ -65,7 +65,7 @@ B('C', U, 'cosecha_vida', ('Cosecha de Vida', 'Life Harvest', 'Moisson de vie', 
 B('C', L, 'egida_perpetua', ('Égida Perpetua', 'Perpetual Aegis', 'Égide perpétuelle', '永恒神盾'),
   ('En combate ganas un escudo de 30 cada 8 s. Si el escudo absorbe un golpe, 0,5 s de invulnerabilidad (cada 3 s).', 'In combat you gain a 30-point shield every 8 s. When it absorbs a hit: 0.5 s of invulnerability (every 3 s).',
    'En combat, vous gagnez un bouclier de 30 toutes les 8 s. S\'il absorbe un coup : 0,5 s d\'invulnérabilité (toutes les 3 s).', '战斗中每8秒获得30点护盾。护盾吸收攻击时获得0.5秒无敌（每3秒）。'),
-  ['TICK|r:combat|SHIELD:30 every=8', 'BLOCKED||INVULN:0.5|icd=3'], stage=2, req=('cat', 'C', 3), ic=('tower', 'sun', 'gold'))
+  ['TICK|r:combat|SHIELD:30|every=8', 'BLOCKED||INVULN:0.5|icd=3'], stage=2, req=('cat', 'C', 3), ic=('tower', 'sun', 'gold'))
 B('C', U, 'onda_choque', ('Onda de Choque', 'Shockwave', 'Onde de choc', '冲击波'),
   ('Al recibir un golpe empujas a los enemigos cercanos (cada 1,2 s).', 'When hit, you push nearby enemies away (every 1.2 s).', 'Quand vous êtes touché, vous repoussez les ennemis proches (toutes les 1,2 s).', '受到攻击时击退附近的敌人（每1.2秒）。'),
   ['HURT||PUSH:80,170|icd=1.2'], ic=('ring', 'hand', 'stone'))

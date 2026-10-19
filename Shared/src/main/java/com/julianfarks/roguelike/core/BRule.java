@@ -153,6 +153,7 @@ final class BRule {
         if (i == 2 && eff == E_EXPLODE && !t.matches("-?[0-9.]+")) return stIndex(t);
         if (i == 2 && eff == E_PROJ && !t.matches("-?[0-9.]+")) return stIndex(t);
         if (i == 3 && eff == E_PROJ && !t.matches("-?[0-9.]+")) return stIndex(t);
+        if (i == 2 && eff == E_SPIRIT_WISP && !t.matches("-?[0-9.]+")) return stIndex(t);
         if (eff == E_EXPLODE && i == 2) return stIndex(t);
         return Float.parseFloat(t);
     }

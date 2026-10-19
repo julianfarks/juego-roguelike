@@ -46,38 +46,52 @@ def cubo_pose(a, i, n):
 
 
 def cubo_body(c, P):
+    """Cubo de magma (rediseno fase 3): bloque de basalto con corona de espinas de obsidiana, placa facial con ojos y boca
+    de lava, juntas incandescentes que se abren con 'gap' y goteo de lava. Mismas poses/anclajes que la version anterior."""
     x, y, sx, sy = P['x'], P['y'], P['sx'], P['sy']
     g = P['gap']
-    with c.at(x - 1, y, P['tilt'], sx, sy):
-        # salpicaduras de lava y goteo
-        with c.part(LAVA_O, bevel=3.0) as p:
-            p.poly([(-10, -14), (-7, -18.5), (7.5, -18.5), (10.5, -15), (11, -3), (8, 0), (-8, 0), (-11, -4)])
-        with c.part(LAVA, bevel=4.0) as p:
-            p.poly([(-8, -14), (-5, -16.5), (6, -16.5), (8.6, -14), (9, -3.5), (6.5, -1.5), (-6.5, -1.5), (-9, -4.5)])
-        # corteza: placas de basalto separadas por grietas (g las separa)
-        with c.part(BAS, line=0.4, bevel=1.8) as p:      # techo
-            p.poly([(-11, -13 - g), (-8, -19.5 - g), (1, -20 - g), (3, -15.5 - g * 0.5), (-4, -13.5), (-8, -11)])
-        with c.part(BAS, line=0.4, bevel=1.8) as p:
-            p.poly([(3.2 + g * 0.6, -19.5 - g), (9.5 + g, -17 - g * 0.6), (12 + g, -11), (7.5 + g * 0.5, -10), (5, -14)])
-        with c.part(BAS_B, line=0.4, bevel=1.8) as p:    # lado izq
-            p.poly([(-11.5 - g, -9), (-8.2 - g * 0.5, -10.5), (-6.5, -5), (-8 - g * 0.5, -0.8), (-11 - g, -2)])
-        with c.part(BAS, line=0.4, bevel=1.8) as p:      # base derecha
-            p.poly([(5.5 + g * 0.6, -6.5), (10.5 + g, -7.5), (11.5 + g, -1.0 + g * 0.3), (6.2 + g * 0.3, 0.3 + g * 0.4)])
-        with c.part(BAS_B, line=0.4, bevel=1.6) as p:
-            p.poly([(-4, 0.2 + g * 0.4), (1.5, 0.4 + g * 0.5), (2.5, -2.2), (-3, -3)])
-        # cara incandescente
-        e = P['eye']
+    e = P['eye']
+    h = 0.55 + g * 0.45                       # separacion de las juntas (la lava del nucleo asoma por ellas)
+
+    def blk(pts, cx, cy, m):
+        ox = (h if cx > 0 else -h if cx < 0 else 0) * 0.8
+        oy = (h if cy > -10 else -h) * 0.8
+        with c.part(m, line=0.4, bevel=1.7) as p:
+            p.poly([(px + ox, py + oy) for px, py in pts])
+    with c.at(x - 1, y, P['tilt'], sx * 0.93, sy * 0.95):
+        with c.part(LAVA_O, bevel=3.0) as p:                                # halo del nucleo
+            p.poly([(-12, -15), (-9, -20), (9, -20), (12, -15), (12.5, -3), (9, 0.6), (-9, 0.6), (-12.5, -3)])
+        with c.part(LAVA, bevel=4.0) as p:                                  # nucleo
+            p.poly([(-11, -15), (-8.5, -19), (8.5, -19), (11, -15), (11.5, -3), (8.5, -0.4), (-8.5, -0.4), (-11.5, -3)])
+        # fila superior: tres bloques; los extremos rematan en espinas de obsidiana
+        blk([(-11.4, -13.6), (-12.0, -17.5), (-9.0, -25.5), (-7.0, -19.4), (-4.4, -19.6), (-4.4, -13.6)], -8, -16, BAS)
+        blk([(-3.6, -13.6), (-3.6, -19.8), (-1.5, -21.0), (3.2, -20.2), (3.6, -13.6)], 0, -17, BAS_B)
+        blk([(4.4, -13.6), (4.6, -19.6), (7.4, -22.4), (8.2, -18.6), (10.6, -19.0), (11.8, -13.6)], 8, -16, BAS)
+        # franja media: bloques laterales + placa facial central
+        blk([(-11.6, -6.6), (-11.8, -12.8), (-5.8, -12.8), (-5.4, -6.6)], -8, -9, BAS_B)
+        blk([(5.4, -6.6), (5.8, -12.8), (11.8, -12.4), (11.6, -6.6)], 8, -9, BAS_B)
+        with c.part(BAS, line=0.4, bevel=1.9) as p:                         # placa facial
+            p.poly([(-5.0, -12.8), (5.0, -12.8), (5.4, -6.8), (3.4, -5.6), (-3.4, -5.6), (-5.4, -6.8)])
+        # fila inferior: tres bloques astillados
+        blk([(-11.4, -5.8), (-4.6, -5.8), (-4.8, -0.8), (-8.0, 0.0), (-11.2, -1.4)], -8, -3, BAS)
+        blk([(-3.8, -4.9), (3.8, -4.9), (4.0, -0.6), (0.8, 0.2), (-3.2, -0.2)], 0, -2, BAS_B)
+        blk([(4.6, -5.8), (11.4, -5.8), (11.2, -1.6), (8.2, -0.1), (4.8, -0.9)], 8, -3, BAS)
+        # cara: ojos en ranura + boca dentada de lava sobre la placa
         with c.part(DARK) as p:
-            p.poly([(-4.8, -11.6), (-1.2, -10.4), (-1.6, -8.4), (-5.2, -9.4)])
-            p.poly([(2.4, -10.4), (6.2, -11.8), (6.4, -9.4), (3.0, -8.6)])
+            p.poly([(-4.4, -11.2), (-0.6, -10.4), (-0.8, -8.6), (-4.2, -9.4)])
+            p.poly([(0.6, -10.4), (4.4, -11.2), (4.2, -9.4), (0.8, -8.6)])
         with c.part(HOTEYE) as p:
-            p.poly([(-4.0, -10.6), (-1.8, -9.9), (-2.0, -9.0), (-4.2, -9.6)])
-            p.poly([(3.0, -9.9), (5.6, -10.8), (5.6, -9.6), (3.2, -9.2)])
-        with c.part(DARK) as p:
-            p.poly([(-2.5, -6.0), (4.5, -6.4), (4.0, -4.6), (-1.6, -4.4)])
-            for k in range(3):
-                p.rect(-1.5 + k * 2.0, -6.0, -0.8 + k * 2.0, -4.0)
-    c.glow(x, y - 9 * sy, 11, '#ff7a20', 0.18 + 0.3 * P['glow'])
+            q = 0.5 + 0.5 * e
+            p.poly([(-3.8, -10.6), (-1.0, -9.9), (-1.1, -9.0 - 0.2 * q), (-3.7, -9.6)])
+            p.poly([(1.0, -9.9), (3.8, -10.6), (3.7, -9.6), (1.1, -9.0 - 0.2 * q)])
+        with c.part(LAVA, bevel=1.0) as p:
+            p.poly([(-3.2, -7.4), (-1.6, -6.6), (0.0, -7.6), (1.6, -6.6), (3.2, -7.4), (2.6, -5.9), (0.0, -6.4), (-2.6, -5.9)])
+        # goteo de lava bajo el borde
+        dr = 0.5 + 0.5 * math.sin(P['glow'] * 6)
+        with c.part(LAVA, bevel=1.6) as p:
+            p.poly([(-9.2, -1.0), (-7.4, -1.0), (-7.8, 1.0 + dr), (-8.4, 2.0 + dr), (-9.0, 1.0 + dr)])
+            p.ell(3.4, 0.6, 1.2, 1.0)
+    c.glow(x, y - 9 * sy, 12, '#ff7a20', 0.18 + 0.3 * P['glow'])
 
 
 def draw_cubo(c, a, i, n):

@@ -361,12 +361,28 @@ final class BlessEffects {
     }
 
     // ------------------------------------------------------------------ sinergias
+    static int dbgAnnounced;      // (pruebas) avisos de sinergia mostrados
+
+    /** Color de la senal segun el tipo de combinacion (fuego, hielo, electricidad, parry, veneno/sangrado, criticos). */
+    static int synColor(int s) {
+        if (s < 0 || s >= BlessData.SYN.length) return 0xFFE070;
+        String r = BlessData.SYN[s][6].toLowerCase();
+        if (r.contains("burn")) return 0xFF8A3C;
+        if (r.contains("slow") || r.contains("freeze")) return 0x8AD8FF;
+        if (r.contains("discharged") || r.contains("shock")) return 0xF0F060;
+        if (r.contains("parry")) return 0x7AF0FF;
+        if (r.contains("poison") || r.contains("bleed") || r.contains("dot")) return 0xB0E060;
+        if (r.contains("crit")) return 0xFF6A6A;
+        return 0xFFE070;
+    }
+
     static void synergyFound(Level lv, int s) {
         BSyn[] all = BlessData.syns();
         if (s < 0 || s >= all.length || lv.pl == null) return;
         Player p = lv.pl;
-        lv.text(p.x, p.y - 74, all[s].name, 0xFFE070, true);
-        lv.fxAdd("fx_ring", "pulse", p.x, p.cy(), 1.3f, 0xFFE070);
+        dbgAnnounced++;
+        lv.text(p.x, p.y - 74, all[s].name, synColor(s), true);
+        lv.fxAdd("fx_ring", "pulse", p.x, p.cy(), 1.3f, synColor(s));
         lv.fx("fx_holy", "beam", p.x, p.y - 56, 0.7f, 0, 0);
         Snd.sfxv("ui_pick_upgrade", 0.5f);
     }
@@ -376,11 +392,12 @@ final class BlessEffects {
         BSyn[] all = BlessData.syns();
         if (s < 0 || s >= all.length || lv.pl == null) return;
         Player p = lv.pl;
-        lv.text(p.x, p.y - 86, "¡Sinergia activada!", 0xFFE070, true);
+        dbgAnnounced++;
+        lv.text(p.x, p.y - 86, "¡Sinergia activada!", synColor(s), true);
         lv.text(p.x, p.y - 74, all[s].name, 0xFFFFFF, false);
-        lv.fxAdd("fx_ring", "pulse", p.x, p.cy(), 1.5f, 0xFFE070);
+        lv.fxAdd("fx_ring", "pulse", p.x, p.cy(), 1.5f, synColor(s));
         lv.fx("fx_holy", "beam", p.x, p.y - 56, 0.9f, 0, 0);
-        lv.ps.burst(lv.rng, p.x, p.cy(), 0xFFE070, 30, 150, 0.9f, 2, -20, true);
+        lv.ps.burst(lv.rng, p.x, p.cy(), synColor(s), 30, 150, 0.9f, 2, -20, true);
         Snd.sfxv("ui_pick_upgrade", 0.8f);
     }
 

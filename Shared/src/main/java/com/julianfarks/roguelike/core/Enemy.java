@@ -1322,6 +1322,12 @@ public final class Enemy extends Ent {
                 g.rect(bx, by, w * Mth.clamp(hpShow / maxHp, 0, 1), 3, 0xFFF0E8E0, false);
                 g.rect(bx, by, w * Mth.clamp(hp / maxHp, 0, 1), 3, elite ? 0xFFFFC040 : (hp / maxHp < 0.3f ? 0xFFFF4040 : 0xFFE04848), false);
                 g.rect(bx, by, w * Mth.clamp(hp / maxHp, 0, 1), 1, 0x55FFFFFF, false);
+                // estados importantes (como mucho 3 iconos pequenos: no llenan la pantalla)
+                int shown = 0;
+                String[] sic = {"burn", "freeze", "shield", "poison", "shock", "bleed", "", "", "skull"};
+                for (int si = 0; si < Ent.ST_COUNT && shown < 3; si++) {
+                    if (st[si] > 0 && !sic[si].isEmpty()) { UI.icon(g, sic[si], bx + shown * 9 - 1, by - 10, 0.5f, Platform.TINT, Ent.ST_COLOR[si], 0.95f); shown++; }
+                }
             }
         }
     }

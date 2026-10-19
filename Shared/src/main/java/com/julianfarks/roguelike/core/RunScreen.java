@@ -814,6 +814,23 @@ final class RunScreen extends Screen implements Level.Listener {
     }
 
     // ------------------------------------------------------------------ altar de riesgo, cofre maldito, desafios
+    // ---- HUD de combate: senal breve al quedar lista una habilidad (0..3 = habilidades, 3 = definitiva)
+    final float[] skReady = new float[4];
+    final boolean[] skWasCd = new boolean[3];
+    void hudTick(float dt) {
+        for (int k = 0; k < 3; k++) {
+            if (rs.cd[k] > 0) skWasCd[k] = true;
+            else if (skWasCd[k]) { skWasCd[k] = false; skReady[k] = 0.5f; }
+        }
+        for (int k = 0; k < 4; k++) if (skReady[k] > 0) skReady[k] -= dt;
+    }
+    /** Texto del tiempo de reutilizacion: enteros hasta 3 s y con un decimal por debajo (se lee mejor el ultimo tramo). */
+    static String cdText(float cd) {
+        if (cd >= 3f) return String.valueOf((int) Math.ceil(cd));
+        int d = Math.max(1, (int) Math.ceil(cd * 10f - 1e-4f));
+        return (d / 10) + "." + (d % 10);
+    }
+
     Runnable afterBless;
     List<Hit> hitsDbg() { return hits; }          // solo pruebas
     void clickDbg(Hit h) { click(h); }            // solo pruebas
@@ -1377,10 +1394,11 @@ final class RunScreen extends Screen implements Level.Listener {
             }
             lv.update(dt);
             challengeTick(dt);
+            hudTick(dt);
             if (ov == OV_NONE && lv != null) {
                 // ult lista
                 boolean ready = rs.ult >= 100f;
-                if (ready && !ultWasReady) Snd.sfx("ult_ready", 0.9f);
+                if (ready && !ultWasReady) { Snd.sfx("ult_ready", 0.9f); skReady[3] = 0.6f; }
                 ultWasReady = ready;
                 rs.ult = Math.min(100f, rs.ult);
             }
@@ -1496,7 +1514,11 @@ final class RunScreen extends Screen implements Level.Listener {
         if (toastT > 0 && ov == OV_NONE) { float tw = UI.small.width(toast) + 10; g.rect(w / 2f - tw / 2, 20, tw, 12, Mth.withAlpha(0x000010, (int) (150 * Math.min(1f, toastT))), false); UI.small.center(g, toast, w / 2f, 22, UI.GOLD, Math.min(1f, toastT)); }
         float ratio = s.maxHp > 0 ? rs.hp / s.maxHp : 0;
         UI.hpBar(g, 8, 8, ratio);
-        UI.small.draw(g, Math.max(0, Math.round(rs.hp)) + "/" + Math.round(s.maxHp), 114, 11, ratio < 0.3f ? UI.RED : UI.WHITE, 1f);
+        String hpT = (ratio < 0.3f ? "! " : "") + Math.max(0, Math.round(rs.hp)) + "/" + Math.round(s.maxHp);
+        float barW = UI.hpFrame != null ? UI.hpFrame.w : 90, tw = UI.small.width(hpT);
+        g.rect(8 + barW / 2f - tw / 2f - 2, 10, tw + 4, 10, 0x88000010, false);     // texto dentro de la barra, con fondo (no choca con la barra del jefe a 480 px)
+        UI.small.center(g, hpT, 8 + barW / 2f, 11, ratio < 0.3f ? UI.RED : UI.WHITE, 1f);
+        PrepScreen.fitErr("hud vida texto", tw + 4, barW - 6, 0);
         UI.ultBar(g, 8, 25, rs.ult / 100f, rs.ult >= 100f, lv.time);
         if (rs.ult >= 100f) UI.small.draw(g, "LISTA", 96, 26, UI.ORANGE, 0.6f + 0.4f * (float) Math.sin(lv.time * 8));
         if (pl.shield > 0) { UI.icon(g, "shield", 114, 21, 1f); UI.small.draw(g, String.valueOf(Math.round(pl.shield)), 132, 26, UI.CYAN, 1f); }
@@ -1512,6 +1534,11 @@ final class RunScreen extends Screen implements Level.Listener {
         for (int i = 0; i < Ent.ST_COUNT; i++) {
             if (pl.st[i] > 0 && i != Ent.ROOT && i != Ent.STUN) { UI.icon(g, ic[i], sx, 38, 1f, Platform.TINT, Ent.ST_COLOR[i], 1f); sx += 18; }
         }
+        for (int i = 0, x2 = 8; i < Ent.ST_COUNT; i++) {       // barrita de duracion bajo cada estado
+            if (pl.st[i] > 0 && i != Ent.ROOT && i != Ent.STUN) { g.rect(x2, 55, 14 * Mth.clamp(pl.st[i] / 5f, 0, 1), 2, Ent.ST_COLOR[i] | 0xFF000000, false); x2 += 18; }
+        }
+        if (lv.flowT > 0) { UI.icon(g, "attack", sx, 38, 1f, Platform.TINT, 0xFFE070, 1f); g.rect(sx, 55, 14 * Mth.clamp(lv.flowT / 5f, 0, 1), 2, 0xFFFFE070, false); sx += 18; }
+        if (lv.counterT > 0) { UI.icon(g, "parry", sx, 38, 1f, Platform.TINT, 0xFFFFFF, 1f); g.rect(sx, 55, 14 * Mth.clamp(lv.counterT / 1.1f, 0, 1), 2, 0xFFFFFFFF, false); sx += 18; }
         BlessRt bxr = rs.bx;
         if (bxr != null && bxr.any) {      // bendiciones: carga arcana y mejoras temporales activas
             if (bxr.arc >= 1f) { UI.icon(g, "shock", sx, 38, 1f, Platform.TINT, 0xF0F060, 1f); UI.small.draw(g, "x" + (int) bxr.arc, sx + 16, 42, 0xFFF0F060, 1f); sx += 34; }
@@ -1533,6 +1560,9 @@ final class RunScreen extends Screen implements Level.Listener {
             float a = Mth.clamp(lv.bossBarShow, 0, 1);
             UI.small.center(g, b.def.name, w / 2f, 4, 0xFFE8D0C0, a);
             UI.bossBar(g, w / 2f, 15, b.hp / b.maxHp, a);
+            String bp = Math.max(0, Math.round(100f * b.hp / b.maxHp)) + "%";
+            UI.small.draw(g, bp, w / 2f + 56, 20, 0xFFE8D0C0, a);
+            PrepScreen.fitErr("hud jefe nombre", UI.small.width(b.def.name), 2 * (w / 2f - 120), 0);
             if (b.phase >= 2) g.rect(w / 2f - 2, 14, 4, 2, 0xFFFF4040, false);
         }
         // reliquia
@@ -1658,7 +1688,14 @@ final class RunScreen extends Screen implements Level.Listener {
         UI.roundButton(g, b.cx, b.cy, b.r, b.pointer >= 0 ? 1 : 0, alpha);
         if (i >= Input.B_S1 && i <= Input.B_ULT) {
             boolean ult = i == Input.B_ULT;
-            if (b.icon != null) UI.iconC(g, b.icon, b.cx, b.cy, 1f, 1f);
+            int kk = ult ? 3 : i - Input.B_S1;
+            boolean cooling = !ult && rs.cd[kk] > 0, ultCharging = ult && rs.ult < 100f;
+            if (b.icon != null) UI.iconC(g, b.icon, b.cx, b.cy, 1f, cooling || ultCharging ? 0.5f : 1f);
+            if (!cooling && !ultCharging) g.circle(b.cx, b.cy, b.r - 1, 0x99FFE8A0, true);        // lista: aro claro fijo (no solo color: tambien cambia el icono y desaparece el numero)
+            if (skReady[kk] > 0) {                                                                  // senal breve y discreta al quedar lista
+                float k2 = Mth.clamp(skReady[kk] / (ult ? 0.6f : 0.5f), 0, 1);
+                g.circle(b.cx, b.cy, b.r + 1 + (1f - k2) * 7, Mth.withAlpha(0xFFFFF4C0, (int) (200 * k2)), true);
+            }
             if (ult) {
                 float r = rs.ult / 100f;
                 if (r > 0 && r < 1) {
@@ -1678,7 +1715,9 @@ final class RunScreen extends Screen implements Level.Listener {
                     g.clipBegin(b.cx - b.r, b.cy - b.r, 2 * b.r, 2 * b.r * f + 1);
                     g.circle(b.cx, b.cy, b.r - 1, 0xAA000000, false);
                     g.clipEnd();
-                    UI.small.center(g, String.valueOf((int) Math.ceil(cd)), b.cx, b.cy - 4, UI.WHITE, 1f);
+                    String ct = cdText(cd);
+                    g.rect(b.cx - UI.small.width(ct) / 2f - 1, b.cy - 5, UI.small.width(ct) + 2, 10, 0x88000010, false);   // fondo: contraste sobre cualquier icono
+                    UI.small.center(g, ct, b.cx, b.cy - 4, UI.WHITE, 1f);
                 }
             }
             return;

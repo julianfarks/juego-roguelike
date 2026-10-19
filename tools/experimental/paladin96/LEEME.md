@@ -23,3 +23,10 @@
 - Casco completamente cerrado: bóveda con cresta, ceja y banda de visera, ranura de ojos oscura, barbote con arista y ventilas, remaches, joya lateral, pluma carmesí. No se ve piel, ojos, nariz, boca ni pelo.
 - Comparación: `comparacion_joven_izq_cerrado_der.png` (idle).
 - Pendiente: el resto de la armadura (peto, hombreras, brazales, rodilleras) sigue como en v3; falta elaborarla. Las animaciones funcionales y el sprite del juego no se tocan.
+
+## Versión yelmo cerrado (v4)
+- Generador: `tools/art_players/exp96_paladin_v4.py` -> `paladin96_cerrado_sheet.png/.json` (idle, run, attack1, roll).
+- Yelmo totalmente cerrado: bóveda con cresta, ranura de ojos oscura, rejilla vertical de visera, proa puntiaguda, remaches y joya lateral; no se ve piel, ojos ni pelo. Pluma carmesí conservada.
+- Guiado por la imagen de referencia del usuario: capa interior oscura en brazo y pierna (separa las placas), tabardo azul con panel blanco y estrella, hombrera de cuatro láminas con remaches.
+- Comparación: `comparacion_joven_izq_cerrado_der.png` (idle).
+- Sin cambios: sprite del juego, otras clases, animaciones funcionales, paleta.

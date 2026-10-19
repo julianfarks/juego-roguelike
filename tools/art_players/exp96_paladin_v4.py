@@ -86,11 +86,13 @@ class Paladin96(cls_paladin.Paladin):
             circ(X, tp(X, [(u, 1.8)])[0], 0.2 * k, 'goldL', tone=5)
         poly(X, tp(X, [(-2.8, 1.0), (-0.6, 1.0), (-0.8, -2.6), (-2.6, -2.0)]), 'gold_b', dome=1.4)
         # pierna delantera
-        leg(X, sk.hipF, sk.kneeF, sk.ankF, 2.4, 1.9, 1.6, 'under', 'leather', p.ffa, kneepad='goldL', greave='gold')
+        leg(X, sk.hipF, sk.kneeF, sk.ankF, 2.4, 1.9, 1.6, 'dark', 'leather', p.ffa, kneepad='goldL', greave='gold')
         # tabardo con banda azul, ribete y pliegue
-        poly(X, tp(X, [(0.2, 1.5), (2.9, 1.5), (3.4, -1), (3.2, -4.8), (1.7, -5.8), (0.4, -4.8), (0.0, -1)]), 'cloth', dome=2.0)
-        poly(X, tp(X, [(0.9, 1.0), (2.3, 1.0), (2.2, -4.6), (1.5, -5.2), (0.9, -4.6)]), 'blue', tone=3)
-        poly(X, tp(X, [(1.1, 1.0), (1.45, 1.0), (1.4, -4.4), (1.1, -4.4)]), 'blue', tone=4)
+        poly(X, tp(X, [(0.2, 1.5), (2.9, 1.5), (3.4, -1), (3.2, -4.8), (1.7, -5.8), (0.4, -4.8), (0.0, -1)]), 'blue', dome=2.0)
+        poly(X, tp(X, [(0.9, 1.0), (2.3, 1.0), (2.2, -4.6), (1.5, -5.2), (0.9, -4.6)]), 'cloth', tone=4)
+        poly(X, tp(X, [(1.1, 1.0), (1.45, 1.0), (1.4, -4.4), (1.1, -4.4)]), 'cloth', tone=5)
+        circ(X, tp(X, [(1.6, -2.2)])[0], 0.55 * k, 'goldL', tone=4)
+        circ(X, tp(X, [(1.6, -2.2)])[0], 0.25 * k, 'blue', tone=2)
         poly(X, tp(X, [(0.2, -4.0), (3.3, -4.0), (3.1, -4.9), (1.7, -5.8), (0.4, -4.9)]), 'goldL', tone=3)
         poly(X, tp(X, [(0.5, -4.1), (3.1, -4.1), (3.1, -4.25), (0.5, -4.25)]), 'goldD', tone=2)
         # gorjal en anillos
@@ -116,8 +118,10 @@ class Paladin96(cls_paladin.Paladin):
         poly(X, hp(X, [(2.6, 5.2), (3.5, 4.3), (3.2, 2.2), (2.3, 2.6)]), 'goldL', tone=3)                                                    # nervio frontal
         poly(X, hp(X, [(1.4, 0.2), (5.6, -0.2), (5.7, -3.4), (4.6, -4.4), (1.8, -4.5), (0.8, -3.0)]), 'goldL', dome=2.4)                       # barbote (mentón)
         poly(X, hp(X, [(3.3, -0.6), (3.9, -0.7), (3.9, -3.7), (3.3, -3.6)]), 'goldL', tone=5)                                                # arista vertical del barbote
-        for u in (4.3, 4.9):                                                                                                                 # ventilas
-            poly(X, hp(X, [(u, -0.9), (u + 0.32, -0.9), (u + 0.32, -3.2), (u, -3.2)]), 'ink', tone=1)
+        for u in (2.7, 3.7, 4.7):                                                                                                            # rejilla vertical de la visera
+            poly(X, hp(X, [(u, 0.9), (u + 0.38, 0.9), (u + 0.38, -3.4), (u, -3.4)]), 'ink', tone=1)
+            poly(X, hp(X, [(u - 0.28, 0.5), (u, 0.5), (u, -3.2), (u - 0.28, -3.2)]), 'goldL', tone=5)
+        poly(X, hp(X, [(5.6, 1.6), (6.4, 0.0), (6.1, -2.4), (5.6, -3.2)]), 'goldL', tone=3)                                                  # proa de la visera (perfil puntiagudo)
         poly(X, hp(X, [(1.4, -3.9), (4.8, -4.3), (4.7, -4.6), (1.4, -4.2)]), 'goldD', tone=1)                                                # sombra del gorjal
         poly(X, hp(X, [(0.6, 0.0), (1.2, 0.0), (1.4, -3.8), (0.7, -3.6)]), 'goldD', tone=1)                                                  # junta mejilla
         for (u, v) in ((-3.8, 1.6), (-2.2, 2.0), (-0.6, 2.4), (1.0, 2.6), (-3.2, -1.8), (-1.6, -2.6)):                                        # remaches
@@ -129,12 +133,17 @@ class Paladin96(cls_paladin.Paladin):
         # hombrera de tres laminas con remaches
         for dy, r, m in ((1.9, 3.5, 'goldD'), (1.0, 3.4, 'gold'), (0.1, 3.3, 'gold')):
             circ(X, (sk.shF[0] - 0.2 * (dy > 0), sk.shF[1] + dy), r * k, m, dome=2.6)
+        circ(X, (sk.shF[0] + 0.1, sk.shF[1] + 2.9), 3.2 * k, 'goldD', dome=2.4)
+        circ(X, (sk.shF[0] + 0.1, sk.shF[1] + 2.5), 3.0 * k, 'gold', dome=2.4)
         circ(X, (sk.shF[0] + 0.4, sk.shF[1] - 0.7), 1.7 * k, 'goldL', dome=1.6)
+        for ang in (200, 235, 270):
+            q = (sk.shF[0] + math.cos(math.radians(ang)) * 2.4 * k, sk.shF[1] + 0.9 + math.sin(math.radians(ang)) * 2.4 * k)
+            circ(X, q, 0.45 * k, 'cloth', tone=5)
         circ(X, (sk.shF[0] + 0.8, sk.shF[1] - 1.1), 0.5 * k, 'cloth', tone=5)
         for dy in (1.8, 0.9):
             circ(X, (sk.shF[0] - 1.9, sk.shF[1] + dy + 0.5), 0.26 * k, 'goldL', tone=5)
         # brazo delantero: manga, brazal con bandas, guantelete con nudillos
-        arm(X, sk.shF, sk.elbF, sk.handF, 1.85, 1.6, 1.4, 'under', glove='leather', bracer='gold', hand_r=1.6)
+        arm(X, sk.shF, sk.elbF, sk.handF, 1.85, 1.6, 1.4, 'dark', glove='leather', bracer='gold', hand_r=1.6)
         e, h = sk.elbF, sk.handF
         for t in (0.58, 0.72, 0.86):
             q = (e[0] * (1 - t) + h[0] * t, e[1] * (1 - t) + h[1] * t)

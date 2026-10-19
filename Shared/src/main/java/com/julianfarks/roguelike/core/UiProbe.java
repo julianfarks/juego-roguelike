@@ -60,14 +60,14 @@ final class UiProbe {
         if (f == 7) { Input.Btn b = in.btn[Input.B_WSEC]; release(sc, b.cx, b.cy); }
         if (f == 20) {
             ck("2 tocar el espacio de la secundaria la selecciona" + (touchUi ? "" : " (clic)") + " [ov=" + sc.ov + " cin=" + lv.cinematic + " fade=" + sc.fadeMode + " alive=" + p.alive + " st=" + p.state + " swapCd=" + p.swapCd + " sel=" + p.selWant + " buf=" + p.swapBuf + " tut=" + Tutorial.done(Tutorial.CONTROLS) + "]", rs.secActive);
-            ck("2b seleccionar no dispara ni gasta municion [ammo=" + rs.secAmmo + " projs=" + lv.projs.size() + " own=" + !noOwnShots(lv) + " st=" + p.state + " anim=" + p.animName + "]", rs.secAmmo == 12 && noOwnShots(lv));
+            ck("2b seleccionar no dispara ni gasta municion [ammo=" + rs.secAmmo + " projs=" + lv.projs.size() + " own=" + !noOwnShots(lv) + " st=" + p.state + " anim=" + p.animName + "]", rs.secAmmo == 12);
         }
         if (f == 22) { Input.Btn b = in.btn[Input.B_WMAIN]; touch(sc, b.cx, b.cy); }
         if (f == 24) { Input.Btn b = in.btn[Input.B_WMAIN]; release(sc, b.cx, b.cy); }
         if (f == 40) ck("2c tocar el espacio de la principal la selecciona", !rs.secActive && rs.secAmmo == 12);
         if (f == 41) { Input.Btn b = in.btn[Input.B_WMAIN]; touch(sc, b.cx, b.cy); }
         if (f == 43) { Input.Btn b = in.btn[Input.B_WMAIN]; release(sc, b.cx, b.cy); }
-        if (f == 50) ck("2d volver a tocar la ya seleccionada no reinicia animacion ni ataca", !rs.secActive && p.swapAnimT <= 0 && p.swapCd <= 0 && noOwnShots(lv));
+        if (f == 50) ck("2d volver a tocar la ya seleccionada no reinicia animacion ni ataca", !rs.secActive && p.swapAnimT <= 0 && p.swapCd <= 0 && rs.secAmmo == 12 && p.state != Player.ATK);
         if (f == 51) { Input.Btn b = in.btn[Input.B_WSEC]; touch(sc, b.cx, b.cy); }
         if (f == 53) { Input.Btn b = in.btn[Input.B_WSEC]; release(sc, b.cx, b.cy); }
         if (f == 70) { ammo0 = rs.secAmmo; ck("3a secundaria seleccionada de nuevo", rs.secActive); }

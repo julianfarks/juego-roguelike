@@ -50,7 +50,7 @@ final class RunSave {
             d.put("special", rs.special); d.put("shield", rs.shield); d.put("secrets", rs.secretsFound);
             d.put("devAsst", rs.devAssisted); d.put("inf", rs.infinite); d.put("infCamp", rs.infFromCampaign); d.put("floor", rs.floor); d.put("floorsDone", rs.floorsDone); d.put("revs", rs.revivesUsed);
             d.put("infRooms", rs.infRooms); d.put("infBK", rs.infBaseKills); d.put("infBB", rs.infBaseBoss); d.put("infT0", (int) rs.infT0);
-            d.put("credK", rs.credKills); d.put("credB", rs.credBoss); d.put("seed", (double) rs.seed); d.put("streak", rs.streak); d.put("pstreak", rs.perfectStreak);
+            d.put("credK", rs.credKills); d.put("credB", rs.credBoss); d.put("seed", (double) rs.seed); d.put("chalK", rs.chalKind); d.put("streak", rs.streak); d.put("pstreak", rs.perfectStreak);
             d.put("cb", rs.cb); d.put("grenLvl", rs.grenLvl); d.put("secLvl", rs.secLvl);
             d.put("ts", (double) System.currentTimeMillis());
             p.store().put(key(slot), Json.write(d));
@@ -104,6 +104,7 @@ final class RunSave {
             if (rs.infinite) rs.stage = 2;
             rs.stats.recalc(rs);
             rs.hp = Math.max(1, Math.min(rs.stats.maxHp, Json.i(d, "hp", (int) rs.stats.maxHp)));
+            rs.chalKind = Json.i(d, "chalK", -1);
             scr.resumeType = Json.i(d, "room", Room.HUB);
             scr.mySlots.add(slot);
             return scr;

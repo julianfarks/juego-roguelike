@@ -33,6 +33,7 @@ public final class RunState {
     public final int[] eventsThisRun = new int[Events.COUNT];
     public boolean eventBiomeDone;      // ya hubo un suceso en este bioma
     public int sideOrigin = -1;         // dentro del mercader errante: tipo de sala (Room.*) a la que se vuelve al salir (-1 = no estamos en una sala secundaria)
+    public int chalKind = -1;           // variante del desafio de la sala actual (se guarda para que cargar no la cambie)
     public int curEvent;                // suceso de la sala actual (Events.*)
     public int startBless = -1;          // bendicion inicial elegida en la preparacion (-1 = ninguna)
     public int damageTaken;

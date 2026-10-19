@@ -1032,6 +1032,67 @@ Asesino eclipse	Assassin de l'éclipse
 Piglin dorado	Piglin doré
 Espectro	Spectre
 Llama solar	Flamme solaire
+Altar de riesgo	Autel du risque
+Cofre maldito	Coffre maudit
+Sala de desafío	Salle de défi
+Un sacrificio a cambio de poder	Un sacrifice contre du pouvoir
+Gran premio, pero se defiende	Grand butin, mais il se défend
+Cumple la regla y gana premio	Respectez la règle et gagnez un prix
+Sin recibir daño	Sans subir de dégâts
+Contrarreloj	Contre la montre
+Resistencia	Endurance
+Curación reducida	Soin réduit
+Derrota a todos sin recibir un solo golpe	Battez-les tous sans recevoir un seul coup
+Derrota a todos antes de que acabe el tiempo	Battez-les tous avant la fin du temps
+Sobrevive hasta que acabe el tiempo	Survivez jusqu'à la fin du temps
+Curación -60%: derrota a todos	Soin -60 % : battez-les tous
+Sala de desafío: {}	Salle de défi : {}
+ALTAR DE RIESGO	AUTEL DU RISQUE
+Cada ofrenda tiene un precio: léelo antes de aceptar	Chaque offrande a un prix : lisez-le avant d'accepter
+Sangre por bendición	Sang et bénédiction
+Eliges 1 de 3 bendiciones	Choisissez 1 bénédiction sur 3
+Eliges 1 de 4 bendiciones	Choisissez 1 bénédiction sur 4
+Dolor por botín	Douleur contre butin
++{} de oro y +{} almas	+{} d'or et +{} âmes
+Recibes un golpe de {} de daño	Vous encaissez un coup de {} dégâts
+Pacto del Ayuno	Pacte du Jeûne
+-2 frascos máximos (mínimo 1)	-2 fioles maximum (minimum 1)
+{} (cuenta como pacto)	{} (compte comme un pacte)
+Almas por elección	Âmes contre un choix
+Pagas {} almas	Vous payez {} âmes
+El altar acepta tu sangre	L'autel accepte votre sang
+El altar acepta tus almas	L'autel accepte vos âmes
+Aguantas el dolor	Vous endurez la douleur
+Sin bendiciones que ofrecer: te curas	Aucune bénédiction à offrir : vous guérissez
+COFRE MALDITO	COFFRE MAUDIT
+Un gran premio, pero algo lo vigila	Un grand butin, mais quelque chose le garde
+Abrir el cofre	Ouvrir le coffre
+2 cofres de elección y {} almas	2 coffres au choix et {} âmes
+Emboscada: {} enemigos, uno de élite	Embuscade : {} ennemis, dont un d'élite
+Dejarlo cerrado	Le laisser fermé
+Sin riesgo	Sans risque
+Renuncias al premio	Vous renoncez au butin
+¡El cofre estaba maldito!	Le coffre était maudit !
+Prefieres no arriesgarte	Vous préférez ne pas risquer
+Botín maldito	Butin maudit
+¡Maldición rota! 2 cofres	Malédiction brisée ! 2 coffres
+¡Otra oleada!	Une autre vague !
+¡Has resistido!	Vous avez résisté !
+¡Te han golpeado!	Vous avez été touché !
+¡Se acabó el tiempo!	Le temps est écoulé !
+{} Desafío fallido	{} Défi échoué
+Sin premio esta vez	Pas de récompense cette fois
+Premio del desafío	Prix du défi
+¡Desafío superado! 2 cofres	Défi réussi ! 2 coffres
+SUPERADO	RÉUSSI
+FALLIDO	ÉCHOUÉ
+sin recibir daño	sans subir de dégâts
+curación -60%	soin -60 %
+{} s	{} s
+{} · {}	{} · {}
+{} · {} · quedan {}	{} · {} · {} restants
+Ofrecer sacrificio	Offrir un sacrifice
+Abrir (maldito)	Ouvrir (maudit)
 Primera sangre	Premier sang
 Derrota 1 enemigo	Vainquez 1 ennemi
 Cazador	Chasseur
@@ -1093,7 +1154,6 @@ Pacto Avaro	Pacte d'Avarice
 +40% de oro	+40 % d'or
 Enemigos veloces	Ennemis rapides
 Más trampas	Plus de pièges
-Curación reducida	Soins réduits
 Más élites	Plus d'élites
 Los enemigos se mueven un 20% más rápido.	Les ennemis se déplacent 20 % plus vite.
 Aparecen más tiras de pinchos en las salas.	Davantage de bandes de pointes apparaissent dans les salles.

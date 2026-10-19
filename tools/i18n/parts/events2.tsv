@@ -1,0 +1,61 @@
+Altar de riesgo	Altar of risk	Autel du risque	风险祭坛
+Cofre maldito	Cursed chest	Coffre maudit	诅咒宝箱
+Sala de desafío	Challenge room	Salle de défi	挑战房间
+Un sacrificio a cambio de poder	A sacrifice in exchange for power	Un sacrifice contre du pouvoir	以牺牲换取力量
+Gran premio, pero se defiende	Great prize, but it fights back	Grand butin, mais il se défend	大奖励，但它会反击
+Cumple la regla y gana premio	Follow the rule and win a prize	Respectez la règle et gagnez un prix	遵守规则即可获奖
+Sin recibir daño	No damage taken	Sans subir de dégâts	不受伤害
+Contrarreloj	Against the clock	Contre la montre	限时
+Resistencia	Endurance	Endurance	坚持
+Curación reducida	Reduced healing	Soin réduit	治疗减弱
+Derrota a todos sin recibir un solo golpe	Defeat everyone without taking a single hit	Battez-les tous sans recevoir un seul coup	不受任何一击击败所有敌人
+Derrota a todos antes de que acabe el tiempo	Defeat everyone before time runs out	Battez-les tous avant la fin du temps	在时间耗尽前击败所有敌人
+Sobrevive hasta que acabe el tiempo	Survive until time runs out	Survivez jusqu'à la fin du temps	存活到时间结束
+Curación -60%: derrota a todos	Healing -60%: defeat everyone	Soin -60 % : battez-les tous	治疗-60%：击败所有敌人
+Sala de desafío: {}	Challenge room: {}	Salle de défi : {}	挑战房间：{}
+ALTAR DE RIESGO	ALTAR OF RISK	AUTEL DU RISQUE	风险祭坛
+Cada ofrenda tiene un precio: léelo antes de aceptar	Every offering has a price: read it before accepting	Chaque offrande a un prix : lisez-le avant d'accepter	每份供奉都有代价：接受前请先阅读
+Sangre por bendición	Blood for a blessing	Sang et bénédiction	以血换祝福
+Eliges 1 de 3 bendiciones	Choose 1 of 3 blessings	Choisissez 1 bénédiction sur 3	从3个祝福中选1个
+Eliges 1 de 4 bendiciones	Choose 1 of 4 blessings	Choisissez 1 bénédiction sur 4	从4个祝福中选1个
+Dolor por botín	Pain for loot	Douleur contre butin	以痛换战利品
++{} de oro y +{} almas	+{} gold and +{} souls	+{} d'or et +{} âmes	+{}金币和+{}灵魂
+Recibes un golpe de {} de daño	You take a hit of {} damage	Vous encaissez un coup de {} dégâts	你会受到{}点伤害
+Pacto del Ayuno	Pact of Fasting	Pacte du Jeûne	斋戒契约
+-2 frascos máximos (mínimo 1)	-2 maximum flasks (minimum 1)	-2 fioles maximum (minimum 1)	药瓶上限-2（至少保留1）
+{} (cuenta como pacto)	{} (counts as a pact)	{} (compte comme un pacte)	{}（算作一个契约）
+Almas por elección	Souls for a choice	Âmes contre un choix	以灵魂换选择
+Pagas {} almas	You pay {} souls	Vous payez {} âmes	支付{}灵魂
+El altar acepta tu sangre	The altar accepts your blood	L'autel accepte votre sang	祭坛接受了你的鲜血
+El altar acepta tus almas	The altar accepts your souls	L'autel accepte vos âmes	祭坛接受了你的灵魂
+Aguantas el dolor	You endure the pain	Vous endurez la douleur	你忍住了痛苦
+Sin bendiciones que ofrecer: te curas	No blessings to offer: you heal	Aucune bénédiction à offrir : vous guérissez	没有可供选择的祝福：你获得治疗
+COFRE MALDITO	CURSED CHEST	COFFRE MAUDIT	诅咒宝箱
+Un gran premio, pero algo lo vigila	A great prize, but something guards it	Un grand butin, mais quelque chose le garde	大奖励，但有东西在守护它
+Abrir el cofre	Open the chest	Ouvrir le coffre	打开宝箱
+2 cofres de elección y {} almas	2 choice chests and {} souls	2 coffres au choix et {} âmes	2个可选宝箱和{}灵魂
+Emboscada: {} enemigos, uno de élite	Ambush: {} enemies, one of them elite	Embuscade : {} ennemis, dont un d'élite	伏击：{}名敌人，其中一名精英
+Dejarlo cerrado	Leave it closed	Le laisser fermé	保持关闭
+Sin riesgo	No risk	Sans risque	没有风险
+Renuncias al premio	You give up the prize	Vous renoncez au butin	放弃奖励
+¡El cofre estaba maldito!	The chest was cursed!	Le coffre était maudit !	宝箱被诅咒了！
+Prefieres no arriesgarte	You'd rather not risk it	Vous préférez ne pas risquer	你选择不冒险
+Botín maldito	Cursed loot	Butin maudit	诅咒战利品
+¡Maldición rota! 2 cofres	Curse broken! 2 chests	Malédiction brisée ! 2 coffres	诅咒解除！2个宝箱
+¡Otra oleada!	Another wave!	Une autre vague !	又一波敌人！
+¡Has resistido!	You held out!	Vous avez résisté !	你坚持住了！
+¡Te han golpeado!	You were hit!	Vous avez été touché !	你被击中了！
+¡Se acabó el tiempo!	Time's up!	Le temps est écoulé !	时间到！
+{} Desafío fallido	{} Challenge failed	{} Défi échoué	{}挑战失败
+Sin premio esta vez	No prize this time	Pas de récompense cette fois	这次没有奖励
+Premio del desafío	Challenge prize	Prix du défi	挑战奖励
+¡Desafío superado! 2 cofres	Challenge complete! 2 chests	Défi réussi ! 2 coffres	挑战成功！2个宝箱
+SUPERADO	COMPLETED	RÉUSSI	已完成
+FALLIDO	FAILED	ÉCHOUÉ	失败
+sin recibir daño	take no damage	sans subir de dégâts	不受伤害
+curación -60%	healing -60%	soin -60 %	治疗-60%
+{} s	{} s	{} s	{} 秒
+{} · {}	{} · {}	{} · {}	{} · {}
+{} · {} · quedan {}	{} · {} · {} left	{} · {} · {} restants	{} · {} · 剩余{}
+Ofrecer sacrificio	Make a sacrifice	Offrir un sacrifice	献上祭品
+Abrir (maldito)	Open (cursed)	Ouvrir (maudit)	打开（诅咒）

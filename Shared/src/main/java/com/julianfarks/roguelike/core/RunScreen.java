@@ -211,6 +211,7 @@ final class RunScreen extends Screen implements Level.Listener {
         sandboxSetup();
         if (lv.cleared && type != Room.BOSS && !sandbox) spawnDoors();
         else if (type == Room.COMBAT && rs.curEvent == 0 && !sandbox) addSideDoor(true);   // el mercader errante puede encontrarse durante la exploracion
+        challengeInit(type);
         // banner
         if (type == Room.HUB) {
             bannerTitle = rs.stage >= 3 ? "El Sello está completo" : "Santuario del Viajero";
@@ -221,6 +222,7 @@ final class RunScreen extends Screen implements Level.Listener {
             bannerTitle = rs.biome.name;
             bannerSub = rs.roomNo == 0 ? rs.biome.tagline : (type == Room.REST ? "Tienda · forja · altar · fuente" : RunState.roomName(type));
             if (type == Room.EVENT || (type == Room.ELITE && rs.curEvent == Events.TRIAL)) { bannerTitle = Events.NAME[rs.curEvent]; bannerSub = Events.SUB[rs.curEvent]; }
+            if (chal >= 0) { bannerTitle = Events.NAME[Events.CHALLENGE] + ": " + Events.CH_NAME[chal]; bannerSub = Events.CH_RULE[chal]; }
         }
         bannerT = type == Room.BOSS ? 0 : 3f;
         // tutorial
@@ -319,6 +321,8 @@ final class RunScreen extends Screen implements Level.Listener {
         if (l.room.type == Room.COMBAT || l.room.type == Room.ELITE) completeRound(l);
         if (rs.curEvent > 0 && (l.room.type == Room.EVENT || l.room.type == Room.ELITE)) Codex.see(rs, "v:" + rs.curEvent, Events.NAME[rs.curEvent]);
         if (l.room.type == Room.ELITE && rs.curEvent == Events.TRIAL) trialReward(l);
+        if (l.room.type == Room.EVENT && rs.curEvent == Events.CURSED && ambushOn) { ambushOn = false; cursedReward(l); }
+        if (l.room.type == Room.EVENT && rs.curEvent == Events.CHALLENGE) challengeCleared(l);
         if (l.room.type == Room.EVENT && rs.curEvent == Events.CAPTIVE) l.text(l.pl.x, l.pl.y - 66, "Guardias derrotados: libera al prisionero", 0xB8A0D0, true);
         rs.roomsDone++;
         spawnDoors();
@@ -509,11 +513,11 @@ final class RunScreen extends Screen implements Level.Listener {
     }
 
     // =============================================================== interaccion
-    private void interact() {
+    void interact() {
         Prop p = lv.nearestInteractable();
         if (p == null || !lv.pl.alive || lv.cinematic) return;
         switch (p.kind) {
-            case "door": case "portal": case "altar": case "shrine": case "spirit": case "cage": case "fountain": case "forge":
+            case "door": case "portal": case "altar": case "shrine": case "spirit": case "cage": case "fountain": case "forge": case "cursed":
                 lv.pl.react("touch", 0f);   // gesto al activar (solo cosmetico: la logica de abajo no cambia)
                 break;
             default: break;
@@ -558,7 +562,8 @@ final class RunScreen extends Screen implements Level.Listener {
                 ovProp = p; openOv(OV_FORGE);
                 break;
             case "spirit": openSpirit(p); break;
-            case "shrine": openShrine(p); break;
+            case "shrine": if (p.arg == 1) openRiskAltar(p); else openShrine(p); break;
+            case "cursed": openCursed(p); break;
             case "cage": rescue(p); break;
             case "relic": openChest(p); break;
             case "merchant":
@@ -808,6 +813,200 @@ final class RunScreen extends Screen implements Level.Listener {
         openOv(OV_EVENT);
     }
 
+    // ------------------------------------------------------------------ altar de riesgo, cofre maldito, desafios
+    Runnable afterBless;
+    List<Hit> hitsDbg() { return hits; }          // solo pruebas
+    void clickDbg(Hit h) { click(h); }            // solo pruebas
+    boolean ambushOn;                 // emboscada del cofre maldito en curso
+    int chal = -1, chalState;         // desafio de la sala (Events.CH_*), -1 = ninguno; estado: 0 en curso, 1 superado, 2 fallido
+    float chalT, chalWaveT;
+
+    void openRiskAltar(Prop p) {
+        evProp = p; evTitle = "ALTAR DE RIESGO"; evSub = "Cada ofrenda tiene un precio: léelo antes de aceptar"; evSel = 0;
+        evOpts.clear();
+        final int maxHp = Math.round(rs.stats.maxHp);
+        final int hpCost = Math.round(maxHp * 0.25f), hit = Math.round(maxHp * 0.18f);
+        final int gold = Math.round((100 + 30 * rs.stage) * rs.stats.goldMul), souls = 30;
+        final int soulCost = 60 + 20 * rs.stage;
+        evOpts.add(new EvOpt("b_sangre", "Sangre por bendición", "Eliges 1 de 3 bendiciones", "Pierdes " + hpCost + " de vida", rs.hp - hpCost >= maxHp * 0.2f, () -> {
+            rs.hp -= hpCost;
+            lv.text(lv.pl.x, lv.pl.y - 40, "-" + hpCost, 0xE0405A, true);
+            offerFromAltar(p, 3, "El altar acepta tu sangre");
+        }));
+        evOpts.add(new EvOpt("coin", "Dolor por botín", "+" + gold + " de oro y +" + souls + " almas", "Recibes un golpe de " + hit + " de daño", rs.hp - hit >= maxHp * 0.15f, () -> {
+            rs.hp -= hit; rs.damageTaken += hit;
+            lv.dropGold(p.x, p.y - 20, gold); rs.souls += souls;
+            lv.pl.hitFlash = 0.15f; lv.shake(3f, 0.2f);
+            finishEvent(p, "Aguantas el dolor", 0xE0405A);
+        }));
+        Events.Pact fast = Events.PACTS[6];
+        evOpts.add(new EvOpt(fast.icon, fast.name, fast.pro, fast.con + " (cuenta como pacto)", rs.pacts[6] == 0 && rs.pactCount() < Events.MAX_PACTS, () -> {
+            rs.pacts[6] = 1; rs.stats.recalc(rs);
+            rs.potions = Math.min(rs.potions, rs.stats.potionsMax); rs.hp = Math.min(rs.hp, rs.stats.maxHp);
+            finishEvent(p, fast.name, 0xE0405A);
+        }));
+        evOpts.add(new EvOpt("soul", "Almas por elección", "Eliges 1 de 4 bendiciones", "Pagas " + soulCost + " almas", rs.souls >= soulCost, () -> {
+            rs.souls -= soulCost;
+            offerFromAltar(p, 4, "El altar acepta tus almas");
+        }));
+        openOv(OV_EVENT);
+    }
+
+    /** Abre una eleccion de bendiciones desde un altar de riesgo sin gastar la bendicion de altar del bioma. */
+    private void offerFromAltar(Prop p, int n, String msg) {
+        closeOv();
+        int[] pick = BlessOffer.pick(rs, n + BlessFx.offerExtra(rs), rs.rng);
+        int cnt = 0;
+        for (int id : pick) if (id >= 0) cnt++;
+        if (cnt == 0) { lv.healPlayer(rs.stats.maxHp * 0.3f); finishEvent(p, "Sin bendiciones que ofrecer: te curas", 0xE0405A); return; }
+        int[] comp = new int[cnt];
+        for (int i = 0, k = 0; i < pick.length; i++) if (pick[i] >= 0) comp[k++] = pick[i];
+        offer = comp; offerSel = 0;
+        final boolean bt = rs.blessingTaken;
+        afterBless = () -> { rs.blessingTaken = bt; finishEvent(p, msg, 0xE0405A); };
+        openOv(OV_BLESS);
+        Snd.sfx("altar_bless", 0.9f);
+    }
+
+    void openCursed(Prop p) {
+        evProp = p; evTitle = "COFRE MALDITO"; evSub = "Un gran premio, pero algo lo vigila"; evSel = 0;
+        evOpts.clear();
+        final int n = Events.ambushCount(rs);
+        evOpts.add(new EvOpt("chest", "Abrir el cofre", "2 cofres de elección y " + (25 + 8 * rs.stage) + " almas", "Emboscada: " + n + " enemigos, uno de élite", true, () -> {
+            closeOv();
+            p.used = true; p.done = true; p.label = null; p.anim = "open"; p.animT = 0;
+            Snd.sfx("chest_open", 1f);
+            lv.flash(0xA050E0, 0.25f); lv.shake(3f, 0.3f);
+            startAmbush(n);
+            lv.text(lv.pl.x, lv.pl.y - 60, "¡El cofre estaba maldito!", 0xC070F0, true);
+        }));
+        evOpts.add(new EvOpt("door", "Dejarlo cerrado", "Sin riesgo", "Renuncias al premio", true, () -> {
+            p.used = true; p.done = true; p.label = null;
+            closeOv();
+            lv.text(lv.pl.x, lv.pl.y - 50, "Prefieres no arriesgarte", 0xB8A0D0, true);
+        }));
+        openOv(OV_EVENT);
+    }
+
+    /** Casillas del suelo, llanas y sin pinchos, alejadas del jugador: sitio donde aparecer sin caer en trampas. */
+    private java.util.List<Integer> groundSpots(float minDist) {
+        Room rm = lv.room;
+        java.util.List<Integer> out = new ArrayList<>();
+        if (rm.ground == null) return out;
+        for (int x = 14; x < rm.w - 14; x++) {
+            int g = rm.ground[x];
+            if (g <= 0 || x + 1 >= rm.w || rm.ground[x + 1] != g || rm.ground[x - 1] != g) continue;
+            if (rm.spikeCols != null && rm.spikeCols.contains(x)) continue;
+            if (Math.abs(x * Room.TS - lv.pl.x) < minDist) continue;
+            out.add(x);
+        }
+        return out;
+    }
+
+    private String randomGroundEnemy(Rng r) {
+        String[] pool = lv.room.biome.enemies;
+        for (int tries = 0; tries < 8; tries++) {
+            String id = pool[r.i(pool.length)];
+            EnemyDef d = EnemyDef.get(id);
+            if (d != null && d.role != EnemyDef.FLY_SHOOT && d.role != EnemyDef.FLY_DIVE && d.role != EnemyDef.HEAVY) return id;
+        }
+        return pool[0];
+    }
+
+    private void spawnWave(int n, boolean withElite) {
+        java.util.List<Integer> spots = groundSpots(120f);
+        if (spots.isEmpty()) spots = groundSpots(0f);
+        Rng r = new Rng(rs.seed ^ (lv.enemies.size() * 7919L + (long) (lv.time * 10f)));
+        java.util.List<Integer> used = new ArrayList<>();
+        for (int i = 0; i < n && !spots.isEmpty(); i++) {
+            int x = spots.get(r.i(spots.size()));
+            for (int t = 0; t < 8; t++) { boolean ok = true; for (int u : used) if (Math.abs(u - x) < 4) ok = false; if (ok) break; x = spots.get(r.i(spots.size())); }
+            used.add(x);
+            String id = randomGroundEnemy(r);
+            boolean el = false;
+            if (withElite && i == 0) { String eid = EnemyDef.eliteFor(lv.room.biome.key); EnemyDef ed = eid == null ? null : EnemyDef.get(eid); if (ed != null && ed.role != EnemyDef.FLY_SHOOT && ed.role != EnemyDef.FLY_DIVE) id = eid; else el = true; }
+            lv.spawnEnemy(id, el, x * Room.TS + 8, lv.room.ground[x] * Room.TS);
+        }
+    }
+
+    private void startAmbush(int n) {
+        ambushOn = true;
+        lv.props.removeIf(q -> q.kind.equals("door"));     // sin salida hasta vencer
+        spawnWave(n, true);
+    }
+
+    private void cursedReward(Level l) {
+        for (int i = 0; i < 2; i++) {
+            Prop c = l.addProp(new Room.PropSpec("chest", l.room.exitX - 70 - i * 38, l.room.exitY, 2));
+            c.label = "Botín maldito"; c.roundChest = true;
+            l.ps.burst(l.rng, c.x, c.y - 12, 0xC070F0, 22, 110, 0.7f, 2, 0, true);
+        }
+        l.dropSouls(l.pl.x, l.pl.y - 20, 25 + 8 * rs.stage);
+        l.text(l.pl.x, l.pl.y - 82, "¡Maldición rota! 2 cofres", 0xC070F0, true);
+    }
+
+    private void challengeInit(int type) {
+        chal = -1; chalState = 0; chalT = 0; chalWaveT = 0;
+        if (lv == null) return;
+        lv.healMul = 1f; lv.holdClear = false;
+        if (type != Room.EVENT || rs.curEvent != Events.CHALLENGE) { rs.chalKind = -1; return; }
+        if (rs.chalKind < 0 || rs.chalKind >= Events.CH_COUNT) rs.chalKind = Events.challengeKind(rs);
+        chal = rs.chalKind;
+        if (chal == Events.CH_TIMED) chalT = Events.CH_TIME_TIMED;
+        else if (chal == Events.CH_SURVIVE) { chalT = Events.CH_TIME_SURVIVE; chalWaveT = 8f; lv.holdClear = true; }
+        else if (chal == Events.CH_NOHEAL) lv.healMul = Events.CH_HEAL;
+    }
+
+    void challengeTick(float dt) {
+        if (chal < 0 || lv == null || chalState != 0 || !lv.pl.alive || bannerT > 2.2f) return;
+        if (chal == Events.CH_NODMG && lv.roomHits > 0) { chalFail("¡Te han golpeado!"); return; }
+        if (chal == Events.CH_TIMED) {
+            chalT -= dt;
+            if (chalT <= 0) { chalT = 0; chalFail("¡Se acabó el tiempo!"); }
+        } else if (chal == Events.CH_SURVIVE) {
+            chalT -= dt; chalWaveT -= dt;
+            if (chalWaveT <= 0 && chalT > 6f) { chalWaveT = 9f; spawnWave(2 + rs.stage, false); lv.text(lv.pl.x, lv.pl.y - 60, "¡Otra oleada!", 0xFFA030, true); }
+            if (chalT <= 0) {
+                chalT = 0; lv.holdClear = false;
+                for (Enemy e : new ArrayList<>(lv.enemies)) if (e.alive) e.die(lv);
+                chalState = 1;
+                lv.text(lv.pl.x, lv.pl.y - 70, "¡Has resistido!", 0xFFD25A, true);
+            }
+        }
+    }
+
+    private void chalFail(String why) {
+        chalState = 2;
+        Snd.sfx("ui_error", 0.8f);
+        lv.text(lv.pl.x, lv.pl.y - 70, why + " Desafío fallido", 0xFF6A5A, true);
+    }
+
+    private void challengeCleared(Level l) {
+        if (chal < 0) return;
+        if (chal == Events.CH_SURVIVE && chalState == 0) return;
+        boolean ok = chalState != 2;
+        if (chal == Events.CH_NODMG && l.roomHits > 0) ok = false;
+        if (chal == Events.CH_TIMED && chalT <= 0) ok = false;
+        chalState = ok ? 1 : 2;
+        if (!ok) { l.text(l.pl.x, l.pl.y - 82, "Sin premio esta vez", 0xB8A0D0, true); return; }
+        for (int i = 0; i < 2; i++) {
+            Prop c = l.addProp(new Room.PropSpec("chest", l.room.exitX - 70 - i * 38, l.room.exitY, 2));
+            c.label = "Premio del desafío"; c.roundChest = true;
+            l.ps.burst(l.rng, c.x, c.y - 12, 0xFFA030, 22, 110, 0.7f, 2, 0, true);
+        }
+        l.dropSouls(l.pl.x, l.pl.y - 20, 20 + 6 * rs.stage);
+        l.text(l.pl.x, l.pl.y - 82, "¡Desafío superado! 2 cofres", 0xFFA030, true);
+        if (chal == Events.CH_SURVIVE) chalState = 1;
+    }
+
+    private void renderChallenge(Platform.Gfx g, int w) {
+        if (chal < 0 || lv == null || ov != OV_NONE) return;
+        String t = Events.CH_NAME[chal];
+        int col = chalState == 1 ? 0xFF8AE08A : chalState == 2 ? 0xFFFF6A5A : 0xFFFFA030;
+        String st = chalState == 1 ? "SUPERADO" : chalState == 2 ? "FALLIDO" : chal == Events.CH_NODMG ? "sin recibir daño" : chal == Events.CH_NOHEAL ? "curación -60%" : Math.round(chalT) + " s";
+        UI.small.center(g, t + " · " + st + (chalState == 0 && chal != Events.CH_SURVIVE && chal != Events.CH_TIMED ? " · quedan " + Math.max(0, lv.toKill) : ""), w / 2f, 34, col, 1f);
+    }
+
     private void rescue(Prop p) {
         if (!lv.cleared) { Snd.sfx("ui_error", 0.8f); toast = "Derrota primero a los guardias"; toastT = 2.2f; return; }
         p.anim = "open"; p.animT = 0; p.done = true; p.used = true; p.label = null;
@@ -886,6 +1085,7 @@ final class RunScreen extends Screen implements Level.Listener {
                         applyBless(offer[k]);
                         if (ovProp != null && ovProp.kind.equals("altar")) { ovProp.used = true; ovProp.anim = "used"; ovProp.label = null; }
                         closeOv();
+                        if (afterBless != null) { Runnable ab = afterBless; afterBless = null; ab.run(); }
                     });
                     h.plain = false; h.tag = i;
                 }
@@ -1176,6 +1376,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 if (canInt && in.pressed(Input.B_INTERACT)) { in.consume(Input.B_INTERACT); interact(); }
             }
             lv.update(dt);
+            challengeTick(dt);
             if (ov == OV_NONE && lv != null) {
                 // ult lista
                 boolean ready = rs.ult >= 100f;
@@ -1374,7 +1575,8 @@ final class RunScreen extends Screen implements Level.Listener {
             case "forge": return "Forjar";
             case "merchant": return "Comerciar";
             case "spirit": return "Ofrecer";
-            case "shrine": return "Elegir pacto";
+            case "shrine": return p.arg == 1 ? "Ofrecer sacrificio" : "Elegir pacto";
+            case "cursed": return "Abrir (maldito)";
             case "cage": return "Liberar";
             case "relic": return "Tomar";
             case "fountain": return "Beber";
@@ -1385,6 +1587,7 @@ final class RunScreen extends Screen implements Level.Listener {
     }
 
     private void renderBanner(Platform.Gfx g, int w) {
+        renderChallenge(g, w);
         if (bannerT <= 0 || (bannerTitle.isEmpty() && bannerSub.isEmpty())) return;
         float t = 3f - bannerT;
         float a = Mth.clamp(Math.min(t / 0.5f, bannerT / 0.7f), 0, 1);
@@ -1722,6 +1925,8 @@ final class RunScreen extends Screen implements Level.Listener {
                     int l1 = UI.small.drawWrapped(g, "+ " + o.pro, h.x + 8, h.y + 70 + yoff, (int) h.w - 16, 0xFF6AE08A, a);
                     UI.small.drawWrapped(g, "- " + o.con, h.x + 8, h.y + 74 + l1 + yoff, (int) h.w - 16, 0xFFFF7A7A, a);
                     if (!o.ok) UI.small.center(g, "No disponible", cx, h.y + h.h - 14 + yoff, UI.GREY, fadeIn);
+                    PrepScreen.fitErr("suceso " + evTitle + " opcion " + i + " texto", h.y + 74 + l1 + UI.small.wrap("- " + o.con, (int) h.w - 16).size() * 9 + yoff, h.y + h.h - (o.ok ? 4 : 18) + yoff, 0);
+                    PrepScreen.fitErr("suceso " + evTitle + " opcion " + i + " nombre", UI.small.width(o.name), h.w - 8, 0);
                 }
                 drawButtons(g);
                 break;

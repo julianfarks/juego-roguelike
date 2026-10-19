@@ -166,6 +166,7 @@ public final class RoomGen {
             rm.exitX = (W - 5) * Room.TS;
         }
         if (type == Room.EVENT && event == Events.CAPTIVE) spawnEnemies(rm, ground, blocked, platforms, r, stage, roomNo, false, upCand, mf, stage >= 1 ? 3 : 2);
+        if (type == Room.EVENT && event == Events.CHALLENGE) spawnEnemies(rm, ground, blocked, platforms, r, stage, roomNo, false, upCand, mf, 3 + stage);
         SecretGen.clearSpawns(rm);
         placeProps(rm, type, fy, r);
         if (big) for (int[] sc : secrets) rm.props.add(new Room.PropSpec("chest", sc[0], sc[1], 3));
@@ -497,6 +498,8 @@ public final class RoomGen {
                     case Events.SECRET -> rm.props.add(new Room.PropSpec("relic", cx, gy, 3));
                     case Events.SANCTUARY -> rm.props.add(new Room.PropSpec("shrine", cx, gy, 0));
                     case Events.CAPTIVE -> rm.props.add(new Room.PropSpec("cage", cx, gy, r.i(3)));
+                    case Events.ALTAR -> rm.props.add(new Room.PropSpec("shrine", cx, gy, 1));
+                    case Events.CURSED -> rm.props.add(new Room.PropSpec("cursed", cx, gy, 0));
                     default -> { }
                 }
             }

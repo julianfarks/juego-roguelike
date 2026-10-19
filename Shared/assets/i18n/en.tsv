@@ -1032,6 +1032,67 @@ Asesino eclipse	Eclipse assassin
 Piglin dorado	Golden piglin
 Espectro	Specter
 Llama solar	Solar flame
+Altar de riesgo	Altar of risk
+Cofre maldito	Cursed chest
+Sala de desafío	Challenge room
+Un sacrificio a cambio de poder	A sacrifice in exchange for power
+Gran premio, pero se defiende	Great prize, but it fights back
+Cumple la regla y gana premio	Follow the rule and win a prize
+Sin recibir daño	No damage taken
+Contrarreloj	Against the clock
+Resistencia	Endurance
+Curación reducida	Reduced healing
+Derrota a todos sin recibir un solo golpe	Defeat everyone without taking a single hit
+Derrota a todos antes de que acabe el tiempo	Defeat everyone before time runs out
+Sobrevive hasta que acabe el tiempo	Survive until time runs out
+Curación -60%: derrota a todos	Healing -60%: defeat everyone
+Sala de desafío: {}	Challenge room: {}
+ALTAR DE RIESGO	ALTAR OF RISK
+Cada ofrenda tiene un precio: léelo antes de aceptar	Every offering has a price: read it before accepting
+Sangre por bendición	Blood for a blessing
+Eliges 1 de 3 bendiciones	Choose 1 of 3 blessings
+Eliges 1 de 4 bendiciones	Choose 1 of 4 blessings
+Dolor por botín	Pain for loot
++{} de oro y +{} almas	+{} gold and +{} souls
+Recibes un golpe de {} de daño	You take a hit of {} damage
+Pacto del Ayuno	Pact of Fasting
+-2 frascos máximos (mínimo 1)	-2 maximum flasks (minimum 1)
+{} (cuenta como pacto)	{} (counts as a pact)
+Almas por elección	Souls for a choice
+Pagas {} almas	You pay {} souls
+El altar acepta tu sangre	The altar accepts your blood
+El altar acepta tus almas	The altar accepts your souls
+Aguantas el dolor	You endure the pain
+Sin bendiciones que ofrecer: te curas	No blessings to offer: you heal
+COFRE MALDITO	CURSED CHEST
+Un gran premio, pero algo lo vigila	A great prize, but something guards it
+Abrir el cofre	Open the chest
+2 cofres de elección y {} almas	2 choice chests and {} souls
+Emboscada: {} enemigos, uno de élite	Ambush: {} enemies, one of them elite
+Dejarlo cerrado	Leave it closed
+Sin riesgo	No risk
+Renuncias al premio	You give up the prize
+¡El cofre estaba maldito!	The chest was cursed!
+Prefieres no arriesgarte	You'd rather not risk it
+Botín maldito	Cursed loot
+¡Maldición rota! 2 cofres	Curse broken! 2 chests
+¡Otra oleada!	Another wave!
+¡Has resistido!	You held out!
+¡Te han golpeado!	You were hit!
+¡Se acabó el tiempo!	Time's up!
+{} Desafío fallido	{} Challenge failed
+Sin premio esta vez	No prize this time
+Premio del desafío	Challenge prize
+¡Desafío superado! 2 cofres	Challenge complete! 2 chests
+SUPERADO	COMPLETED
+FALLIDO	FAILED
+sin recibir daño	take no damage
+curación -60%	healing -60%
+{} s	{} s
+{} · {}	{} · {}
+{} · {} · quedan {}	{} · {} · {} left
+Ofrecer sacrificio	Make a sacrifice
+Abrir (maldito)	Open (cursed)
 Primera sangre	First Blood
 Derrota 1 enemigo	Defeat 1 enemy
 Cazador	Hunter
@@ -1093,7 +1154,6 @@ Pacto Avaro	Pact of Greed
 +40% de oro	+40% gold
 Enemigos veloces	Swift enemies
 Más trampas	More traps
-Curación reducida	Reduced healing
 Más élites	More elites
 Los enemigos se mueven un 20% más rápido.	Enemies move 20% faster.
 Aparecen más tiras de pinchos en las salas.	More spike strips appear in the rooms.

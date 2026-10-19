@@ -1032,6 +1032,67 @@ Asesino eclipse	日蚀刺客
 Piglin dorado	黄金猪灵
 Espectro	怨灵
 Llama solar	烈日之焰
+Altar de riesgo	风险祭坛
+Cofre maldito	诅咒宝箱
+Sala de desafío	挑战房间
+Un sacrificio a cambio de poder	以牺牲换取力量
+Gran premio, pero se defiende	大奖励，但它会反击
+Cumple la regla y gana premio	遵守规则即可获奖
+Sin recibir daño	不受伤害
+Contrarreloj	限时
+Resistencia	坚持
+Curación reducida	治疗减弱
+Derrota a todos sin recibir un solo golpe	不受任何一击击败所有敌人
+Derrota a todos antes de que acabe el tiempo	在时间耗尽前击败所有敌人
+Sobrevive hasta que acabe el tiempo	存活到时间结束
+Curación -60%: derrota a todos	治疗-60%：击败所有敌人
+Sala de desafío: {}	挑战房间：{}
+ALTAR DE RIESGO	风险祭坛
+Cada ofrenda tiene un precio: léelo antes de aceptar	每份供奉都有代价：接受前请先阅读
+Sangre por bendición	以血换祝福
+Eliges 1 de 3 bendiciones	从3个祝福中选1个
+Eliges 1 de 4 bendiciones	从4个祝福中选1个
+Dolor por botín	以痛换战利品
++{} de oro y +{} almas	+{}金币和+{}灵魂
+Recibes un golpe de {} de daño	你会受到{}点伤害
+Pacto del Ayuno	斋戒契约
+-2 frascos máximos (mínimo 1)	药瓶上限-2（至少保留1）
+{} (cuenta como pacto)	{}（算作一个契约）
+Almas por elección	以灵魂换选择
+Pagas {} almas	支付{}灵魂
+El altar acepta tu sangre	祭坛接受了你的鲜血
+El altar acepta tus almas	祭坛接受了你的灵魂
+Aguantas el dolor	你忍住了痛苦
+Sin bendiciones que ofrecer: te curas	没有可供选择的祝福：你获得治疗
+COFRE MALDITO	诅咒宝箱
+Un gran premio, pero algo lo vigila	大奖励，但有东西在守护它
+Abrir el cofre	打开宝箱
+2 cofres de elección y {} almas	2个可选宝箱和{}灵魂
+Emboscada: {} enemigos, uno de élite	伏击：{}名敌人，其中一名精英
+Dejarlo cerrado	保持关闭
+Sin riesgo	没有风险
+Renuncias al premio	放弃奖励
+¡El cofre estaba maldito!	宝箱被诅咒了！
+Prefieres no arriesgarte	你选择不冒险
+Botín maldito	诅咒战利品
+¡Maldición rota! 2 cofres	诅咒解除！2个宝箱
+¡Otra oleada!	又一波敌人！
+¡Has resistido!	你坚持住了！
+¡Te han golpeado!	你被击中了！
+¡Se acabó el tiempo!	时间到！
+{} Desafío fallido	{}挑战失败
+Sin premio esta vez	这次没有奖励
+Premio del desafío	挑战奖励
+¡Desafío superado! 2 cofres	挑战成功！2个宝箱
+SUPERADO	已完成
+FALLIDO	失败
+sin recibir daño	不受伤害
+curación -60%	治疗-60%
+{} s	{} 秒
+{} · {}	{} · {}
+{} · {} · quedan {}	{} · {} · 剩余{}
+Ofrecer sacrificio	献上祭品
+Abrir (maldito)	打开（诅咒）
 Primera sangre	初次见血
 Derrota 1 enemigo	击败1名敌人
 Cazador	猎手
@@ -1093,7 +1154,6 @@ Pacto Avaro	贪婪契约
 +40% de oro	金币+40%
 Enemigos veloces	迅捷敌人
 Más trampas	更多陷阱
-Curación reducida	治疗削弱
 Más élites	更多精英
 Los enemigos se mueven un 20% más rápido.	敌人移动速度提高20%。
 Aparecen más tiras de pinchos en las salas.	房间中出现更多尖刺带。

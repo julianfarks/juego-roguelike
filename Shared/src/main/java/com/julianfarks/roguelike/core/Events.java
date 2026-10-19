@@ -8,12 +8,12 @@ package com.julianfarks.roguelike.core;
 final class Events {
     private Events() {}
 
-    static final int NONE = 0, MERCHANT = 1, SPIRIT = 2, TRIAL = 3, SECRET = 4, CAPTIVE = 5, SANCTUARY = 6, COUNT = 7;
-    static final String[] NAME = {"", "Mercader errante", "Espíritu del abismo", "Prueba de combate", "Cámara secreta", "Prisionero", "Santuario de pactos"};
-    static final String[] SUB = {"", "Pocas existencias, buenos precios", "Ofrece poder a cambio de un recurso", "Elite y recompensa superior", "Una reliquia te espera", "Libéralo derrotando a sus guardias", "Dos pactos: ventaja y precio"};
-    static final String[] ICON = {"", "shop", "soul", "elite", "relic", "heart", "altar"};
-    static final int[] GLOW = {0, 0xFFA040, 0x7AC8F0, 0xFF5A30, 0xFFD45A, 0xB8A0D0, 0xAA6EFF};
-    static final int[] WEIGHT = {0, 22, 18, 16, 10, 16, 18};
+    static final int NONE = 0, MERCHANT = 1, SPIRIT = 2, TRIAL = 3, SECRET = 4, CAPTIVE = 5, SANCTUARY = 6, ALTAR = 7, CURSED = 8, CHALLENGE = 9, COUNT = 10;
+    static final String[] NAME = {"", "Mercader errante", "Espíritu del abismo", "Prueba de combate", "Cámara secreta", "Prisionero", "Santuario de pactos", "Altar de riesgo", "Cofre maldito", "Sala de desafío"};
+    static final String[] SUB = {"", "Pocas existencias, buenos precios", "Ofrece poder a cambio de un recurso", "Elite y recompensa superior", "Una reliquia te espera", "Libéralo derrotando a sus guardias", "Dos pactos: ventaja y precio", "Un sacrificio a cambio de poder", "Gran premio, pero se defiende", "Cumple la regla y gana premio"};
+    static final String[] ICON = {"", "shop", "soul", "elite", "relic", "heart", "altar", "b_sangre", "chest", "elite"};
+    static final int[] GLOW = {0, 0xFFA040, 0x7AC8F0, 0xFF5A30, 0xFFD45A, 0xB8A0D0, 0xAA6EFF, 0xE0405A, 0xA050E0, 0xFFA030};
+    static final int[] WEIGHT = {0, 22, 18, 16, 10, 16, 18, 14, 12, 14};
     static final float CHANCE = 0.20f;          // por sala elegible (hasta 3 por bioma, maximo 1 suceso por bioma)
     static final int MAX_PACTS = 2;             // pactos por run
 
@@ -24,17 +24,24 @@ final class Events {
         if (force != null) { int k = Integer.parseInt(force); return k > 0 && k < COUNT ? k : NONE; }
         if (!r.chance(CHANCE)) return NONE;
         int tot = 0;
-        for (int k = 1; k < COUNT; k++) if (allowed(rs, k)) tot += WEIGHT[k];
+        for (int k = 1; k < COUNT; k++) if (allowed(rs, k)) tot += weight(rs, k);
         int x = r.i(Math.max(1, tot));
         for (int k = 1; k < COUNT; k++) {
             if (!allowed(rs, k)) continue;
-            x -= WEIGHT[k];
+            x -= weight(rs, k);
             if (x < 0) return k;
         }
         return NONE;
     }
 
+    /** Peso de sorteo: cada vez que ya se vio ese suceso en la run, su peso se reduce a la mitad (variedad, sin repeticion excesiva). */
+    static int weight(RunState rs, int kind) {
+        int seen = Math.min(4, rs.eventsThisRun[kind]);
+        return Math.max(1, WEIGHT[kind] >> seen);
+    }
+
     static boolean allowed(RunState rs, int kind) {
+        if ((kind == ALTAR || kind == CURSED || kind == CHALLENGE) && rs.eventsThisRun[kind] >= 2) return false;   // como mucho 2 de cada uno por run
         if (kind == SANCTUARY && rs.pactCount() >= MAX_PACTS) return false;
         if (kind == SECRET && rs.eventsThisRun[SECRET] > 0) return false;      // una reliquia secreta por run
         return true;
@@ -76,6 +83,7 @@ final class Events {
             new Pact(3, "Pacto de Sangre", "b_sangre", "+5% de robo de vida", "-10% de daño"),
             new Pact(4, "Pacto del Sabio", "b_habilidad", "Habilidades 15% más rápidas", "-1 frasco máximo"),
             new Pact(5, "Pacto Avaro", "b_fortuna", "+40% de oro", "+8% de daño recibido"),
+            new Pact(6, "Pacto del Ayuno", "b_sangre", "+20% de daño", "-2 frascos máximos (mínimo 1)"),
     };
 
     /** Dos pactos distintos, que el jugador aun no tenga. */
@@ -98,6 +106,7 @@ final class Events {
                 case 3: st.lifesteal += 0.05f; st.dmgMul *= 0.90f; break;
                 case 4: st.cdMul = Math.max(0.4f, st.cdMul * 0.85f); st.potionsMax = Math.max(1, st.potionsMax - 1); break;
                 case 5: st.goldMul *= 1.40f; st.dmgTaken *= 1.08f; break;
+                case 6: st.dmgMul *= 1.20f; st.potionsMax = Math.max(0, st.potionsMax - 2); break;
                 default: break;
             }
         }
@@ -107,4 +116,18 @@ final class Events {
     static int spiritHpCost(RunState rs) { return Math.round(rs.stats.maxHp * 0.20f); }
     static boolean spiritHpOk(RunState rs) { return rs.hp > rs.stats.maxHp * 0.45f; }
     static int spiritGoldCost(RunState rs) { return 70 + 25 * rs.stage; }
+
+    // ------------------------------------------------------------------ salas de desafio
+    static final int CH_NODMG = 0, CH_TIMED = 1, CH_SURVIVE = 2, CH_NOHEAL = 3, CH_COUNT = 4;
+    static final String[] CH_NAME = {"Sin recibir daño", "Contrarreloj", "Resistencia", "Curación reducida"};
+    static final String[] CH_RULE = {"Derrota a todos sin recibir un solo golpe", "Derrota a todos antes de que acabe el tiempo", "Sobrevive hasta que acabe el tiempo", "Curación -60%: derrota a todos"};
+    static final float CH_TIME_TIMED = 40f, CH_TIME_SURVIVE = 30f, CH_HEAL = 0.4f;
+
+    /** Variante del desafio de una sala: depende de la semilla de la run y del piso, para que no sea siempre la misma. */
+    static int challengeKind(RunState rs) {
+        return (int) ((rs.seed ^ (rs.stage * 31L + rs.roomNo * 17L + rs.eventsThisRun[CHALLENGE] * 7L)) & 0x7fffffffL) % CH_COUNT;
+    }
+
+    // ------------------------------------------------------------------ cofre maldito
+    static int ambushCount(RunState rs) { return 3 + rs.stage; }
 }

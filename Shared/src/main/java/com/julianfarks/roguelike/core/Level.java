@@ -114,7 +114,8 @@ public final class Level {
             case "merchant": p.sheet = Assets.spr("prop_merchant"); if (ps.arg == 1) { p.back = Assets.spr("ops_stall"); p.label = "Mercader errante"; } break;
             case "spirit": p.sheet = Assets.spr("ev_spirit"); p.label = "Espíritu del abismo"; break;
             case "cage": p.sheet = Assets.spr("ev_cage"); p.anim = "idle"; p.label = "Prisionero"; break;
-            case "shrine": p.sheet = Assets.spr("ev_shrine"); p.label = "Santuario de pactos"; break;
+            case "shrine": p.sheet = Assets.spr("ev_shrine"); p.label = ps.arg == 1 ? "Altar de riesgo" : "Santuario de pactos"; break;
+            case "cursed": p.sheet = Assets.spr("prop_chest"); p.anim = "closed"; p.label = "Cofre maldito"; break;
             case "relic": p.sheet = Assets.spr("ev_relic"); p.anim = "idle"; p.label = "Reliquia"; break;
             case "fountain": p.sheet = Assets.spr("prop_fountain"); break;
             case "npc": p.sheet = Assets.spr("prop_npc_" + Math.max(0, Math.min(2, ps.arg))); p.anim = "idle"; break;
@@ -449,9 +450,28 @@ public final class Level {
 
     final List<float[]> lines = new ArrayList<>();
 
+    /** Multiplicador de curacion de la sala (1 = normal; los desafios de "curacion reducida" lo bajan). */
+    public float healMul = 1f;
+    /** Mientras sea true la sala no se da por despejada aunque no queden enemigos (desafio de resistencia). */
+    public boolean holdClear;
+
+    /** Anade un enemigo en mitad de la sala (emboscada, oleadas de desafio). Cuenta para despejar la sala. */
+    public Enemy spawnEnemy(String id, boolean elite, float x, float y) {
+        EnemyDef d = EnemyDef.get(id);
+        if (d == null) return null;
+        Enemy e = new Enemy(d, elite, rs.enemyHpMul(), rs.enemyDmgMul());
+        e.x = x; e.y = y; e.home = x;
+        enemies.add(e);
+        toKill++; roomEnemies++;
+        cleared = false;
+        fxAdd("fx_ring", "pulse", x, y - 14, 0.8f, 0xA050E0);
+        ps.burst(rng, x, y - 14, 0xA050E0, 10, 80, 0.5f, 2, -10, true);
+        return e;
+    }
+
     public void healPlayer(float amt) {
         if (amt <= 0 || pl == null || !pl.alive) return;
-        amt *= Infinite.healMul(rs) * BlessFx.healMul(rs);
+        amt *= Infinite.healMul(rs) * BlessFx.healMul(rs) * healMul;
         float before = rs.hp;
         rs.hp = Math.min(rs.stats.maxHp, rs.hp + amt);
         float got = rs.hp - before;
@@ -629,7 +649,7 @@ public final class Level {
             else delayT.set(i, t);
         }
         // fin de sala
-        if (!cleared && !bossFight && room.type != Room.BOSS) {
+        if (!cleared && !bossFight && !holdClear && room.type != Room.BOSS) {
             int alive = 0;
             for (Enemy e : enemies) if (e.alive || !e.remove && !e.deadAnimDone()) { if (e.alive) alive++; }
             if (alive == 0 && !pendingSpawns()) {
@@ -1169,7 +1189,8 @@ public final class Level {
     private int eventColor(Prop p) {
         switch (p.kind) {
             case "spirit": return Events.GLOW[Events.SPIRIT];
-            case "shrine": return Events.GLOW[Events.SANCTUARY];
+            case "shrine": return Events.GLOW[p.arg == 1 ? Events.ALTAR : Events.SANCTUARY];
+            case "cursed": return Events.GLOW[Events.CURSED];
             case "cage": return Events.GLOW[Events.CAPTIVE];
             case "relic": return Events.GLOW[Events.SECRET];
             case "merchant": return p.arg == 1 ? Events.GLOW[Events.MERCHANT] : 0;
@@ -1224,7 +1245,7 @@ public final class Level {
             boolean can = false;
             switch (p.kind) {
                 case "altar": case "forge": case "merchant": case "fountain": case "chest": case "portal": case "sanctuary": case "npc": can = !p.used || p.kind.equals("merchant"); break;
-                case "spirit": case "shrine": case "cage": case "relic": can = !p.done && !p.used; break;
+                case "spirit": case "shrine": case "cage": case "relic": case "cursed": can = !p.done && !p.used; break;
                 case "door": can = !p.locked; break;
                 default: break;
             }

@@ -395,6 +395,7 @@ public final class DebugBot {
         Level lv = rs.lv;
         Player p = lv.pl;
         if (System.getenv("BOT_PERF") != null && frame % 60 == 0) System.out.println("PERF f=" + frame + " en=" + lv.enemies.size() + " proj=" + lv.projs.size() + " fx=" + lv.fxs.size() + " txt=" + lv.texts.size() + " delayed=" + lv.delayed.size() + " part=" + lv.ps.count() + " props=" + lv.props.size() + " heapMB=" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576);
+        if (System.getenv("BOT_TRAILER") != null && warped && frame > warpFrame + 30) TrailerProbe.step(g, rs, lv, p, frame);
         if (System.getenv("BOT_HUDTEST") != null && warped && frame > warpFrame + 30) { if (HudProbe.step(g, rs, lv, p, frame)) System.exit(HudProbe.fails == 0 ? 0 : 1); return; }
         if (System.getenv("BOT_EVENTTEST") != null && warped && frame > warpFrame + 30) { if (EventProbe.step(g, rs, frame)) System.exit(EventProbe.fails == 0 ? 0 : 1); return; }
         if (System.getenv("BOT_COMBATTEST") != null && warped && frame > warpFrame + 30) { if (CombatProbe.step(g, rs, lv, p, frame)) System.exit(CombatProbe.fails == 0 ? 0 : 1); return; }
@@ -625,7 +626,7 @@ public final class DebugBot {
         if (System.getenv("BOT_OVLOG") != null && rs.ov != 0 && rs.ovT < 0.02f) System.out.println("OVSTART ov=" + rs.ov + " frame=" + frame);
         switch (rs.ov) {
             case RunScreen.OV_BLESS:
-                if (rs.ovT > 1.3f) for (Screen.Hit h : rs.hits) { rs.touch(0, 0, h.x + 5, h.y + 5); rs.touch(0, 2, h.x + 5, h.y + 5); break; }
+                if (rs.ovT > 1.3f && System.getenv("BOT_TRAILER") == null) for (Screen.Hit h : rs.hits) { rs.touch(0, 0, h.x + 5, h.y + 5); rs.touch(0, 2, h.x + 5, h.y + 5); break; }
                 return;
             case RunScreen.OV_CHEST:
                 if (rs.ovT > 1.0f && System.getenv("BOT_CHESTSHOT") == null || rs.ovT > 6f) {

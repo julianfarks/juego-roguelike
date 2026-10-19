@@ -29,19 +29,26 @@ S = [
     ('b3_shadow', 0.1, 0.8, dict(flash=(WHITE, .35))),
     ('b5_storm', 0.1, 0.8, dict(flash=(WHITE, .35))),
     ('b7_earth', 0.1, 0.8, dict(flash=(WHITE, .35))),
-    # ---- PROGRESION 18.4-22.4
-    ('s_bless', 4.1, 1.2, dict(flash=(WHITE, .4))),
-    ('s_shop', 4.2, 0.8, dict()),
-    ('s_forge', 4.3, 0.8, dict()),
-    ('s_ev4', 4.7, 1.2, dict()),
-    # ---- CLIMAX 22.4-27.2
+    # ---- 200 BENDICIONES Y SINERGIAS 18.4-25.6 (escenas reales del altar: tb_bless, grabadas con TrailerProbe)
+    ('tb_bless', 0.25, 1.6, dict(flash=(WHITE, .35))),
+    ('tb_bless', 1.9, 1.6, dict()),
+    ('tb_bless', 3.55, 0.8, dict()),
+    ('tb_bless', 4.35, 0.8, dict()),
+    ('tb_bless', 5.1, 1.2, dict()),
+    ('tb_bless', 6.3, 1.2, dict(flash=(ORANGE, .5), zoom=(1.0, 1.12), focus=(.35, .72))),
+    # ---- PARRY PERFECTO 25.6-29.2 (jefe real; el bot hace el parry y despues pulsa atacar en la ventana de contraataque)
+    ('tp_parry', 15.7, 1.6, dict(zoom=(1.0, 1.1), focus=(.62, .72))),
+    ('tp_parry', 23.4, 2.0, dict(zoom=(1.0, 1.1), focus=(.7, .72))),
+    # ---- SINERGIA INFIERNO 29.2-34.0 (build real: Brasas Eternas + Llama Voraz + Contagio Igneo)
+    ('ts_fire', 2.0, 1.6, dict(flash=(ORANGE, .5), shake=10)),
+    ('ts_fire', 5.0, 1.6, dict(flash=(ORANGE, .5), zoom=(1.0, 1.1), focus=(.5, .75))),
+    ('ts_fire', 6.0, 1.6, dict(zoom=(1.0, 1.1), focus=(.5, .75))),
+    # ---- DEFINITIVAS 34.0-37.2
     ('b7_earth', 10.0, 0.8, dict(flash=(ORANGE, .6), shake=18, zoom=(1.0, 1.15))),
     ('b6_blood', 8.4, 0.8, dict(flash=(RED, .6), shake=14, zoom=(1.0, 1.15))),
     ('b2_frost', 7.2, 0.8, dict(flash=(WHITE, .6), shake=14, zoom=(1.0, 1.12))),
     ('b5_storm', 12.4, 0.8, dict(flash=(WHITE, .7), shake=16, zoom=(1.0, 1.12))),
-    ('b1_flame', 9.4, 0.8, dict(flash=(ORANGE, .7), shake=16, zoom=(1.0, 1.15))),
-    ('b8_astral', 11.2, 0.8, dict(flash=(PINK, .8), shake=22, zoom=(1.0, 1.18))),
-    # ---- TITULO 27.2-30
+    # ---- TITULO 37.2-40
     ('b8_astral', 11.4, 2.8, dict(overlay='title')),
 ]
 
@@ -50,7 +57,7 @@ _t = 0.0
 for c, ss, d, ex in S:
     sh = dict(clip=c, ss=ss, dur=d, t0=_t); sh.update(ex)
     SHOTS.append(sh); _t += d
-assert abs(_t - 30.0) < 1e-6, _t
+assert abs(_t - 40.0) < 1e-6, _t
 
 # Textos: cada idioma esta ESCRITO por separado (no es traduccion literal). "A|B" = linea principal + linea secundaria mas pequena.
 # y = centro del bloque. Arriba (y~235) no tapa ni a los jefes ni al aviso inferior del juego (nombre del jefe y subtitulo); en las
@@ -62,12 +69,14 @@ TEXTS = [
     dict(t0=8.2, t1=11.4, y=235, scale=7, band=.5, es='ATRAVIESA 9 BIOMAS', en='CROSS 9 BIOMES'),
     dict(t0=11.6, t1=15.0, y=235, scale=7, band=.5, es='ENFRÉNTATE A 9 JEFES', en='FACE 9 BOSSES'),
     dict(t0=15.2, t1=18.4, y=905, scale=8, band=.85, es='10 ESPADACHINES|CADA UNO CON SU ESTILO', en='10 SWORDSMEN|10 WAYS TO FIGHT', ss=4),
-    dict(t0=18.4, t1=20.2, y=925, scale=6, band=.7, es='28 BENDICIONES', en='28 BLESSINGS'),
-    dict(t0=20.4, t1=22.3, y=925, scale=5, band=.7, es='MEJORA · COMPRA · DESCUBRE', en='UPGRADE · SHOP · DISCOVER'),
-    dict(t0=22.6, t1=24.6, y=235, scale=7, band=.5, es='DESATA TUS DEFINITIVAS', en='UNLEASH YOUR ULTIMATES'),
-    dict(t0=24.8, t1=27.0, y=235, scale=6, band=.5, es='LLEGA HASTA EL CAZADOR PÁLIDO', en='REACH THE PALE HUNTER'),
-    dict(t0=28.3, t1=30.0, y=815, scale=6, band=0, es='DESAFÍA EL ABISMO', en='DARE TO DESCEND'),
-    dict(t0=28.7, t1=30.0, y=935, scale=4, band=0, anim='rise', es='PC · ANDROID', en='PC · ANDROID'),
+    dict(t0=18.6, t1=21.4, y=925, scale=6, band=.75, es='200 BENDICIONES|INFINITAS FORMAS DE LUCHAR', en='200 BLESSINGS|ENDLESS WAYS TO FIGHT', ss=4),
+    dict(t0=21.6, t1=25.4, y=925, scale=5, band=.75, es='20 SINERGIAS ESPECIALES|CADA ELECCIÓN CAMBIA TU PARTIDA', en='20 SPECIAL SYNERGIES|EVERY PICK CHANGES YOUR RUN', ss=4),
+    dict(t0=25.8, t1=29.0, y=235, scale=6, band=.5, es='DOMINA EL MOMENTO|CONVIERTE LA DEFENSA EN ATAQUE', en='MASTER THE TIMING|TURN DEFENSE INTO OFFENSE', ss=4),
+    dict(t0=29.4, t1=33.0, y=235, scale=6, band=.5, es='COMBINA BENDICIONES.|DESATA SINERGIAS DEVASTADORAS', en='COMBINE BLESSINGS.|UNLEASH POWERFUL SYNERGIES', ss=4),
+    dict(t0=31.2, t1=33.9, y=915, scale=4, band=.7, anim='rise', es='SINERGIA · INFIERNO|Brasas Eternas + Llama Voraz + Contagio Ígneo', en='SYNERGY · INFIERNO|Brasas Eternas + Llama Voraz + Contagio Ígneo', ss=3),
+    dict(t0=34.2, t1=37.0, y=235, scale=7, band=.5, es='DESATA TUS DEFINITIVAS', en='UNLEASH YOUR ULTIMATES'),
+    dict(t0=38.3, t1=40.0, y=815, scale=6, band=0, es='DESAFÍA EL ABISMO', en='DARE TO DESCEND'),
+    dict(t0=38.7, t1=40.0, y=935, scale=4, band=0, anim='rise', es='PC · ANDROID', en='PC · ANDROID'),
 ]
 
 _logo = np.array(Image.open(pixtext.ROOT + '/Shared/assets/ui/ui_logo.png').convert('RGBA'))
@@ -99,14 +108,15 @@ for _s in SHOTS:
 
 def audio(mx, lang, clips):
     import os
-    mx.add_music(MUSIC, 0.0, 0.0, 30.0, vol=0.62, fade_in=0.15, fade_out=1.2)
+    mx.add_music(MUSIC, 0.0, 0.0, 40.0, vol=0.62, fade_in=0.15, fade_out=1.2)
     for sh in SHOTS:
         tsv = os.path.join(clips, sh['clip'] + '.mp4.audio.tsv')
         mx.add_scene_sfx(tsv, sh['ss'], sh['ss'] + sh['dur'], sh['t0'], vol=0.8, skip=('ui_click', 'ui_start_run'))
     S_ = mixer_sfx = __import__('mixer')
     mx.add(S_.sfx('boss_title'), 0.0, 1.0)
     mx.add(S_.sfx('explosion_big'), 0.8, 0.8)
-    mx.add(S_.sfx('explosion_big'), 22.4, 0.9)
-    mx.add(S_.sfx('boss_title'), 27.2, 1.0)
-    mx.add(S_.sfx('explosion_big'), 27.2, 1.0, pitch=0.8)
-    mx.add(S_.sfx('level_up'), 28.4, 0.6)
+    mx.add(S_.sfx('explosion_big'), 34.0, 0.9)
+    mx.add(S_.sfx('level_up'), 18.4, 0.5)
+    mx.add(S_.sfx('boss_title'), 37.2, 1.0)
+    mx.add(S_.sfx('explosion_big'), 37.2, 1.0, pitch=0.8)
+    mx.add(S_.sfx('level_up'), 38.4, 0.6)

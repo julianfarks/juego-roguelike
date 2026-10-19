@@ -1,19 +1,19 @@
 # Tráileres de SwordsmanMagic: Eternal Abyss
 
-Dos tráileres de **30 s exactos**, hechos solo con **gameplay real** del juego (modo PC limpio), la **música y los efectos originales** del juego y textos animados con la **tipografía pixel del propio juego**.
+Dos tráileres de **40 s exactos**, hechos solo con **gameplay real** del juego (modo PC limpio), la **música y los efectos originales** del juego y textos animados con la **tipografía pixel del propio juego**.
 
 | Archivo | Idioma | Duración | Resolución | FPS | Vídeo / Audio |
 |---|---|---|---|---|---|
-| `Trailer_Spanish.mp4` | Español | 30,000 s (1800 fotogramas) | 1920×1080 (16:9) | 60 | H.264 High, yuv420p / AAC estéreo 48 kHz |
-| `Trailer_English.mp4` | English | 30,000 s (1800 fotogramas) | 1920×1080 (16:9) | 60 | H.264 High, yuv420p / AAC estéreo 48 kHz |
+| `Trailer_Spanish.mp4` | Español | 40,000 s (2400 fotogramas) | 1920×1080 (16:9) | 60 | H.264 High, yuv420p / AAC estéreo 48 kHz |
+| `Trailer_English.mp4` | English | 40,000 s (2400 fotogramas) | 1920×1080 (16:9) | 60 | H.264 High, yuv420p / AAC estéreo 48 kHz |
 
 Descarga directa (archivos del repositorio, rama `main`):
 - https://github.com/julianfarks/juego-roguelike/raw/main/Videos/Trailer_Spanish.mp4
 - https://github.com/julianfarks/juego-roguelike/raw/main/Videos/Trailer_English.mp4
 
 ## Contenido (todo verificado con el código del juego)
-- **10 clases** (cada una con 3 habilidades + 1 definitiva), **9 biomas**, **9 jefes** (8 de bioma + El Cazador, con 3 formas), **28 bendiciones**.
-- Se muestran tienda del mercader, forja, bendiciones y cámara secreta. No se afirman cifras de enemigos, objetos ni fechas/tiendas/enlaces de lanzamiento.
+- **10 clases** (cada una con 3 habilidades + 1 definitiva), **9 biomas**, **9 jefes** (8 de bioma + El Cazador, con 3 formas), **200 bendiciones** con **20 sinergias especiales** (ver `docs/BENDICIONES.md`), parry perfecto con contraataque.
+- Se muestran ofertas de bendiciones en el altar, la lista de bendiciones activas y su pestaña de sinergias, el aviso real «¡Sinergia activada!», un parry perfecto contra el Rey Exánime con su «¡Contra!» y la sinergia Infierno (Brasas Eternas + Llama Voraz + Contagio Ígneo) propagando fuego. No se afirman cifras de enemigos, objetos ni fechas/tiendas/enlaces de lanzamiento.
 
 | Tiempo | Texto ES | Texto EN |
 |---|---|---|
@@ -23,11 +23,15 @@ Descarga directa (archivos del repositorio, rama `main`):
 | 8,2–11,4 | ATRAVIESA 9 BIOMAS | CROSS 9 BIOMES |
 | 11,6–15,0 | ENFRÉNTATE A 9 JEFES | FACE 9 BOSSES |
 | 15,2–18,4 | 10 ESPADACHINES / CADA UNO CON SU ESTILO | 10 SWORDSMEN / 10 WAYS TO FIGHT |
-| 18,4–20,2 | 28 BENDICIONES | 28 BLESSINGS |
-| 20,4–22,3 | MEJORA · COMPRA · DESCUBRE | UPGRADE · SHOP · DISCOVER |
-| 22,6–24,6 | DESATA TUS DEFINITIVAS | UNLEASH YOUR ULTIMATES |
-| 24,8–27,0 | LLEGA HASTA EL CAZADOR PÁLIDO | REACH THE PALE HUNTER |
-| 27,2–30 | Logo oficial + DESAFÍA EL ABISMO / PC · ANDROID | Logo + DARE TO DESCEND / PC · ANDROID |
+| 18,6–21,4 | 200 BENDICIONES / INFINITAS FORMAS DE LUCHAR | 200 BLESSINGS / ENDLESS WAYS TO FIGHT |
+| 21,6–25,4 | 20 SINERGIAS ESPECIALES / CADA ELECCIÓN CAMBIA TU PARTIDA | 20 SPECIAL SYNERGIES / EVERY PICK CHANGES YOUR RUN |
+| 25,8–29,0 | DOMINA EL MOMENTO / CONVIERTE LA DEFENSA EN ATAQUE | MASTER THE TIMING / TURN DEFENSE INTO OFFENSE |
+| 29,4–33,0 | COMBINA BENDICIONES. / DESATA SINERGIAS DEVASTADORAS | COMBINE BLESSINGS. / UNLEASH POWERFUL SYNERGIES |
+| 31,2–33,9 | SINERGIA · INFIERNO / Brasas Eternas + Llama Voraz + Contagio Ígneo | SYNERGY · INFIERNO / (mismos nombres del juego) |
+| 34,2–37,0 | DESATA TUS DEFINITIVAS | UNLEASH YOUR ULTIMATES |
+| 38,3–40 | Logo oficial + DESAFÍA EL ABISMO / PC · ANDROID | Logo + DARE TO DESCEND / PC · ANDROID |
+
+Escenas nuevas (18,4–34 s): altar con ofertas de distintas rarezas y categorías → lista de activas y sinergias → «¡Sinergia activada!» → parry perfecto (jefe prepara el ataque, parry, destello real, «¡Contra!») ×2 → Infierno ×3. Las escenas nuevas se graban con `TrailerProbe` (solo captura): invoca las pantallas y reglas reales del juego; el parry lo ejecuta el bot.
 
 Los textos van arriba o sobre una banda oscura para no tapar al personaje ni los carteles del propio juego. El tráiler en inglés muestra la interfaz del juego en español (limitación honesta: el juego no tiene idioma inglés).
 
@@ -48,4 +52,5 @@ bash Videos/source/render_all.sh                 # 2) monta y renderiza ES + EN 
 
 ## Límites honestos
 - Gameplay grabado en el banco headless del PC (no en un móvil Android ni en hardware Windows real).
+- El parry de las escenas nuevas lo ejecuta el bot de pruebas; las ofertas y la build del altar se conceden con la herramienta de captura para poder mostrarlas.
 - Sin locución profesional: solo texto y sonido.

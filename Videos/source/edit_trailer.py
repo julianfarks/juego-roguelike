@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Monta y renderiza un trailer (ES o EN) de exactamente 30 s, 1920x1080, 60 fps, H.264 + AAC estereo.
+"""Monta y renderiza un trailer (ES o EN) de exactamente 40 s, 1920x1080, 60 fps, H.264 + AAC estereo.
 Uso:  python3 edit_trailer.py es|en SALIDA.mp4 [--clips DIR] [--audio-only] [--preview]
 Entrada: clips de gameplay real grabados con capture_clips.sh (carpeta --clips, por defecto ./clips) y storyboard.py.
 Los pixeles se escalan SIEMPRE por vecino mas cercano. Nada de los .ogg ni de los sprites originales se modifica."""
@@ -9,7 +9,7 @@ from PIL import Image
 import pixtext, mixer
 import storyboard as SB
 
-W, H, FPS, DUR = 1920, 1080, 60, 30.0
+W, H, FPS, DUR = 1920, 1080, 60, 40.0
 NF = int(round(DUR * FPS))
 
 

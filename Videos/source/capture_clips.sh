@@ -20,4 +20,16 @@ clip c4_verdant 5 combat:4 700; clip c5_storm 3 combat:5 700; clip c6_blood 6 co
 clip e1_elite 0 elite:1 700;   clip e3_elite 3 elite:3 700
 clip s_shop 0 shop:0 500; clip s_bless 0 bless:0 500; clip s_treasure 0 treasure:0 500; clip s_forge 0 forge:1 500
 clip s_ev1 0 ev1:0 500; clip s_ev2 0 ev2:0 500; clip s_ev4 0 ev4:0 500; clip s_ev5 0 ev5:0 500; clip s_ev6 0 ev6:0 500
+# Escenas nuevas (altar de 200 bendiciones, parry perfecto, sinergia Infierno): usan TrailerProbe (solo captura; llama a las pantallas y reglas reales del juego).
+# BOT_TRAILER=bless|parry|fire. La ventana de grabacion (--rec-from/--rec-to) esta en fotogramas.
+probe() {  # NOMBRE MODO CLASE WARP DESDE HASTA
+  local N=$1 M=$2 C=$3 W=$4 A=$5 B=$6
+  [ -f "$OUT/$N.mp4" ] && return 0
+  ( cd "$ROOT" && BOT_TRAILER=$M BOT_CLASS=$C BOT_GOD=1 BOT_WARP=$W BOT_ULT=1 BOT_PARRYBOSS=$([ $M = parry ] && echo 1 || echo 0) SWR_OUT=/tmp/swr_build_trailer \
+    bash PC/run.sh --headless --pc --bot --w 480 --frames $B --store "/tmp/trailer_store_$N" \
+    --record "$OUT/$N.mp4" --rec-from $A --rec-to $B > "$OUT/$N.log" 2>&1 )
+}
+probe tb_bless bless 0 combat:0 335 800     # altar: ofertas, lista de activas, pestaña de sinergias, sinergia activada
+probe tp_parry parry 0 boss:7 140 2100      # Rey Exanime: parry perfecto + contra
+probe ts_fire  fire  2 combat:1 140 700     # Infierno: Brasas Eternas + Llama Voraz + Contagio Igneo
 echo "Escenas en $OUT"

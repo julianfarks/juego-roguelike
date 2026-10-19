@@ -721,7 +721,7 @@ final class RunScreen extends Screen implements Level.Listener {
         Snd.sfx("altar_bless", 0.9f);
     }
 
-    private void applyBless(int id) {
+    void applyBless(int id) {
         BlessFx.sync(rs);
         boolean[] synBefore = rs.bx.synOn.clone();
         rs.bless[id]++;
@@ -832,6 +832,7 @@ final class RunScreen extends Screen implements Level.Listener {
     }
 
     Runnable afterBless;
+    void offerSelDbg(int i) { offerSel = Math.max(0, Math.min(offer.length - 1, i)); }   // solo grabacion de trailers
     List<Hit> hitsDbg() { return hits; }          // solo pruebas
     void clickDbg(Hit h) { click(h); }            // solo pruebas
     boolean ambushOn;                 // emboscada del cofre maldito en curso
@@ -1815,7 +1816,7 @@ final class RunScreen extends Screen implements Level.Listener {
         g.rect(h.x + 3, y + 3, h.w - 6, 2, Mth.withAlpha(rc, ba), false);
         if (b.rar >= 3 || selected) { g.rect(h.x + 1, y + 1, 2, h.h - 2, Mth.withAlpha(rc, ba), false); g.rect(h.x + h.w - 3, y + 1, 2, h.h - 2, Mth.withAlpha(rc, ba), false); }
         UI.small.center(g, RAR_ES[b.rar], cx, y + 8, rc, fadeIn);
-        UI.small.center(g, BlessData.CAT_ES[b.cat - 'A'], cx, y + 19, UI.GREY, fadeIn);
+        UI.small.center(g, UI.fitLabel(UI.small, BlessData.CAT_ES[b.cat - 'A'], h.w - 10), cx, y + 19, UI.GREY, fadeIn);       // categoria recortada si no cabe (a 480 px las 4 cartas son estrechas)
         UI.light(g, cx, y + 46, 20 + b.rar * 4, rc & 0xFFFFFF, (0.16f + 0.06f * b.rar + (selected ? 0.1f : 0f)) * fadeIn);
         UI.iconC(g, b.icon, cx, y + 46, 2f, fadeIn);
         int maxW = (int) h.w - 10;

@@ -17,3 +17,9 @@
 - Comparación a la misma escala: `comparacion_prototipo_izq_joven_der.png` (izq. versión "heroica" anterior, der. nueva; arriba idle, abajo run).
 - Paleta, capa, escudo, espada y penacho sin cambios. Prueba headless sobre el prototipo aislado; no se tocó el sprite del juego.
 - Límites conocidos: fila roll recortada abajo, espada recortada a la derecha en ataque, sin smear/hurt/ult.
+
+## Versión yelmo cerrado (v4)
+- Generador: `tools/art_players/exp96_paladin_v4.py` -> `paladin96_cerrado_sheet.png/.json` (idle, run, attack1, roll).
+- Casco completamente cerrado: bóveda con cresta, ceja y banda de visera, ranura de ojos oscura, barbote con arista y ventilas, remaches, joya lateral, pluma carmesí. No se ve piel, ojos, nariz, boca ni pelo.
+- Comparación: `comparacion_joven_izq_cerrado_der.png` (idle).
+- Pendiente: el resto de la armadura (peto, hombreras, brazales, rodilleras) sigue como en v3; falta elaborarla. Las animaciones funcionales y el sprite del juego no se tocan.

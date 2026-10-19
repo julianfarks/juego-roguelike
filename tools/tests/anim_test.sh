@@ -4,7 +4,7 @@
 RUN=${RUN:-/tmp/run2.sh}; [ -x "$RUN" ] || RUN=PC/run.sh
 ROOT=$(cd "$(dirname "$0")/../.." && pwd); cd "$ROOT"
 fail=0
-python3 tools/tests/anim_sheets_check.py || fail=1
+python3 -W ignore tools/tests/anim_sheets_check.py || fail=1
 out=$(BOT_ANIMTEST=1 BOT_GOD=1 BOT_WARP=combat:0 timeout 300 $RUN --headless --bot --frames 900 2>&1 | grep -E "^AN|Exception|at com\.")
 echo "$out" | grep -E "FALLA|FIN|Exception|at com\."
 echo "$out" | grep -q "fallos=0" || fail=1

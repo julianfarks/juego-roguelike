@@ -575,7 +575,15 @@ public final class Boss extends Ent {
         float dy = flying && state != DEAD && state != INTRO ? (float) Math.sin(bob * 2f) * 3f : 0f;
         if (!flying || state == DEAD) g.rect(Math.round(x - 26 + offX), Math.round(y - 2), 52, 3, 0x55000000, false);
         UI.light(g, x + offX, y - bh * 0.5f + offY + dy, 70, def.color, state == DEAD ? 0.1f : 0.16f);
-        if (Impact.react(lv, this, rx)) sheet.drawSq(g, a, frame, x + offX + rx[2], y + offY + dy, right, rx[0], rx[1], flags, tint, alpha);
+        float bspd = (float) Math.hypot(vx, vy);
+        if (state == ATTACK && bspd > 160f && !Impact.react(lv, this, rx)) {      // smear de embestida del jefe (solo visual; el patron y la zona peligrosa no cambian)
+            float k = Mth.clamp((bspd - 160f) / 260f, 0.3f, 1f);
+            boolean vert = Math.abs(vy) > Math.abs(vx) * 1.4f;
+            float sx2 = vert ? 1f - 0.06f * k : 1f + 0.14f * k, sy2 = vert ? 1f + 0.14f * k : 1f - 0.06f * k;
+            if (!Save.S.reduceFx) for (int i = 2; i >= 1; i--)
+                sheet.drawSq(g, a, frame, x + offX - vx / bspd * 8f * i, y + offY + dy - vy / bspd * 8f * i, right, sx2, sy2, Platform.ADD | Platform.TINT, def.color, i == 1 ? 0.24f : 0.12f);
+            sheet.drawSq(g, a, frame, x + offX, y + offY + dy, right, sx2, sy2, flags, tint, alpha);
+        } else if (Impact.react(lv, this, rx)) sheet.drawSq(g, a, frame, x + offX + rx[2], y + offY + dy, right, rx[0], rx[1], flags, tint, alpha);
         else sheet.draw(g, a, frame, x + offX, y + offY + dy, right, 1f, flags, tint, alpha);
     }
     private final float[] rx = new float[3];

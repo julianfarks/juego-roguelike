@@ -24,7 +24,9 @@ for png in sorted(glob.glob(os.path.join(ROOT, 'Shared/assets/sprites/pl_*.png')
         if n['n'] != o['n'] + add: errs.append(f'{an}: n {o["n"]}->{n["n"]}')
         if n.get('box') != o.get('box'): errs.append(f'{an}: box cambio')
         if 'hit' in o and n['hit'] != [o['hit'][0] + add, o['hit'][1] + add]: errs.append(f'{an}: hit mal desplazado')
-        if sm >= 0 and not (0 < sm <= (o['hit'][0] if 'hit' in o else 1)): errs.append(f'{an}: smear fuera de lugar')
+        lim = o['hit'][0] if 'hit' in o else (o['rel'] if 'rel' in o else 1)
+        if sm >= 0 and not (0 <= sm <= lim): errs.append(f'{an}: smear fuera de lugar')
+        if 'rel' in o and n.get('rel') != o['rel'] + add: errs.append(f'{an}: rel mal desplazado')
         for i in range(n['n']):
             if i == sm: continue
             j = i - 1 if (sm >= 0 and i > sm) else i

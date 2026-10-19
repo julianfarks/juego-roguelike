@@ -22,6 +22,8 @@ PLAN = {
     'attack2': ('h0', [1.1, 1.2, 0.45, 0.7, 0.8, 1.0, 1.3], 1.22, 0.96),
     'attack3': ('h0', [1.3, 1.5, 1.2, 0.45, 0.8, 1.0, 1.3, 1.7], 1.32, 0.94),
     'airatk':  ('h0', [1.2, 0.45, 0.8, 0.8, 0.9, 1.4], 1.20, 0.96),
+    'skill':   ('rel', [1.2, 1.3, 1.1, 0.4, 0.9, 0.9, 1.0, 1.4], 1.20, 0.97),
+    'hurt':    ('imp', [0.5, 0.8, 1.6], 0.86, 1.08),
     'roll':    (1,    [0.7, 0.45, 0.9, 1.0, 1.0, 1.1, 1.2, 1.5], 1.36, 0.88),
 }
 
@@ -79,6 +81,20 @@ def make_smear(prev, cur, sx, sy):
             if o[x, y][3] == 0 and (x + y) % 4 != 1: o[x, y] = col
     return out
 
+def impact_frame(cur, sx, sy):
+    """Pose de impacto recibido: comprimido, estirado en vertical, desplazado 2 px hacia atras y con contorno de 1 px en el tono mas claro del sprite."""
+    hi, _ = palette_tones(cur)
+    b = stretch(cur, sx, sy); out = Image.new('RGBA', (CW, CH), (0, 0, 0, 0)); o, s_ = out.load(), b.load()
+    for y in range(CH):
+        for x in range(CW):
+            if s_[x, y][3] >= 200 and x - 2 >= 0: o[x - 2, y] = s_[x, y]
+    edge = []
+    for y in range(CH):
+        for x in range(CW):
+            if o[x, y][3] == 0 and any(0 <= x + dx < CW and 0 <= y + dy < CH and o[x + dx, y + dy][3] == 255 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))): edge.append((x, y))
+    for x, y in edge: o[x, y] = hi
+    return out
+
 def process(png):
     jpath = png[:-4] + '.json'
     d = json.load(open(jpath)); im = Image.open(png).convert('RGBA')
@@ -89,8 +105,8 @@ def process(png):
         n, row = a['n'], a['row']
         if n + 1 > im.size[0] // CW: print('sin espacio', png, name); continue
         frames = [im.crop((i * CW, row * CH, (i + 1) * CW, (row + 1) * CH)) for i in range(n)]
-        pos = a['hit'][0] if ins == 'h0' else ins
-        sm = make_smear(frames[pos - 1], frames[pos], sx, sy)
+        pos = a['hit'][0] if ins == 'h0' else (a['rel'] if ins == 'rel' else (0 if ins == 'imp' else ins))
+        sm = impact_frame(frames[0], sx, sy) if ins == 'imp' else make_smear(frames[pos - 1], frames[pos], sx, sy)
         frames.insert(pos, sm)
         # limpiar la fila y reescribir
         im.paste((0, 0, 0, 0), (0, row * CH, im.size[0], (row + 1) * CH))

@@ -21,7 +21,18 @@ Pruebas: `tools/tests/anim_test.sh` (banco headless, no es un Android/Windows re
 - Tiempo: fotogramas monótonos, termina a la duración, 30 fps = 60 fps.
 - Vivo: combo 1-2-3 real contra maniquí → se muestra el smear, los impactos solo caen en fotogramas de golpe, ataque al aire sin impactos, pose de impacto acotada y de 0,16 s, límite de sonido.
 
+## Fase 2 (completada)
+- **Habilidades**: fotograma smear de lanzamiento insertado justo antes del fotograma de liberación (`rel` +1; el proyectil sale en el mismo instante de la pose). Las 10 clases. La definitiva (`ult`, 10 fotogramas) ocupa toda la fila de la hoja: no admite un fotograma más sin ampliar la hoja, así que conserva su animación y sus efectos.
+- **Daño recibido**: nuevo fotograma de impacto (pose comprimida, desplazada hacia atrás, con contorno de 1 px del tono más claro del sprite) antes de la pose original; pesos `[0.5,0.8,1.6]`.
+- **Parry perfecto**: el jugador absorbe el choque (compresión y retroceso de 0,16 s) además del destello, la ventana de contraataque y el slow-mo ya existentes.
+- **Armas secundarias**: impulso hacia delante al disparar; estelas de proyectil (ver abajo).
+- **Proyectiles y magia** (`Level.drawProj`): ecos detrás con el color del proyectil (2 o 3 según velocidad, separación proporcional a la velocidad); los que giran (chakram, hacha) dejan giro residual. Fuego/hielo/rayo de la varita, flechas y lanzas heredan su color. Desactivado con "reducir efectos". Solo visual.
+- **Jefes**: smear de embestida (estiramiento + 2 ecos) cuando atacan en movimiento; los patrones, telegrafías y zonas peligrosas no se tocan. La pose de impacto recibida de jefes es ×0,45.
+- **Enemigos comunes**: la reacción depende del tipo de golpe y del tipo de enemigo (pesados/escudo ×0,6, voladores ×1,2).
+
 ## Pendiente / limitaciones
-- Armas secundarias, jefes (smear específico por ataque), habilidades mágicas y parry/esquiva dibujados a mano: no se han rehecho; usan los efectos existentes (estelas de proyectil y `Impact`).
-- Pelo/capa/accesorios: ya van pintados en la hoja; no hay capas separadas para animarlos aparte.
-- Falta validar el tacto en dispositivo real (Android/PC) y en 30 fps reales.
+- Los smear de las hojas son generados por script a partir de tus dibujos (no dibujo manual); se pueden retocar a mano sin tocar código.
+- Definitiva (`ult`) sin smear propio (fila de hoja llena). Bloqueo (`block`) no se usa en juego (el escudo se dibuja por código).
+- Pelo/capa/accesorios van pintados en la hoja; no hay capas separadas para animarlos aparte.
+- Enemigos y jefes con hoja propia: no se redibujaron fotogramas; el smear es por código (estiramiento nearest-neighbor + ecos).
+- Falta validar el tacto en dispositivo real (Android/PC) y a 30 fps reales.

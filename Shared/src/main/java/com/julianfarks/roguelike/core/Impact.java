@@ -41,7 +41,8 @@ final class Impact {
     static boolean react(Level lv, Ent e, float[] out) {
         float age = lv.time - e.recAt;
         if (age < 0 || age > 0.16f || !e.alive) return false;
-        float amp = AMP[e.recKind] * (e instanceof Boss ? 0.45f : 1f) * (Save.S.reduceFx ? 0.5f : 1f);
+        float role = e instanceof Enemy ? (((Enemy) e).def.role == EnemyDef.HEAVY || ((Enemy) e).def.role == EnemyDef.SHIELD ? 0.6f : ((Enemy) e).flying ? 1.2f : 1f) : 1f;   // pesados/escudo se mueven menos; voladores mas
+        float amp = AMP[e.recKind] * role * (e instanceof Boss ? 0.45f : 1f) * (Save.S.reduceFx ? 0.5f : 1f);
         float k = 1f - age / 0.16f;
         out[0] = 1f - amp * k; out[1] = 1f + amp * 0.8f * k;
         float shake = e.recKind == HEAVY || e.recKind == CRIT ? (float) Math.sin(age * 95f) * 1.6f * k : 0f;
@@ -107,6 +108,7 @@ final class Impact {
         Snd.sfx("hit_metal_2", 0.8f, 1.15f, 0f);
         lv.slowmo(0.14f, 0.35f);
         lv.counterT = 1.1f;                                          // contraataque: el siguiente golpe de arma hace +50 % y desequilibra
+        p.parryPoseAt = lv.time;
         registerDefense(lv, p);
     }
 

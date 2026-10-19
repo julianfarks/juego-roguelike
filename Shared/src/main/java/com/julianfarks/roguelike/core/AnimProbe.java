@@ -16,6 +16,7 @@ final class AnimProbe {
 
     static final String[] CLASSES = {"astral", "blood", "earth", "flame", "frost", "paladin", "shadow", "steel", "storm", "verdant"};
     static final String[] SM = {"attack1", "attack2", "attack3", "airatk", "roll"};
+    static Enemy rusher; static int shots0;
 
     static Enemy dummy;
     static final Map<String, Set<Integer>> seen = new HashMap<>(), hitAt = new HashMap<>();
@@ -81,6 +82,21 @@ final class AnimProbe {
             // presupuesto de sonido: 20 golpes en el mismo instante -> como mucho 3 capas
             int ok = 0; for (int i = 0; i < 20; i++) if (Impact.sfxOkForTest()) ok++;
             ck("sonido: 20 impactos simultaneos dejan pasar como mucho 3 capas (pasaron " + ok + ")", ok <= 3);
+            // fase 2: habilidad, daño recibido, parry, proyectiles y embestidas (sin excepciones al dibujar)
+            for (String c : CLASSES) {
+                Sheet sh = Assets.spr("pl_" + c); Anim sk = sh.anim("skill"), hu = sh.anim("hurt");
+                ck("hoja " + c + ": habilidad con smear antes de la liberacion (smear " + sk.smear + " < rel " + sk.rel + ") y pose de impacto recibido", sk.smear >= 0 && sk.smear < sk.rel && hu.smear == 0 && hu.n == 3 && hu.frameAt(0.01f) == 0 && hu.frameAt(hu.duration() - 0.001f) == 2);
+            }
+            Impact.perfectParry(lv, p, p.x + 10, p.y - 16);
+            ck("parry: el jugador recibe la pose de absorcion en el instante del parry", p.parryPoseAt == lv.time);
+            rusher = new Enemy(EnemyDef.get("bruto_forja"), false, 1f, 1f); rusher.x = p.x + 80; rusher.y = p.y; rusher.hp = rusher.maxHp = 1e7f; rusher.state = Enemy.CHARGE; rusher.vx = -260f;
+            lv.enemies.add(rusher); lv.toKill = 999; lv.cleared = false;
+            lv.proj(p.x, p.y - 20, 500, 0, 1f, true, "longarrow", 0xC8E890); lv.proj(p.x, p.y - 20, 300, 0, 1f, true, "chakram", 0xB8F4FF).spin = true;
+            shots0 = 1;
+        }
+        if (shots0 == 1 && t > 130 && t < 160) { rusher.state = Enemy.CHARGE; rusher.vx = -260f; }
+        if (t == 160) {
+            ck("embestida/proyectiles: se dibujan con smear sin excepciones y la embestida mantiene su estado", rusher.state == Enemy.CHARGE || rusher.state == Enemy.HURT || rusher.state == Enemy.RECOVER);
             System.out.println("AN FIN ok=" + oks + " fallos=" + fails);
             return true;
         }

@@ -1179,6 +1179,18 @@ public final class Level {
         Sheet s = Assets.fx("fx_proj");
         Anim a = s.anim(p.sprite);
         float rot = p.spin ? p.t * p.spinRate : (float) Math.atan2(p.vy, p.vx);
+        float sp = (float) Math.hypot(p.vx, p.vy);
+        if (!Save.S.reduceFx && p.special != 1 && p.t > 0.03f && (p.spin || sp > 220f)) {
+            // estela / smear coherente con la velocidad y el elemento (color del proyectil): ecos tenues detras (o giro residual si rota). Solo visual.
+            int n = sp > 420f ? 3 : 2;
+            float gap = Mth.clamp(sp / 70f, 2.5f, 7f);
+            float ux = sp > 1f ? p.vx / sp : 0f, uy = sp > 1f ? p.vy / sp : 0f;
+            for (int i = n; i >= 1; i--) {
+                float al = (p.spin ? 0.30f : 0.26f) * (1f - (i - 1) / (float) n);
+                if (p.spin) s.drawCentered(g, a, a.frameAt(p.t), Math.round(p.x), Math.round(p.y), rot - p.spinRate * 0.012f * i * Math.signum(p.spinRate), p.scale, Platform.ADD | Platform.TINT, p.color, al);
+                else s.drawCentered(g, a, a.frameAt(p.t), Math.round(p.x - ux * gap * i), Math.round(p.y - uy * gap * i), rot, p.scale * (1f - 0.08f * i), Platform.ADD | Platform.TINT, p.color, al);
+            }
+        }
         s.drawCentered(g, a, a.frameAt(p.t), Math.round(p.x), Math.round(p.y), rot, p.scale, 0, 0, 1f);
     }
 

@@ -791,6 +791,7 @@ public final class Player extends Ent {
     }
 
     // ------------------------------------------------------------------ dibujo
+    public float parryPoseAt = -9f;
     private float hitPoseAt = -9f; private int hitPoseKind;     // ultimo contacto del arma propia (pose de impacto del jugador, solo visual)
     public void render(Platform.Gfx g, Level lv) {
         Sheet cs = curSheet();
@@ -830,6 +831,14 @@ public final class Player extends Ent {
         if (ia >= 0f && ia < 0.14f && state == ATK) {          // pose de impacto: el cuerpo se estira hacia el golpe y se asienta (el tiempo de juego se detiene en la pausa de impacto)
             float k = 1f - ia / 0.14f, amp = (hitPoseKind >= Impact.HEAVY ? 0.14f : 0.08f) * (Save.S.reduceFx ? 0.5f : 1f);
             ssx += amp * k; ssy -= amp * 0.7f * k; ox = dir() * 2.5f * amp * 10f * k;
+        }
+        float pa = lv.time - parryPoseAt;
+        if (pa >= 0f && pa < 0.16f) {          // parry perfecto: el cuerpo absorbe el choque (compresion y retroceso breves)
+            float k = 1f - pa / 0.16f, amp = 0.09f * (Save.S.reduceFx ? 0.5f : 1f);
+            ssx -= amp * k; ssy += amp * 0.6f * k; ox -= dir() * 3f * k;
+        } else if (wpnT > 0f) {                 // disparo del arma secundaria: ligero impulso hacia delante y vuelta
+            float k = wpnT / 0.22f;
+            ssx += 0.05f * k; ox += dir() * 1.5f * k;
         }
         if (a.smear >= 0 && frame == a.smear && state == ATK && !Save.S.reduceFx) {      // movimiento secundario del smear: ecos de la clase detras del tajo
             cs.draw(g, a, frame, x - dir() * 8, y, right, 1f, Platform.ADD | Platform.TINT, cls.color1, 0.30f);

@@ -84,34 +84,46 @@ def esc_head(c, x, y, ang, P):
         with c.part(RUSTY, bevel=0.8) as p:
             p.limb((-4.8, -2.6), (4.6, -3.0), 0.55)                                           # banda oxidada
             p.ell(-1.0, -5.0, 0.9)
+        if not P.get('nohorn'):                                                               # cuernos de hueso (en la muerte se van con el yelmo)
+            with c.part(BONE, line=0.4, bevel=0.9) as p:
+                p.poly([(-4.4, -3.2), (-5.8, -4.2), (-6.0, -9.0), (-4.4, -6.6), (-3.2, -5.2)])
+                p.poly([(2.8, -5.0), (4.8, -6.0), (5.4, -11.6), (3.6, -8.2), (1.6, -5.6)])
+        with c.part(RUSTY, line=0.4, bevel=0.9) as p:                                         # cresta
+            p.poly([(-2.6, -5.4), (-1.4, -9.8), (1.6, -9.0), (3.0, -5.4)])
 
 
 def esc_front(c, P, rear, front):
     """Escudo de torre en la mano cercana + la maza en la lejana."""
     hx_, hy_ = rear
     bash = P['bash']
-    with c.at(hx_ + 2.6, hy_ - 1.4, 0.04):
-        with c.part(PLATE, line=0.6, bevel=1.8) as p:
-            p.poly([(-4.2, -10.8), (4.4, -10.4), (5.0, -3), (4.6, 5.0), (0.6, 10.8), (-3.8, 5.6), (-4.8, -3)])
+    with c.at(hx_ + 3.6, hy_ - 2.2, 0.04):
+        with c.part(PLATE, line=0.6, bevel=2.0) as p:               # escudo de torre grande (cubre medio cuerpo)
+            p.poly([(-6.6, -14.0), (8.6, -13.6), (9.6, -4.0), (8.8, 6.0), (1.2, 15.0), (-5.8, 7.0), (-7.6, -4.0)])
         with c.part(PLATE_D, line=0.5, bevel=1.0) as p:
-            p.poly([(-4.2, -10.8), (-1.6, -10.7), (-1.0, 7.0), (0.6, 10.8), (-3.8, 5.6), (-4.8, -3)])      # cara en sombra
-        with c.part(RUSTY, line=0.4, bevel=1.0) as p:
-            p.poly([(-4.4, -4.2), (4.8, -4.4), (4.8, -2.2), (-4.6, -2.0)])                                 # bandas
-            p.poly([(-4.0, 3.0), (4.5, 2.8), (4.4, 4.6), (-3.8, 4.8)])
+            p.poly([(-6.6, -14.0), (-2.0, -13.9), (-1.2, 8.5), (1.2, 15.0), (-5.8, 7.0), (-7.6, -4.0)])      # cara en sombra
+        with c.part(RUSTY, line=0.4, bevel=1.0) as p:               # refuerzos oxidados y remaches
+            p.poly([(-7.2, -8.4), (9.4, -8.6), (9.4, -6.4), (-7.4, -6.2)])
+            p.poly([(-7.0, 3.2), (9.0, 3.0), (8.6, 5.0), (-6.6, 5.4)])
+            p.poly([(-6.6, -14.0), (8.6, -13.6), (8.7, -12.2), (-6.6, -12.6)])           # remate superior
         with c.part(GOLDT, bevel=0.8) as p:
-            p.ell(0.4, -1.0, 2.0)                                                                           # ombligo
-        with c.part(RUNE) as p:
-            p.rect(-0.2, -6.6, 1.0, -5.0); p.rect(-0.2, 6.0, 1.0, 7.4)
-            p.limb((0.4, -1.6), (0.4, -0.2), 0.45)
-        c.glow(0.4, -1.0, 4.2, SOUL, 0.10 + 0.55 * P['glow'])
+            p.ell(0.8, -1.4, 2.7)                                                          # umbo
+        with c.part(BONE, bevel=0.7, line=0.3) as p:                # calavera emblema
+            p.ell(0.8, -10.6, 2.6, 2.3)
+            p.rect(-0.6, -9.2, 2.2, -7.6)
         with c.part(DARK) as p:
-            p.poly([(2.4, -10.3), (3.3, -6.0), (2.2, -4.8), (3.0, -3.0), (1.6, -2.4), (1.4, -7.6)])      # grieta
+            p.ell(-0.2, -10.8, 0.7, 0.8); p.ell(1.8, -10.8, 0.7, 0.8)
+        with c.part(RUNE) as p:
+            p.rect(0.4, 7.0, 1.4, 9.0)
+            p.limb((0.8, -2.2), (0.8, -0.6), 0.45)
+        c.glow(0.8, -1.4, 5.0, SOUL, 0.10 + 0.55 * P['glow'])
+        with c.part(DARK) as p:
+            p.poly([(5.4, -13.4), (6.5, -9.0), (5.2, -7.8), (6.1, -5.8), (4.6, -5.2), (4.4, -10.4)])      # grieta
     # mano agarrando
     with c.part(BONE, bevel=0.6) as p:
         p.ell(hx_ - 1.0, hy_ + 1.0, 1.5)
     if bash > 0.7:
         for q in range(6):
-            c.dotw(hx_ + 9 + (q % 3) * 2.2, hy_ - 9 + q * 3.4, '#e8fff0' if q % 2 else SOUL)
+            c.dotw(hx_ + 11 + (q % 3) * 2.2, hy_ - 9 + q * 3.4, '#e8fff0' if q % 2 else SOUL)
         c.glow(hx_ + 7, hy_ - 1, 9, SOUL, 0.25)
 
 
@@ -152,6 +164,9 @@ def _p_shield(c):
 def _p_helm(c):
     with c.part(PLATE, line=0.5, bevel=1.8) as p:
         p.poly([(-4.8, 1.4), (-5.2, -3.4), (-2.4, -5.6), (2.8, -5.4), (4.8, -3.2), (4.4, 1.4)])
+    with c.part(BONE, bevel=0.8) as p:
+        p.poly([(-4.0, -2.4), (-5.8, -3.0), (-6.6, -6.2), (-3.4, -4.4)])
+        p.poly([(3.0, -3.8), (5.0, -4.0), (6.4, -6.8), (3.6, -5.4)])
     with c.part(DARK) as p:
         p.ell(1.0, 2.0, 1.8, 1.2)
 
@@ -168,6 +183,7 @@ def death_escudero(c, i, n):
         return
     u = i / (n - 1)
     P = esc_pose('hurt', 1, 2)
+    P['nohorn'] = True
     ang = kf(u, [(0, 0), (0.35, -0.35), (0.7, -1.2), (1.0, -1.57)])
     P['feet'] = (kf(u, [(0, -3), (1, -6)]), 0), (kf(u, [(0, 3), (1, 5)]), 0)
     P['glow'] = 0

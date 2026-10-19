@@ -117,22 +117,19 @@ class Paladin(PClass):
         # cabeza
         hc = sk.head
         circ(X, hc, D.hr, 'gold', dome=3.6)
-        # cara: piel clara, mandibula en sombra, nariz que sobresale, ojo con brillo, ceja
-        poly(X, hp(X, [(0.6, 2.3), (4.9, 2.0), (5.4, -0.4), (5.1, -3.1), (2.2, -4.0), (0.6, -1.4)]), 'skin', dome=1.4)
-        poly(X, hp(X, [(1.4, -1.9), (4.9, -1.9), (4.7, -3.2), (2.0, -3.8)]), 'skin', tone=2)
-        circ(X, hpt(X, 5.2, -0.3), 0.75 * k, 'skin', tone=4)                                             # nariz
-        poly(X, hp(X, [(2.7, 1.7), (5.0, 1.5), (5.0, 0.9), (2.7, 1.2)]), 'hair', tone=2)                 # ceja
-        poly(X, hp(X, [(3.7, 0.9), (4.5, 0.9), (4.5, -0.5), (3.7, -0.5)]), 'dark', tone=1)               # ojo
-        poly(X, hp(X, [(2.8, 0.9), (3.7, 0.9), (3.7, -0.5), (2.8, -0.5)]), 'eye', tone=5)                # blanco del ojo
-        poly(X, hp(X, [(3.6, -2.3), (4.5, -2.3), (4.5, -2.7), (3.6, -2.7)]), 'skin', tone=1)             # boca
-        # yelmo: casquete con borde inferior oscuro, cresta y barra nasal corta
+        # YELMO CERRADO: visera metalica con ranura de ojos y rejilla vertical; sin piel ni pelo
+        poly(X, hp(X, [(0.2, 2.5), (5.1, 2.2), (5.7, -0.4), (5.4, -3.2), (3.6, -4.4), (1.6, -4.6), (0.2, -2.2)]), 'gold', dome=2.0)
+        poly(X, hp(X, [(0.4, -2.6), (5.2, -2.6), (4.8, -4.0), (3.4, -4.4), (1.6, -4.5)]), 'goldD', tone=2)                 # barbote en sombra
+        poly(X, hp(X, [(0.6, 2.4), (5.2, 2.0), (5.3, 1.6), (0.6, 2.0)]), 'goldL', tone=4)                                  # ceja de la visera (filo de luz)
+        poly(X, hp(X, [(1.6, 1.5), (5.8, 1.1), (5.8, 0.25), (1.6, 0.65)]), 'dark', tone=0)                                 # ranura de ojos
+        poly(X, hp(X, [(1.6, 0.65), (5.8, 0.25), (5.8, 0.0), (1.6, 0.4)]), 'goldL', tone=3)                                # labio inferior de la ranura
+        for u in (2.6, 3.7, 4.8):                                                                                           # rejilla vertical
+            poly(X, hp(X, [(u, -0.5), (u + 0.5, -0.5), (u + 0.5, -3.1), (u, -3.1)]), 'dark', tone=0)
+        poly(X, hp(X, [(5.5, 1.0), (6.1, -0.4), (5.9, -3.0), (5.4, -3.0)]), 'goldL', tone=3)                               # proa de la visera
         poly(X, hp(X, [(-5.0, 1.4), (-2.4, 5.3), (2.2, 5.5), (5.2, 2.7), (4.9, 2.0), (0.6, 2.4), (-1.0, 0.6)]), 'gold', dome=2.4)
         poly(X, hp(X, [(-3.8, 3.2), (-1.0, 5.6), (3.2, 5.6), (4.8, 3.3), (3.0, 3.9), (-1.0, 4.1)]), 'goldL', dome=1.5)
-        poly(X, hp(X, [(0.6, 2.4), (5.0, 2.0), (5.1, 1.8), (0.6, 2.2)]), 'dark', tone=2)                # sombra bajo el borde del yelmo
-        poly(X, hp(X, [(4.6, 3.0), (5.4, 2.6), (5.1, 0.6), (4.5, 0.8)]), 'goldL', tone=4)                # barra nasal
-        # cabello bajo el yelmo (nuca y patilla)
-        poly(X, hp(X, [(-4.8, 1.0), (-0.8, 0.8), (-0.4, -2.6), (-2.4, -3.8), (-4.4, -2.4)]), 'hair', dome=1.4)
-        poly(X, hp(X, [(0.2, 1.2), (1.2, 1.2), (1.2, -1.8), (0.2, -1.8)]), 'hair', tone=3)
+        poly(X, hp(X, [(-4.8, 1.0), (-0.8, 0.8), (-0.4, -2.6), (-2.4, -3.8), (-4.4, -2.4)]), 'goldD', dome=1.6)          # nuca acorazada (antes pelo)
+        poly(X, hp(X, [(-0.4, 1.0), (0.9, 1.0), (1.1, -3.4), (-0.2, -3.2)]), 'goldD', tone=1)                              # junta mejilla-nuca
         # guarda de mejilla dorada
         poly(X, hp(X, [(-1.8, 0.4), (0.3, 0.6), (0.9, -1.5), (0.0, -3.6), (-1.6, -3.2)]), 'goldD', dome=1.6)
         ribbons_draw(X, 'plume', 'plume', dome=1.6)

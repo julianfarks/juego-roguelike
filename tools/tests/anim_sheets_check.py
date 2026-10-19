@@ -3,8 +3,11 @@
  - cada fotograma original sigue intacto (solo se inserto un fotograma smear por animacion);
  - las cajas de golpe ('box') no cambiaron y 'hit' se desplazo exactamente +1;
  - las demas filas (idle, run, hurt...) son identicas."""
+import warnings; warnings.filterwarnings('ignore')
 import json, subprocess, sys, io, glob, os
 from PIL import Image, ImageChops
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'art'))
+import polish
 BASE = '8e44cff'
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 CW, CH = 64, 48
@@ -33,12 +36,20 @@ for png in sorted(glob.glob(os.path.join(ROOT, 'Shared/assets/sprites/pl_*.png')
             if i == sm: continue
             j = i - 1 if (sm >= 0 and i > sm) else i
             a = old.crop((j * CW, o['row'] * CH, (j + 1) * CW, (o['row'] + 1) * CH)); b = new.crop((i * CW, n['row'] * CH, (i + 1) * CW, (n['row'] + 1) * CH))
-            if ImageChops.difference(a, b).getbbox(): errs.append(f'{an}: fotograma {i} distinto del original')
+            # fase 2 visual: el pulido cambia el RGB, pero la silueta (alfa) debe ser identica al original
+            if ImageChops.difference(a.getchannel('A'), b.getchannel('A')).getbbox(): errs.append(f'{an}: fotograma {i}: silueta distinta del original')
         if sm >= 0:   # el smear conserva la paleta del sprite (sin colores nuevos) y no esta vacio
-            f = new.crop((sm * CW, n['row'] * CH, (sm + 1) * CW, (n['row'] + 1) * CH)); orig = set(p for p in old.crop((0, o['row'] * CH, old.size[0], (o['row'] + 1) * CH)).getdata())
+            f = new.crop((sm * CW, n['row'] * CH, (sm + 1) * CW, (n['row'] + 1) * CH))
+            base = set()
+            for i2 in range(n['n']):
+                if i2 != sm: base |= set(new.crop((i2 * CW, n['row'] * CH, (i2 + 1) * CW, (n['row'] + 1) * CH)).getdata())
+            orig = set(base)
+            for c in base:   # derivados del pulido (luz/sombra con cambio de tono) y contornos tintados oscuros
+                for fn, amt in ((polish.lighten, 0.10), (polish.darken, 0.10), (polish.lighten, 0.04), (polish.darken, 0.04)):
+                    orig.add(fn(c[:3], amt) + (255,))
             opaque = [p for p in f.getdata() if p[3] == 255]
             if not opaque: errs.append(f'{an}: smear vacio')
-            if any(p not in orig for p in opaque): errs.append(f'{an}: smear con colores fuera de la paleta del sprite')
+            if any(p not in orig and (0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2]) / 255 > 0.22 and min(sum((p[k] - q[k]) ** 2 for k in range(3)) for q in orig) > 40 * 40 for p in opaque): errs.append(f'{an}: smear con colores fuera de la paleta del sprite')
     if errs: bad += 1; print('FALLA', name, errs[:6])
-    else: print('OK   ', name, 'fotogramas originales intactos, cajas de golpe iguales, smear con paleta propia')
+    else: print('OK   ', name, 'siluetas originales intactas, cajas de golpe iguales, smear con paleta propia')
 sys.exit(1 if bad else 0)

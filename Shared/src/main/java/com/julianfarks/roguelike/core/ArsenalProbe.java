@@ -48,6 +48,9 @@ final class ArsenalProbe {
         for (float x = 96; x < lv.room.pixW - 96; x += 8) {
             float gy = lv.groundBelow(x, y0 - 20);
             if (Math.abs(gy - y0) > 3) continue;
+            boolean haz = false;                                                      // nunca sobre pinchos: el peligro devuelve al jugador a la entrada de la sala y descoloca la prueba
+            for (float hy : new float[]{4, 17, 30}) if (lv.room.hazardAt(x, y0 - hy)) haz = true;
+            if (haz) continue;
             for (int dir = 1; dir >= -1; dir -= 2) {
                 float L = 0;
                 for (float d = 8; d <= need + 24; d += 8) {
@@ -55,6 +58,7 @@ final class ArsenalProbe {
                     if (xx < 8 || xx > lv.room.pixW - 8) break;
                     boolean bad = false;
                     for (float hy : new float[]{8, 17, 30, 55}) if (lv.solidAtPx(xx, y0 - hy)) { bad = true; break; }
+                    for (float hy : new float[]{4, 17, 30}) if (lv.room.hazardAt(xx, y0 - hy)) { bad = true; break; }
                     if (bad || Math.abs(lv.groundBelow(xx, y0 - 20) - y0) > 3) break;
                     L = d;
                 }
@@ -72,7 +76,11 @@ final class ArsenalProbe {
         done = true;
         for (int c : new int[]{'A', 'D', 'W', 'S', 37, 38, 39, 40, 'J', 'K', 'R', 'T', 'E', 'C', 'L', 'I', 'U', 32}) g.key(c, false);
         System.out.println("AT inicio arsenal");
-        try { run(); } catch (RuntimeException e) { e.printStackTrace(System.out); ck("sin excepciones durante las pruebas: " + e, false); }
+        System.out.println("AT SEED " + rs.seed + " sala=" + lv.room.pixW + "x" + lv.room.pixH + " jugador=(" + p.x + "," + p.y + ")");
+        // Aislamiento: el bot de pruebas pudo lanzar una habilidad de clase justo antes de ceder el control (depende de la sala/semilla); sus efectos
+        // (animacion de cast, lv.later(0.48 s), proyectiles con vida hasta 1,2 s) caerian dentro de la primera comprobacion. Se deja pasar ese tiempo
+        // (3 s sin teclas) para que termine solo; reset() limpia despues los proyectiles. No se relaja ninguna comprobacion.
+        try { fr(180); run(); } catch (RuntimeException e) { e.printStackTrace(System.out); ck("sin excepciones durante las pruebas: " + e, false); }
         System.out.println("AT FIN ok=" + oks + " fallos=" + fails);
         return true;
     }
@@ -93,9 +101,11 @@ final class ArsenalProbe {
 
         // ---------------------------------------------------------------- 2. recoger la primera secundaria del suelo (sin recogida automatica)
         reset(); dm = dummy(200);
+        float pxd = p.x, pyd = p.y; boolean placed0 = placed; float placedLen0 = placedLen;
         Prop w = Arsenal.dropWeapon(lv, Items.SEC_BOW, 0, p.x + 6, p.y, false, true);
         fr(120);
         ck("arma en el suelo: pasar cerca / quedarse encima NO la recoge sola", rs.sec == 0 && !w.dead && weaponProps() == 1);
+        { Object ni = lv.nearestInteractable(); if (ni != w) System.out.println("AT DIAG interactuable mas cercano no es el arma: " + (ni instanceof Prop ? "Prop kind=" + ((Prop) ni).kind + " x=" + ((Prop) ni).x + " y=" + ((Prop) ni).y : String.valueOf(ni)) + " | arma x=" + w.x + " y=" + w.y + " dead=" + w.dead + " | jugador=(" + p.x + "," + p.y + ") antes=(" + pxd + "," + pyd + ") colocado=" + placed0 + " pasillo=" + placedLen0 + " estado=" + p.state + " vivo=" + p.alive + " hp=" + rs.hp); }
         ck("arma en el suelo: es interactuable (se puede inspeccionar con la tarjeta)", lv.nearestInteractable() == w);
         scr.interact();
         ck("primera secundaria: se equipa directamente (con su municion completa)", rs.sec == Items.SEC_BOW && rs.secAmmo == Items.SEC_AMMO[Items.SEC_BOW] && weaponProps() == 0);
@@ -159,9 +169,12 @@ final class ArsenalProbe {
         ck("30 intercambios seguidos: son las mismas dos armas", (a == Items.SEC_BOW && b == Items.SEC_CHAKRAM) || (a == Items.SEC_CHAKRAM && b == Items.SEC_BOW));
 
         // arma repetida: mejora en vez de duplicar
-        reset(); rs.sec = Items.SEC_SPEAR; rs.secAmmo = 3; rs.wState[Items.SEC_SPEAR] = 1;
+        reset(); dummy(200); rs.sec = Items.SEC_SPEAR; rs.secAmmo = 3; rs.wState[Items.SEC_SPEAR] = 1;   // con un enemigo vivo la sala no se da por completada (si no, reparte cofres y a veces un arma)
         Arsenal.dropWeapon(lv, Items.SEC_SPEAR, 0, p.x + 2, p.y, false, true); fr(5);
         scr.interact();
+        if (!(rs.secLvl == 1 && weaponProps() == 0 && rs.sec == Items.SEC_SPEAR)) System.out.println("AT DIAG arma repetida: secLvl=" + rs.secLvl + " armasSuelo=" + weaponProps() + " sec=" + rs.sec + " jugador=(" + p.x + "," + p.y + ") estado=" + p.state + " hp=" + rs.hp + " enemigos=" + lv.enemies.size() + " props=" + lv.props.size() + " interactuableCercano=" + (lv.nearestInteractable() == null ? "null" : lv.nearestInteractable().kind));
+        { StringBuilder kb = new StringBuilder("AT DIAG   props:"); for (Prop q : lv.props) kb.append(" ").append(q.kind).append(q.label != null ? "(" + q.label + ")" : "").append("@").append((int) q.x); kb.append(" | exitX=" + lv.room.exitX); System.out.println(kb); }
+        for (Prop q : lv.props) if (q.kind.equals("weapon") && !q.dead) System.out.println("AT DIAG   arma en suelo: id=" + q.arg + " x=" + q.x + " y=" + q.y + " dropped=" + q.dropped + " used=" + q.used + " pickLock=" + q.pickLock);
         ck("arma repetida del suelo: mejora de nivel (sin segundo ejemplar)", rs.secLvl == 1 && weaponProps() == 0 && rs.sec == Items.SEC_SPEAR);
 
         // ---------------------------------------------------------------- 6. colocacion segura al soltar

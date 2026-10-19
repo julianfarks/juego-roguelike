@@ -127,7 +127,9 @@ final class RunScreen extends Screen implements Level.Listener {
         super(g);
         cls = c;
         in = g.input;
-        rs = new RunState(c, System.nanoTime() ^ 0x5DEECE66DL, asc);
+        // BOT_SEED: solo para el banco de pruebas (reproducir una partida concreta); sin la variable el comportamiento es el de siempre
+        String botSeed = System.getenv("BOT_SEED");
+        rs = new RunState(c, botSeed != null ? Long.parseLong(botSeed) : System.nanoTime() ^ 0x5DEECE66DL, asc);
         Inventory.seeAll(rs);
     }
 

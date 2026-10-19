@@ -54,6 +54,8 @@ class Shadow(PClass):
         mat('steel', '#B7B0D0', hl='#FFFFFF')
         mat('eye', '#E7C8FF', hl='#FFFFFF')
         mat('leather', '#4A3050')
+        mat('edge', '#6A3AA8', hl='#D9B8FF')
+        mat('gem', '#E7C8FF', hl='#FFFFFF')
         for m in ('cloth', 'cloth2', 'leather', 'scarf'):
             mat_back(m)
 
@@ -69,7 +71,15 @@ class Shadow(PClass):
         # torso
         poly(X, tp(X, [(-2.8, -0.6), (2.6, -0.6), (3.0, 3.5), (3.1, 7.6), (2.4, 9.6), (-2.2, 9.6), (-3.0, 7), (-3.1, 3)]), 'cloth', dome=3.0)
         poly(X, tp(X, [(-2.9, 0.4), (2.7, 0.4), (2.8, 1.8), (-3.0, 1.8)]), 'leather', dome=1.2)
+        poly(X, tp(X, [(-2.9, 1.2), (2.8, 1.2), (2.8, 1.35), (-2.9, 1.35)]), 'dark', tone=1)                            # costura del cinturon
+        poly(X, tp(X, [(0.8, 0.2), (2.0, 0.2), (2.0, 2.0), (0.8, 2.0)]), 'steel', dome=0.8)                              # hebilla
+        poly(X, tp(X, [(-2.8, 0.2), (-0.8, 0.2), (-0.9, -1.9), (-2.7, -1.5)]), 'leather', dome=1.2)                       # bolsa de cadera
+        poly(X, tp(X, [(-2.7, -0.3), (-0.9, -0.3), (-0.9, -0.15), (-2.7, -0.15)]), 'steel', tone=3)
+        for v in (4.0, 6.2):                                                                                              # vendajes del torso
+            poly(X, tp(X, [(-3.0, v), (2.9, v + 0.5), (2.9, v + 0.7), (-3.0, v + 0.2)]), 'cloth2', tone=2)
         poly(X, tp(X, [(-1.0, 8.8), (2.6, 8.4), (0.4, 1.8), (-0.6, 1.8)]), 'cloth2', dome=1.6)  # banda cruzada
+        poly(X, tp(X, [(-0.4, 8.5), (0.6, 8.4), (-0.1, 2.0), (-0.9, 2.0)]), 'leather', tone=4)                           # correa de cuero sobre la banda
+        circ(X, tp(X, [(0.9, 5.6)])[0], 0.55 * k, 'steel', dome=1.0)                                                      # broche de la correa
         ribbons_draw(X, 'tail', 'cloth2', dome=1.6)
         leg(X, sk.hipF, sk.kneeF, sk.ankF, 2.1, 1.7, 1.4, 'cloth2', 'leather', p.ffa, greave='leather')
         # bufanda/cuello
@@ -78,10 +88,15 @@ class Shadow(PClass):
         hc = sk.head
         poly(X, hp(X, [(-4.2, 2.5), (-3.0, 4.2), (0, 4.8), (2.8, 3.4), (4.0, 0), (3.6, -2.8), (1.5, -4.0), (-2.6, -3.5), (-4.4, -1.0), (-6.4, 0.6)]), 'cloth', dome=3.0)
         poly(X, hp(X, [(0.8, 2.2), (3.6, 1.0), (3.9, -1.6), (2.0, -3.2), (0.4, -2.6)]), 'dark', tone=1)
+        poly(X, hp(X, [(0.5, 2.6), (3.0, 3.2), (3.9, 1.0), (3.6, 0.7), (2.8, 2.6), (0.6, 2.2)]), 'edge', tone=4)           # ribete de la capucha
+        poly(X, hp(X, [(-0.6, 3.6), (0.2, 3.9), (0.0, 1.2), (-0.8, 1.4)]), 'cloth2', tone=1)                              # pliegue lateral
         poly(X, hp(X, [(1.2, 0.2), (3.6, 0.2), (3.6, -0.8), (1.2, -0.8)]), 'eye', emissive=True)
         poly(X, hp(X, [(0.8, -1.4), (3.8, -1.6), (3.0, -3.3), (0.6, -3.0)]), 'scarf', dome=1.0)
         # brazo delantero + dagas
-        arm(X, sk.shF, sk.elbF, sk.handF, 1.6, 1.4, 1.2, 'cloth', glove='leather', bracer='leather')
+        arm(X, sk.shF, sk.elbF, sk.handF, 1.6, 1.4, 1.2, 'cloth', glove='leather', bracer='steel')
+        circ(X, sk.shF, 2.2 * k, 'leather', dome=2.0)                                                                     # hombrera de cuero
+        circ(X, (sk.shF[0] + 0.2, sk.shF[1] - 0.5), 1.1 * k, 'edge', tone=4)
+        poly(X, [(sk.shF[0] - 0.4, sk.shF[1] - 1.8), (sk.shF[0] + 0.6, sk.shF[1] - 3.6), (sk.shF[0] + 1.2, sk.shF[1] - 1.6)], 'steel', tone=4)   # pua
         self._dagger(X, sk.handF, p.wa)
 
     def _dagger(self, X, hand, ang, back=False):
@@ -91,6 +106,8 @@ class Shadow(PClass):
         poly(X, wfpoly(X, hand, ang, [(0.2, -2.2), (1.4, -2.2), (1.4, 2.2), (0.2, 2.2)]), 'leather' + ('_b' if back else ''), dome=1.0)
         poly(X, wfpoly(X, hand, ang, [(-2.2, -0.7), (0.3, -0.7), (0.3, 0.7), (-2.2, 0.7)]), 'dark', dome=1.0)
         poly(X, wfpoly(X, hand, ang, [(1.6, 0.0), (9.0, -0.4), (9.0, -0.1), (1.6, 0.2)]), 'eye', tone=4)
+        poly(X, wfpoly(X, hand, ang, [(1.6, -0.9), (8.8, -1.0), (9.0, -0.6), (1.6, -0.5)]), 'steel', tone=5)              # bisel iluminado
+        circ(X, wpt(X, -2.3, 0, hand) if False else wfr(X, hand, ang, -2.3, 0), 0.6 * X.D.k, 'gem', tone=4)                # gema del pomo
 
     def fx(self, X, name, i, n):
         aura_fx(self, X, name, i, n)

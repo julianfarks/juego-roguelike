@@ -2,6 +2,7 @@ package com.julianfarks.roguelike.core;
 
 /** Bot de pruebas para el banco de escritorio (--bot): navega menus y juega sin ayuda. No se usa en Android. */
 public final class DebugBot {
+    private int progT0 = -1, progT, progStep; private final java.util.Set<Integer> progSeen = new java.util.HashSet<>();
     private final boolean[] held = new boolean[256];
     private int lastClassFrame = -999, lastAct;
     private int stuck, jumpUntil;
@@ -492,6 +493,21 @@ public final class DebugBot {
                 System.out.println("SBTEST salir: tocar 'Salir del modo de prueba'=" + rs.debugTap("Salir del modo de prueba"));
                 sbStep = 3; lastClassFrame = frame;
                 return;
+            }
+        }
+        if (System.getenv("BOT_PROGTEST") != null && !rs.rs.infinite) {
+            // Integracion: recorre afterBoss 8 veces y comprueba que se visitan las 8 mazmorras y luego el Cazador (sin Sello).
+            if (progT0 < 0 && frame > 400) { progT0 = frame; progT = frame; System.out.println("PROG sello_forjado=" + Save.S.sealForged() + " reliquias=" + Save.S.relicCount()); }
+            if (progT0 >= 0 && frame > progT + 150 && progStep < 9) {
+                progT = frame;
+                if (progStep == 0) { System.out.println("PROG inicio bioma=" + rs.rs.biome.id + " visited=" + rs.rs.visited); progSeen.add(rs.rs.biome.id); rs.rs.visited.add(rs.rs.biome.id); }
+                if (progStep > 0) {
+                    System.out.println("PROG paso" + progStep + " dungeonNo=" + rs.rs.dungeonNo + " stage=" + rs.rs.stage + " bioma=" + rs.rs.biome.id + " " + rs.rs.biome.name + " power=" + rs.rs.power() + " fin_run=" + (rs.rs.finalRun) + " sala=" + lv.room.type);
+                    progSeen.add(rs.rs.biome.id);
+                }
+                progStep++;
+                if (progStep < 9) rs.debugNextFloor();
+                else { java.util.Set<Integer> vv = new java.util.HashSet<>(rs.rs.visited); System.out.println("PROG distintos=" + progSeen + " visited=" + vv + (vv.size() == 9 ? " OK" : " FALLA")); }
             }
         }
         if (System.getenv("BOT_INFTEST") != null && rs.rs.infinite) {

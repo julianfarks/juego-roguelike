@@ -11,7 +11,10 @@ public final class RunState {
     public final Rng rng;
     public final Stats stats = new Stats();
     public final int[] bless = new int[Blessing.ALL.length];
-    public int stage;                 // 0..2, 3 = final
+    public int stage;                 // tramo de dificultad 0..2, 3 = final (derivado de dungeonNo)
+    public int dungeonNo;             // mazmorras superadas en la partida: 0..8 (8 = toca el Cazador)
+    /** Tramo segun mazmorras superadas: 3 de tramo 0, 2 de tramo 1, 3 de tramo 2 y luego el Cazador. */
+    public static int tierOf(int d) { return d < 3 ? 0 : d < 5 ? 1 : d < 8 ? 2 : 3; }
     public int roomNo;                // sala dentro del bioma
     public int roomsDone;
     public Biome biome;
@@ -106,7 +109,7 @@ public final class RunState {
         hp = Math.min(stats.maxHp, Math.max(hp, ratio * stats.maxHp * 0 + hp));
     }
 
-    public int power() { return infinite ? Infinite.power(floor, roomNo) + asc * 3 : stage * 6 + roomNo + asc * 3; }
+    public int power() { return infinite ? Infinite.power(floor, roomNo) + asc * 3 : Math.round(dungeonNo * 2.25f) + roomNo + asc * 3; }
     public float diffHp() { return diff == 0 ? 0.72f : (diff == 2 ? 1.35f : 1f); }
     public float diffDmg() { return diff == 0 ? 0.6f : (diff == 2 ? 1.4f : 1f); }
     public float diffSouls() { return diff == 0 ? 0.7f : (diff == 2 ? 1.4f : 1f); }

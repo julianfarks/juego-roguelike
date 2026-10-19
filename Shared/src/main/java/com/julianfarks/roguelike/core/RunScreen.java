@@ -224,8 +224,8 @@ final class RunScreen extends Screen implements Level.Listener {
         challengeInit(type);
         // banner
         if (type == Room.HUB) {
-            bannerTitle = rs.stage >= 3 ? "El Sello está completo" : "Santuario del Viajero";
-            bannerSub = rs.stage == 0 && rs.visited.isEmpty() ? "Elige tu primer destino" : (rs.stage >= 3 ? "Solo queda el Cazador" : "Elige tu próximo destino");
+            bannerTitle = rs.stage >= 3 ? "Las ocho mazmorras han caído" : "Santuario del Viajero";
+            bannerSub = rs.stage == 0 && rs.visited.isEmpty() ? "Elige tu primer destino" : (rs.stage >= 3 ? "Solo queda el Cazador del Abismo" : "Elige tu próximo destino");
         } else if (type == Room.BOSS) {
             bannerTitle = ""; bannerSub = "";
         } else {
@@ -487,14 +487,11 @@ final class RunScreen extends Screen implements Level.Listener {
             goRoom(Room.COMBAT);
             return;
         }
-        rs.stage++;
+        // Progresion completa en una sola partida: 8 mazmorras y luego el Cazador. Las reliquias del Sello son
+        // progreso entre partidas y ya NO bloquean el final.
+        rs.dungeonNo++;
+        rs.stage = RunState.tierOf(rs.dungeonNo);
         rs.blessingTaken = false;
-        if (rs.stage >= 3 && !Save.S.sealForged()) {
-            endRun(true);
-            lv.pl.react("victory", 1f);
-            openOv(OV_WIN);
-            return;
-        }
         int nid = autoBiome();
         goRoom(nid == 8 ? Room.BOSS : Room.COMBAT);
     }

@@ -33,7 +33,7 @@ final class RunSave {
             d.put("cls", r.cls.id);
             d.put("room", r.lv != null ? r.lv.room.type : Room.HUB);
             d.put("biome", rs.biome == null ? -1 : rs.biome.id);
-            d.put("stage", rs.stage); d.put("roomNo", rs.roomNo); d.put("roomsDone", rs.roomsDone);
+            d.put("stage", rs.stage); d.put("dungeonNo", rs.dungeonNo); d.put("roomNo", rs.roomNo); d.put("roomsDone", rs.roomsDone);
             int[] vis = new int[rs.visited.size()]; for (int i = 0; i < vis.length; i++) vis[i] = rs.visited.get(i);
             d.put("visited", vis);
             d.put("gold", rs.gold); d.put("souls", rs.souls); d.put("kills", rs.kills); d.put("bossKills", rs.bossKills);
@@ -76,6 +76,7 @@ final class RunSave {
             int b = Json.i(d, "biome", -1);
             rs.biome = b >= 0 && b < Biome.ALL.length ? Biome.ALL[b] : null;
             rs.stage = Json.i(d, "stage", 0); rs.roomNo = Json.i(d, "roomNo", 0); rs.roomsDone = Json.i(d, "roomsDone", 0);
+            rs.dungeonNo = d.containsKey("dungeonNo") ? Json.i(d, "dungeonNo", 0) : new int[]{0, 3, 5, 8}[Math.max(0, Math.min(3, rs.stage))];
             int[] vis = Json.ints(d, "visited");
             rs.visited.clear(); if (vis != null) for (int v : vis) rs.visited.add(v);
             rs.gold = Json.i(d, "gold", 0); rs.souls = Json.i(d, "souls", 0); rs.kills = Json.i(d, "kills", 0); rs.bossKills = Json.i(d, "bossKills", 0);

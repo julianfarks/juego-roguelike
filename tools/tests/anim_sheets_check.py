@@ -11,7 +11,7 @@ import polish
 BASE = '8e44cff'
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 CW, CH = 64, 48
-REDESIGNED = {'paladin', 'shadow', 'flame', 'storm', 'frost', 'verdant', 'blood', 'earth'}   # clases con rediseno real (fase 3 y grupo 2)
+REDESIGNED = {'paladin', 'shadow', 'flame', 'storm', 'frost', 'verdant', 'blood', 'earth', 'astral'}   # clases con rediseno real (fase 3 y grupo 2)
 def git(path):
     return subprocess.run(['git', 'show', f'{BASE}:{path}'], cwd=ROOT, capture_output=True, check=True).stdout
 bad = 0

@@ -59,6 +59,8 @@ class Astral(PClass):
         mat('shaft', '#4A3A80', hl='#A090E0')
         mat('leather', '#2E2458')
         mat('eye', '#FF4FD0', hl='#FFFFFF')
+        mat('trim', '#F0D890', hl='#FFFBE8')
+        mat('moon', '#C8C0FF', hl='#FFFFFF')
         for m in ('robe', 'robe2', 'cape', 'hair', 'leather'):
             mat_back(m)
 
@@ -86,6 +88,13 @@ class Astral(PClass):
         ribbons_draw(X, 'robe', 'robe', dome=2.4)
         poly(X, tp(X, [(-3.0, 1.8), (3.2, 1.8), (3.4, -1.4), (-3.2, -0.8)]), 'robe', dome=2.0)
         poly(X, tp(X, [(-3.0, 2.4), (3.0, 2.4), (3.0, 1.3), (-3.0, 1.3)]), 'pink', dome=1.0)
+        poly(X, tp(X, [(-3.0, 2.4), (3.0, 2.4), (3.0, 2.55), (-3.0, 2.55)]), 'trim', tone=4)                                  # ribete dorado de la faja
+        poly(X, tp(X, [(0.2, 2.8), (2.0, 2.8), (2.0, 1.0), (0.2, 1.0)]), 'trim', dome=1.0)                                    # broche
+        circ(X, tp(X, [(1.1, 1.9)])[0], 0.4 * k, 'moon', tone=5)
+        poly(X, tp(X, [(-3.2, -0.6), (3.4, -1.0), (3.4, -1.25), (-3.2, -0.85)]), 'trim', tone=3)                               # ribete del bajo de la tunica
+        poly(X, tp(X, [(-2.2, 9.8), (3.0, 9.8), (2.4, 8.6), (-1.6, 8.4)]), 'robe2', dome=1.2)                                  # cuello alto
+        poly(X, tp(X, [(-2.2, 9.8), (3.0, 9.8), (3.0, 9.95), (-2.2, 9.95)]), 'trim', tone=4)
+        poly(X, tp(X, [(0.2, 8.6), (0.8, 8.6), (0.6, 2.6), (0.0, 2.6)]), 'trim', tone=2)                                       # tira central dorada
         self._stars(X, [(-1.6, 6.8), (1.4, 5.0), (-0.8, 3.2), (1.8, 8.0), (-2.0, 0.2), (2.0, -0.4)])
         # capucha/pelo/cabeza
         ribbons_draw(X, 'hair', 'hair_b', dome=1.8)
@@ -93,11 +102,19 @@ class Astral(PClass):
         circ(X, hc, D.hr, 'skin', dome=3.2)
         poly(X, hp(X, [(-4.4, 0.2), (-3.4, 4.0), (0, 5.0), (3.4, 3.4), (4.2, 1.6), (2.2, 2.6), (0.6, 2.2), (-0.6, 3.0), (-2.6, -1.0)]), 'hair', dome=2.0)
         poly(X, hp(X, [(1.6, 0.4), (3.2, 0.3), (3.2, -0.6), (1.6, -0.5)]), 'eye', emissive=True)
+        poly(X, hp(X, [(1.2, 1.3), (3.6, 1.2), (3.6, 0.9), (1.2, 1.0)]), 'hair', tone=2)                                       # ceja
+        poly(X, hp(X, [(0.8, -2.0), (3.4, -2.0), (3.0, -3.0), (1.4, -3.2)]), 'skin', tone=2)                                    # barbilla
+        poly(X, hp(X, [(-0.6, 3.4), (0.4, 3.4), (0.6, 2.2), (-0.4, 2.4)]), 'trim', tone=4)                                      # diadema
+        cap(X, hpt(X, -3.4, 2.0), hpt(X, -3.8, -2.2), 0.3 * k, 0.15 * k, 'hair', tone=5)                                         # mechon luminoso
         spark4(X, hp(X, [(1.0, 3.6)])[0], 1.8, 'pink')
         circ(X, sk.shB, 2.3 * k, 'cape_b', dome=2.0)
         self._staff(X)
         arm(X, sk.shF, sk.elbF, sk.handF, 1.5, 1.3, 1.1, 'robe', glove='leather', bracer='pink')
         circ(X, sk.shF, 2.5 * k, 'robe', dome=2.2)
+        circ(X, (sk.shF[0] + 0.2, sk.shF[1] - 0.2), 1.1 * k, 'trim', dome=1.2)                                                  # hombrera dorada
+        spark4(X, (sk.shF[0] + 0.3, sk.shF[1] - 0.3), 0.9, 'star')
+        for i in range(3):
+            cap(X, (sk.shF[0] - 1.1 + i * 0.8, sk.shF[1] + 1.1), (sk.shF[0] - 1.4 + i * 0.8, sk.shF[1] + 2.3), 0.15 * k, 0.15 * k, 'trim', tone=3)
         # orbes flotantes
         ov = X.ob
         for nm in ('orb1', 'orb2', 'orb3'):
@@ -112,6 +129,10 @@ class Astral(PClass):
         poly(X, W([(11, -2.4), (14, -2.8), (24.5, 0), (14, 2.8), (11, 2.4)]), 'crystal', dome=2.0)
         poly(X, W([(12.5, -0.6), (22, 0), (12.5, 0.6)]), 'star', tone=5)
         poly(X, W([(9.8, -3.0), (11.4, -3.0), (11.4, 3.0), (9.8, 3.0)]), 'gold', dome=1.0)
+        poly(X, W([(9.6, -3.0), (11.4, -3.0), (13.6, -4.6), (11.0, -3.8)]), 'trim', tone=4)                                     # cuernos de la luna
+        poly(X, W([(9.6, 3.0), (11.4, 3.0), (13.6, 4.6), (11.0, 3.8)]), 'trim', tone=4)
+        for x in (-6, -2, 3):                                                                                                  # anillos del baston
+            poly(X, W([(x, -1.2), (x + 0.8, -1.2), (x + 0.8, 1.2), (x, 1.2)]), 'gold', tone=3)
         # orbe en el pomo
         o = wpt(X, -12.5, 0)
         X.ob.glow(o, 5.5, 5.5, self.col1, 0.6, power=1.5)

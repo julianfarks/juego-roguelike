@@ -35,6 +35,7 @@ final class RunScreen extends Screen implements Level.Listener {
     Runnable fadeAct;
     String bannerTitle = "", bannerSub = "";
     float bannerT;
+    final Tutorial tut = new Tutorial();
     float bossCardT = -1;
     int[] offer = new int[3];
     int offerSel;
@@ -232,10 +233,12 @@ final class RunScreen extends Screen implements Level.Listener {
         }
         bannerT = type == Room.BOSS ? 0 : 3f;
         // tutorial
-        if (!Save.S.tutorialDone) {
-            if (type == Room.HUB && rs.visited.isEmpty()) lv.tutorial = "Acércate a un portal\ny pulsa el botón de la llave";
-            else if (type == Room.COMBAT && rs.roomNo == 0) lv.tutorial = "Pad: moverte  ·  Botones: saltar, rodar y atacar\nEl rodar te hace invulnerable un instante";
-        }
+        tut.close();                                              // salir de la sala cuenta como visto: nunca se repite
+        if (!sandbox && type != Room.HUB) Tutorial.complete(Tutorial.PORTAL);
+        if (!sandbox && type == Room.HUB && rs.visited.isEmpty() && !Tutorial.done(Tutorial.PORTAL)) lv.tutorial = "Acércate a un portal\ny pulsa el botón de la llave";
+        // controles: solo la primera vez que este perfil entra en su primera mazmorra (el estado vive en Save, no en la sala ni en el bioma)
+        if (!sandbox && type == Room.COMBAT && rs.roomNo == 0 && rs.stage == 0 && rs.visited.size() <= 1 && rs.bossKills == 0 && !rs.infinite
+                && !Tutorial.done(Tutorial.CONTROLS)) tut.start();
         fadeAct = null;
         layoutOverlay();
     }
@@ -463,7 +466,7 @@ final class RunScreen extends Screen implements Level.Listener {
         s.bestRooms = Math.max(s.bestRooms, rs.roomsDone);
         if (rs.infinite) { infResult = Infinite.resultOf(rs); infRecord = Infinite.record(s, infResult); }
         s.lastClass = cls.id;
-        s.tutorialDone = true;
+        Tutorial.complete(Tutorial.ALL);
         if (win) {
             s.wins++; s.classWins[cls.id]++;
             if (rs.asc == s.ascension && s.ascension < 5) { s.ascension++; sumNote = "¡Nueva dificultad desbloqueada!"; }
@@ -1435,6 +1438,7 @@ final class RunScreen extends Screen implements Level.Listener {
         }
         if (comboFlash > 0) comboFlash -= dt;
         if (bossCardT >= 0) bossCardT += dt;
+        tut.update(dt, in, ov == OV_NONE && fadeMode == 0 && deadT < 0 && winT < 0 && !lv.cinematic && lv.pl.alive && bannerT <= 0.6f);
         if (ov == OV_NONE) {
             if (fadeMode != 1) {
                 if (in.pressed(Input.B_PAUSE) && deadT < 0 && winT < 0) { openOv(OV_PAUSE); return; }
@@ -1478,6 +1482,7 @@ final class RunScreen extends Screen implements Level.Listener {
     @Override void touch(int id, int action, float x, float y) {
         if (ov != OV_NONE) { super.touch(id, action, x, y); return; }
         if (fadeMode == 1) return;
+        if (action == Platform.ACTION_DOWN && tut.hitButton(x, y)) { tut.close(); Snd.sfx("ui_click", 0.6f); return; }
         if (!game.touchUiVisible()) return;   // con mando activo los toques no tocan el juego
         in.touch(id, action, x, y);
     }
@@ -1537,6 +1542,7 @@ final class RunScreen extends Screen implements Level.Listener {
         renderHud(g, w);
         if (ov == OV_NONE) { if (game.touchUiVisible()) renderControls(g, w); else renderPadHud(g, w); }
         renderBanner(g, w);
+        if (ov == OV_NONE && !lv.cinematic) tut.render(g, this, w);
         renderOverlay(g, w);
         // pantalla roja al morir
         if (deadT >= 0) g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x500000, (int) (Mth.clamp(deadT / 1.5f, 0, 1) * 150)), false);
@@ -1691,13 +1697,13 @@ final class RunScreen extends Screen implements Level.Listener {
     }
 
     // ---- indicaciones de boton segun el dispositivo (mando Xbox / PlayStation / teclado)
-    private String glyphText(int action) {
+    String glyphText(int action) {
         if (game.lastDevice == 1) return Pad.keyName(Save.S.kb[action]);
         int c = Save.S.pb[action];
         return c <= 0 ? "-" : Pad.name(game.padType, c);
     }
 
-    private int glyphColor(int action) {
+    int glyphColor(int action) {
         if (game.lastDevice == 1) return 0xFFE8E0D0;
         int fc = Pad.faceColor(game.padType, Save.S.pb[action]);
         return fc != 0 ? (0xFF000000 | fc) : 0xFFE8E0D0;

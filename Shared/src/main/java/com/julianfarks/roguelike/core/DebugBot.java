@@ -398,6 +398,8 @@ public final class DebugBot {
         if (System.getenv("BOT_TRAILER") != null && warped && frame > warpFrame + 30) TrailerProbe.step(g, rs, lv, p, frame);
         if (System.getenv("BOT_HUDTEST") != null && warped && frame > warpFrame + 30) { if (HudProbe.step(g, rs, lv, p, frame)) System.exit(HudProbe.fails == 0 ? 0 : 1); return; }
         if (System.getenv("BOT_EVENTTEST") != null && warped && frame > warpFrame + 30) { if (EventProbe.step(g, rs, frame)) System.exit(EventProbe.fails == 0 ? 0 : 1); return; }
+        if (System.getenv("BOT_TUTTEST") != null && warped && frame > warpFrame + 30) { if (TutorialProbe.step(g, rs)) System.exit(TutorialProbe.fails == 0 ? 0 : 1); return; }
+        if (System.getenv("BOT_TUTSCENE") != null && warped && frame > warpFrame + 30) { TutorialProbe.scene(g, rs, lv, p, frame, System.getenv("BOT_TUTSCENE")); return; }
         if (System.getenv("BOT_ARSENALSCENE") != null && warped && frame > warpFrame + 30) { ArsenalProbe.scene(g, rs, lv, p, frame, System.getenv("BOT_ARSENALSCENE")); return; }
         if (System.getenv("BOT_ARSENAL") != null && warped && frame > warpFrame + 30) { if (ArsenalProbe.step(g, rs, lv, p, frame)) System.exit(ArsenalProbe.fails == 0 ? 0 : 1); return; }
         if (System.getenv("BOT_COMBATTEST") != null && warped && frame > warpFrame + 30) { if (CombatProbe.step(g, rs, lv, p, frame)) System.exit(CombatProbe.fails == 0 ? 0 : 1); return; }

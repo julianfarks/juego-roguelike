@@ -223,6 +223,9 @@ public final class Input {
         recompute(b);
     }
 
+    /** Estado crudo de una tecla/boton (para atajos que no son acciones de juego). */
+    public boolean rawDown(int code) { return isDown(code); }
+
     private boolean isDown(int code) { return code > 0 && code < codeDown.length && codeDown[code]; }
 
     /** Accion a la que apunta una tecla/boton: la asignada explicitamente (puede ser mas de una) o, si nadie la usa, su alternativa fija. */

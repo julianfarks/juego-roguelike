@@ -37,7 +37,7 @@ public final class Save {
     public int ascensionSel = 0;
     public boolean musicOn = true, sfxOn = true, vibOn = true;
     public boolean reduceFx = false;                 // accesibilidad: reduce destellos, sacudidas de camara, pausas de impacto y particulas
-    public boolean tutorialDone = false;
+    public int tutMask = 0;                          // tutoriales ya vistos (bits de Tutorial); unica fuente de verdad, por perfil
     public int lastClass = 0;
     public int diffSel = 1;                          // 0 facil, 1 normal, 2 dificil
     public boolean[] unlocked = new boolean[Unlocks.COUNT];   // desbloqueos por enemigos derrotados
@@ -116,7 +116,11 @@ public final class Save {
                 if (cw != null) for (int i = 0; i < Math.min(10, cw.length); i++) s.classWins[i] = cw[i];
                 s.ascension = Json.i(d, "asc", 0); s.ascensionSel = Json.i(d, "ascSel", 0);
                 s.musicOn = Json.bool(d, "music", true); s.sfxOn = Json.bool(d, "sfx", true); s.vibOn = Json.bool(d, "vib", true); s.reduceFx = Json.bool(d, "rfx", false);
-                s.tutorialDone = Json.bool(d, "tut", false);
+                if (d.containsKey("tuts")) s.tutMask = Json.i(d, "tuts", 0) & Tutorial.ALL;
+                else {   // guardado anterior: copia de seguridad y migracion (quien ya jugo no vuelve a ver el tutorial)
+                    if (p.store().get("save_bak_tuts", "").isEmpty()) { p.store().put("save_bak_tuts", raw); p.store().commit(); }
+                    s.tutMask = (Json.bool(d, "tut", false) || Json.i(d, "runs", 0) > 0 || Json.i(d, "st_started", 0) > 0) ? Tutorial.ALL : 0;
+                }
                 s.lastClass = Json.i(d, "last", 0);
                 s.diffSel = Math.max(0, Math.min(2, Json.i(d, "diff", 1)));
                 int[] un = Json.ints(d, "unl");
@@ -189,7 +193,7 @@ public final class Save {
             d.put("runs", runs); d.put("wins", wins); d.put("kills", kills); d.put("bestRooms", bestRooms); d.put("bossKills", bossKills);
             d.put("cw", classWins);
             d.put("asc", ascension); d.put("ascSel", ascensionSel);
-            d.put("music", musicOn); d.put("sfx", sfxOn); d.put("vib", vibOn); d.put("rfx", reduceFx); d.put("tut", tutorialDone); d.put("last", lastClass); d.put("diff", diffSel);
+            d.put("music", musicOn); d.put("sfx", sfxOn); d.put("vib", vibOn); d.put("rfx", reduceFx); d.put("tut", (tutMask & Tutorial.CONTROLS) != 0); d.put("tuts", tutMask); d.put("last", lastClass); d.put("diff", diffSel);
             int[] un = new int[Unlocks.COUNT]; for (int i = 0; i < un.length; i++) un[i] = unlocked[i] ? 1 : 0;
             d.put("unl", un);
             int[] cl = new int[ctl.length]; for (int i = 0; i < cl.length; i++) cl[i] = Math.round(ctl[i] * 10f);

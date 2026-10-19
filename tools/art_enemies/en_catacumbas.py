@@ -13,7 +13,7 @@ EYE = Mat(ramp=['#1c8a52', '#3cd07a', '#8affb8', '#e8fff0'], emi=True, nooutline
 CLOTH_S = Mat(ramp=['#161420', '#2a2634', '#3f3a4a', '#58526a', '#7a7288'], bevel=1.2, tex=0.3, seed=2)
 
 
-def skel_head(c, x, y, tilt, jaw, eyeamt, mat=BONE):
+def skel_head(c, x, y, tilt, jaw, eyeamt, mat=BONE, cap=False):
     with c.at(x, y, tilt):
         with c.part(mat, bevel=1.6) as p:
             p.ell(0, 0, 4.4, 4.0)                          # craneo
@@ -29,8 +29,21 @@ def skel_head(c, x, y, tilt, jaw, eyeamt, mat=BONE):
         with c.part(DARK) as p:  # dientes
             for k in range(3):
                 p.rect(-0.3 + k * 1.6, 3.7 + jaw * 0.3, 0.3 + k * 1.6, 4.9 + jaw * 0.9)
-        if eyeamt > 0.6:
-            pass
+        with c.part(DARK) as p:                                   # grietas del craneo y arco superciliar
+            p.limb((-0.4, -3.9), (0.3, -1.6), 0.18)
+            p.limb((0.3, -1.6), (-0.5, -0.4), 0.15)
+            p.limb((1.8, -2.0), (4.2, -1.9), 0.16)
+        with c.part(mat, bevel=0.8) as p:                         # pomulo marcado
+            p.poly([(1.6, 1.0), (4.0, 0.9), (4.2, 2.2), (2.2, 2.4)])
+        if cap:                                                   # casquete de hierro oxidado (identidad del esqueleto)
+            with c.part(RUST, line=0.4, bevel=1.2) as p:
+                p.poly([(-4.5, -0.2), (-3.9, -3.8), (-1.2, -4.9), (0.6, -4.4), (-0.4, -2.6), (-2.2, 0.2)])
+            with c.part(IRON, bevel=0.7) as p:
+                p.poly([(-4.4, -1.4), (-3.7, -3.6), (-2.0, -4.4), (-1.9, -3.2)])
+                p.limb((-0.2, -5.0), (0.2, -2.3), 0.35)
+            with c.part(DARK) as p:
+                p.ell(-2.8, -2.3, 0.35)
+                p.ell(0.8, -4.2, 0.3)
 
 
 def skel_pose(a, i, n):
@@ -156,19 +169,32 @@ def draw_esqueleto(c, a, i, n):
                 p.rect(-3.2, -5.4 + k * 2.4, 3.2, -4.7 + k * 2.4 + 0.2)
         with c.part(BONE, bevel=0.8) as p:
             p.limb((-2.0, -6.8), (-1.2, 2.0), 0.9, 0.8)   # esternon/columna visible
-            for k in range(4):
-                p.limb((-2.0, -5.8 + k * 2.4), (3.4, -5.0 + k * 2.4), 0.5, 0.45)
+            p.limb((-2.0, -6.3), (3.8, -7.0), 0.5, 0.45)  # clavicula
     # --- pierna delantera
     leg(c, (hip[0] + 1.0, hip[1] + 1), (hip[0] + 1.0 + f2[0], f2[1]), 6.6, 6.6, 1.0, 0.95, BONE, bend=-1)
+    # trapo de cintura colgando de un cinto de cuero
+    with c.at(hip[0], hip[1], lean * 0.5):
+        with c.part(CLOTH_S, line=0.4, bevel=1.3) as p:
+            p.poly([(-2.4, 1.2), (1.6, 1.0), (2.0, 3.8), (0.8, 4.8), (-0.4, 4.0), (-1.4, 5.4), (-2.6, 3.6)])
+        with c.part(WOODS, line=0.3, bevel=0.8) as p:
+            p.poly([(-3.4, -0.4), (3.4, -0.6), (3.5, 0.9), (-3.4, 1.1)])
+        with c.part(IRON, bevel=0.6) as p:
+            p.rect(0.8, -0.8, 2.2, 1.4)
     # --- cabeza
     skel_head(c, neck[0] + 3.5 * math.sin(lean + P['tilt']) + 0.5, neck[1] - 3.8 * math.cos(lean + P['tilt']) , lean * 0.6 + P['tilt'],
-              P['jaw'], P['eye'])
+              P['jaw'], P['eye'], cap=True)
     # --- brazo espada (cercano)
     A1, A2 = P['arm']
     e, hand = fk(shoulder, A1, 5.8, A2, 5.6)
     # trapo/bufanda
     bone(c, shoulder, e, 0.95, BONE)
     bone(c, e, hand, 0.9, BONE)
+    with c.part(RUST, line=0.4, bevel=1.3) as p:      # hombrera oxidada
+        p.poly([(shoulder[0] - 2.2, shoulder[1] + 1.0), (shoulder[0] - 1.4, shoulder[1] - 1.6), (shoulder[0] + 1.2, shoulder[1] - 2.2), (shoulder[0] + 2.6, shoulder[1] - 0.4), (shoulder[0] + 1.8, shoulder[1] + 1.4)])
+    with c.part(IRON, bevel=0.6) as p:
+        p.limb((shoulder[0] - 1.8, shoulder[1] - 1.8), (shoulder[0] + 2.2, shoulder[1] - 1.4), 0.3)
+    with c.part(CLOTH_S, bevel=0.8) as p:             # venda en la muneca
+        p.limb((lerp(e[0], hand[0], 0.7), lerp(e[1], hand[1], 0.7) - 0.8), (lerp(e[0], hand[0], 0.7), lerp(e[1], hand[1], 0.7) + 0.9), 1.2)
     # espada oxidada
     sa = P['swa']
     d = (math.cos(sa), math.sin(sa))
@@ -184,6 +210,11 @@ def draw_esqueleto(c, a, i, n):
         p.limb((hand[0] + nrm[0] * 2.6 + d[0] * 2.2, hand[1] + nrm[1] * 2.6 + d[1] * 2.2),
                (hand[0] - nrm[0] * 2.6 + d[0] * 2.2, hand[1] - nrm[1] * 2.6 + d[1] * 2.2), 0.8)
         p.limb(base, (hand[0] + d[0] * 1.5, hand[1] + d[1] * 1.5), 0.9)
+    with c.part(DARK) as p:                           # mellas del filo
+        for q in (0.35, 0.55, 0.78):
+            p.poly([(hand[0] + d[0] * (2.5 + 11 * q) - nrm[0] * 1.2, hand[1] + d[1] * (2.5 + 11 * q) - nrm[1] * 1.2),
+                    (hand[0] + d[0] * (3.2 + 11 * q) - nrm[0] * 0.2, hand[1] + d[1] * (3.2 + 11 * q) - nrm[1] * 0.2),
+                    (hand[0] + d[0] * (3.4 + 11 * q) - nrm[0] * 1.3, hand[1] + d[1] * (3.4 + 11 * q) - nrm[1] * 1.3)])
     with c.part(BONE, bevel=0.6) as p:
         p.ell(hand[0], hand[1], 1.4)
     if a == 'windup':
@@ -203,7 +234,7 @@ TRAILM = Mat(ramp=['#2e8a5c', '#5cd890', '#a8ffd0', '#effff6'], emi=True, nooutl
 
 
 def _p_skull(c):
-    skel_head(c, 0, 0, 0, 1.5, 0.2)
+    skel_head(c, 0, 0, 0, 1.5, 0.2, cap=True)
 
 
 def _p_ribs(c):

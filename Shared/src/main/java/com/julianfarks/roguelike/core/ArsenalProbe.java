@@ -88,6 +88,7 @@ final class ArsenalProbe {
         ck("sin secundaria: elegir la principal (ya activa) no hace nada: sin animacion ni enfriamiento", !rs.secActive && p.swapAnimT <= 0 && p.swapCd <= 0);
         Enemy dm = dummy(40);
         hold('J', 20);
+        for (Proj dp : lv.projs) System.out.println("AT DIAG proyectil sobrante: sprite=" + dp.sprite + " friendly=" + dp.friendly + " x=" + dp.x + " y=" + dp.y + " vx=" + dp.vx + " vy=" + dp.vy + " life=" + dp.life + " dmg=" + dp.dmg + " jugador=(" + p.x + "," + p.y + ") enemigos=" + lv.enemies.size());
         ck("sin secundaria: el ataque sigue siendo el de la clase (sin proyectiles)", lv.projs.isEmpty());
 
         // ---------------------------------------------------------------- 2. recoger la primera secundaria del suelo (sin recogida automatica)

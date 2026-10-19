@@ -94,10 +94,12 @@ public final class Level {
             Enemy e = new Enemy(d, el, hpMul, dmgMul);
             e.x = s.x; e.y = s.y;
             e.home = s.x;
+            e.optional = s.optional;
             if (Infinite.has(rs, Infinite.M_FAST)) e.modSpeed = 1.2f;
             enemies.add(e);
         }
-        toKill = enemies.size();
+        toKill = 0;
+        for (Enemy e : enemies) if (!e.optional) toKill++;
         roomEnemies = toKill; roomHits = 0; rewarded = false;
         for (Room.PropSpec ps : room.props) addProp(ps);
         secrets.init();
@@ -655,7 +657,7 @@ public final class Level {
         // fin de sala
         if (!cleared && !bossFight && !holdClear && room.type != Room.BOSS) {
             int alive = 0;
-            for (Enemy e : enemies) if (e.alive || !e.remove && !e.deadAnimDone()) { if (e.alive) alive++; }
+            for (Enemy e : enemies) if (e.alive || !e.remove && !e.deadAnimDone()) { if (e.alive && !e.optional) alive++; }
             if (alive == 0 && !pendingSpawns()) {
                 cleared = true;
                 if (listener != null) listener.onCleared(this);

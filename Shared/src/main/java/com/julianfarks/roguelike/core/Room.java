@@ -15,6 +15,8 @@ public final class Room {
 
     public static final class Spawn {
         public final String enemy; public final float x, y; public final boolean elite;
+        public boolean optional;       // encuentro opcional (camaras profundas, torres, alcobas): no cuenta para despejar la sala
+        public int zone;               // Vertical.Z_*: en que altura / ruta esta
         public Spawn(String e, float x, float y, boolean elite) { this.enemy = e; this.x = x; this.y = y; this.elite = elite; }
     }
 
@@ -42,6 +44,12 @@ public final class Room {
     public int[] ground;               // fila de superficie por columna (-1 = foso)
     public final List<int[]> arenas = new ArrayList<>();   // {x0,x1} tramos de arena de combate (el generador concentra ahi a los enemigos)
     public List<Integer> spikeCols;    // columnas con tira de pinchos sobre suelo firme
+    // ---- mazmorras verticales (Vertical.java): arquetipo y filas de cada altura (0 = no hay)
+    public boolean tall;               // sala con varias alturas: la validacion usa el modelo estricto de saltos y caidas
+    public int arch;                   // Vertical.A_COMPACT / A_TALL / A_DEEP
+    public int fy, mf, mf2, mf3, s1, s2;   // fila del suelo principal, de los pisos superiores 1-3 y de los subsuelos 1-2 (0 = sin ese nivel)
+    public int xdA, xuB, xc, xd2;      // pozos: bajada y subida del subsuelo 1, bajada y subida del subsuelo 2 (0 = no hay)
+    public final List<int[]> optionalSpots = new ArrayList<>();   // {x,y} de recompensas/cofres opcionales de la ruta (para pruebas y guias)
 
     public Room(int w, int h, int type, Biome b) {
         this.w = w; this.h = h; this.type = type; this.biome = b;

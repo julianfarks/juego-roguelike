@@ -9,6 +9,9 @@ public final class RoomGen {
     /** Pinchos extra en el piso superior (reto 'mas trampas'); lo fija RunScreen justo antes de generar. */
     static int extraTraps = 0;
 
+    /** Contadores para pruebas: salas verticales pedidas, aceptadas a la primera, y reintentos / salas que cayeron a compacta. */
+    static int statWanted, statFirst, statRetries, statFallback;
+
     private RoomGen() {}
 
     /** Genera una sala y, en las de combate, la valida (entrada -> salida y enemigos alcanzables); si falla reintenta con otra disposicion. */
@@ -18,24 +21,34 @@ public final class RoomGen {
     public static Room generate(int type, Biome b, Rng r, int stage, int roomNo, int event) {
         Room rm = null;
         boolean big = type == Room.COMBAT || type == Room.ELITE;
-        for (int attempt = 0; attempt < 12; attempt++) {
-            rm = build(type, b, r, stage, roomNo, event);
-            if (!big || RoomCheck.fix(rm, r)) { SecretGen.clearSpawns(rm); return rm; }
+        int want = Vertical.pick(b, type, roomNo, r);
+        if (big && want != Vertical.A_COMPACT) statWanted++;
+        for (int attempt = 0; attempt < 14; attempt++) {
+            int arch = attempt < 9 ? want : Vertical.A_COMPACT;      // si la sala vertical no sale bien tras varios intentos, se genera una compacta (nunca falla)
+            rm = build(type, b, r, stage, roomNo, event, arch);
+            if (!big) { SecretGen.clearSpawns(rm); return rm; }
+            if (rm.tall ? Vertical.validate(rm, Vertical.minEnemies(arch)) : RoomCheck.fix(rm, r)) {
+                SecretGen.clearSpawns(rm);
+                if (want != Vertical.A_COMPACT) { if (attempt == 0) statFirst++; else if (arch == Vertical.A_COMPACT) statFallback++; }
+                return rm;
+            }
+            if (rm.tall) statRetries++;
         }
         return rm;
     }
 
-    private static Room build(int type, Biome b, Rng r, int stage, int roomNo, int event) {
+    private static Room build(int type, Biome b, Rng r, int stage, int roomNo, int event, int arch) {
         boolean calm = type == Room.START || type == Room.BLESSING || type == Room.FORGE || type == Room.SHOP || type == Room.FOUNTAIN
                 || type == Room.TREASURE || type == Room.REST || type == Room.HUB || type == Room.EVENT;
         boolean boss = type == Room.BOSS;
         boolean big = !calm && !boss;
-        int W = boss ? 48 : (calm ? r.range(38, 44) : r.range(72, 104));
-        int H = boss ? 22 : (big ? 30 : 20);
+        int W = boss ? 48 : (calm ? r.range(38, 44) : (arch != Vertical.A_COMPACT ? r.range(80, 96) : r.range(72, 104)));
+        int H = boss ? 22 : (big ? Vertical.heightOf(arch) : 20);
         Room rm = new Room(W, H, type, b);
+        rm.tall = big && arch != Vertical.A_COMPACT; rm.arch = rm.tall ? arch : Vertical.A_COMPACT;
         rm.event = type == Room.EVENT ? event : 0;
         rm.glow = type == Room.EVENT ? Events.GLOW[Math.max(0, Math.min(Events.COUNT - 1, event))] : 0;
-        int fy = big ? 22 : H - 4;
+        int fy = big ? Vertical.fyOf(rm.arch) : H - 4;
         int pitRow = big ? fy + 3 : H - 1;
         int mf = fy - 10;                       // fila de la losa del piso superior
         boolean[] slab = new boolean[W];
@@ -111,6 +124,14 @@ public final class RoomGen {
             }
         }
 
+        Vertical.Ctx vc = null;
+        if (rm.tall) {
+            vc = new Vertical.Ctx();
+            vc.rm = rm; vc.r = r; vc.st = Vertical.style(b.key); vc.arch = rm.arch; vc.stage = stage; vc.roomNo = roomNo;
+            vc.W = W; vc.H = H; vc.fy = fy; vc.mf = mf; vc.ground = ground; vc.blocked = blocked; vc.slab1 = slab; vc.plats = platforms;
+            Vertical.build(vc);
+        }
+
         // ----- decoracion -----
         // vistas al parallax
         int nv = r.range(1, 3);
@@ -160,7 +181,7 @@ public final class RoomGen {
         for (int x = 2; x < 9; x++) rm.deco[(fy - 1) * W + x] = 0;
 
         for (Secret sc : rm.secrets) upCand.removeIf(c -> sc.contains(c[0], mf) || sc.contains(c[0], mf - 1));
-        if (type == Room.COMBAT || type == Room.ELITE) spawnEnemies(rm, ground, blocked, platforms, r, stage, roomNo, type == Room.ELITE, upCand, mf);
+        if (type == Room.COMBAT || type == Room.ELITE) { if (vc != null) Vertical.spawn(vc); else spawnEnemies(rm, ground, blocked, platforms, r, stage, roomNo, type == Room.ELITE, upCand, mf); }
         if (boss) {
             rm.spawnX = 5 * Room.TS;
             rm.exitX = (W - 5) * Room.TS;
@@ -416,7 +437,7 @@ public final class RoomGen {
 
     private static void spawnEnemies(Room rm, int[] ground, boolean[] blocked, List<int[]> plat, Rng r, int stage, int roomNo, boolean elite, List<int[]> upCand, int mf, int forceCount) {
         int W = rm.w;
-        int count = 3 + stage + (roomNo >= 2 ? 1 : 0) + r.i(2);
+        int count = Vertical.compactCount(stage, roomNo, r);
         if (elite) count = 2 + stage;
         if (forceCount > 0) count = forceCount;
         String[] full = rm.biome.enemies;

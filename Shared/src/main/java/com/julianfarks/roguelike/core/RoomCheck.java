@@ -24,7 +24,59 @@ final class RoomCheck {
         return true;
     }
 
-    static Set<Integer> reach(Room r, int sx, int sg) {
+    static Set<Integer> reach(Room r, int sx, int sg) { return r.tall ? reachTall(r, sx, sg, null) : reachOld(r, sx, sg); }
+
+    // ------------------------------------------------------------------ modelo estricto para salas con varias alturas
+    /** Celda libre para el cuerpo (los pinchos y las plataformas de un solo sentido no bloquean el salto). */
+    private static boolean air(Room r, int x, int y) { return clear(r, x, y); }
+    /** Celda libre y sin pinchos (para recorridos de caida). */
+    private static boolean airSafe(Room r, int x, int y) { int t = r.tile(x, y); return clear(r, x, y) && t != Room.SPIKE && t != Room.SPIKE_DOWN; }
+
+    /**
+     * Alcanzabilidad con saltos Y caidas reales: a diferencia de reachOld, un salto hacia arriba necesita aire sobre el punto de partida (no se atraviesa
+     * un techo) y una caida necesita el pasillo de salida libre y la columna de aterrizaje libre (no se cae a traves de la roca). Los mismos limites
+     * de salto que reachOld (salto 410 -> ~3.5 baldosas, doble salto ~5, caminar 135 px/s). `parent` (opcional) recibe, por cada casilla, la de la que se llega.
+     */
+    static Set<Integer> reachTall(Room r, int sx, int sg, Map<Integer, Integer> parent) {
+        Set<Integer> seen = new HashSet<>(); ArrayDeque<int[]> q = new ArrayDeque<>();
+        if (!node(r, sx, sg)) return seen;
+        seen.add(sg * 1000 + sx); q.add(new int[]{sx, sg});
+        while (!q.isEmpty()) {
+            int[] c = q.poll(); int x = c[0], g = c[1];
+            for (int nx = Math.max(1, x - 6); nx <= Math.min(r.w - 2, x + 6); nx++) {
+                int dx = Math.abs(nx - x);
+                if (dx == 0) continue;
+                int lo = Math.min(x, nx), hi = Math.max(x, nx);
+                // ---- hacia arriba (o al mismo nivel): salto
+                for (int ng = Math.max(2, g - 5); ng <= g; ng++) {
+                    int up = g - ng;
+                    boolean ok = up == 0 ? dx <= 4 : (up <= 3 ? dx <= 4 : dx <= 2);
+                    if (!ok || seen.contains(ng * 1000 + nx) || !node(r, nx, ng)) continue;
+                    int top = ng - 2 - (up > 3 ? 1 : 0);
+                    boolean free = true;
+                    for (int xx = lo; xx <= hi && free; xx++) for (int yy = top; yy <= ng - 1; yy++) if (!air(r, xx, yy)) { free = false; break; }
+                    if (free && up > 0) for (int yy = ng - 1; yy <= g - 1 && free; yy++) if (!air(r, x, yy)) free = false;      // aire sobre el punto de partida
+                    if (!free) continue;
+                    seen.add(ng * 1000 + nx); q.add(new int[]{nx, ng}); if (parent != null) parent.put(ng * 1000 + nx, g * 1000 + x);
+                }
+                // ---- hacia abajo: salir andando/saltando y caer por la columna de aterrizaje
+                if (dx > 5) continue;
+                boolean out = true;
+                for (int xx = lo; xx <= hi && out; xx++) for (int yy = g - 2; yy <= g - 1; yy++) if (!air(r, xx, yy)) { out = false; break; }
+                if (!out || !airSafe(r, nx, g)) continue;
+                for (int ng = g + 1; ng < r.h; ng++) {
+                    if (node(r, nx, ng) && !seen.contains(ng * 1000 + nx)) {
+                        seen.add(ng * 1000 + nx); q.add(new int[]{nx, ng}); if (parent != null) parent.put(ng * 1000 + nx, g * 1000 + x);
+                    }
+                    int t = r.tile(nx, ng);
+                    if (!airSafe(r, nx, ng) && t != Room.ONEWAY) break;    // la roca o los pinchos cortan la caida (las plataformas de un solo sentido se atraviesan al bajar)
+                }
+            }
+        }
+        return seen;
+    }
+
+    static Set<Integer> reachOld(Room r, int sx, int sg) {
         Set<Integer> seen = new HashSet<>(); ArrayDeque<int[]> q = new ArrayDeque<>();
         seen.add(sg * 1000 + sx); q.add(new int[]{sx, sg});
         while (!q.isEmpty()) {

@@ -1,0 +1,19 @@
+{
+ "cell": [
+  96,
+  96
+ ],
+ "rows": [
+  "idle",
+  "run",
+  "attack1",
+  "roll"
+ ],
+ "frames": {
+  "idle": 6,
+  "run": 8,
+  "attack1": 6,
+  "roll": 7
+ },
+ "note": "EXPERIMENTAL: no usado por el juego"
+}

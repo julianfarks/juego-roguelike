@@ -54,6 +54,8 @@ class Storm(PClass):
         mat('gold', '#E8C860', hl='#FFFBD0')
         mat('leather', '#3A3A58')
         mat('eye', '#4DC8FF', hl='#F0FCFF')
+        mat('trim', '#F2D878', hl='#FFFBE0')
+        mat('sapph', '#2A8AE8', hl='#C8F0FF')
         for m in ('coat', 'coat2', 'white', 'leather', 'hair'):
             mat_back(m)
 
@@ -67,8 +69,16 @@ class Storm(PClass):
         poly(X, tp(X, [(-2.6, -0.6), (2.4, -0.6), (2.8, 3.5), (2.9, 7.6), (2.3, 9.6), (-2.1, 9.6), (-2.9, 7), (-3.0, 3)]), 'coat', dome=3.0)
         poly(X, tp(X, [(0.4, 9.4), (2.6, 8.2), (0.6, 0.6), (-0.2, 0.6)]), 'white', dome=1.4)   # solapa
         poly(X, tp(X, [(-2.8, 1.6), (2.6, 1.6), (2.6, 0.5), (-2.8, 0.5)]), 'gold', dome=1.0)  # cinturon
+        poly(X, tp(X, [(0.6, 2.0), (1.8, 2.0), (1.8, 0.2), (0.6, 0.2)]), 'steel', dome=0.8)                              # hebilla
+        circ(X, tp(X, [(1.2, 1.1)])[0], 0.35 * k, 'sapph', tone=4)
+        poly(X, tp(X, [(-0.2, 9.4), (0.5, 9.5), (0.7, 6.0), (0.1, 6.0)]), 'coat2', tone=2)                                # solapa oscura
+        for v in (8.0, 6.4, 4.8, 3.2):                                                                                    # botones dorados
+            circ(X, tp(X, [(1.0, v)])[0], 0.28 * k, 'trim', tone=4)
+        poly(X, tp(X, [(-2.9, 7.2), (2.7, 7.6), (2.7, 7.8), (-2.9, 7.4)]), 'coat2', tone=2)                               # costura del pecho
+        poly(X, tp(X, [(-2.0, 9.4), (2.4, 9.8), (2.6, 8.6), (-1.6, 8.4)]), 'white', dome=1.0)                             # cuello alto
         leg(X, sk.hipF, sk.kneeF, sk.ankF, 2.0, 1.6, 1.3, 'coat2', 'leather', p.ffa, greave='leather')
         poly(X, tp(X, [(-0.4, 1.8), (3.1, 1.8), (3.3, -2.8), (1.2, -3.6), (0, -2)]), 'coat', dome=1.6)  # faldon
+        poly(X, tp(X, [(0.0, -2.0), (3.3, -2.8), (3.2, -3.1), (1.2, -3.9), (0.1, -2.5)]), 'trim', tone=3)                 # ribete dorado del faldon
         ribbons_draw(X, 'scarf', 'white', dome=1.0)
         # cabeza
         hc = sk.head
@@ -76,10 +86,20 @@ class Storm(PClass):
         circ(X, hc, D.hr, 'skin', dome=3.2)
         poly(X, hp(X, [(-4.2, 0.4), (-3.4, 3.8), (0, 4.6), (3.4, 3.2), (4.2, 1.8), (2.8, 2.2), (0.8, 3.0), (-0.6, 1.8), (-3.0, -1.4)]), 'hair', dome=1.8)
         poly(X, hp(X, [(1.6, 0.3), (3.2, 0.3), (3.2, -0.6), (1.6, -0.6)]), 'eye', emissive=True)
+        poly(X, hp(X, [(1.2, 1.5), (3.6, 1.7), (3.6, 1.2), (1.2, 1.0)]), 'hair', tone=2)                                   # ceja marcada
+        poly(X, hp(X, [(1.0, -2.2), (3.6, -2.0), (3.2, -3.2), (1.6, -3.5)]), 'skin', tone=2)                                # mandibula definida
+        poly(X, hp(X, [(3.0, -1.5), (3.8, -1.6), (3.8, -1.9), (3.0, -1.8)]), 'skin', tone=1)                                # boca
         poly(X, hp(X, [(-3.6, 2.0), (3.8, 2.2), (3.8, 3.2), (-3.6, 3.0)]), 'white', dome=1.0)  # cinta
+        circ(X, hpt(X, 2.4, 2.7), 0.6 * k, 'sapph', tone=4)                                                                 # gema de la cinta
+        for u in (-1.5, 0.2, 1.8):                                                                                          # mechones claros
+            cap(X, hpt(X, u, 4.0), hpt(X, u - 1.6, 1.0), 0.25 * k, 0.12 * k, 'hair', tone=5)
         # brazo delantero + estoque
         self._rapier(X)
-        arm(X, sk.shF, sk.elbF, sk.handF, 1.5, 1.3, 1.1, 'coat', glove='white', bracer='white')
+        arm(X, sk.shF, sk.elbF, sk.handF, 1.5, 1.3, 1.1, 'coat', glove='white', bracer='steel')
+        circ(X, sk.shF, 1.9 * k, 'trim', dome=1.6)                                                                          # charretera
+        circ(X, (sk.shF[0] + 0.2, sk.shF[1] - 0.4), 0.8 * k, 'sapph', tone=4)
+        for i in range(3):
+            cap(X, (sk.shF[0] - 1.2 + i * 0.9, sk.shF[1] + 1.3), (sk.shF[0] - 1.5 + i * 0.9, sk.shF[1] + 2.5), 0.2 * k, 0.2 * k, 'trim', tone=3)
 
     def _rapier(self, X):
         W = lambda pts: wpoly(X, pts)
@@ -89,6 +109,8 @@ class Storm(PClass):
         poly(X, W([(1.5, -3.2), (3.4, -3.0), (4.2, 0), (3.4, 3.4), (1.5, 3.6), (2.2, 0)]), 'gold', dome=1.4)
         poly(X, W([(-3.0, -0.8), (1.6, -0.8), (1.6, 0.8), (-3.0, 0.8)]), 'leather', dome=1.0)
         circ(X, wpt(X, -3.6, 0), 1.1 * X.D.k, 'gold', dome=1.0)
+        poly(X, W([(1.8, -3.2), (3.2, -3.0), (3.4, -2.2), (1.8, -2.4)]), 'trim', tone=5)                                    # reborde de la cesta
+        circ(X, wpt(X, 2.6, 0), 0.6 * X.D.k, 'sapph', tone=4)                                                               # gema de la cesta
 
     def fx(self, X, name, i, n):
         ov = X.of

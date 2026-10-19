@@ -1291,6 +1291,7 @@ public final class Enemy extends Ent {
 
     // ------------------------------------------------------------------ dibujo
     private float hpShow = -1;
+    private final float[] rx = new float[3];
     public void render(Platform.Gfx g, Level lv) {
         if (spawnT < 0) return;
         Anim a = sheet.anim(animName);
@@ -1310,7 +1311,19 @@ public final class Enemy extends Ent {
             flags |= Platform.TINT; if (hitFlash <= 0) tint = ((int) (lv.time * 14) & 1) == 0 ? 0xFFB0A0 : 0xFFFFFF;
         }
         float dy = (def.role == EnemyDef.FLY_SHOOT || def.role == EnemyDef.FLY_DIVE) && alive ? (float) Math.sin(bob) * 1.5f : 0;
-        sheet.draw(g, a, frame, x, y + dy, right, scale, flags, tint, alpha);
+        float spd = (float) Math.hypot(vx, vy);
+        boolean rush = alive && (state == CHARGE || state == DIVE || state == LEAP) && spd > 120f;
+        if (rush && !Impact.react(lv, this, rx)) {       // smear de embestida/salto/picado: silueta estirada en el sentido del movimiento + ecos (solo visual)
+            boolean vert = Math.abs(vy) > Math.abs(vx) * 1.4f;
+            float k = Mth.clamp((spd - 120f) / 200f, 0.4f, 1f);
+            float ssx = scale * (vert ? 1f - 0.10f * k : 1f + 0.22f * k), ssy = scale * (vert ? 1f + 0.22f * k : 1f - 0.10f * k);
+            if (!Save.S.reduceFx) for (int i = 2; i >= 1; i--) {
+                float ex = spd > 1f ? -vx / spd * 6f * i : 0f, ey = spd > 1f ? -vy / spd * 6f * i : 0f;
+                sheet.drawSq(g, a, frame, x + ex, y + dy + ey, right, ssx, ssy, Platform.ADD | Platform.TINT, def.color, i == 1 ? 0.28f : 0.14f);
+            }
+            sheet.drawSq(g, a, frame, x, y + dy, right, ssx, ssy, flags, tint, alpha);
+        } else if (Impact.react(lv, this, rx)) sheet.drawSq(g, a, frame, x + rx[2], y + dy, right, scale * rx[0], scale * rx[1], flags, tint, alpha);
+        else sheet.draw(g, a, frame, x, y + dy, right, scale, flags, tint, alpha);
         if (alive) {
             if ((state == WINDUP || state == AIM || state == FUSE) && UI.big != null) UI.big.center(g, "!", x, y - bh - 16, 0xFF4040, 1f);
             {

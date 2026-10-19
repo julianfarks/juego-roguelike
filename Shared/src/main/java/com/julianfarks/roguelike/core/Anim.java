@@ -11,20 +11,36 @@ public final class Anim {
     public int[] box;                   // [x,y,w,h] relativo al pivote mirando a la derecha
     public int rel = -1;                // fotograma de liberacion
     public int[] muzzle;                // [x,y] relativo al pivote
+    public int smear = -1;              // indice del fotograma smear (deformacion intencional de velocidad); -1 = ninguno
+    private float[] cum;                // tiempos acumulados por fotograma (peso de duracion "ft"); null = fotogramas uniformes
+
+    /** Peso de duracion por fotograma (anticipacion lenta, golpe rapido, recuperacion con peso). Duracion total = suma / fps. */
+    public void setWeights(float[] w) {
+        if (w == null || w.length != n) { cum = null; return; }
+        cum = new float[n + 1];
+        for (int i = 0; i < n; i++) cum[i + 1] = cum[i] + Math.max(0.1f, w[i]) / fps;
+    }
 
     public Anim(String name, int row, int n, float fps, boolean loop) {
         this.name = name; this.row = row; this.n = Math.max(1, n); this.fps = Math.max(0.1f, fps); this.loop = loop;
     }
 
-    public float duration() { return n / fps; }
+    public float duration() { return cum != null ? cum[n] : n / fps; }
 
     public int frameAt(float t) {
+        if (cum != null) {
+            if (t < 0) t = 0;
+            if (loop) t %= cum[n];
+            int i = 0;
+            while (i < n - 1 && t >= cum[i + 1]) i++;
+            return i;
+        }
         int f = (int) (t * fps);
         if (f < 0) f = 0;
         return loop ? f % n : Math.min(f, n - 1);
     }
 
-    public boolean done(float t) { return !loop && t * fps >= n; }
+    public boolean done(float t) { return !loop && (cum != null ? t >= cum[n] : t * fps >= n); }
 
     public boolean hitActive(float t) {
         if (h0 < 0) return false;

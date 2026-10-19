@@ -588,6 +588,7 @@ public final class Player extends Ent {
             lv.onWeaponHit(e, dmg, crit, combo);
             hitCount++;
             Impact.hit(lv, e, kind, dir(), !e.alive, hitSfxFor(e, crit));
+            hitPoseAt = lv.time; hitPoseKind = kind;
             if (a.name.startsWith("attack")) {
                 // contragolpe: pequeño retroceso
                 vx -= dir() * 20;
@@ -790,6 +791,7 @@ public final class Player extends Ent {
     }
 
     // ------------------------------------------------------------------ dibujo
+    private float hitPoseAt = -9f; private int hitPoseKind;     // ultimo contacto del arma propia (pose de impacto del jugador, solo visual)
     public void render(Platform.Gfx g, Level lv) {
         Sheet cs = curSheet();
         Anim a = cs.anim(animName);
@@ -823,8 +825,18 @@ public final class Player extends Ent {
         }
         float runB = (state == RUN && onGround) ? 0.035f * (float) Math.abs(Math.sin(animT * 13f)) : 0f;
         float ssx = 1f + sq * 0.9f + runB, ssy = 1f - sq * 0.9f - runB;
+        float ox = 0f;
+        float ia = lv.time - hitPoseAt;
+        if (ia >= 0f && ia < 0.14f && state == ATK) {          // pose de impacto: el cuerpo se estira hacia el golpe y se asienta (el tiempo de juego se detiene en la pausa de impacto)
+            float k = 1f - ia / 0.14f, amp = (hitPoseKind >= Impact.HEAVY ? 0.14f : 0.08f) * (Save.S.reduceFx ? 0.5f : 1f);
+            ssx += amp * k; ssy -= amp * 0.7f * k; ox = dir() * 2.5f * amp * 10f * k;
+        }
+        if (a.smear >= 0 && frame == a.smear && state == ATK && !Save.S.reduceFx) {      // movimiento secundario del smear: ecos de la clase detras del tajo
+            cs.draw(g, a, frame, x - dir() * 8, y, right, 1f, Platform.ADD | Platform.TINT, cls.color1, 0.30f);
+            cs.draw(g, a, frame, x - dir() * 15, y, right, 1f, Platform.ADD | Platform.TINT, cls.color1, 0.16f);
+        }
         if (!alive) { ssx = 1f; ssy = 1f; }
-        cs.drawSq(g, a, frame, x, y, right, ssx, ssy, flags, tint, alpha);
+        cs.drawSq(g, a, frame, x + ox, y, right, ssx, ssy, flags, tint, alpha);
         if (guarding) {
             int sc = Items.SH_COL[lv.rs.shield];
             float sx0 = x + dir() * 11, ph = parryT > 0 ? 1f : 0f;

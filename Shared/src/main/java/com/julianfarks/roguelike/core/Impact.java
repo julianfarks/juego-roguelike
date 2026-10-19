@@ -35,9 +35,34 @@ final class Impact {
         return null;
     }
 
+    /** Pose de impacto del objetivo (SOLO visual: no toca cajas de colision ni dano). Rellena out = {escalaX, escalaY, desplazamientoX}.
+     *  Comprime en el sentido del golpe en el instante del contacto (se mantiene durante la pausa de impacto, porque lv.time se detiene) y
+     *  rebota en ~0,16 s; en golpes pesados/criticos se anade una sacudida corta de perdida de equilibrio. */
+    static boolean react(Level lv, Ent e, float[] out) {
+        float age = lv.time - e.recAt;
+        if (age < 0 || age > 0.16f || !e.alive) return false;
+        float amp = AMP[e.recKind] * (e instanceof Boss ? 0.45f : 1f) * (Save.S.reduceFx ? 0.5f : 1f);
+        float k = 1f - age / 0.16f;
+        out[0] = 1f - amp * k; out[1] = 1f + amp * 0.8f * k;
+        float shake = e.recKind == HEAVY || e.recKind == CRIT ? (float) Math.sin(age * 95f) * 1.6f * k : 0f;
+        out[2] = e.recDir * amp * 9f * k + shake;
+        return true;
+    }
+    private static final float[] AMP = {0.10f, 0.20f, 0.22f, 0.12f};
+
+    /** Presupuesto de sonidos de impacto: como mucho 3 capas de golpe por ventana de 60 ms (varios enemigos a la vez no saturan el audio). */
+    private static long sfxWin; private static int sfxN;
+    static boolean sfxOkForTest() { return sfxOk(); }
+    private static boolean sfxOk() {
+        long now = System.currentTimeMillis();
+        if (now - sfxWin > 60) { sfxWin = now; sfxN = 0; }
+        return ++sfxN <= 3;
+    }
+
     /** Respuesta completa a un golpe ya aplicado. {@code killed}: el golpe derroto al objetivo. */
     static void hit(Level lv, Ent e, int kind, float dir, boolean killed, String baseSfx) {
         lv.dbgImpacts++;
+        e.recAt = lv.time; e.recDir = dir; e.recKind = kind;
         boolean boss = e instanceof Boss;
         float bm = boss ? 0.5f : 1f;                                  // los jefes: contundente pero sin quedar "congelados"
         // pausa de impacto: con presupuesto; los remates que matan dan un poco mas (sin pasarse)
@@ -57,9 +82,10 @@ final class Impact {
         if (kind >= HEAVY && budget > 0f) lv.fx("fx_ring", "pulse", e.cx(), e.cy(), kind == HEAVY ? 0.45f : 0.35f, col, Platform.ADD | Platform.TINT);
         // sonido proporcional: volumen y tono segun el tipo + capa elemental o metalica
         lastVol = VOL[kind]; lastPitch = PITCH[kind]; lastSparks = n;
-        if (baseSfx != null) Snd.sfx(baseSfx, VOL[kind], PITCH[kind] * (0.97f + lv.rng.f() * 0.06f), 0f);
-        if (kind == HEAVY) Snd.sfx("hit_stone", 0.55f, 0.9f, 0f);
-        if (kind == CRIT) Snd.sfx("hit_metal_" + (1 + lv.rng.i(2)), 0.45f, 1.25f, 0f);
+        boolean loud = sfxOk();
+        if (baseSfx != null && loud) Snd.sfx(baseSfx, VOL[kind], PITCH[kind] * (0.97f + lv.rng.f() * 0.06f), 0f);
+        if (kind == HEAVY && loud) Snd.sfx("hit_stone", 0.55f, 0.9f, 0f);
+        if (kind == CRIT && loud) Snd.sfx("hit_metal_" + (1 + lv.rng.i(2)), 0.45f, 1.25f, 0f);
         String es = elementSfx(e);
         if (es != null && lv.time - lastElemSfx > 0.18f) { lastElemSfx = lv.time; Snd.sfx(es, 0.35f, 1f, 0f); }
         if (killed && kind >= HEAVY) {                               // remate satisfactorio: mas chispas y, solo con elites o al limpiar la sala, un instante lento

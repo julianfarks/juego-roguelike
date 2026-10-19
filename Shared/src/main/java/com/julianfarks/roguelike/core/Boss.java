@@ -575,6 +575,8 @@ public final class Boss extends Ent {
         float dy = flying && state != DEAD && state != INTRO ? (float) Math.sin(bob * 2f) * 3f : 0f;
         if (!flying || state == DEAD) g.rect(Math.round(x - 26 + offX), Math.round(y - 2), 52, 3, 0x55000000, false);
         UI.light(g, x + offX, y - bh * 0.5f + offY + dy, 70, def.color, state == DEAD ? 0.1f : 0.16f);
-        sheet.draw(g, a, frame, x + offX, y + offY + dy, right, 1f, flags, tint, alpha);
+        if (Impact.react(lv, this, rx)) sheet.drawSq(g, a, frame, x + offX + rx[2], y + offY + dy, right, rx[0], rx[1], flags, tint, alpha);
+        else sheet.draw(g, a, frame, x + offX, y + offY + dy, right, 1f, flags, tint, alpha);
     }
+    private final float[] rx = new float[3];
 }

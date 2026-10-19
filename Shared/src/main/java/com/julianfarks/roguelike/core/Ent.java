@@ -10,6 +10,7 @@ public abstract class Ent {
     public boolean right = true, onGround, alive = true, flying, gravity = true, hitWall, onOneWay;
     public float hp = 1, maxHp = 1;
     public float hitFlash;
+    public float recAt = -9f, recDir; public int recKind;     // ultimo golpe recibido: instante, direccion y tipo (pose de impacto, solo visual)
     public float stun;                  // aturdimiento (no actua)
     public float[] st = new float[ST_COUNT];
     public float[] stPow = new float[ST_COUNT];   // daño por segundo del estado

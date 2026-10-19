@@ -32,6 +32,9 @@ public final class Sheet {
                 a.box = Json.ints(m, "box");
                 a.rel = Json.i(m, "rel", -1);
                 a.muzzle = Json.ints(m, "muzzle");
+                a.smear = Json.i(m, "smear", -1);
+                Object ft = m.get("ft");
+                if (ft instanceof java.util.List) { java.util.List<?> l = (java.util.List<?>) ft; float[] w = new float[l.size()]; for (int i = 0; i < w.length; i++) w[i] = l.get(i) instanceof Number ? ((Number) l.get(i)).floatValue() : 1f; a.setWeights(w); }
                 s.anims.put(e.getKey(), a);
             }
         }

@@ -51,6 +51,8 @@ class Verdant(PClass):
         mat('glow', '#4FD96A', hl='#C8FF9A')
         mat('leather', '#4A3626')
         mat('antler', '#D8C090', hl='#FFF4D0')
+        mat('bone', '#E8DCC0', hl='#FFFFFF')
+        mat('rune', '#8CFFA0', hl='#F0FFE0')
         for m in ('leaf', 'leaf2', 'bark', 'moss', 'leather'):
             mat_back(m)
 
@@ -67,9 +69,22 @@ class Verdant(PClass):
         leg(X, sk.hipB, sk.kneeB, sk.ankB, 2.2, 1.8, 1.5, 'bark_b', 'leather_b', p.bfa, kneepad='moss_b')
         poly(X, tp(X, [(-3.0, -0.6), (2.8, -0.6), (3.2, 3.5), (3.4, 7.6), (2.6, 9.6), (-2.4, 9.6), (-3.2, 7), (-3.3, 3)]), 'bark', dome=3.0)
         poly(X, tp(X, [(-3.2, 5.6), (3.4, 6.2), (3.6, 9.4), (2.4, 9.8), (-2.4, 9.8), (-3.4, 8)]), 'leaf', dome=2.4)  # peto de hojas
+        for (v, w) in ((8.8, 3.0), (7.2, 3.3), (5.6, 3.1)):                                                                    # hojas solapadas del peto
+            poly(X, tp(X, [(-w, v), (0, v + 1.3), (w + 0.2, v), (w - 0.4, v - 1.1), (0, v - 1.6), (-w + 0.4, v - 1.1)]), 'leaf', dome=1.2)
+            cap(X, tp(X, [(0, v + 1.0)])[0], tp(X, [(0, v - 1.4)])[0], 0.14 * k, 0.14 * k, 'leaf2', tone=2)                    # nervio central
+        poly(X, tp(X, [(-3.4, 3.0), (3.3, 3.0), (3.5, 4.8), (-3.5, 4.8)]), 'bark', dome=1.6)                                    # faja de corteza
+        for u in (-2.4, -0.8, 0.8, 2.4):
+            cap(X, tp(X, [(u, 3.1)])[0], tp(X, [(u + 0.2, 4.7)])[0], 0.12 * k, 0.12 * k, 'bark', tone=2)                       # vetas
         poly(X, tp(X, [(-3.2, -0.6), (3.0, -0.6), (3.1, 1.7), (-3.3, 1.7)]), 'leather', dome=1.2)
+        for u in (-2.4, -1.2, 0.0):
+            circ(X, tp(X, [(u, 1.1)])[0], 0.22 * k, 'wood', tone=4)                                                              # tachuelas de madera
         circ(X, tp(X, [(0.6, 1.0)])[0], 1.2 * k, 'glow', emissive=True)
         leg(X, sk.hipF, sk.kneeF, sk.ankF, 2.4, 1.9, 1.6, 'bark', 'leather', p.ffa, kneepad='moss')
+        an, kn = sk.ankF, sk.kneeF
+        for t in (0.35, 0.6, 0.85):                                                                                            # vendas de enredadera en la pierna
+            q = lerp_pt(kn, an, t)
+            cap(X, (q[0] - 1.6, q[1]), (q[0] + 1.6, q[1] + 0.5), 0.3 * k, 0.3 * k, 'leaf2', tone=3)
+        poly(X, [(kn[0] + 0.4, kn[1] - 1.4), (kn[0] + 2.4, kn[1] - 0.2), (kn[0] + 0.4, kn[1] + 1.0)], 'bone', tone=4)           # espina de rodilla
         ribbons_draw(X, 'vine', 'leaf', dome=1.2)
         # taparrabo de hojas
         poly(X, tp(X, [(-0.2, 1.6), (3.4, 1.6), (3.6, -2.6), (1.6, -1.6), (0.0, -3.0)]), 'leaf', dome=1.6)
@@ -88,11 +103,19 @@ class Verdant(PClass):
         circ(X, hc, D.hr, 'moss', dome=3.2)
         poly(X, hp(X, [(0.6, 2.4), (4.0, 1.4), (4.1, -2.4), (1.2, -3.4), (0.2, -1)]), 'mask', dome=2.0)
         poly(X, hp(X, [(1.6, 0.6), (3.6, 0.5), (3.6, -0.3), (1.6, -0.2)]), 'glow', emissive=True)
+        poly(X, hp(X, [(0.8, 2.0), (4.0, 1.4), (4.0, 1.0), (0.8, 1.6)]), 'mask', tone=5)                                         # ceja de la mascara
+        poly(X, hp(X, [(2.2, 0.0), (3.2, 0.0), (3.3, -2.6), (2.5, -3.0)]), 'mask', tone=2)                                       # hocico/relieve
+        for v in (-1.2, -1.9):
+            poly(X, hp(X, [(1.4, v), (3.4, v - 0.05), (3.4, v - 0.2), (1.4, v - 0.15)]), 'rune', tone=3)                        # runas de la mascara
         poly(X, hp(X, [(-3.6, 2.4), (-1, 4.2), (1.6, 3.8), (0, 2.6), (-2.4, 1.4)]), 'leaf', dome=1.2)
         circ(X, sk.shB, 2.4 * k, 'moss_b', dome=2.0)
         self._sword(X)
         arm(X, sk.shF, sk.elbF, sk.handF, 1.7, 1.5, 1.3, 'bark', glove='moss', bracer='leaf2')
+        circ(X, (sk.shF[0] - 0.3, sk.shF[1] + 1.6), 2.8 * k, 'bark', dome=2.0)
         circ(X, sk.shF, 3.0 * k, 'moss', dome=2.8)
+        for ang in (200, 245, 290):
+            q = (sk.shF[0] + math.cos(math.radians(ang)) * 2.4 * k, sk.shF[1] + math.sin(math.radians(ang)) * 2.4 * k)
+            circ(X, q, 0.35 * k, 'leaf', tone=5)
         poly(X, [(sk.shF[0] - 2, sk.shF[1] - 1), (sk.shF[0] - 0.4, sk.shF[1] - 3.6), (sk.shF[0] + 1.6, sk.shF[1] - 1.2)], 'leaf', dome=1.0)
 
     def _sword(self, X):
@@ -104,6 +127,9 @@ class Verdant(PClass):
             poly(X, W([(x, -2.2), (x + 1.3, -2.2), (x + 2.8, 2.2), (x + 1.5, 2.2)]), 'leaf', tone=3)
         poly(X, W([(4, -0.3), (19, -0.2), (19, 0.3), (4, 0.3)]), 'glow', emissive=True)
         poly(X, W([(1.6, -3.4), (2.9, -3.4), (2.9, 3.4), (1.6, 3.4)]), 'bark', dome=1.2)
+        poly(X, W([(1.4, -3.4), (2.9, -3.4), (3.8, -5.0), (2.2, -4.2)]), 'wood', tone=4)                                          # ramas de la guarda
+        poly(X, W([(1.4, 3.4), (2.9, 3.4), (3.8, 5.0), (2.2, 4.2)]), 'wood', tone=4)
+        poly(X, W([(3, -1.8), (19, -1.9), (19, -1.5), (3, -1.4)]), 'wood', tone=5)                                                # veta iluminada
         circ(X, wpt(X, 2.2, 0), 1.3 * X.D.k, 'glow', emissive=True)
         poly(X, W([(-2.6, -0.9), (1.7, -0.9), (1.7, 0.9), (-2.6, 0.9)]), 'leather', dome=1.0)
 

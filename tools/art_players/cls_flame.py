@@ -69,9 +69,21 @@ class Flame(PClass):
         for pts in ([(-1.8, 7.8), (-0.4, 6.2), (0.6, 6.6), (1.8, 4.6), (1.2, 4.4), (0.2, 5.8), (-0.6, 5.4), (-2.2, 7.2)],
                     [(0.2, 3.2), (1.0, 2.2), (1.7, 2.4), (1.2, 3.6)]):
             poly(X, tp(X, pts), 'lava', emissive=True)
+        # peto de obsidiana en placas: filo claro, juntas con lava y reborde de acero
+        poly(X, tp(X, [(-3.4, 6.0), (3.4, 6.0), (4.1, 7.4), (3.6, 9.8), (-2.8, 9.8), (-3.9, 7.4)]), 'obs', dome=3.0)
+        poly(X, tp(X, [(-3.2, 3.6), (3.4, 3.6), (3.9, 5.7), (-3.6, 5.7)]), 'obs2', dome=1.6)
+        for v in (5.85, 3.5):
+            poly(X, tp(X, [(-3.5, v), (3.9, v), (3.9, v + 0.2), (-3.5, v + 0.2)]), 'lava', tone=3)
+        poly(X, tp(X, [(-3.3, 9.5), (3.0, 9.5), (3.0, 9.8), (-2.8, 9.8)]), 'steel', tone=3)                       # reborde del gorjal
+        poly(X, tp(X, [(-3.2, 6.2), (-2.6, 6.2), (-2.9, 9.4), (-3.5, 8.0)]), 'obs', tone=5)                     # luz del borde
         poly(X, tp(X, [(-3.3, 1.8), (3.2, 1.8), (3.3, -0.4), (-3.4, -0.4)]), 'obs2', dome=1.4)
+        for u in (-2.4, -0.8, 0.8, 2.4):                                                                          # tachuelas del cinturon
+            circ(X, tp(X, [(u, 0.7)])[0], 0.25 * k, 'ember', tone=4)
         circ(X, tp(X, [(0.2, 1.0)])[0], 1.3 * k, 'ember', emissive=True)
         leg(X, sk.hipF, sk.kneeF, sk.ankF, 2.5, 2.0, 1.7, 'obs2', 'leather', p.ffa, kneepad='obs', greave='obs')
+        kn = sk.kneeF
+        poly(X, [(kn[0] + 0.8, kn[1] - 1.2), (kn[0] + 3.4, kn[1] - 0.2), (kn[0] + 0.8, kn[1] + 1.0)], 'steel', tone=4)     # pua de rodilla
+        circ(X, kn, 0.7 * k, 'lava', emissive=True)
         poly(X, tp(X, [(-0.2, 1.5), (3.4, 1.5), (3.8, -2.2), (1.8, -4.4), (0.2, -3)]), 'cloth', dome=1.8)  # faldon
         self._sword(X)
         # cabeza con cuernos
@@ -83,6 +95,10 @@ class Flame(PClass):
         poly(X, hp(X, horn2), 'ember', dome=1.2)
         circ(X, hc, D.hr, 'obs', dome=3.4)
         poly(X, hp(X, [(0.4, 1.4), (4.2, 1.2), (4.2, -1.0), (0.4, -1.2)]), 'obs2', tone=1)
+        poly(X, hp(X, [(0.2, 2.2), (4.6, 1.8), (4.6, 1.2), (0.2, 1.6)]), 'steel', tone=3)                         # ceja del yelmo
+        poly(X, hp(X, [(-4.0, 2.4), (-1.0, 4.6), (1.0, 4.2), (0.2, 2.0)]), 'obs', tone=4)                         # cresta del yelmo
+        for v in (-0.4, -1.0):                                                                                    # ventilas de la visera
+            poly(X, hp(X, [(1.2, v), (3.6, v - 0.05), (3.6, v - 0.25), (1.2, v - 0.2)]), 'lava', tone=2)
         poly(X, hp(X, [(1.4, 0.8), (3.8, 0.7), (3.8, -0.1), (1.4, 0.0)]), 'lava', emissive=True)
         poly(X, hp(X, [(0.6, -1.6), (3.6, -1.8), (2.8, -3.8), (0.4, -3.2)]), 'obs2', dome=1.4)
         # brazos / hombreras
@@ -90,7 +106,11 @@ class Flame(PClass):
         if p.two >= 0.5:
             arm(X, sk.shB, sk.elbB, sk.handB, 1.8, 1.6, 1.4, 'obs2', glove='obs', bracer='obs')
         arm(X, sk.shF, sk.elbF, sk.handF, 1.9, 1.7, 1.5, 'obs2', glove='obs', bracer='obs')
+        circ(X, (sk.shF[0] - 0.3, sk.shF[1] + 1.8), 3.0 * k, 'obs2', dome=2.2)                                    # lamina inferior de la hombrera
         circ(X, sk.shF, 3.1 * k, 'obs', dome=2.8)
+        for ang in (200, 245, 290):
+            q = (sk.shF[0] + math.cos(math.radians(ang)) * 2.6 * k, sk.shF[1] + math.sin(math.radians(ang)) * 2.6 * k)
+            circ(X, q, 0.4 * k, 'steel', tone=4)
         poly(X, [(sk.shF[0] - 0.5, sk.shF[1] - 2.4), (sk.shF[0] + 1.0, sk.shF[1] - 5.6), (sk.shF[0] + 2.0, sk.shF[1] - 2.0)], 'obs', dome=1.2)
         circ(X, (sk.shF[0] + 0.5, sk.shF[1] - 0.3), 0.8, 'lava', emissive=True)
 
@@ -100,6 +120,9 @@ class Flame(PClass):
         poly(X, W([(4, -1.6), (30, -1.7), (34, 0), (30, 1.7), (4, 1.6)]), 'lava', tone=3)
         poly(X, W([(5, -0.7), (31, -0.7), (33, 0), (31, 0.7), (5, 0.7)]), 'ember', emissive=True)
         poly(X, W([(2.2, -5.2), (3.4, -5.2), (3.4, 5.2), (2.2, 5.2)]), 'obs', dome=1.4)
+        poly(X, W([(2.0, -5.2), (3.4, -5.2), (4.6, -7.4), (2.6, -6.2)]), 'steel', tone=4)                          # cuernos de la guarda
+        poly(X, W([(2.0, 5.2), (3.4, 5.2), (4.6, 7.4), (2.6, 6.2)]), 'steel', tone=4)
+        poly(X, W([(4, -2.4), (29, -2.5), (29, -2.1), (4, -2.0)]), 'steel', tone=5)                                 # filo iluminado
         poly(X, W([(-5.0, -1.1), (2.4, -1.1), (2.4, 1.1), (-5.0, 1.1)]), 'leather', dome=1.0)
         circ(X, wpt(X, -6.2, 0), 1.3 * X.D.k, 'obs', dome=1.2)
         # llamas del filo

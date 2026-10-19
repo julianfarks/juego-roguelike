@@ -19,3 +19,10 @@ Capturas: `docs/capturas_arte/paladin_fase3_captura_partida_real.png` (partida r
 
 ## Pendiente
 Otras 9 clases, enemigos, jefes, armas secundarias y efectos no rediseñados.
+
+## Revisión 2 (v3)
+Cambios sobre v2, todo dentro de `cls_paladin.py` y regenerado en todas las poses (JSON idéntico):
+- Cabeza (radio 5,0): cara con ojo (blanco + pupila), ceja, nariz que sobresale y boca; casquete con borde y sombra bajo el borde; barra nasal; cabello en nuca y patilla; guarda de mejilla.
+- Armadura: sayo azul medio (se separa del fondo); peto en placas (cuerpo + faja) con juntas oscuras y reflejo central; cinturón con hebilla; hombrera en capas; brazales y guanteletes diferenciados.
+- Capa con dos pliegues oscuros, un filo de luz y ribete dorado. Escudo: borde + reborde dorado, campo azul bipartido (luz/sombra) y sol de 8 rayos con disco. Espada: hoja con bisel y canal, guarda alada con remates y gema, empuñadura vendada, pomo.
+- Comparación: `docs/capturas_arte/paladin_rev2_escala_juego_fase2_v2_v3.png` (3 filas, a escala de juego sobre fondo real) y `paladin_rev2_ampliado_fase2_v2_v3.png`.

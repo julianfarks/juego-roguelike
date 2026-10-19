@@ -552,104 +552,110 @@ def zom_pose(a, i, n):
     return P
 
 
+RAGZ = Mat(ramp=['#120e10', '#261a1a', '#42302a', '#654838', '#876650'], bevel=1.4, tex=0.5, seed=37)
+PUSZ = Mat(ramp=['#4a4a14', '#8a8c24', '#c4c43c', '#eef07a'], bevel=0.8, tex=0.1, seed=38)
+
+
 def zombi_body(c, P, a='idle', skip_parts=()):
+    """Zombi (rediseno fase 3): cadaver ENCORVADO con joroba de columna expuesta, cabeza caida hacia delante con la mandibula
+    colgando, brazos larguisimos con garras que casi rozan el suelo, vientre hinchado cosido y harapos en vez de armadura.
+    Mismos parametros de pose que la version anterior (hx, dy, lean, arm, arm2, head, belly, jaw, eye...)."""
     hx, dy, lean = P['hx'], P['dy'], P['lean']
     ph = P['ph']
-    hip = (hx, -23 + dy)
-    sl = (math.sin(lean), -math.cos(lean))
+    hip = (hx, -22 + dy)
+    hun = (lean * 0.7 + 0.18) if a in ('windup', 'attack') else (lean + 0.40)                                   # el tronco se dobla hacia delante (encorvado)
+    sl = (math.sin(hun), -math.cos(hun))
     if P['walk']:
         f1 = gait(ph, P['stride'], P['lift']); f2 = gait((ph + 0.5) % 1, P['stride'], P['lift'])
     elif a in ('windup', 'attack'):
         f1, f2 = (-7.0, 0), (6.0, 0)
     else:
         f1, f2 = (-4.5, 0), (4.5, 0)
-    # brazo lejano
-    chest = (hip[0] + 12 * sl[0], hip[1] + 12 * sl[1])
-    shf = (chest[0] + 1, chest[1] - 3)
-    e2, h2 = fk(shf, P['arm2'][0], 12.5, P['arm2'][1], 12.5)
-    with c.part(FLESHZ_B, line=0.5, bevel=2.2) as p:
-        p.limb(shf, e2, 3.4, 3.0)
-        p.limb(e2, h2, 3.0, 2.8)
-    with c.part(FLESHZ_B, line=0.5, bevel=2.0) as p:
-        p.ell(h2[0] + 0.6, h2[1] + 0.6, 3.3)
-    # pierna trasera
-    leg(c, (hip[0] - 3, hip[1] + 2), (hip[0] - 3 + f1[0], f1[1]), 10.2, 10.2, 4.2, 3.6, FLESHZ_B, bend=-1, footmat=ARMOR_R, footlen=6, footh=3.4)
-    # torso: vientre hinchado
-    with c.at(hip[0] + 4.0 * sl[0], hip[1] + 4.0 * sl[1], lean):
-        bl = P['belly']
-        with c.part(FLESHZ, line=0.5, bevel=3.4) as p:
-            p.ell(1.0, -9.5, 11.5 + bl * 0.5, 14.0)                 # tronco
-            p.ell(3.5, -1.0, 9.5 + bl * 0.6, 8.5 + bl * 0.4)        # barriga hinchada
-        with c.part(BRUISE, bevel=1.2) as p:
-            p.ell(-2.0, -4.0, 3.2, 2.4, 0.4)
-            p.ell(4.6, 0.8, 2.2, 1.6, -0.3)
-        with c.part(WOUND, bevel=1.0) as p:
-            p.poly([(5.0, -6.5), (8.5, -5.0), (7.5, -2.6), (4.6, -3.5)])
-            p.ell(-5, -12, 1.8, 1.2)
-        with c.part(TEETH, bevel=0.6) as p:  # costillas expuestas
+    chest = (hip[0] + 13 * sl[0], hip[1] + 13 * sl[1])
+    AL = 12.4                                              # brazos muy largos
+
+    def arm(sh, ang, mat, hand_r):
+        e, h = fk(sh, ang[0], AL, ang[1], AL)
+        with c.part(mat, line=0.5, bevel=2.0) as p:
+            p.limb(sh, e, 2.9, 2.2)
+            p.limb(e, h, 2.2, 1.8)
+        with c.part(mat, line=0.5, bevel=1.6) as p:      # mano grande
+            p.ell(h[0] + 0.5, h[1] + 0.8, hand_r, hand_r * 0.85)
+        with c.part(TEETH, bevel=0.5, line=0.3) as p:    # garras
             for k in range(3):
-                p.limb((6.8 + k * 0.4, -5.8 + k * 1.2), (9.0 + k * 0.4, -5.2 + k * 1.2), 0.45)
-        # cinturon y taparrabos podrido
-        with c.part(ARMOR_R, line=0.5, bevel=1.4) as p:
-            p.poly([(-9, 2.0), (12, 2.5), (12, 5.0), (-9, 4.6)])
-            p.poly([(-6, 4.6), (4, 5.0), (3, 12), (0, 10), (-3, 13), (-7, 9)])
-        # peto oxidado cruzado por cadenas
-        with c.part(ARMOR_R, line=0.5, bevel=1.6) as p:
-            p.poly([(-8, -20), (3, -23), (6, -15), (4, -9), (-5, -8), (-9, -13)])
+                p.limb((h[0] + 0.5 + k * 1.3, h[1] + 1.5), (h[0] + 1.2 + k * 1.3, h[1] + 3.8 + (k % 2) * 0.8), 0.45, 0.2)
+        return e, h
+    # brazo lejano
+    shf = (chest[0] + 2, chest[1] - 1)
+    arm(shf, P['arm2'], FLESHZ_B, 2.3)
+    # pierna trasera: flaca, rodilla hacia dentro
+    leg(c, (hip[0] - 2, hip[1] + 2), (hip[0] - 3 + f1[0], f1[1]), 10.5, 10.5, 3.4, 2.4, FLESHZ_B, bend=-1, footmat=FLESHZ_B, footlen=6, footh=2.6)
+    # torso encorvado
+    with c.at(hip[0] + 3.0 * sl[0], hip[1] + 3.0 * sl[1], hun):
+        bl = P['belly']
+        with c.part(FLESHZ, line=0.5, bevel=3.2) as p:
+            p.ell(1.0, -8.5, 9.0, 12.5)                              # caja toracica hundida
+            p.ell(4.8, 0.5, 8.8 + bl * 0.6, 7.6 + bl * 0.4)          # vientre hinchado y colgante
+        with c.part(RAGZ, line=0.5, bevel=1.4) as p:                 # harapos de la camisa
+            p.poly([(-10, -22), (2, -24), (9, -17), (10.5, -6), (9.5, -1.5), (6, 1.5), (3, -2.5), (0.5, 3.0), (-3, -1.5), (-6, 2.5), (-10, -6)])
+        with c.part(RAGZ, bevel=0.8, line=0.4) as p:                 # tira colgante
+            p.poly([(-2, 2), (3, 2.5), (2.2, 9), (-0.4, 7), (-1.6, 11)])
+        with c.part(WOUND, bevel=1.0) as p:                          # tajo y puntos
+            p.poly([(4.0, -2.4), (9.0, -3.4), (9.4, -1.6), (4.4, -0.6)])
+        with c.part(TEETH, bevel=0.6, line=0.3) as p:                # costillas asomando por el costado
+            for k in range(4):
+                p.limb((-6.4, -15 + k * 2.4), (-2.6, -14.2 + k * 2.4), 0.55, 0.4)
+        with c.part(PUSZ, bevel=0.6) as p:
+            p.ell(7.0, 1.2, 1.0, 0.8)
+        with c.part(BRUISE, bevel=1.2) as p:
+            p.ell(-3.0, -12, 3.0, 2.2, 0.4)
+        # joroba: columna con vertebras que atraviesan la piel
+        with c.part(FLESHZ_B, line=0.5, bevel=2.2) as p:
+            p.ell(-8.4, -19.5, 4.6, 3.8)
+        with c.part(TEETH, bevel=0.6, line=0.3) as p:
+            for k in range(4):
+                p.poly([(-10.6 + k * 2.6, -21.4 + k * 0.5), (-9.4 + k * 2.6, -25.0 + k * 0.7 - (k % 2) * 1.2), (-8.2 + k * 2.6, -21.2 + k * 0.4)])
         with c.part(WOUND, bevel=0.8) as p:
-            p.poly([(-4, -18), (-1, -19), (0, -15)])
-        for (x0, y0, x1, y1) in ((-9, -21, 11, 0), (10, -20, -8, 2)):
-            nlk = 8
-            with c.part(CHAIN, bevel=0.6, line=0.3) as p:
-                for k in range(nlk):
-                    u = k / (nlk - 1)
-                    p.ell(lerp(x0, x1, u), lerp(y0, y1, u) + 1.0 * math.sin(u * 3.14), 1.5, 1.0 if k % 2 else 1.5, 0.5)
+            p.ell(-7.0, -19.0, 1.6, 1.0, 0.3)
     # pierna delantera
-    leg(c, (hip[0] + 3, hip[1] + 2), (hip[0] + 3 + f2[0], f2[1]), 10.2, 10.2, 4.4, 3.7, FLESHZ, bend=-1, footmat=ARMOR_R, footlen=6, footh=3.4)
-    # cabeza
-    nk = (hip[0] + 21 * sl[0] + 0, hip[1] + 21 * sl[1] - 2)
+    leg(c, (hip[0] + 3, hip[1] + 2), (hip[0] + 3 + f2[0], f2[1]), 10.5, 10.5, 3.6, 2.5, FLESHZ, bend=-1, footmat=FLESHZ, footlen=6.5, footh=2.8)
+    with c.part(RAGZ, line=0.4, bevel=1.0) as p:               # pernera rota
+        p.poly([(hip[0] + 0.5, hip[1] + 1), (hip[0] + 6.5, hip[1] + 1.5), (hip[0] + 6.5 + f2[0] * 0.2, hip[1] + 11), (hip[0] + 4.0, hip[1] + 8.5), (hip[0] + 2.0, hip[1] + 12), (hip[0] - 0.5, hip[1] + 8)])
+    # cabeza: grande, caida, con la mandibula descolgada
+    nk = (chest[0] + 6.5 * sl[0] + 2.5, chest[1] + 6.5 * sl[1] + 2.0)
     hd = P['head']
-    with c.at(nk[0] + 3.5, nk[1] - 2.0, lean * 0.5 + hd):
-        with c.part(FLESHZ, line=0.5, bevel=2.4) as p:
-            p.ell(0, 0, 5.6, 5.0)
-            p.poly([(-3.5, 3), (4.0, 2.6), (4.2, 5.0 + P['jaw'] * 0.5), (-1.0, 5.8 + P['jaw'] * 0.6)])
-        with c.part(BRUISE, bevel=1.0) as p:
-            p.ell(-1, -2.5, 3, 1.4)
+    jw = P['jaw']
+    with c.at(nk[0] + 3.0, nk[1], lean * 0.3 + hd + 0.35):
+        with c.part(FLESHZ, line=0.5, bevel=2.6) as p:
+            p.ell(0, 0, 7.4, 6.6)
+        with c.part(FLESHZ_B, line=0.5, bevel=1.8) as p:         # mandibula colgando
+            p.poly([(-1.5, 3.2), (4.8, 3.0), (5.2, 5.0 + jw * 0.55), (3.0, 7.2 + jw * 0.7), (-0.5, 6.0 + jw * 0.5)])
         with c.part(DARK) as p:
-            p.ell(2.8, -0.8, 1.7, 1.5)
-            p.ell(-0.6, -0.8, 1.3, 1.2)
-            p.poly([(1.0, 3.2), (4.0, 3.0), (4.0, 3.2 + P['jaw'] * 0.5), (1.0, 3.6 + P['jaw'] * 0.5)])
+            p.poly([(0.6, 3.4), (5.0, 3.2), (4.8, 3.6 + jw * 0.5), (0.8, 4.0 + jw * 0.5)])   # boca
+            p.ell(3.4, -1.0, 2.0, 1.8)                            # cuenca ocular
+            p.ell(-1.0, -0.8, 1.5, 1.4)
         with c.part(EYEY) as p:
-            p.ell(3.0, -0.8, 0.9 + 0.3 * P['eye'], 0.9 + 0.3 * P['eye'])
-            p.ell(-0.5, -0.8, 0.7, 0.7)
-        c.glow(3.0, -0.8, 3 + 2 * P['eye'], '#ffe050', 0.3 + 0.5 * P['eye'])
-        with c.part(TEETH) as p:
-            p.rect(0.5, 3.4, 1.4, 4.6); p.rect(2.4, 3.4, 3.3, 4.4)
-        with c.part(CHAIN, bevel=0.5) as p:
-            p.ell(-4, -5, 1, 0.8)
-    # hombrera enorme cercana
-    shn = (chest[0] - 1, chest[1] - 3)
-    e1, h1 = fk(shn, P['arm'][0], 12.5, P['arm'][1], 12.5)
-    with c.part(FLESHZ, line=0.5, bevel=2.2) as p:
-        p.limb(shn, e1, 3.8, 3.3)
-        p.limb(e1, h1, 3.3, 3.0)
-    # grillete y cadena colgando del antebrazo
-    ew = (lerp(e1[0], h1[0], 0.75), lerp(e1[1], h1[1], 0.75))
+            p.ell(3.5, -0.9, 1.0 + 0.4 * P['eye'], 1.0 + 0.4 * P['eye'])
+        c.glow(3.5, -0.9, 3 + 2 * P['eye'], '#ffe050', 0.3 + 0.5 * P['eye'])
+        with c.part(TEETH, bevel=0.5) as p:
+            p.rect(1.2, 3.6, 2.0, 5.0); p.rect(3.2, 3.6, 4.0, 4.8)
+            p.poly([(-5.8, -3.0), (-2.0, -5.8), (0.5, -4.6), (-1.5, -2.0)])        # craneo expuesto
+        with c.part(WOUND, bevel=0.6) as p:
+            p.ell(-3.2, -1.8, 1.0, 0.8)
+        with c.part(RAGZ, bevel=0.6, line=0.3) as p:             # mechones de pelo
+            p.limb((-5.0, -3.5), (-7.5, 1.5), 0.5, 0.3)
+            p.limb((-3.8, -4.8), (-7.0, -1.0), 0.5, 0.3)
+    # brazo cercano con grillete y cadena
+    shn = (chest[0] - 1, chest[1] - 1)
+    e1, h1 = arm(shn, P['arm'], FLESHZ, 2.7)
+    ew = (lerp(e1[0], h1[0], 0.7), lerp(e1[1], h1[1], 0.7))
     with c.part(CHAIN, bevel=0.7, line=0.3) as p:
-        p.limb((ew[0], ew[1] - 0.6), (ew[0], ew[1] + 0.8), 3.4)
-    with c.part(FLESHZ, line=0.5, bevel=2.0) as p:
-        p.ell(h1[0] + 0.8, h1[1] + 0.8, 3.9)
-    with c.part(WOUND, bevel=0.8) as p:
-        p.ell(h1[0] + 1.5, h1[1] + 0.5, 1.2, 0.8)
+        p.limb((ew[0], ew[1] - 0.8), (ew[0], ew[1] + 0.8), 3.0)
+    with c.part(WOUND, bevel=0.6) as p:
+        p.ell(lerp(e1[0], h1[0], 0.35), lerp(e1[1], h1[1], 0.35), 1.1, 0.8)
     with c.part(CHAIN, bevel=0.6, line=0.3) as p:
         for k in range(4):
-            p.ell(ew[0] + 0.5 + math.sin(k + P['ph'] * 6.28) * 0.7, ew[1] + 3 + k * 2.0, 1.3, 0.9 if k % 2 else 1.3)
-    with c.part(ARMOR_R, line=0.5, bevel=1.8) as p:
-        sx, sy = shn[0] - 1, shn[1] - 1
-        p.poly([(sx - 5.5, sy + 3), (sx - 4, sy - 3.5), (sx + 2, sy - 6), (sx + 6.5, sy - 2), (sx + 6, sy + 3), (sx, sy + 5)])
-    with c.part(ARMOR_R, bevel=0.8) as p:
-        p.poly([(shn[0] + 0.5, shn[1] - 6), (shn[0] + 2.0, shn[1] - 10.5), (shn[0] + 3.5, shn[1] - 5.5)])
-        p.poly([(shn[0] - 4.0, shn[1] - 4.5), (shn[0] - 6.5, shn[1] - 8.5), (shn[0] - 2.2, shn[1] - 5.2)])
+            p.ell(ew[0] + 0.5 + math.sin(k + P['ph'] * 6.28) * 0.7, ew[1] + 2.4 + k * 1.9, 1.2, 0.85 if k % 2 else 1.2)
     if 'k' in P and 0.35 < P['k'] < 0.7:
         for q in range(7):
             c.dotw(10 + q * 3.2 + (P['k'] - 0.4) * 14, -1 - (q % 3) * 1.3, '#8a9a8a' if q % 2 else '#586458')
@@ -690,7 +696,7 @@ def death_zombi(c, i, n):
             zombi_body(c, P, 'hurt')
     # piezas desprendidas: hombrera y cadenas
     items = [
-        dict(fn=lambda cc: [cc.part(ARMOR_R, line=0.5, bevel=1.8).__enter__().poly([(-5, 2.5), (-3.5, -3), (2, -5), (6, -1.5), (5.5, 2.5), (0, 4)]).finish()], x=4, y=-40, r=4, vx=6, vy=-9, spin=4, rest=0.3),
+        dict(fn=lambda cc: [cc.part(RAGZ, line=0.5, bevel=1.4).__enter__().poly([(-5, 2.5), (-3.5, -3), (2, -5), (6, -1.5), (5.5, 2.5), (0, 4)]).finish()], x=4, y=-40, r=4, vx=6, vy=-9, spin=4, rest=0.3),
         dict(fn=lambda cc: [cc.part(CHAIN, bevel=0.6).__enter__().tube([(-4, 0), (0, 1), (4, 0)], 1.1).finish()], x=-2, y=-25, r=1.5, vx=-6, vy=-5, spin=6, rest=0.1),
     ]
     for d_ in items:

@@ -15,7 +15,7 @@ class Paladin(PClass):
     skill_kind = 'thrust'
 
     def setup(self):
-        self.D = Dims(k=1.06, hr=4.1, sw=1.25)
+        self.D = Dims(k=1.06, hr=4.7, sw=1.25)
         self.carry = dict(afA=32, afE=0.85, abA=62, abE=0.78, wa=66, lean=3,
                           guard=dict(afA=100, afE=0.5, abA=92, abE=0.95, wa=172, hy=2, lean=8),
                           guard2=dict(hy=2.6, lean=10, abA=96))
@@ -45,102 +45,102 @@ class Paladin(PClass):
                                                             dict(ffy=-5, bfy=-8, ffa=25, bfa=30)]), (1, 3))
 
     def init_mats(self):
-        mat('gold', '#D9A23A', hl='#FFF2B0')
+        mat('gold', '#E0A93A', hl='#FFF2B0')
         mat('goldL', '#FFD25A', hl='#FFFBE0')
-        mat('cloth', '#EDE9F2', hl='#FFFFFF')
-        mat('steel', '#AEBBD2', hl='#F4F8FF')
-        mat('under', '#3B4A78')
-        mat('leather', '#6A4A3A')
-        mat('dark', '#2A2438')
-        mat('skin', '#E3AE84')
-        mat('plume', '#FFF6C8', hl='#FFFFFF')
-        mat('shield', '#E9ECF6', hl='#FFFFFF')
-        mat('eye', '#8FEFFF', hl='#FFFFFF')
-        mat('crimson', '#B5333F', hl='#FF8A8A')
         mat('goldD', '#B07A22', hl='#F2C45A')
-        mat_back('gold'); mat_back('goldD'); mat_back('under'); mat_back('leather'); mat_back('cloth', 0.8)
+        mat('cloth', '#F2EEE4', hl='#FFFFFF')
+        mat('steel', '#AEBBD2', hl='#F4F8FF')
+        mat('under', '#2B3A72')                      # sayo azul marino: separa la armadura dorada de los miembros
+        mat('blue', '#3C66CF', hl='#A9CBFF')         # capa y campo del escudo
+        mat('leather', '#6A4A3A')
+        mat('dark', '#221C30')
+        mat('skin', '#E8B48C', hl='#FFD9B8')
+        mat('hair', '#7A4B26', hl='#C98A4B')
+        mat('plume', '#C23A48', hl='#FF9AA0')
+        mat('eye', '#BFF3FF', hl='#FFFFFF')
+        mat('crimson', '#B5333F', hl='#FF8A8A')
+        mat_back('gold'); mat_back('goldD'); mat_back('under'); mat_back('leather'); mat_back('cloth', 0.8); mat_back('blue', 0.78); mat_back('steel', 0.75)
 
     def draw(self, X):
         D, p, sk = X.D, X.p, X.sk
         k = D.k
-        # capa
-        ribbons_draw(X, 'cape', 'cloth_b', dome=2.6)
+        # capa azul real (separa la silueta del fondo oscuro y del tabardo claro)
+        ribbons_draw(X, 'cape', 'blue_b', dome=2.6)
         # pierna trasera
         leg(X, sk.hipB, sk.kneeB, sk.ankB, 2.2, 1.8, 1.5, 'under_b', 'leather_b', p.bfa, kneepad='gold_b', greave='gold_b')
-        # torso
+        # torso: sayo azul + peto dorado ahusado a la cintura + cinturon
         poly(X, tp(X, [(-3.0, -0.6), (2.8, -0.6), (3.2, 3.5), (3.3, 7.6), (2.6, 9.6), (-2.4, 9.6), (-3.2, 7), (-3.3, 3)]), 'under', dome=3.0)
-        poly(X, tp(X, [(-3.3, 3.2), (3.0, 3.2), (3.8, 5.2), (3.9, 7.8), (3.0, 9.8), (-2.5, 9.8), (-3.8, 7.4), (-3.9, 4.4)]), 'gold', dome=3.0)
-        poly(X, tp(X, [(-3.2, -0.6), (3.0, -0.6), (3.1, 1.5), (-3.3, 1.5)]), 'leather', dome=1.2)
-        poly(X, tp(X, [(-3.3, 1.2), (-0.6, 1.2), (-0.8, -2.2), (-3.0, -1.6)]), 'gold_b', dome=1.4)
-        # emblema (sol)
-        c = tp(X, [(0.9, 5.4)])[0]
-        circ(X, c, 1.25 * k, 'goldL', tone=4)
-        circ(X, c, 0.6 * k, 'cloth', tone=5)
+        poly(X, tp(X, [(-3.0, 3.4), (2.6, 3.4), (3.9, 5.0), (3.9, 7.8), (3.0, 9.9), (-2.5, 9.9), (-3.8, 7.6), (-3.9, 5.0)]), 'gold', dome=3.0)
+        poly(X, tp(X, [(-3.3, 0.9), (3.3, 0.9), (3.3, 2.5), (-3.3, 2.5)]), 'leather', dome=1.2)
+        poly(X, tp(X, [(0.5, 0.7), (2.5, 0.7), (2.5, 2.7), (0.5, 2.7)]), 'goldL', tone=4)
+        poly(X, tp(X, [(1.0, 1.2), (2.0, 1.2), (2.0, 2.2), (1.0, 2.2)]), 'dark', tone=2)
+        # faldon trasero
+        poly(X, tp(X, [(-3.3, 0.9), (-0.6, 0.9), (-0.8, -2.6), (-3.0, -2.0)]), 'gold_b', dome=1.4)
+        # emblema (sol) en el peto
+        c = tp(X, [(0.9, 6.2)])[0]
+        circ(X, c, 1.4 * k, 'goldD', tone=3)
+        circ(X, c, 0.95 * k, 'goldL', tone=4)
+        circ(X, c, 0.45 * k, 'cloth', tone=5)
+        # reborde del peto
+        poly(X, tp(X, [(-3.0, 3.4), (2.6, 3.4), (3.4, 4.3), (-3.4, 4.3)]), 'goldD', tone=3)
         # pierna delantera
         leg(X, sk.hipF, sk.kneeF, sk.ankF, 2.4, 1.9, 1.6, 'under', 'leather', p.ffa, kneepad='goldL', greave='gold')
-        # tabardo
+        # tabardo blanco con ribete dorado
         poly(X, tp(X, [(0.2, 1.5), (3.3, 1.5), (3.9, -1), (3.6, -4.8), (1.8, -5.8), (0.4, -4.8), (0.0, -1)]), 'cloth', dome=2.0)
+        poly(X, tp(X, [(0.9, 1.0), (2.3, 1.0), (2.2, -4.6), (1.5, -5.2), (0.9, -4.6)]), 'blue', tone=3)
         poly(X, tp(X, [(0.2, -4.0), (3.7, -4.0), (3.5, -4.9), (1.8, -5.8), (0.4, -4.9)]), 'goldL', tone=3)
-        # cinturon con hebilla y faldones (placas colgantes) para dar cintura y volumen a la armadura
-        poly(X, tp(X, [(-3.3, 9.0), (3.4, 9.0), (3.5, 10.3), (-3.3, 10.3)]), 'leather', dome=1.0)
-        poly(X, tp(X, [(0.6, 8.8), (2.4, 8.8), (2.4, 10.5), (0.6, 10.5)]), 'goldL', tone=4)
-        poly(X, tp(X, [(-3.0, 10.2), (-0.4, 10.2), (-0.8, 13.0), (-2.9, 12.6)]), 'goldD', dome=1.2)
-        poly(X, tp(X, [(0.4, 10.2), (3.2, 10.2), (3.0, 13.4), (0.8, 13.2)]), 'gold', dome=1.4)
-        # gorjal + cabeza
-        circ(X, lerp_pt(sk.neck, sk.hip, 0.0), 2.4 * k, 'gold', dome=1.6)
+        # gorjal
+        circ(X, lerp_pt(sk.neck, sk.hip, 0.0), 2.3 * k, 'steel', dome=1.6)
         # brazo trasero con escudo
         self._shield_arm(X)
-        # cabeza: yelmo con cresta, visor en T con ojo luminoso, guardas de mejilla y babera
+        # cabeza: yelmo abierto con la cara visible (ojo, ceja, mandibula), cabello bajo el yelmo, cresta y pluma
         hc = sk.head
         circ(X, hc, D.hr, 'gold', dome=3.6)
-        # cresta que recorre el yelmo (de la frente a la nuca)
-        poly(X, hp(X, [(-3.6, 2.2), (-1.0, 4.3), (2.6, 4.3), (3.6, 2.6), (2.6, 3.0), (-1.0, 3.2), (-3.0, 1.4)]), 'goldL', dome=1.4)
-        # frente y cejas del yelmo
-        poly(X, hp(X, [(0.0, 2.2), (4.2, 2.0), (4.4, 1.0), (0.0, 1.2)]), 'goldD', tone=3)
-        # visor en T: ranura horizontal oscura + ojo luminoso
-        poly(X, hp(X, [(0.2, 1.7), (4.7, 1.7), (4.7, -0.7), (0.2, -0.7)]), 'dark', tone=1)
-        poly(X, hp(X, [(1.7, 1.3), (4.3, 1.3), (4.3, -0.3), (1.7, -0.3)]), 'eye', tone=5)
+        poly(X, hp(X, [(0.9, 2.3), (4.5, 1.9), (4.9, -0.6), (4.5, -2.8), (1.8, -3.4), (0.9, -1.0)]), 'skin', dome=1.2)       # cara
+        poly(X, hp(X, [(1.6, -1.6), (4.6, -1.6), (4.4, -3.0), (1.8, -3.5)]), 'skin', tone=2)                                 # mandibula en sombra
+        poly(X, hp(X, [(2.4, 1.6), (4.7, 1.3), (4.7, 0.8), (2.4, 1.1)]), 'hair', tone=2)                                      # ceja
+        poly(X, hp(X, [(3.0, 0.7), (4.2, 0.7), (4.2, -0.5), (3.0, -0.5)]), 'dark', tone=1)                                    # ojo
+        circ(X, hpt(X, 3.1, 0.2), 0.35 * k, 'eye', tone=5)                                                                    # brillo del ojo
+        # frente del yelmo con borde dorado y cresta
+        poly(X, hp(X, [(-4.4, 1.2), (-2.0, 4.6), (2.0, 4.8), (4.9, 2.3), (4.7, 1.5), (0.9, 2.3), (-0.6, 0.6)]), 'gold', dome=2.2)
+        poly(X, hp(X, [(-3.4, 2.6), (-0.8, 4.9), (2.8, 4.9), (4.4, 3.0), (2.6, 3.5), (-0.8, 3.7)]), 'goldL', dome=1.4)
+        # nuca y cabello bajo el yelmo
+        poly(X, hp(X, [(-4.4, 0.8), (-0.6, 0.6), (-0.4, -2.6), (-2.2, -4.0), (-4.2, -2.4)]), 'hair', dome=1.4)
+        # guarda de mejilla
+        poly(X, hp(X, [(-1.6, 0.6), (0.9, 0.9), (1.5, -1.2), (0.6, -3.4), (-1.2, -3.0)]), 'goldD', dome=1.6)
         # barra nasal
-        poly(X, hp(X, [(3.3, 3.2), (4.2, 3.2), (4.2, -3.2), (3.3, -3.2)]), 'goldL', tone=4)
-        # guarda de mejilla y babera (parte baja de la cara)
-        poly(X, hp(X, [(-1.8, -0.4), (2.8, -0.4), (3.6, -1.0), (3.2, -3.2), (-0.6, -3.6), (-2.4, -2.4)]), 'gold', dome=1.8)
-        poly(X, hp(X, [(0.4, -1.4), (3.4, -1.4), (3.2, -1.9), (0.4, -1.9)]), 'dark', tone=2)
-        # remache
-        circ(X, hpt(X, -1.0, 1.8), 0.45 * k, 'cloth', tone=5)
-        # pluma
+        poly(X, hp(X, [(4.1, 3.0), (5.0, 2.8), (4.8, -0.2), (4.1, -0.2)]), 'goldL', tone=4)
         ribbons_draw(X, 'plume', 'plume', dome=1.6)
-        # hombrera delantera
-        circ(X, (sk.shF[0] - 0.2, sk.shF[1] + 1.4), 3.0 * k, 'goldD', dome=2.4)
-        circ(X, sk.shF, 3.0 * k, 'gold', dome=2.8)
-        circ(X, (sk.shF[0] + 0.5, sk.shF[1] - 0.6), 1.6 * k, 'goldL', dome=1.6)
-        circ(X, (sk.shF[0] + 0.9, sk.shF[1] + 0.9), 0.55 * k, 'cloth', tone=5)
-        # brazo delantero
-        arm(X, sk.shF, sk.elbF, sk.handF, 1.8, 1.55, 1.35, 'gold', glove='goldL', bracer='goldL')
+        # hombrera delantera en capas
+        circ(X, (sk.shF[0] - 0.2, sk.shF[1] + 1.2), 3.2 * k, 'goldD', dome=2.4)
+        circ(X, sk.shF, 3.1 * k, 'gold', dome=2.8)
+        circ(X, (sk.shF[0] + 0.4, sk.shF[1] - 0.7), 1.7 * k, 'goldL', dome=1.6)
+        # brazo delantero: manga azul, brazal dorado, guantelete de cuero
+        arm(X, sk.shF, sk.elbF, sk.handF, 1.7, 1.5, 1.3, 'under', glove='leather', bracer='gold')
         # espada
         self._sword(X)
 
     def _shield_arm(self, X):
         p, sk, k = X.p, X.sk, X.D.k
-        arm(X, sk.shB, sk.elbB, sk.handB, 1.7, 1.5, 1.3, 'gold_b', glove='gold_b', bracer='gold_b')
-        circ(X, sk.shB, 2.5 * k, 'gold', dome=2.4)
+        arm(X, sk.shB, sk.elbB, sk.handB, 1.6, 1.45, 1.3, 'under_b', glove='leather_b', bracer='gold_b')
+        circ(X, sk.shB, 2.5 * k, 'gold_b', dome=2.4)
         h = sk.handB
         ctr = (h[0] + 1.6 * k, h[1] - 0.2)
         def sp(pts, s=1.0):
             return [(ctr[0] + x * s * k, ctr[1] + y * s * k) for x, y in pts]
-        outer = [(-4.6, -6.6), (4.6, -6.6), (4.8, 0.2), (0, 7.6), (-4.8, 0.2)]
-        poly(X, sp(outer), 'gold', dome=3.0)
-        poly(X, sp(outer, 0.74), 'shield', dome=3.0)
-        circ(X, sp([(0, -1.2)])[0], 1.9 * k, 'goldL', dome=1.6)
-        circ(X, sp([(0, -1.2)])[0], 0.8 * k, 'cloth', tone=5)
+        outer = [(-4.2, -6.2), (4.2, -6.2), (4.4, 0.2), (0, 7.2), (-4.4, 0.2)]
+        poly(X, sp(outer), 'gold', dome=3.0)                 # borde dorado
+        poly(X, sp(outer, 0.72), 'blue', dome=3.0)            # campo azul
+        circ(X, sp([(0, -0.8)])[0], 1.7 * k, 'goldL', dome=1.6)
+        circ(X, sp([(0, -0.8)])[0], 0.7 * k, 'cloth', tone=5)
 
     def _sword(self, X):
         W = lambda pts: wpoly(X, pts)
         poly(X, W([(2.2, -1.5), (17.0, -1.6), (20.6, 0), (17.0, 1.6), (2.2, 1.5)]), 'steel', dome=1.8)
         poly(X, W([(3.0, -0.35), (17.5, -0.35), (17.5, 0.35), (3.0, 0.35)]), 'steel', tone=5)
         poly(X, W([(1.2, -4.6), (2.9, -3.3), (2.9, 3.3), (1.2, 4.6), (0.6, 3.3), (0.6, -3.3)]), 'gold', dome=1.4)
-        circ(X, wpt(X, 1.9, 0), 0.8 * X.D.k, 'crimson', tone=4)
         poly(X, W([(-2.4, -0.9), (1.5, -0.9), (1.5, 0.9), (-2.4, 0.9)]), 'leather', dome=1.0)
-        circ(X, wpt(X, -3.2, 0), 1.25 * X.D.k, 'goldL', dome=1.2)
+        circ(X, wpt(X, -3.2, 0), 1.3 * X.D.k, 'goldL', dome=1.2)
 
     def fx(self, X, name, i, n):
         aura_fx(self, X, name, i, n)

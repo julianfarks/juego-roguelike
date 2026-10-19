@@ -53,6 +53,8 @@ class Steel(PClass):
         mat('leather', '#3A3044')
         mat('eye', '#FF9A3C', hl='#FFFFFF')
         mat('dark', '#1C1F30')
+        mat('lace', '#E8742A', hl='#FFC890')
+        mat('lacq', '#2A2E48', hl='#6A76A0')
         for m in ('steel', 'steel2', 'under', 'orange', 'leather'):
             mat_back(m)
 
@@ -78,7 +80,15 @@ class Steel(PClass):
         poly(X, tp(X, [(-3.4, 3.2), (3.0, 3.2), (3.9, 5.2), (4.0, 7.8), (3.0, 9.8), (-2.5, 9.8), (-3.9, 7.4), (-4.0, 4.4)]), 'steel', dome=3.0)
         for v in (4.4, 6.2, 8.0):
             poly(X, tp(X, [(-3.6, v), (3.8, v + 0.2), (3.8, v - 0.7), (-3.6, v - 0.9)]), 'steel2', tone=2)
+        # cordones de laca (kumihimo) en rombos sobre las placas y juntas con laca oscura
+        for v in (4.4, 6.2, 8.0):
+            for u in (-2.8, -1.0, 0.8, 2.6):
+                poly(X, tp(X, [(u, v - 0.5), (u + 0.9, v - 0.1), (u, v + 0.3), (u - 0.9, v - 0.1)]), 'lace', tone=3)
+        for v in (3.4, 5.3, 7.1, 9.0):
+            poly(X, tp(X, [(-3.7, v), (3.9, v + 0.2), (3.9, v + 0.38), (-3.7, v + 0.18)]), 'lacq', tone=1)
+        poly(X, tp(X, [(-3.9, 9.4), (-3.2, 9.8), (-0.4, 9.8), (-1.2, 9.4)]), 'steel', tone=5)                             # filo de luz del pecho
         poly(X, tp(X, [(-3.2, 1.8), (3.0, 1.8), (3.1, 0.2), (-3.3, 0.2)]), 'orange', dome=1.2)
+        poly(X, tp(X, [(0.6, 2.0), (2.0, 2.0), (2.0, 0.0), (0.6, 0.0)]), 'gold', dome=0.8)                                  # hebilla del obi
         leg(X, sk.hipF, sk.kneeF, sk.ankF, 2.3, 1.8, 1.5, 'under', 'leather', p.ffa, kneepad='steel', greave='steel')
         # faldar
         poly(X, tp(X, [(-0.4, 0.4), (3.6, 0.4), (3.9, -3.2), (1.8, -3.6), (0, -2.6)]), 'steel2', dome=1.8)
@@ -92,6 +102,13 @@ class Steel(PClass):
         poly(X, hp(X, [(-4.0, 2.4), (4.6, 2.2), (4.8, 1.2), (-4.2, 1.0)]), 'steel2', dome=1.2)
         poly(X, hp(X, [(-0.6, 3.4), (-3.2, 8.0), (-2.2, 9.2), (1.0, 6.4), (3.0, 8.8), (3.2, 7.2), (1.4, 3.4)]), 'gold', dome=1.2)
         poly(X, hp(X, [(-4.4, 1.6), (-5.4, -1.0), (-3.8, -3.4), (-2.4, -2.6)]), 'steel2', dome=1.4)
+        for v in (0.8, -0.6, -2.0):                                                                                         # laminas del cubrenuca (shikoro)
+            cap(X, hpt(X, -5.2, v), hpt(X, -2.6, v - 0.3), 0.3 * k, 0.3 * k, 'steel', tone=3)
+        cap(X, hpt(X, -5.0, 1.2), hpt(X, -2.8, 1.0), 0.18 * k, 0.18 * k, 'lace', tone=3)
+        poly(X, hp(X, [(0.8, -0.4), (4.0, -0.5), (4.0, -3.0), (1.2, -3.2)]), 'steel2', dome=1.2)                            # mempo (mascara facial)
+        for v in (-1.2, -1.8, -2.4):
+            cap(X, hpt(X, 1.4, v), hpt(X, 3.8, v - 0.1), 0.1 * k, 0.1 * k, 'dark', tone=1)                                  # ranuras de ventilacion
+        poly(X, hp(X, [(3.4, 2.4), (5.2, 2.0), (5.0, 1.0), (3.4, 1.4)]), 'steel', tone=5)                                   # filo de la visera
         circ(X, sk.shB, 2.6 * k, 'steel_b', dome=2.2)
         if p.two >= 0.5:
             arm(X, sk.shB, sk.elbB, sk.handB, 1.6, 1.4, 1.2, 'under', glove='leather', bracer='steel')
@@ -100,12 +117,20 @@ class Steel(PClass):
         # hombrera (sode)
         poly(X, [(sk.shF[0] - 3.2, sk.shF[1] - 2.4), (sk.shF[0] + 3.2, sk.shF[1] - 2.4), (sk.shF[0] + 3.6, sk.shF[1] + 4.0), (sk.shF[0] - 3.0, sk.shF[1] + 3.8)], 'steel', dome=2.2)
         poly(X, [(sk.shF[0] - 3.0, sk.shF[1] + 0.6), (sk.shF[0] + 3.5, sk.shF[1] + 0.6), (sk.shF[0] + 3.5, sk.shF[1] + 1.6), (sk.shF[0] - 3.0, sk.shF[1] + 1.6)], 'orange', tone=3)
+        for v in (2.4, 3.2):                                                                                                # laminas del sode con cordon
+            poly(X, [(sk.shF[0] - 3.0, sk.shF[1] + v), (sk.shF[0] + 3.5, sk.shF[1] + v), (sk.shF[0] + 3.5, sk.shF[1] + v + 0.2), (sk.shF[0] - 3.0, sk.shF[1] + v + 0.2)], 'dark', tone=2)
+        poly(X, [(sk.shF[0] - 3.2, sk.shF[1] - 2.4), (sk.shF[0] + 3.2, sk.shF[1] - 2.4), (sk.shF[0] + 3.2, sk.shF[1] - 2.0), (sk.shF[0] - 3.2, sk.shF[1] - 2.0)], 'steel', tone=5)
+        circ(X, (sk.shF[0] + 0.2, sk.shF[1] - 0.8), 0.6 * k, 'gold', tone=4)                                                # remache dorado
 
     def _katana(self, X):
         W = lambda pts: wpoly(X, pts)
         poly(X, W([(2.6, -0.9), (14, -1.0), (22, -0.4), (26.5, 0.8), (22, 0.4), (14, 0.9), (2.6, 0.9)]), 'blade', dome=1.0, edge=False)
         poly(X, W([(3, -0.2), (22, 0.0), (22, 0.3), (3, 0.3)]), 'blade', tone=2)
         poly(X, W([(1.8, -2.4), (2.8, -2.4), (2.8, 2.4), (1.8, 2.4)]), 'gold', dome=1.0)
+        poly(X, W([(1.6, -2.4), (2.8, -2.4), (3.4, -3.2), (2.0, -2.8)]), 'gold', tone=4)                                    # tsuba redondeada
+        poly(X, W([(1.6, 2.4), (2.8, 2.4), (3.4, 3.2), (2.0, 2.8)]), 'gold', tone=4)
+        poly(X, W([(3.0, -0.5), (21, -0.3), (21, -0.1), (3.0, 0.0)]), 'steel2', tone=3)                                     # hamon (linea de temple)
+        poly(X, W([(3.0, -0.95), (22, -0.6), (22, -0.4), (3.0, -0.7)]), 'blade', tone=5)                                    # filo iluminado
         poly(X, W([(-5.5, -1.0), (1.9, -1.0), (1.9, 1.0), (-5.5, 1.0)]), 'leather', dome=1.0)
         for x in (-4, -2, 0):
             poly(X, W([(x, -1.0), (x + 0.9, -1.0), (x + 0.9, 1.0), (x, 1.0)]), 'orange', tone=3)

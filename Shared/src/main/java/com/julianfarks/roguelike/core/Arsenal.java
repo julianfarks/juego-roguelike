@@ -129,7 +129,8 @@ final class Arsenal {
     static void summon(Level lv, Player p, float dmg) {
         while (lv.summons.size() >= 2) lv.summons.remove(0);                 // maximo 2: el mas antiguo se disipa
         Summon s = new Summon();
-        s.x = p.x + p.dir() * 16; s.y = p.y - 30; s.dmg = dmg; s.slot = lv.summons.isEmpty() ? 0 : 1 - lv.summons.get(0).slot;
+        s.x = p.x + p.dir() * 16; s.y = p.y - 30;
+        if (lv.solidAtPx(s.x, s.y)) s.x = p.x; s.dmg = dmg; s.slot = lv.summons.isEmpty() ? 0 : 1 - lv.summons.get(0).slot;
         lv.summons.add(s);
         Snd.sfxv("hit_magic", 0.7f);
         lv.fx("fx_ring", "pulse", s.x, s.y, 0.5f, Items.SEC_COL[Items.SEC_SUMMON], Platform.ADD | Platform.TINT);
@@ -148,6 +149,7 @@ final class Arsenal {
                 lv.summons.remove(i); continue;
             }
             float tx = pl.x + (s.slot == 0 ? -26 : 26), ty = pl.y - 38 + (float) Math.sin(s.t * 2.4f + s.slot * 2f) * 5;
+            if (lv.solidAtPx(tx, ty)) { tx = pl.x; ty = pl.y - 34; }       // junto a una pared: el espiritu se coloca sobre el jugador (nunca dentro del muro)
             float k = Math.min(1f, dt * 4f);
             s.x += (tx - s.x) * k; s.y += (ty - s.y) * k;
             if (Math.abs(s.x - pl.x) > 280) { s.x = tx; s.y = ty; }

@@ -165,4 +165,19 @@ public final class Font {
         for (int i = 0; i < ls.size(); i++) rawDraw(g, ls.get(i), x, y + i * step, color, alpha);
         return ls.size() * step;
     }
+
+    /** Texto ajustado a ancho y a un maximo de lineas (la ultima se corta con "..." si sobra texto). Traduce una sola vez; devuelve el alto usado. */
+    public int drawWrappedMax(Platform.Gfx g, String s, float x, float y, int maxW, int color, float alpha, int step, int maxLines) {
+        List<String> ls = rawWrap(I18n.tr(s), maxW);
+        int n = Math.min(ls.size(), Math.max(1, maxLines));
+        for (int i = 0; i < n; i++) {
+            String l = ls.get(i);
+            if (i == n - 1 && ls.size() > n) { while (l.length() > 1 && rawWidth(l + "…") > maxW) l = l.substring(0, l.length() - 1); l += "…"; }
+            rawDraw(g, l, x, y + i * step, color, alpha);
+        }
+        return n * step;
+    }
+
+    /** Numero de lineas que ocupa el texto (ya traducido) al ajustarlo a ancho. */
+    public int wrapLines(String s, int maxW) { return rawWrap(I18n.tr(s), maxW).size(); }
 }

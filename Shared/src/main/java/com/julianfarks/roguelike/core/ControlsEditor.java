@@ -8,7 +8,7 @@ final class ControlsEditor extends Screen {
     private int dragId = -1, dragB = -1;
     private float offX, offY;
     private Hit minus, plus, reset, done;
-    private static final String[] ICONS = {"", "", "", "jump", "attack", "roll", "", "", "", "", "key", "pause", "potion", "attack", "burn", "parry"};
+    private static final String[] ICONS = {"", "", "", "jump", "attack", "roll", "", "", "", "", "key", "pause", "potion", "attack", "burn", "parry", "swap", "bag"};
 
     ControlsEditor(Game g, boolean fromRun) { super(g); this.fromRun = fromRun; this.in = g.input; }
 

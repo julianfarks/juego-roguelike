@@ -17,14 +17,14 @@ final class ArsenalProbe {
 
     static Level lv; static Player p; static RunState rs; static RunScreen scr; static Input in; static Game game;
 
-    static final java.util.IdentityHashMap<Enemy, Float> pin = new java.util.IdentityHashMap<>();
-    static void fr(int n) { for (int i = 0; i < n; i++) { for (Enemy e : lv.enemies) { Float px = pin.get(e); if (px != null) { e.x = px; e.vx = 0; } } lv.update(1f / 60f); in.endFrame(); } }
+    static final java.util.IdentityHashMap<Enemy, Float> pin = new java.util.IdentityHashMap<>(), pinY = new java.util.IdentityHashMap<>();
+    static void fr(int n) { for (int i = 0; i < n; i++) { for (Enemy e : lv.enemies) { Float px = pin.get(e); if (px != null) { e.x = px; e.vx = 0; Float py = pinY.get(e); if (py != null) { e.y = py; e.vy = 0; } } } lv.update(1f / 60f); in.endFrame(); } }
     static void tap(int code) { in.key(code, true); fr(1); in.key(code, false); fr(1); }
     static void hold(int code, int frames) { in.key(code, true); fr(frames); in.key(code, false); fr(1); }
 
     static Enemy dummy(float dx) {
         Enemy e = new Enemy(EnemyDef.get("esqueleto"), false, 1f, 1f);
-        e.hp = e.maxHp = 1e7f; e.x = p.x + dx; e.y = p.y; e.home = e.x; e.state = Enemy.PATROL; pin.put(e, e.x);
+        e.hp = e.maxHp = 1e7f; e.x = p.x + p.dir() * dx; e.y = p.y; e.home = e.x; e.state = Enemy.PATROL; pin.put(e, e.x); pinY.put(e, e.y);
         lv.enemies.add(e); lv.toKill = 999; lv.cleared = false;
         return e;
     }
@@ -38,7 +38,33 @@ final class ArsenalProbe {
         lv.props.removeIf(q -> q.dead);
         p.invuln = 99f; p.secCd = 0; p.swapCd = 0; rs.hp = rs.stats.maxHp; p.alive = true;
         rs.sec = 0; rs.secAmmo = 0; rs.secLvl = 0; rs.secActive = false; java.util.Arrays.fill(rs.wState, 0); rs.unseen.clear();
+        place(100);
     }
+
+    /** Coloca al jugador en el punto de la sala con mas pasillo despejado y llano por delante (mirando hacia el): asi las pruebas no dependen del azar de la sala. */
+    static float placedLen;
+    static void place(float need) {
+        float y0 = p.y, bestL = -1, bx = p.x; boolean bright = true;
+        for (float x = 96; x < lv.room.pixW - 96; x += 8) {
+            float gy = lv.groundBelow(x, y0 - 20);
+            if (Math.abs(gy - y0) > 3) continue;
+            for (int dir = 1; dir >= -1; dir -= 2) {
+                float L = 0;
+                for (float d = 8; d <= need + 24; d += 8) {
+                    float xx = x + dir * d;
+                    if (xx < 8 || xx > lv.room.pixW - 8) break;
+                    boolean bad = false;
+                    for (float hy : new float[]{8, 17, 30, 55}) if (lv.solidAtPx(xx, y0 - hy)) { bad = true; break; }
+                    if (bad || Math.abs(lv.groundBelow(xx, y0 - 20) - y0) > 3) break;
+                    L = d;
+                }
+                float score = L >= need ? 100000 - Math.abs(x - lv.room.pixW / 2f) : L;      // si hay pasillo suficiente, el mas cercano al centro (lejos de bordes)
+                if (score > bestL) { bestL = score; bx = x; bright = dir > 0; placedLen = L; }
+            }
+        }
+        p.x = bx; p.vx = 0; p.vy = 0; p.right = bright; p.safeX = bx; p.safeY = y0; placed = placedLen >= need;
+    }
+    static boolean placed;
 
     static boolean step(Game g, RunScreen r, Level l, Player pl, int frame) {
         if (done) return true;
@@ -209,9 +235,11 @@ final class ArsenalProbe {
 
     /** Dispara el arma `id` contra un maniqui y comprueba su comportamiento propio. */
     static void weapon(int id) {
-        reset();
+        reset(); place(id == Items.SEC_AXE ? 260 : 200);
         Enemy e = dummy(id == Items.SEC_EMBER ? 50 : id == Items.SEC_AXE ? 225 : 90);
         rs.sec = id; rs.secAmmo = Items.SEC_AMMO[id]; rs.wState[id] = 1; rs.secActive = true; p.secCd = 0; p.swapCd = 0;
+        Enemy ex2 = null, ex3 = null;
+        if (id == Items.SEC_AXE) { ex2 = dummy(195); ex3 = dummy(255); }       // el hacha cae en parabola: tres maniquies a distintas distancias
         float hp0 = e.hp; int am0 = rs.secAmmo;
         Items.useSecondary(lv, p);
         String nm = Items.SEC_NAME[id];
@@ -230,7 +258,8 @@ final class ArsenalProbe {
             Proj pr = lv.projs.get(0); float d0 = pr.dmg; fr(40);
             ck(nm + ": el daño crece con la distancia recorrida (" + Math.round(d0) + " -> " + Math.round(pr.dmg) + ")", pr.dmg > d0 * 1.3f || pr.dead);
         }
-        boolean hitAny = false; for (int i = 0; i < 150; i++) { fr(1); if (e.hp < hp0 || e.hp <= 0 || !lv.enemies.contains(e)) hitAny = true; }
+        if (!Boolean.getBoolean("arsenal.nodbg") && id == 5) System.out.println("AT info placed=" + placed + "/" + placedLen + " room=" + lv.room.type + " w=" + lv.room.pixW + " h=" + lv.room.pixH + " p=" + p.x + "," + p.y + " e=" + e.x + "," + e.y + " eh=" + e.hp + " projs=" + lv.projs.size() + " godmode=" + rs.hp + " invuln=" + p.invuln + " toKill=" + lv.toKill);
+        boolean hitAny = false; for (int i = 0; i < 150; i++) { fr(1); if (e.hp < hp0 || e.hp <= 0 || !lv.enemies.contains(e) || (ex2 != null && (ex2.hp < hp0 || ex3.hp < hp0))) hitAny = true; }
         ck(nm + ": hace daño real al enemigo", hitAny);
         if (id == Items.SEC_CHAKRAM) {
             fr(120);
@@ -239,20 +268,20 @@ final class ArsenalProbe {
         if (id == Items.SEC_EMBER) ck(nm + ": prende fuego", e.hasStatus(Ent.BURN) || e.hp < hp0);
         if (id == Items.SEC_SPEAR) {
             // atraviesa varios enemigos y gana daño
-            reset(); for (int i = 0; i < 4; i++) dummy(60 + i * 28);
+            reset(); place(200); for (int i = 0; i < 4; i++) dummy(60 + i * 28);
             rs.sec = id; rs.secAmmo = 6; p.secCd = 0; float[] h0 = new float[lv.enemies.size()]; for (int i = 0; i < h0.length; i++) h0[i] = lv.enemies.get(i).hp;
             Items.useSecondary(lv, p); fr(80);
             int hit = 0; for (int i = 0; i < h0.length; i++) if (lv.enemies.get(i).hp < h0[i]) hit++;
             ck(nm + ": atraviesa varios enemigos (golpeó a " + hit + " de 4)", hit >= 3);
         }
         if (id == Items.SEC_WAND) {
-            reset(); Enemy t = dummy(70); rs.sec = id; rs.secAmmo = 18; p.secCd = 0;
+            reset(); place(200); Enemy t = dummy(70); rs.sec = id; rs.secAmmo = 18; p.secCd = 0;
             boolean burn = false, frz = false, stun = false;
             for (int i = 0; i < 3; i++) { t.st[Ent.BURN] = t.st[Ent.FREEZE] = t.st[Ent.STUN] = 0; p.secCd = 0; Items.useSecondary(lv, p); fr(22); burn |= t.st[Ent.BURN] > 0; frz |= t.st[Ent.FREEZE] > 0; stun |= t.st[Ent.STUN] > 0; }
             ck(nm + ": alterna fuego, hielo y rayo (quemar=" + burn + " congelar=" + frz + " aturdir=" + stun + ")", burn && frz && stun);
         }
         if (id == Items.SEC_SUMMON) {
-            reset(); dummy(120); rs.sec = id; rs.secAmmo = 5; p.secCd = 0;
+            reset(); place(200); dummy(120); rs.sec = id; rs.secAmmo = 5; p.secCd = 0;
             Items.useSecondary(lv, p); p.secCd = 0; Items.useSecondary(lv, p); p.secCd = 0; Items.useSecondary(lv, p);
             ck(nm + ": maximo 2 espiritus a la vez (" + lv.summons.size() + ")", lv.summons.size() == 2);
             fr(60 * 11);
@@ -308,6 +337,7 @@ final class ArsenalProbe {
         game.P.store().put(RunSave.key(2) + "_bak", "");
         RunScreen ol = RunSave.load(game, 2);
         ck("partida antigua (sin claves nuevas): carga sin error y conserva lo suyo", ol != null && ol.rs.sec == Items.SEC_AXE && ol.rs.secAmmo == 5 && !ol.rs.secActive && ol.rs.wState[Items.SEC_AXE] == 1);
+        if (ol != null) { ol.inv.open(false); int nn = 0; for (int c = 0; c < Inventory.C_COUNT; c++) nn += ol.inv.catNew[c]; ck("partida antigua: nada de lo que ya llevabas aparece como nuevo en el inventario (" + nn + ")", nn == 0); }
         ck("partida antigua: se crea una copia de seguridad intacta antes de modificarla", old.equals(game.P.store().get(RunSave.key(2) + "_bak", "")));
         // id de arma fuera de rango (partida de otra version) no rompe
         d.put("sec", 99.0); game.P.store().put(RunSave.key(2), Json.write(d));
@@ -354,6 +384,7 @@ final class ArsenalProbe {
         }
         if (name.equals("wcmp") && t == 100) scr.dbgConfirm();
         if (name.equals("ground") && t == 5) p.x += 10;
+        if (name.equals("i18n")) i18nScene(t);
     }
 
     static void sf(int n) { for (int i = 0; i < n; i++) { scr.update(1f / 60f); in.endFrame(); } }
@@ -473,5 +504,48 @@ final class ArsenalProbe {
         int sec = 0; for (Inventory.Item it : iv.items) if (it.state == Inventory.ST_EQUIPPED && it.kind != 1) sec++;
         ck("nunca aparecen dos secundarias equipadas", sec == 1);
         scr.invClose();
+    }
+
+    // ================================================================ cobertura de traducciones: recorre todo lo nuevo y lista lo que falte
+    static void i18nScene(int t) {
+        if (t == 1) {
+            for (String[] arr : new String[][]{Items.SEC_NAME, Items.SEC_DESC, Items.SEC_FX, Items.SEC_STYLE}) for (String x : arr) I18n.tr(x);
+            for (int id = 1; id < Items.SEC_COUNT; id++) for (Arsenal.Line l : Arsenal.lines(id, id == 1 ? 2 : 1)) { I18n.tr(l.label); I18n.tr(l.val); }
+            for (String x : Inventory.CAT_NAME) I18n.tr(x);
+            for (String x : Inventory.RAR_ES) I18n.tr(x);
+            for (String x : Inventory.ST_NAME) I18n.tr(x);
+        }
+        if (t == 3) { rs.secActive = false; scr.update(0.01f); in.key('R', true); fr(1); in.key('R', false); }
+        if (t > 10 && t < 140 && t % 12 == 0) {                 // tarjeta del suelo de cada arma
+            int id = 1 + (t - 12) / 12; if (id >= 1 && id < Items.SEC_COUNT) {
+                for (Prop q : lv.props) if (q.kind.equals("weapon")) q.dead = true;
+                lv.props.removeIf(q -> q.dead);
+                rs.sec = id == Items.SEC_CHAKRAM ? Items.SEC_BOW : Items.SEC_CHAKRAM;
+                Arsenal.dropWeapon(lv, id, 0, p.x + 2, p.y, false, true);
+            }
+        }
+        if (t == 150) { for (Prop q : lv.props) if (q.kind.equals("weapon")) q.dead = true; lv.props.removeIf(q -> q.dead); Arsenal.dropWeapon(lv, Items.SEC_SPEAR, 4, p.x + 2, p.y, true, true); fr(50); scr.interact(); }
+        if (t == 160) { Arsenal.leaveRoom(rs, lv); fr(1); lv.counterT = 1f; Items.useSecondary(lv, p); }
+        if (t == 170) { rs.sec = Items.SEC_KNIFE; rs.secAmmo = 0; rs.secActive = true; p.secCd = 0; Items.useSecondary(lv, p); }
+        if (t == 200) scr.openInventory(false);
+        if (t > 200 && t < 460 && t % 20 == 0) {
+            int k = (t - 200) / 20;
+            scr.inv.setCat(k % 4); scr.inv.filter = k % 7; scr.inv.sort = k % 2; scr.inv.rebuild(); scr.layoutOverlay();
+            scr.inv.focus = k % 3 == 0 ? 1 : 0; scr.inv.slot = k % 2;
+            for (int j = 0; j < Math.min(scr.inv.items.size(), 6); j++) { scr.inv.sel = j; scr.inv.focus = 0; scr.layoutOverlay(); fr(0); }
+        }
+        if (t == 470) scr.invClose();
+        if (t == 480) {
+            rs.sec = Items.SEC_KNIFE; rs.secAmmo = 3; rs.secLvl = 0;
+            scr.cOffer = new ChestLoot.Reward[]{ChestLoot.secNew(rs, Items.SEC_BOW, rs.rng), ChestLoot.secNew(rs, Items.SEC_SUMMON, rs.rng), ChestLoot.secNew(rs, Items.SEC_EMBER, rs.rng)};
+            scr.cMode = ChestLoot.MODE_WEAPONS; scr.dbgChest(0); scr.layoutOverlay();
+        }
+        if (t == 520) scr.dbgConfirm();
+        if (t == 560) scr.dbgWcmp(true);
+        if (t == 620) {
+            System.out.println("I18N faltan " + I18n.missing().size());
+            for (String m : I18n.missing()) System.out.println("I18N | " + m.replace("\n", "\\n"));
+            System.exit(0);
+        }
     }
 }

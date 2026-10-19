@@ -114,6 +114,7 @@ final class RunSave {
             rs.credKills = Json.i(d, "credK", 0); rs.credBoss = Json.i(d, "credB", 0);
             rs.streak = Json.i(d, "streak", 0); rs.perfectStreak = Json.i(d, "pstreak", 0);
             if (rs.infinite) rs.stage = 2;
+            if (!d.containsKey("seen")) Inventory.seeAll(rs);      // partida antigua: todo lo que ya llevas cuenta como visto (nada aparece como «nuevo»)
             rs.stats.recalc(rs);
             rs.hp = Math.max(1, Math.min(rs.stats.maxHp, Json.i(d, "hp", (int) rs.stats.maxHp)));
             rs.chalKind = Json.i(d, "chalK", -1);

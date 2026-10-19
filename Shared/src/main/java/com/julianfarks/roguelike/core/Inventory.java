@@ -206,11 +206,16 @@ final class Inventory {
         float pad = 10;
         // cabecera: pestanas
         float ty = 7, th = 18;
-        float tabW = Math.min(88, (w - pad * 2 - 90) / C_COUNT);
+        float[] tw = new float[C_COUNT]; float tot = 0, avail = w - pad * 2 - 96 - 3 * (C_COUNT - 1);
+        for (int c = 0; c < C_COUNT; c++) { tw[c] = Math.max(52, UI.small.width(CAT_NAME[c] + (catNew[c] > 0 ? " !" : "")) + 18); tot += tw[c]; }
+        float sc2 = tot > avail ? avail / tot : 1f;
+        float tx0 = pad;
         for (int c = 0; c < C_COUNT; c++) {
             final int cc = c;
-            Screen.Hit hb = sc.add(pad + c * (tabW + 3), ty, tabW, th, CAT_NAME[c] + (catNew[c] > 0 ? " !" : ""), () -> setCat(cc));
+            float tww = tw[c] * sc2;
+            Screen.Hit hb = sc.add(tx0, ty, tww, th, CAT_NAME[c] + (catNew[c] > 0 ? " !" : ""), () -> setCat(cc));
             hb.tag = 100 + c; hb.noSound = false;
+            tx0 += tww + 3;
         }
         // pie: orden, filtro, volver
         float fy = h - 25, fh = 20;
@@ -379,7 +384,9 @@ final class Inventory {
         if (k == 1) line = "Munición " + rs().secAmmo + "/" + Items.SEC_AMMO[rs().sec] + (rs().secLvl > 0 ? " · Nv +" + rs().secLvl : "");
         else line = rs().special != 0 ? Items.SP_NAME[rs().special] : "Sin mejora elemental";
         Arsenal.rarityMark(g, tx + 3, h.y + 31, Math.min(3, it.rar), rc);
-        UI.small.draw(g, UI.fitLabel(UI.small, (k == 1 ? RAR_ES[it.rar] + " · " : "") + line, h.w - 56), tx + 9, h.y + 28, k == 1 ? rc : 0xFFB8B0B8, 1f);
+        String full = (k == 1 ? RAR_ES[it.rar] + " · " : "") + line;
+        String show = UI.small.width(full) <= h.w - 56 ? full : line;
+        UI.small.draw(g, UI.fitLabel(UI.small, show, h.w - 56), tx + 9, h.y + 28, k == 1 && show == full ? rc : 0xFFB8B0B8, 1f);
     }
 
     void render(Platform.Gfx g, int w) {
@@ -440,10 +447,10 @@ final class Inventory {
         if (it.cat == C_WEAPONS && it.wid > 0) {
             float yy = ArsenalUI.sheet(g, x, y, w, it.wid, rs.sec != it.wid ? rs.sec : 0, 0);
             yy += 3;
-            UI.small.draw(g, ST_NAME[it.state], x + 2, yy, it.state == ST_EQUIPPED ? 0xFFFFD25A : 0xFF7AC8F0, 1f); yy += 10;
-            if (it.state == ST_EQUIPPED) { UI.small.draw(g, "Munición " + rs.secAmmo + "/" + Items.SEC_AMMO[it.wid] + (rs.secLvl > 0 ? " · Nv +" + rs.secLvl + "/3" : ""), x + 2, yy, 0xFFB8B0B8, 1f); yy += 10; }
-            else if (it.state == ST_FLOOR) { UI.small.draw(g, "Recógela con [Interactuar]", x + 2, yy, 0xFFB8B0B8, 1f); yy += 10; }
-            else UI.small.draw(g, "Quedó en otra sala (no se puede recoger)", x + 2, yy, 0xFFB8B0B8, 1f);
+            UI.small.draw(g, ST_NAME[it.state], x + 2, yy, it.state == ST_EQUIPPED ? 0xFFFFD25A : 0xFF7AC8F0, 1f); yy += ArsenalUI.lh() + 1;
+            if (it.state == ST_EQUIPPED) { UI.small.draw(g, UI.fitLabel(UI.small, "Munición " + rs.secAmmo + "/" + Items.SEC_AMMO[it.wid] + (rs.secLvl > 0 ? " · Nv +" + rs.secLvl + "/3" : ""), w - 4), x + 2, yy, 0xFFB8B0B8, 1f); yy += ArsenalUI.lh() + 1; }
+            else if (it.state == ST_FLOOR) { UI.small.draw(g, UI.fitLabel(UI.small, "Recógela con [Interactuar]", w - 4), x + 2, yy, 0xFFB8B0B8, 1f); yy += ArsenalUI.lh() + 1; }
+            else UI.small.drawWrappedMax(g, "Quedó en otra sala (no se puede recoger)", x + 2, yy, (int) w - 4, 0xFFB8B0B8, 1f, ArsenalUI.lh(), 2);
             return;
         }
         // cabecera generica
@@ -481,22 +488,14 @@ final class Inventory {
         yy += wrapClip(g, body, x + 2, yy, (int) w - 4, bottom - yy - 24, 0xFFE8E0E0);
         yy += 3;
         for (String e : extra) {
-            if (yy + 9 > bottom) break;
+            if (yy + ArsenalUI.lh() > bottom) break;
             yy += wrapClip(g, e, x + 2, yy, (int) w - 4, bottom - yy, 0xFFFFD25A) + 1;
         }
     }
 
     /** Texto con ajuste de linea que nunca se sale del espacio disponible (corta con "…"). Devuelve el alto usado. */
     private float wrapClip(Platform.Gfx g, String s, float x, float y, int w, float maxH, int col) {
-        List<String> ls = UI.small.wrap(s, w);
-        int maxL = Math.max(1, (int) (maxH / 9));
-        float used = 0;
-        for (int i = 0; i < ls.size() && i < maxL; i++) {
-            String l = ls.get(i);
-            if (i == maxL - 1 && ls.size() > maxL) l = UI.fitLabel(UI.small, l + "…", w);
-            UI.small.draw(g, l, x, y + used, col, 1f);
-            used += 9;
-        }
-        return used;
+        int maxL = Math.max(1, (int) (maxH / ArsenalUI.lh()));
+        return UI.small.drawWrappedMax(g, s, x, y, w, col, 1f, ArsenalUI.lh(), maxL);
     }
 }

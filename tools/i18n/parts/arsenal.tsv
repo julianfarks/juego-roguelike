@@ -1,0 +1,117 @@
+# Arsenal, armas secundarias e inventario (es<TAB>en<TAB>fr<TAB>zh)
+Arco de cazador	Hunter's bow	Arc de chasseur	猎人之弓
+Chakram	Chakram	Chakram	环刃
+Varita prismática	Prismatic wand	Baguette prismatique	棱彩法杖
+Lanza arrojadiza	Throwing spear	Lance de jet	投掷长矛
+Cañón de brasas	Ember cannon	Canon de braises	余烬炮
+Cetro de invocación	Summoning scepter	Sceptre d'invocation	召唤权杖
+3 cuchillos por lanzamiento	3 knives per throw	3 couteaux par lancer	每次投掷3把飞刀
+Atraviesa 2 enemigos	Pierces 2 enemies	Transperce 2 ennemis	穿透2个敌人
+Atraviesa 3 enemigos	Pierces 3 enemies	Transperce 3 ennemis	穿透3个敌人
+Persigue y explota	Homes in and explodes	Poursuit et explose	追踪并爆炸
++90% de daño a máxima distancia	+90% damage at maximum range	+90 % de dégâts à portée maximale	最大射程时伤害+90%
+Vuelve al jugador (máx. 1 en vuelo)	Returns to you (max. 1 in flight)	Revient vers vous (1 max. en vol)	会飞回你手中（同时最多1个）
+Quema · congela · aturde (rota)	Burns · freezes · stuns (rotates)	Brûle · gèle · étourdit (en rotation)	灼烧·冰冻·眩晕（轮换）
+Atraviesa 5 · +15% de daño por enemigo	Pierces 5 · +15% damage per enemy	Transperce 5 · +15 % de dégâts par ennemi	穿透5个·每穿过一个敌人伤害+15%
+Quema 2.5 s · 3 proyectiles	Burns 2.5 s · 3 projectiles	Brûle 2,5 s · 3 projectiles	灼烧2.5秒·3发弹丸
+Hasta 2 espíritus · 10 s cada uno	Up to 2 spirits · 10 s each	Jusqu'à 2 esprits · 10 s chacun	最多2个灵体·各持续10秒
+Ráfaga en abanico: cubre muchos enemigos cercanos.	Fan burst: covers many nearby enemies.	Rafale en éventail : touche de nombreux ennemis proches.	扇形连射：覆盖附近的多个敌人。
+Disparo recto y potente que atraviesa.	Straight, powerful shot that pierces.	Tir droit et puissant qui transperce.	笔直而强力的射击，可穿透敌人。
+Arco alto y pesado: golpea por encima y atraviesa.	High, heavy arc: strikes from above and pierces.	Arc haut et lourd : frappe par-dessus et transperce.	高抛重击：从上方砸下并穿透。
+Esfera que persigue y explota al impactar.	Orb that homes in and explodes on impact.	Sphère qui poursuit sa cible et explose à l'impact.	追踪球体，命中时爆炸。
+Flecha en parábola: cuanto más lejos vuela, más daño hace.	Arcing arrow: the farther it flies, the more damage it deals.	Flèche en parabole : plus elle vole loin, plus elle fait de dégâts.	抛物线箭矢：飞得越远，伤害越高。
+Gira hacia delante y regresa a tu mano: golpea a la ida y a la vuelta.	Spins forward and returns to your hand: hits on the way out and back.	Tourne vers l'avant et revient dans votre main : touche à l'aller et au retour.	向前旋转并飞回手中：去程和回程都会造成伤害。
+Alterna fuego, hielo y rayo en cada disparo.	Alternates fire, ice and lightning with each shot.	Alterne feu, glace et foudre à chaque tir.	每次射击轮流释放火焰、寒冰和闪电。
+Lanzamiento largo: atraviesa y gana daño con cada enemigo.	Long throw: pierces and gains damage with each enemy.	Lancer long : transperce et gagne des dégâts à chaque ennemi.	远程投掷：穿透敌人，每穿过一个伤害提升。
+Ráfaga corta de brasas que prende fuego de cerca.	Short burst of embers that sets enemies ablaze up close.	Courte rafale de braises qui enflamme à courte portée.	近距离喷射余烬，点燃敌人。
+Invoca espíritus temporales que atacan por ti.	Summons temporary spirits that attack for you.	Invoque des esprits temporaires qui attaquent pour vous.	召唤会为你战斗的临时灵体。
+Flecha en parábola · hasta +90% de daño lejos	Arcing arrow · up to +90% damage at range	Flèche en parabole · jusqu'à +90 % de dégâts de loin	抛物线箭矢·远距离最高伤害+90%
+Regresa tras lanzarlo · daño 1.1x	Returns after being thrown · damage 1.1x	Revient après le lancer · dégâts 1,1x	投出后会飞回·伤害1.1x
+Fuego, hielo y rayo · daño 1.2x	Fire, ice and lightning · damage 1.2x	Feu, glace et foudre · dégâts 1,2x	火焰、寒冰与闪电·伤害1.2x
+Atraviesa 5 · daño 2.6x	Pierces 5 · damage 2.6x	Transperce 5 · dégâts 2,6x	穿透5个·伤害2.6x
+3 brasas cortas · quema · daño 0.7x	3 short embers · burns · damage 0.7x	3 braises courtes · brûle · dégâts 0,7x	3发短程余烬·灼烧·伤害0.7x
+2 espíritus · 10 s	2 spirits · 10 s	2 esprits · 10 s	2个灵体·10秒
+Cadencia	Fire rate	Cadence	射速
+Alcance	Range	Portée	射程
+Potencia	Power	Puissance	威力
+{} casillas	{} tiles	{} cases	{}格
+{} cas.	{} tiles	{} cases	{}格
+Efecto: {}	Effect: {}	Effet : {}	效果：{}
+Armas	Weapons	Armes	武器
+Objetos	Items	Objets	物品
+Legendaria	Legendary	Légendaire	传说
+{} !	{} !	{} !	{} !
+En tu poder	In your possession	En votre possession	持有中
+Equipada	Equipped	Équipée	已装备
+En el suelo de esta sala	On the floor of this room	Au sol dans cette salle	在本房间的地面上
+Dejada atrás en otra sala	Left behind in another room	Laissée dans une autre salle	遗落在其他房间
+Intercambiar por {}	Swap for {}	Échanger contre {}	与{}交换
+Recoger y equipar	Pick up and equip	Ramasser et équiper	拾取并装备
+Mejorar (misma arma: sube de nivel)	Upgrade (same weapon: levels up)	Améliorer (même arme : gagne un niveau)	升级（相同武器：提升等级）
+{} (soltada)	{} (dropped)	{} (lâchée)	{}（已丢下）
+soltaste {}	you dropped {}	vous avez lâché {}	你丢下了{}
+Intercambio: {}	Swapped: {}	Échange : {}	交换：{}
+¡Contra a distancia!	Ranged counter!	Contre à distance !	远程反击！
+Hay un arma en el suelo	There is a weapon on the floor	Il y a une arme au sol	地上有一把武器
+INVENTARIO	INVENTORY	INVENTAIRE	物品栏
+ARMA PRINCIPAL	MAIN WEAPON	ARME PRINCIPALE	主武器
+ARMA SECUNDARIA	SECONDARY WEAPON	ARME SECONDAIRE	副武器
+EN USO	IN USE	ACTIVE	使用中
+En uso	In use	Active	使用中
+{} obj.	{} items	{} obj.	{}件
+Mejora activa: {}	Active upgrade: {}	Amélioration active : {}	当前强化：{}
+Orden: {}	Sort: {}	Tri : {}	排序：{}
+Filtro: {}	Filter: {}	Filtre : {}	筛选：{}
+Rareza	Rarity	Rareté	稀有度
+Nombre	Name	Nom	名称
+Todas	All	Toutes	全部
+Nuevas	New	Nouvelles	新获得
+Volver al juego	Back to game	Retour au jeu	返回游戏
+Sinergia ACTIVA: {}	Synergy ACTIVE: {}	Synergie ACTIVE : {}	协同已激活：{}
+Nada coincide con el filtro.	Nothing matches the filter.	Aucun résultat pour ce filtre.	没有符合筛选条件的物品。
+No tienes nada en esta categoría todavía.	You have nothing in this category yet.	Vous n'avez encore rien dans cette catégorie.	该分类中还没有物品。
+Selecciona un objeto para ver su detalle.	Select an item to see its details.	Sélectionnez un objet pour voir ses détails.	选择一件物品查看详情。
+Te quedan {}	You have {} left	Il vous en reste {}	还剩{}个
+Recógela con [Interactuar]	Pick it up with [Interact]	Ramassez-la avec [Interagir]	用[互动]键拾取
+Curan vida cuando los usas. Los recargas en tiendas y con algunos objetos.	They heal you when used. Refill them in shops and with some items.	Ils vous soignent à l'usage. Rechargez-les chez les marchands et avec certains objets.	使用后恢复生命。可在商店或通过某些物品补充。
+Llevas {} de {}	You carry {} of {}	Vous en portez {} sur {}	携带 {}/{}
+Coste: {}	Cost: {}	Coût : {}	代价：{}
+¿INTERCAMBIAR ARMA?	SWAP WEAPON?	ÉCHANGER L'ARME ?	交换武器？
+Tu arma actual quedará en el suelo y podrás recogerla de nuevo	Your current weapon will stay on the floor and you can pick it up again	Votre arme actuelle restera au sol et vous pourrez la ramasser à nouveau	你当前的武器会留在地上，之后还能再捡起来
+Conservar la actual	Keep current	Garder l'actuelle	保留当前武器
+TU ARMA SEC. · {} usos	YOUR SEC. WEAPON · {} uses	VOTRE ARME SEC. · {} usages	你的副武器 · {}次
+NUEVA · {} usos	NEW · {} uses	NOUVELLE · {} usages	新武器 · {}次
++ mejor · - peor · = igual que tu arma actual	+ better · - worse · = same as your current weapon	+ mieux · - moins bien · = identique à votre arme actuelle	+ 更好 · - 更差 · = 与当前武器相同
++ mejor · - peor que tu arma actual	+ better · - worse than your current weapon	+ mieux · - moins bien que votre arme actuelle	+ 更好 · - 比当前武器更差
+Arma secundaria · {} usos	Secondary weapon · {} uses	Arme secondaire · {} usages	副武器 · {}次
+Arma secundaria mejorada	Upgraded secondary weapon	Arme secondaire améliorée	副武器已强化
+Arma secundaria	Secondary weapon	Arme secondaire	副武器
+Arma principal	Main weapon	Arme principale	主武器
+Arma: {}	Weapon: {}	Arme : {}	武器：{}
+Sec: {}	Sec: {}	Sec : {}	副：{}
+Bendición inicial	Starting blessing	Bénédiction initiale	初始祝福
+Pacto de santuario	Sanctuary pact	Pacte de sanctuaire	圣所契约
+Reliquia	Relic	Relique	遗物
+Reliquia de {}. La conservas en la sala de trofeos.	Relic of {}. It is kept in the trophy room.	Relique de {}. Elle est conservée dans la salle des trophées.	{}的遗物。保存在战利品室中。
+Granada · {} uds.	Grenade · {} pcs.	Grenade · {} pcs	手雷·{}个
+Mejora del arma principal	Main weapon upgrade	Amélioration de l'arme principale	主武器强化
+Frascos de vida	Life flasks	Fioles de vie	生命药瓶
+Mejora de la forja: Nv {}	Forge upgrade: Lv {}	Amélioration de forge : Niv {}	锻造强化：Lv {}
+Mejora: Nv +{}/3	Upgrade: Lv +{}/3	Amélioration : Niv +{}/3	强化：Lv +{}/3
+Nivel {}/{} · {}	Level {}/{} · {}	Niveau {}/{} · {}	等级 {}/{} · {}
+Munición {}/{}	Ammo {}/{}	Munitions {}/{}	弹药 {}/{}
+Munición {}/{} · Nv +{}/3	Ammo {}/{} · Lv +{}/3	Munitions {}/{} · Niv +{}/3	弹药 {}/{} · Lv +{}/3
+Munición {}/{} · Nv +{}	Ammo {}/{} · Lv +{}	Munitions {}/{} · Niv +{}	弹药 {}/{} · Lv +{}
+Sin mejora elemental	No elemental upgrade	Aucune amélioration élémentaire	无元素强化
+En espera (usas la secundaria)	Standby (you are using the secondary)	En attente (vous utilisez l'arme secondaire)	待机（正在使用副武器）
+Quedó en otra sala (no se puede recoger)	Left in another room (cannot be picked up)	Restée dans une autre salle (impossible à ramasser)	留在了其他房间（无法拾取）
+Vacía · recoge un arma del suelo o de un cofre	Empty · pick up a weapon from the floor or a chest	Vide · ramassez une arme au sol ou dans un coffre	空 · 从地上或宝箱中拾取武器
+Usar arma principal	Use main weapon	Utiliser l'arme principale	使用主武器
+Usar esta arma	Use this weapon	Utiliser cette arme	使用此武器
+E equipada · S en el suelo · D dejada · ! nueva · +n mejora	E equipped · S on floor · D left behind · ! new · +n upgrade	E équipée · S au sol · D laissée · ! nouvelle · +n amélioration	E 已装备 · S 在地上 · D 已遗落 · ! 新 · +n 强化
+E equip. · S suelo · D dejada · ! nueva	E equip. · S floor · D left · ! new	E équip. · S sol · D laissée · ! nouv.	E 装备 · S 地面 · D 遗落 · ! 新
+E equip. · S suelo · ! nueva	E equip. · S floor · ! new	E équip. · S sol · ! nouv.	E 装备 · S 地面 · ! 新
+! nueva	! new	! nouv.	! 新
+Misma arma: sube de nivel	Same weapon: levels up	Même arme : gagne un niveau	相同武器：提升等级
+Dejaste atrás: {}	You left behind: {}	Vous avez laissé : {}	你遗落了：{}
+ equipada!	 equipped!	 équipée !	 已装备！

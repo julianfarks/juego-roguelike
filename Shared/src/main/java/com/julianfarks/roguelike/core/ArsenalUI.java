@@ -8,6 +8,9 @@ final class ArsenalUI {
 
     static final int OK = 0xFF5AD070, BAD = 0xFFFF6A5A, EQ = 0xFFB8B8C0;
 
+    /** Alto de linea de texto pequeño: el chino necesita mas que el alfabeto latino. */
+    static int lh() { return I18n.lang() == I18n.ZH ? 13 : 9; }
+
     static int rarCol(int rar) { return ChestLoot.R_COL[Math.max(0, Math.min(3, rar))]; }
 
     /** Marca de comparacion que no depende solo del color: "+" mejor, "-" peor, "=" igual. */
@@ -32,11 +35,11 @@ final class ArsenalUI {
             UI.small.draw(g, l.label, x + 2, yy, 0xFFB8B0B8, 1f);
             UI.small.right(g, l.val, x + w - 12, yy, 0xFFF0E8E0, 1f);
             cmpMark(g, x + w - 8, yy, l.cmp);
-            yy += 10;
+            yy += lh() + 1;
         }
         yy += 2;
-        yy += UI.small.drawWrapped(g, "Efecto: " + Items.SEC_FX[id], x + 2, yy, (int) w - 4, 0xFFFFD25A, 1f, 9) + 2;
-        yy += UI.small.drawWrapped(g, Items.SEC_STYLE[id], x + 2, yy, (int) w - 4, 0xFFC8C0C8, 1f);
+        yy += UI.small.drawWrapped(g, "Efecto: " + Items.SEC_FX[id], x + 2, yy, (int) w - 4, 0xFFFFD25A, 1f, lh()) + 2;
+        yy += UI.small.drawWrapped(g, Items.SEC_STYLE[id], x + 2, yy, (int) w - 4, 0xFFC8C0C8, 1f, lh() + 1);
         return yy;
     }
 
@@ -69,10 +72,11 @@ final class ArsenalUI {
         int id = p.arg;
         if (id <= 0 || id >= Items.SEC_COUNT) return;
         float cw = Math.min(252, w - 16);
-        List<String> fx = UI.small.wrap("Efecto: " + Items.SEC_FX[id], (int) cw - 16);
-        int fxl = Math.min(2, fx.size());
+        String fxs = "Efecto: " + Items.SEC_FX[id];
+        int fxl = Math.min(2, UI.small.wrapLines(fxs, (int) cw - 16));
         boolean cmp = rs.sec != 0 && rs.sec != id;
-        float ch = 6 + 20 + 3 * 10 + 3 + fxl * 9 + 4 + (cmp ? 10 : 0) + 14;
+        int L = lh();
+        float ch = 6 + 20 + 2 * (L + 1) + 3 + fxl * L + 4 + (cmp ? L + 1 : 0) + L + 6;
         float x = w / 2f - cw / 2f, y = 36;
         UI.panel(g, 0, x, y, cw, ch, 0.94f);
         float ix = x + 8, yy = y + 6;
@@ -87,17 +91,17 @@ final class ArsenalUI {
         for (int i = 0; i < ls.size() && i < 5; i++) {
             if (i == 3) { /* Municion ya va en la cabecera */ continue; }
             int k = i > 3 ? 3 : i;
-            float cx = ix + (k % 2) * (colW + 6), cy = yy + (k / 2) * 10;
+            float cx = ix + (k % 2) * (colW + 6), cy = yy + (k / 2) * (L + 1);
             Arsenal.Line l = ls.get(i);
             String v = l.val.replace(" casillas", " cas.");
             UI.small.draw(g, l.label, cx, cy, 0xFFB8B0B8, 1f);
             UI.small.right(g, v, cx + colW - 12, cy, 0xFFF0E8E0, 1f);
             cmpMark(g, cx + colW - 9, cy, l.cmp);
         }
-        yy += 20 + 3;
-        for (int i = 0; i < fxl; i++) UI.small.draw(g, i == fxl - 1 && fx.size() > fxl ? UI.fitLabel(UI.small, fx.get(i) + "…", cw - 16) : fx.get(i), ix, yy + i * 9, 0xFFFFD25A, 1f);
-        yy += fxl * 9 + 3;
-        if (cmp) { UI.small.center(g, "+ mejor · - peor que tu arma actual", x + cw / 2f, yy, 0xFF9890A0, 1f); yy += 10; }
+        yy += 2 * (L + 1) + 3;
+        UI.small.drawWrappedMax(g, fxs, ix, yy, (int) cw - 16, 0xFFFFD25A, 1f, L, 2);
+        yy += fxl * L + 3;
+        if (cmp) { UI.small.center(g, "+ mejor · - peor que tu arma actual", x + cw / 2f, yy, 0xFF9890A0, 1f); yy += L + 1; }
         String foot = rs.sec == 0 ? actionLabel + " y equipar" : rs.sec == id ? actionLabel + " (misma arma: sube de nivel)" : actionLabel + " por " + Items.SEC_NAME[rs.sec];
         UI.small.center(g, UI.fitLabel(UI.small, foot, cw - 12), x + cw / 2f, yy + 2, UI.GOLD, 1f);
     }

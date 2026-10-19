@@ -25,7 +25,7 @@ final class Items {
             "Alterna fuego, hielo y rayo en cada disparo.", "Lanzamiento largo: atraviesa y gana daño con cada enemigo.",
             "Ráfaga corta de brasas que prende fuego de cerca.", "Invoca espíritus temporales que atacan por ti."};
     /** Efecto especial (texto de ficha). */
-    static final String[] SEC_FX = {"", "-", "Atraviesa 2 enemigos", "Atraviesa 3 enemigos", "Persigue y explota",
+    static final String[] SEC_FX = {"", "3 cuchillos por lanzamiento", "Atraviesa 2 enemigos", "Atraviesa 3 enemigos", "Persigue y explota",
             "+90% de daño a máxima distancia", "Vuelve al jugador (máx. 1 en vuelo)", "Quema · congela · aturde (rota)", "Atraviesa 5 · +15% de daño por enemigo",
             "Quema 2.5 s · 3 proyectiles", "Hasta 2 espíritus · 10 s cada uno"};
 

@@ -1,4 +1,120 @@
 # zh-Hans generado por tools/i18n/build_catalogs.py (clave = texto en espanol)
+Arco de cazador	猎人之弓
+Chakram	环刃
+Varita prismática	棱彩法杖
+Lanza arrojadiza	投掷长矛
+Cañón de brasas	余烬炮
+Cetro de invocación	召唤权杖
+3 cuchillos por lanzamiento	每次投掷3把飞刀
+Atraviesa 2 enemigos	穿透2个敌人
+Atraviesa 3 enemigos	穿透3个敌人
+Persigue y explota	追踪并爆炸
++90% de daño a máxima distancia	最大射程时伤害+90%
+Vuelve al jugador (máx. 1 en vuelo)	会飞回你手中（同时最多1个）
+Quema · congela · aturde (rota)	灼烧·冰冻·眩晕（轮换）
+Atraviesa 5 · +15% de daño por enemigo	穿透5个·每穿过一个敌人伤害+15%
+Quema 2.5 s · 3 proyectiles	灼烧2.5秒·3发弹丸
+Hasta 2 espíritus · 10 s cada uno	最多2个灵体·各持续10秒
+Ráfaga en abanico: cubre muchos enemigos cercanos.	扇形连射：覆盖附近的多个敌人。
+Disparo recto y potente que atraviesa.	笔直而强力的射击，可穿透敌人。
+Arco alto y pesado: golpea por encima y atraviesa.	高抛重击：从上方砸下并穿透。
+Esfera que persigue y explota al impactar.	追踪球体，命中时爆炸。
+Flecha en parábola: cuanto más lejos vuela, más daño hace.	抛物线箭矢：飞得越远，伤害越高。
+Gira hacia delante y regresa a tu mano: golpea a la ida y a la vuelta.	向前旋转并飞回手中：去程和回程都会造成伤害。
+Alterna fuego, hielo y rayo en cada disparo.	每次射击轮流释放火焰、寒冰和闪电。
+Lanzamiento largo: atraviesa y gana daño con cada enemigo.	远程投掷：穿透敌人，每穿过一个伤害提升。
+Ráfaga corta de brasas que prende fuego de cerca.	近距离喷射余烬，点燃敌人。
+Invoca espíritus temporales que atacan por ti.	召唤会为你战斗的临时灵体。
+Flecha en parábola · hasta +90% de daño lejos	抛物线箭矢·远距离最高伤害+90%
+Regresa tras lanzarlo · daño 1.1x	投出后会飞回·伤害1.1x
+Fuego, hielo y rayo · daño 1.2x	火焰、寒冰与闪电·伤害1.2x
+Atraviesa 5 · daño 2.6x	穿透5个·伤害2.6x
+3 brasas cortas · quema · daño 0.7x	3发短程余烬·灼烧·伤害0.7x
+2 espíritus · 10 s	2个灵体·10秒
+Cadencia	射速
+Alcance	射程
+Potencia	威力
+{} casillas	{}格
+{} cas.	{}格
+Efecto: {}	效果：{}
+Armas	武器
+Objetos	物品
+Legendaria	传说
+{} !	{} !
+En tu poder	持有中
+Equipada	已装备
+En el suelo de esta sala	在本房间的地面上
+Dejada atrás en otra sala	遗落在其他房间
+Intercambiar por {}	与{}交换
+Recoger y equipar	拾取并装备
+Mejorar (misma arma: sube de nivel)	升级（相同武器：提升等级）
+{} (soltada)	{}（已丢下）
+soltaste {}	你丢下了{}
+Intercambio: {}	交换：{}
+¡Contra a distancia!	远程反击！
+Hay un arma en el suelo	地上有一把武器
+INVENTARIO	物品栏
+ARMA PRINCIPAL	主武器
+ARMA SECUNDARIA	副武器
+EN USO	使用中
+En uso	使用中
+{} obj.	{}件
+Mejora activa: {}	当前强化：{}
+Orden: {}	排序：{}
+Filtro: {}	筛选：{}
+Rareza	稀有度
+Nombre	名称
+Todas	全部
+Nuevas	新获得
+Volver al juego	返回游戏
+Sinergia ACTIVA: {}	协同已激活：{}
+Nada coincide con el filtro.	没有符合筛选条件的物品。
+No tienes nada en esta categoría todavía.	该分类中还没有物品。
+Selecciona un objeto para ver su detalle.	选择一件物品查看详情。
+Te quedan {}	还剩{}个
+Recógela con [Interactuar]	用[互动]键拾取
+Curan vida cuando los usas. Los recargas en tiendas y con algunos objetos.	使用后恢复生命。可在商店或通过某些物品补充。
+Llevas {} de {}	携带 {}/{}
+Coste: {}	代价：{}
+¿INTERCAMBIAR ARMA?	交换武器？
+Tu arma actual quedará en el suelo y podrás recogerla de nuevo	你当前的武器会留在地上，之后还能再捡起来
+Conservar la actual	保留当前武器
+TU ARMA SEC. · {} usos	你的副武器 · {}次
+NUEVA · {} usos	新武器 · {}次
++ mejor · - peor · = igual que tu arma actual	+ 更好 · - 更差 · = 与当前武器相同
++ mejor · - peor que tu arma actual	+ 更好 · - 比当前武器更差
+Arma secundaria · {} usos	副武器 · {}次
+Arma secundaria mejorada	副武器已强化
+Arma secundaria	副武器
+Arma principal	主武器
+Arma: {}	武器：{}
+Sec: {}	副：{}
+Bendición inicial	初始祝福
+Pacto de santuario	圣所契约
+Reliquia	遗物
+Reliquia de {}. La conservas en la sala de trofeos.	{}的遗物。保存在战利品室中。
+Granada · {} uds.	手雷·{}个
+Mejora del arma principal	主武器强化
+Frascos de vida	生命药瓶
+Mejora de la forja: Nv {}	锻造强化：Lv {}
+Mejora: Nv +{}/3	强化：Lv +{}/3
+Nivel {}/{} · {}	等级 {}/{} · {}
+Munición {}/{}	弹药 {}/{}
+Munición {}/{} · Nv +{}/3	弹药 {}/{} · Lv +{}/3
+Munición {}/{} · Nv +{}	弹药 {}/{} · Lv +{}
+Sin mejora elemental	无元素强化
+En espera (usas la secundaria)	待机（正在使用副武器）
+Quedó en otra sala (no se puede recoger)	留在了其他房间（无法拾取）
+Vacía · recoge un arma del suelo o de un cofre	空 · 从地上或宝箱中拾取武器
+Usar arma principal	使用主武器
+Usar esta arma	使用此武器
+E equipada · S en el suelo · D dejada · ! nueva · +n mejora	E 已装备 · S 在地上 · D 已遗落 · ! 新 · +n 强化
+E equip. · S suelo · D dejada · ! nueva	E 装备 · S 地面 · D 遗落 · ! 新
+E equip. · S suelo · ! nueva	E 装备 · S 地面 · ! 新
+! nueva	! 新
+Misma arma: sube de nivel	相同武器：提升等级
+Dejaste atrás: {}	你遗落了：{}
+ equipada!	 已装备！
 Filo Afilado	锋利之刃
 +15% de daño de arma por nivel.	每级武器伤害提高15%。
 Corazón Robusto	强健之心
@@ -593,13 +709,11 @@ Fuente de vida	生命之泉
 Recuperas esa parte de tu vida máxima ahora mismo.	立即回复相应比例的最大生命值。
 Botín de oro	金币战利品
 Un montón de monedas y algunas almas para gastar en la tienda.	一堆金币和一些灵魂，可在商店中花费。
-Frascos de vida	生命药瓶
 Rellena tus frascos de vida (hasta tu máximo).	补充你的生命药瓶（不超过上限）。
 Barrera de luz	光之屏障
 Un escudo temporal que absorbe daño antes que tu vida.	一层临时护盾，会先于生命值吸收伤害。
 Recarga total	完全充能
 Reinicia las recargas de tus habilidades y carga tu definitiva.	重置所有技能冷却，并为终极技充能。
-Arma principal	主武器
 Escudo	盾牌
 Más granadas	更多手雷
 Granadas mejoradas	强化手雷
@@ -1268,7 +1382,6 @@ Equipo: {}	装备：{}
 Compañero: {}	同伴：{}
 Enfriamiento {}s	冷却 {}秒
 Definitiva: {}	终极技：{}
-Arma: {}	武器：{}
 Almas: {}	灵魂：{}
 Gemas: {}	宝石：{}
 Comprado: {}	已购买：{}
@@ -1750,7 +1863,6 @@ Silencio	沉默
 Voluntad	意志
 Libertad	自由
 Paciencia	耐心
-Reliquia	遗物
 ¡Segunda oportunidad!	第二次机会！
 ¡Reliquia obtenida!	获得遗物！
 ¡Roto!	破碎！

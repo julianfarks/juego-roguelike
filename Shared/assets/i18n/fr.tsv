@@ -1,4 +1,120 @@
 # fr generado por tools/i18n/build_catalogs.py (clave = texto en espanol)
+Arco de cazador	Arc de chasseur
+Chakram	Chakram
+Varita prismática	Baguette prismatique
+Lanza arrojadiza	Lance de jet
+Cañón de brasas	Canon de braises
+Cetro de invocación	Sceptre d'invocation
+3 cuchillos por lanzamiento	3 couteaux par lancer
+Atraviesa 2 enemigos	Transperce 2 ennemis
+Atraviesa 3 enemigos	Transperce 3 ennemis
+Persigue y explota	Poursuit et explose
++90% de daño a máxima distancia	+90 % de dégâts à portée maximale
+Vuelve al jugador (máx. 1 en vuelo)	Revient vers vous (1 max. en vol)
+Quema · congela · aturde (rota)	Brûle · gèle · étourdit (en rotation)
+Atraviesa 5 · +15% de daño por enemigo	Transperce 5 · +15 % de dégâts par ennemi
+Quema 2.5 s · 3 proyectiles	Brûle 2,5 s · 3 projectiles
+Hasta 2 espíritus · 10 s cada uno	Jusqu'à 2 esprits · 10 s chacun
+Ráfaga en abanico: cubre muchos enemigos cercanos.	Rafale en éventail : touche de nombreux ennemis proches.
+Disparo recto y potente que atraviesa.	Tir droit et puissant qui transperce.
+Arco alto y pesado: golpea por encima y atraviesa.	Arc haut et lourd : frappe par-dessus et transperce.
+Esfera que persigue y explota al impactar.	Sphère qui poursuit sa cible et explose à l'impact.
+Flecha en parábola: cuanto más lejos vuela, más daño hace.	Flèche en parabole : plus elle vole loin, plus elle fait de dégâts.
+Gira hacia delante y regresa a tu mano: golpea a la ida y a la vuelta.	Tourne vers l'avant et revient dans votre main : touche à l'aller et au retour.
+Alterna fuego, hielo y rayo en cada disparo.	Alterne feu, glace et foudre à chaque tir.
+Lanzamiento largo: atraviesa y gana daño con cada enemigo.	Lancer long : transperce et gagne des dégâts à chaque ennemi.
+Ráfaga corta de brasas que prende fuego de cerca.	Courte rafale de braises qui enflamme à courte portée.
+Invoca espíritus temporales que atacan por ti.	Invoque des esprits temporaires qui attaquent pour vous.
+Flecha en parábola · hasta +90% de daño lejos	Flèche en parabole · jusqu'à +90 % de dégâts de loin
+Regresa tras lanzarlo · daño 1.1x	Revient après le lancer · dégâts 1,1x
+Fuego, hielo y rayo · daño 1.2x	Feu, glace et foudre · dégâts 1,2x
+Atraviesa 5 · daño 2.6x	Transperce 5 · dégâts 2,6x
+3 brasas cortas · quema · daño 0.7x	3 braises courtes · brûle · dégâts 0,7x
+2 espíritus · 10 s	2 esprits · 10 s
+Cadencia	Cadence
+Alcance	Portée
+Potencia	Puissance
+{} casillas	{} cases
+{} cas.	{} cases
+Efecto: {}	Effet : {}
+Armas	Armes
+Objetos	Objets
+Legendaria	Légendaire
+{} !	{} !
+En tu poder	En votre possession
+Equipada	Équipée
+En el suelo de esta sala	Au sol dans cette salle
+Dejada atrás en otra sala	Laissée dans une autre salle
+Intercambiar por {}	Échanger contre {}
+Recoger y equipar	Ramasser et équiper
+Mejorar (misma arma: sube de nivel)	Améliorer (même arme : gagne un niveau)
+{} (soltada)	{} (lâchée)
+soltaste {}	vous avez lâché {}
+Intercambio: {}	Échange : {}
+¡Contra a distancia!	Contre à distance !
+Hay un arma en el suelo	Il y a une arme au sol
+INVENTARIO	INVENTAIRE
+ARMA PRINCIPAL	ARME PRINCIPALE
+ARMA SECUNDARIA	ARME SECONDAIRE
+EN USO	ACTIVE
+En uso	Active
+{} obj.	{} obj.
+Mejora activa: {}	Amélioration active : {}
+Orden: {}	Tri : {}
+Filtro: {}	Filtre : {}
+Rareza	Rareté
+Nombre	Nom
+Todas	Toutes
+Nuevas	Nouvelles
+Volver al juego	Retour au jeu
+Sinergia ACTIVA: {}	Synergie ACTIVE : {}
+Nada coincide con el filtro.	Aucun résultat pour ce filtre.
+No tienes nada en esta categoría todavía.	Vous n'avez encore rien dans cette catégorie.
+Selecciona un objeto para ver su detalle.	Sélectionnez un objet pour voir ses détails.
+Te quedan {}	Il vous en reste {}
+Recógela con [Interactuar]	Ramassez-la avec [Interagir]
+Curan vida cuando los usas. Los recargas en tiendas y con algunos objetos.	Ils vous soignent à l'usage. Rechargez-les chez les marchands et avec certains objets.
+Llevas {} de {}	Vous en portez {} sur {}
+Coste: {}	Coût : {}
+¿INTERCAMBIAR ARMA?	ÉCHANGER L'ARME ?
+Tu arma actual quedará en el suelo y podrás recogerla de nuevo	Votre arme actuelle restera au sol et vous pourrez la ramasser à nouveau
+Conservar la actual	Garder l'actuelle
+TU ARMA SEC. · {} usos	VOTRE ARME SEC. · {} usages
+NUEVA · {} usos	NOUVELLE · {} usages
++ mejor · - peor · = igual que tu arma actual	+ mieux · - moins bien · = identique à votre arme actuelle
++ mejor · - peor que tu arma actual	+ mieux · - moins bien que votre arme actuelle
+Arma secundaria · {} usos	Arme secondaire · {} usages
+Arma secundaria mejorada	Arme secondaire améliorée
+Arma secundaria	Arme secondaire
+Arma principal	Arme principale
+Arma: {}	Arme : {}
+Sec: {}	Sec : {}
+Bendición inicial	Bénédiction initiale
+Pacto de santuario	Pacte de sanctuaire
+Reliquia	Relique
+Reliquia de {}. La conservas en la sala de trofeos.	Relique de {}. Elle est conservée dans la salle des trophées.
+Granada · {} uds.	Grenade · {} pcs
+Mejora del arma principal	Amélioration de l'arme principale
+Frascos de vida	Fioles de vie
+Mejora de la forja: Nv {}	Amélioration de forge : Niv {}
+Mejora: Nv +{}/3	Amélioration : Niv +{}/3
+Nivel {}/{} · {}	Niveau {}/{} · {}
+Munición {}/{}	Munitions {}/{}
+Munición {}/{} · Nv +{}/3	Munitions {}/{} · Niv +{}/3
+Munición {}/{} · Nv +{}	Munitions {}/{} · Niv +{}
+Sin mejora elemental	Aucune amélioration élémentaire
+En espera (usas la secundaria)	En attente (vous utilisez l'arme secondaire)
+Quedó en otra sala (no se puede recoger)	Restée dans une autre salle (impossible à ramasser)
+Vacía · recoge un arma del suelo o de un cofre	Vide · ramassez une arme au sol ou dans un coffre
+Usar arma principal	Utiliser l'arme principale
+Usar esta arma	Utiliser cette arme
+E equipada · S en el suelo · D dejada · ! nueva · +n mejora	E équipée · S au sol · D laissée · ! nouvelle · +n amélioration
+E equip. · S suelo · D dejada · ! nueva	E équip. · S sol · D laissée · ! nouv.
+E equip. · S suelo · ! nueva	E équip. · S sol · ! nouv.
+! nueva	! nouv.
+Misma arma: sube de nivel	Même arme : gagne un niveau
+Dejaste atrás: {}	Vous avez laissé : {}
+ equipada!	 équipée !
 Filo Afilado	Lame affûtée
 +15% de daño de arma por nivel.	+15 % de dégâts d'arme par niveau.
 Corazón Robusto	Coeur robuste
@@ -593,13 +709,11 @@ Fuente de vida	Source de vie
 Recuperas esa parte de tu vida máxima ahora mismo.	Vous récupérez immédiatement cette part de votre vie maximale.
 Botín de oro	Butin d'or
 Un montón de monedas y algunas almas para gastar en la tienda.	Un tas de pièces et quelques âmes à dépenser à la boutique.
-Frascos de vida	Fioles de vie
 Rellena tus frascos de vida (hasta tu máximo).	Remplit vos fioles de vie (jusqu'à votre maximum).
 Barrera de luz	Barrière de lumière
 Un escudo temporal que absorbe daño antes que tu vida.	Un bouclier temporaire qui absorbe les dégâts avant votre vie.
 Recarga total	Recharge totale
 Reinicia las recargas de tus habilidades y carga tu definitiva.	Réinitialise les recharges de vos compétences et charge votre ultime.
-Arma principal	Arme principale
 Escudo	Bouclier
 Más granadas	Plus de grenades
 Granadas mejoradas	Grenades améliorées
@@ -1268,7 +1382,6 @@ Equipo: {}	Équipement : {}
 Compañero: {}	Compagnon : {}
 Enfriamiento {}s	Recharge {} s
 Definitiva: {}	Ultime : {}
-Arma: {}	Arme : {}
 Almas: {}	Âmes : {}
 Gemas: {}	Gemmes : {}
 Comprado: {}	Acheté : {}
@@ -1750,7 +1863,6 @@ Silencio	Silence
 Voluntad	Volonté
 Libertad	Liberté
 Paciencia	Patience
-Reliquia	Relique
 ¡Segunda oportunidad!	Seconde chance !
 ¡Reliquia obtenida!	Relique obtenue !
 ¡Roto!	Brisé !

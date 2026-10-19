@@ -1,4 +1,120 @@
 # en generado por tools/i18n/build_catalogs.py (clave = texto en espanol)
+Arco de cazador	Hunter's bow
+Chakram	Chakram
+Varita prismática	Prismatic wand
+Lanza arrojadiza	Throwing spear
+Cañón de brasas	Ember cannon
+Cetro de invocación	Summoning scepter
+3 cuchillos por lanzamiento	3 knives per throw
+Atraviesa 2 enemigos	Pierces 2 enemies
+Atraviesa 3 enemigos	Pierces 3 enemies
+Persigue y explota	Homes in and explodes
++90% de daño a máxima distancia	+90% damage at maximum range
+Vuelve al jugador (máx. 1 en vuelo)	Returns to you (max. 1 in flight)
+Quema · congela · aturde (rota)	Burns · freezes · stuns (rotates)
+Atraviesa 5 · +15% de daño por enemigo	Pierces 5 · +15% damage per enemy
+Quema 2.5 s · 3 proyectiles	Burns 2.5 s · 3 projectiles
+Hasta 2 espíritus · 10 s cada uno	Up to 2 spirits · 10 s each
+Ráfaga en abanico: cubre muchos enemigos cercanos.	Fan burst: covers many nearby enemies.
+Disparo recto y potente que atraviesa.	Straight, powerful shot that pierces.
+Arco alto y pesado: golpea por encima y atraviesa.	High, heavy arc: strikes from above and pierces.
+Esfera que persigue y explota al impactar.	Orb that homes in and explodes on impact.
+Flecha en parábola: cuanto más lejos vuela, más daño hace.	Arcing arrow: the farther it flies, the more damage it deals.
+Gira hacia delante y regresa a tu mano: golpea a la ida y a la vuelta.	Spins forward and returns to your hand: hits on the way out and back.
+Alterna fuego, hielo y rayo en cada disparo.	Alternates fire, ice and lightning with each shot.
+Lanzamiento largo: atraviesa y gana daño con cada enemigo.	Long throw: pierces and gains damage with each enemy.
+Ráfaga corta de brasas que prende fuego de cerca.	Short burst of embers that sets enemies ablaze up close.
+Invoca espíritus temporales que atacan por ti.	Summons temporary spirits that attack for you.
+Flecha en parábola · hasta +90% de daño lejos	Arcing arrow · up to +90% damage at range
+Regresa tras lanzarlo · daño 1.1x	Returns after being thrown · damage 1.1x
+Fuego, hielo y rayo · daño 1.2x	Fire, ice and lightning · damage 1.2x
+Atraviesa 5 · daño 2.6x	Pierces 5 · damage 2.6x
+3 brasas cortas · quema · daño 0.7x	3 short embers · burns · damage 0.7x
+2 espíritus · 10 s	2 spirits · 10 s
+Cadencia	Fire rate
+Alcance	Range
+Potencia	Power
+{} casillas	{} tiles
+{} cas.	{} tiles
+Efecto: {}	Effect: {}
+Armas	Weapons
+Objetos	Items
+Legendaria	Legendary
+{} !	{} !
+En tu poder	In your possession
+Equipada	Equipped
+En el suelo de esta sala	On the floor of this room
+Dejada atrás en otra sala	Left behind in another room
+Intercambiar por {}	Swap for {}
+Recoger y equipar	Pick up and equip
+Mejorar (misma arma: sube de nivel)	Upgrade (same weapon: levels up)
+{} (soltada)	{} (dropped)
+soltaste {}	you dropped {}
+Intercambio: {}	Swapped: {}
+¡Contra a distancia!	Ranged counter!
+Hay un arma en el suelo	There is a weapon on the floor
+INVENTARIO	INVENTORY
+ARMA PRINCIPAL	MAIN WEAPON
+ARMA SECUNDARIA	SECONDARY WEAPON
+EN USO	IN USE
+En uso	In use
+{} obj.	{} items
+Mejora activa: {}	Active upgrade: {}
+Orden: {}	Sort: {}
+Filtro: {}	Filter: {}
+Rareza	Rarity
+Nombre	Name
+Todas	All
+Nuevas	New
+Volver al juego	Back to game
+Sinergia ACTIVA: {}	Synergy ACTIVE: {}
+Nada coincide con el filtro.	Nothing matches the filter.
+No tienes nada en esta categoría todavía.	You have nothing in this category yet.
+Selecciona un objeto para ver su detalle.	Select an item to see its details.
+Te quedan {}	You have {} left
+Recógela con [Interactuar]	Pick it up with [Interact]
+Curan vida cuando los usas. Los recargas en tiendas y con algunos objetos.	They heal you when used. Refill them in shops and with some items.
+Llevas {} de {}	You carry {} of {}
+Coste: {}	Cost: {}
+¿INTERCAMBIAR ARMA?	SWAP WEAPON?
+Tu arma actual quedará en el suelo y podrás recogerla de nuevo	Your current weapon will stay on the floor and you can pick it up again
+Conservar la actual	Keep current
+TU ARMA SEC. · {} usos	YOUR SEC. WEAPON · {} uses
+NUEVA · {} usos	NEW · {} uses
++ mejor · - peor · = igual que tu arma actual	+ better · - worse · = same as your current weapon
++ mejor · - peor que tu arma actual	+ better · - worse than your current weapon
+Arma secundaria · {} usos	Secondary weapon · {} uses
+Arma secundaria mejorada	Upgraded secondary weapon
+Arma secundaria	Secondary weapon
+Arma principal	Main weapon
+Arma: {}	Weapon: {}
+Sec: {}	Sec: {}
+Bendición inicial	Starting blessing
+Pacto de santuario	Sanctuary pact
+Reliquia	Relic
+Reliquia de {}. La conservas en la sala de trofeos.	Relic of {}. It is kept in the trophy room.
+Granada · {} uds.	Grenade · {} pcs.
+Mejora del arma principal	Main weapon upgrade
+Frascos de vida	Life flasks
+Mejora de la forja: Nv {}	Forge upgrade: Lv {}
+Mejora: Nv +{}/3	Upgrade: Lv +{}/3
+Nivel {}/{} · {}	Level {}/{} · {}
+Munición {}/{}	Ammo {}/{}
+Munición {}/{} · Nv +{}/3	Ammo {}/{} · Lv +{}/3
+Munición {}/{} · Nv +{}	Ammo {}/{} · Lv +{}
+Sin mejora elemental	No elemental upgrade
+En espera (usas la secundaria)	Standby (you are using the secondary)
+Quedó en otra sala (no se puede recoger)	Left in another room (cannot be picked up)
+Vacía · recoge un arma del suelo o de un cofre	Empty · pick up a weapon from the floor or a chest
+Usar arma principal	Use main weapon
+Usar esta arma	Use this weapon
+E equipada · S en el suelo · D dejada · ! nueva · +n mejora	E equipped · S on floor · D left behind · ! new · +n upgrade
+E equip. · S suelo · D dejada · ! nueva	E equip. · S floor · D left · ! new
+E equip. · S suelo · ! nueva	E equip. · S floor · ! new
+! nueva	! new
+Misma arma: sube de nivel	Same weapon: levels up
+Dejaste atrás: {}	You left behind: {}
+ equipada!	 equipped!
 Filo Afilado	Keen Edge
 +15% de daño de arma por nivel.	+15% weapon damage per level.
 Corazón Robusto	Sturdy Heart
@@ -593,13 +709,11 @@ Fuente de vida	Fountain of life
 Recuperas esa parte de tu vida máxima ahora mismo.	You instantly recover that portion of your max health.
 Botín de oro	Gold loot
 Un montón de monedas y algunas almas para gastar en la tienda.	A pile of coins and a few souls to spend in the shop.
-Frascos de vida	Life flasks
 Rellena tus frascos de vida (hasta tu máximo).	Refills your life flasks (up to your maximum).
 Barrera de luz	Barrier of light
 Un escudo temporal que absorbe daño antes que tu vida.	A temporary shield that absorbs damage before your health does.
 Recarga total	Full recharge
 Reinicia las recargas de tus habilidades y carga tu definitiva.	Resets your skill cooldowns and charges your ultimate.
-Arma principal	Main weapon
 Escudo	Shield
 Más granadas	More grenades
 Granadas mejoradas	Improved grenades
@@ -1268,7 +1382,6 @@ Equipo: {}	Gear: {}
 Compañero: {}	Companion: {}
 Enfriamiento {}s	Cooldown {}s
 Definitiva: {}	Ultimate: {}
-Arma: {}	Weapon: {}
 Almas: {}	Souls: {}
 Gemas: {}	Gems: {}
 Comprado: {}	Purchased: {}
@@ -1750,7 +1863,6 @@ Silencio	Silence
 Voluntad	Will
 Libertad	Freedom
 Paciencia	Patience
-Reliquia	Relic
 ¡Segunda oportunidad!	Second chance!
 ¡Reliquia obtenida!	Relic obtained!
 ¡Roto!	Broken!

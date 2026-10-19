@@ -88,6 +88,8 @@ public final class Enemy extends Ent {
     private boolean superArmor() { return elite || def.role == EnemyDef.HEAVY || def.role == EnemyDef.CHARGER; }
 
     // ------------------------------------------------------------------ reaccion al daño
+    float hurtDur = 0.26f, hurtFric = 500f;      // duracion de la reaccion al golpe y friccion calculada para frenar justo al terminar (sin deslizarse)
+
     public void onHit(Level lv, float kx, float ky, float dmgTaken) {
         aggro = true;
         if (kx == 0 && ky == 0) return;
@@ -95,8 +97,12 @@ public final class Enemy extends Ent {
         if (def.role == EnemyDef.TURRET) { if (state != WINDUP && state != ATTACK) { state = HURT; stateT = 0; animName = "hurt"; animT = 0; } return; }
         float resist = def.role == EnemyDef.HEAVY || def.role == EnemyDef.SHIELD ? 0.45f : (def.role == EnemyDef.CHARGER ? 0.55f : 1f);
         if (elite) resist *= 0.6f;
-        if (!flying) vx = kx * resist; else { vx = kx * resist * 0.8f; }
+        int hk = lv.hitKind;
+        float kmul = hk == Impact.HEAVY ? 1.25f : hk == Impact.CRIT ? 1.1f : hk == Impact.LIGHT ? 0.9f : 1f;
+        hurtDur = hk == Impact.HEAVY ? 0.38f : hk == Impact.CRIT ? 0.30f : hk == Impact.LIGHT ? 0.22f : 0.26f;
+        if (!flying) vx = kx * resist * kmul; else { vx = kx * resist * 0.8f * kmul; }
         if (ky != 0) vy = flying ? ky * 0.5f : Math.min(0, ky) * resist;
+        hurtFric = Math.max(400f, Math.abs(vx) / (hurtDur * 0.8f));
         boolean stagger = !(superArmor() && (state == WINDUP || state == ATTACK || state == CHARGE) && dmgTaken < maxHp * 0.18f);
         if (stagger && state != DEAD) {
             state = HURT; stateT = 0; animName = "hurt"; animT = 0; hitDone = false;
@@ -410,8 +416,8 @@ public final class Enemy extends Ent {
                 if (stateT > 0.25f) state = CHASE;
                 break;
             case HURT:
-                vx = Mth.approach(vx, 0, 500 * dt);
-                if (stateT > 0.26f) { state = CHASE; animName = "idle"; }
+                vx = Mth.approach(vx, 0, hurtFric * dt);
+                if (stateT > hurtDur) { state = CHASE; animName = "idle"; }
                 break;
             default: state = CHASE; break;
         }
@@ -450,8 +456,8 @@ public final class Enemy extends Ent {
                 if (stateT > 0.2f) state = CHASE;
                 break;
             case HURT:
-                vx = Mth.approach(vx, 0, 500 * dt);
-                if (stateT > 0.26f) { state = CHASE; animName = "idle"; }
+                vx = Mth.approach(vx, 0, hurtFric * dt);
+                if (stateT > hurtDur) { state = CHASE; animName = "idle"; }
                 break;
             default: state = CHASE; break;
         }
@@ -525,9 +531,9 @@ public final class Enemy extends Ent {
                 break;
             }
             case HURT:
-                vx = Mth.approach(vx, 0, 400 * dt); vy = Mth.approach(vy, 0, 400 * dt);
+                vx = Mth.approach(vx, 0, hurtFric * dt); vy = Mth.approach(vy, 0, hurtFric * dt);
                 lv.move(this, dt);
-                if (stateT > 0.26f) { state = CHASE; animName = "idle"; }
+                if (stateT > hurtDur) { state = CHASE; animName = "idle"; }
                 break;
             default:
                 lv.move(this, dt);
@@ -575,9 +581,9 @@ public final class Enemy extends Ent {
                 if (stateT > 0.5f) state = CHASE;
                 break;
             case HURT:
-                vx = Mth.approach(vx, 0, 400 * dt); vy = Mth.approach(vy, 0, 400 * dt);
+                vx = Mth.approach(vx, 0, hurtFric * dt); vy = Mth.approach(vy, 0, hurtFric * dt);
                 lv.move(this, dt);
-                if (stateT > 0.26f) { state = CHASE; animName = "walk"; }
+                if (stateT > hurtDur) { state = CHASE; animName = "walk"; }
                 break;
             default: state = CHASE; break;
         }
@@ -617,8 +623,8 @@ public final class Enemy extends Ent {
                 if (stateT > 0.6f) { state = CHASE; animName = "idle"; }
                 break;
             case HURT:
-                vx = Mth.approach(vx, 0, 500 * dt);
-                if (stateT > 0.26f) { state = CHASE; animName = "idle"; }
+                vx = Mth.approach(vx, 0, hurtFric * dt);
+                if (stateT > hurtDur) { state = CHASE; animName = "idle"; }
                 break;
             default: state = CHASE; break;
         }
@@ -661,8 +667,8 @@ public final class Enemy extends Ent {
                 if (onGround && stateT > 0.1f) { state = CHASE; stateT = 0; animName = "idle"; atkCd = cooldown * (0.7f + lv.rng.f() * 0.4f); vx = 0; }
                 break;
             case HURT:
-                vx = Mth.approach(vx, 0, 500 * dt);
-                if (stateT > 0.26f) { state = CHASE; animName = "idle"; }
+                vx = Mth.approach(vx, 0, hurtFric * dt);
+                if (stateT > hurtDur) { state = CHASE; animName = "idle"; }
                 break;
             default: state = CHASE; break;
         }
@@ -771,8 +777,8 @@ public final class Enemy extends Ent {
                 if (stateT > 0.2f) state = CHASE;
                 break;
             case HURT:
-                vx = Mth.approach(vx, 0, 500 * dt);
-                if (stateT > 0.26f) { state = CHASE; animName = "idle"; }
+                vx = Mth.approach(vx, 0, hurtFric * dt);
+                if (stateT > hurtDur) { state = CHASE; animName = "idle"; }
                 break;
             default: state = CHASE; break;
         }
@@ -951,8 +957,8 @@ public final class Enemy extends Ent {
                 if (stateT > 0.3f) state = CHASE;
                 break;
             case HURT:
-                vx = Mth.approach(vx, 0, 500 * dt);
-                if (stateT > 0.26f) { state = CHASE; animName = "idle"; }
+                vx = Mth.approach(vx, 0, hurtFric * dt);
+                if (stateT > hurtDur) { state = CHASE; animName = "idle"; }
                 break;
             default: state = CHASE; break;
         }

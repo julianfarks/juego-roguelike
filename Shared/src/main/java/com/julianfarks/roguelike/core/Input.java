@@ -272,6 +272,8 @@ public final class Input {
     public boolean held(int b) { return held[b]; }
     public boolean pressed(int b) { return pressed[b]; }
     public void consume(int b) { pressed[b] = false; }
-    public void endFrame() { for (int i = 0; i < B_COUNT; i++) pressed[i] = false; }
+    /** Durante una pausa de impacto (hitstop) el jugador no se actualiza: se conservan las pulsaciones para el primer fotograma real (no se pierden entradas). */
+    public boolean keep;
+    public void endFrame() { if (keep) { keep = false; return; } for (int i = 0; i < B_COUNT; i++) pressed[i] = false; }
     public float moveX() { return (held[B_RIGHT] ? 1 : 0) - (held[B_LEFT] ? 1 : 0); }
 }

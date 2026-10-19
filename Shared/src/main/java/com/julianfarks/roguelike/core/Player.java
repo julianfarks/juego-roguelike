@@ -485,7 +485,7 @@ public final class Player extends Ent {
         Snd.sfxv(sfx, 0.85f);
     }
 
-    private float atkSpeed(Level lv) { return cls.atkSpeed * lv.rs.stats.atkSpd * BlessFx.atkSpdMul(lv) * (1f + 0.03f * Math.min(furia, 6)); }
+    private float atkSpeed(Level lv) { return cls.atkSpeed * lv.rs.stats.atkSpd * BlessFx.atkSpdMul(lv) * (lv.flowT > 0 ? 1.12f : 1f) * (1f + 0.03f * Math.min(furia, 6)); }
 
     private void updateAttack(Level lv, float dt, float mx, float spd) {
         Anim a = sheet.anim(animName);
@@ -559,16 +559,20 @@ public final class Player extends Ent {
             if (s.eclipseCd > 0 && eclipseT <= 0) { dmg *= 2.5f; eclipseT = s.eclipseCd; lv.fx("fx_ring", "pulse", e.cx(), e.cy(), 0.6f, 0xFFE8A0, Platform.ADD | Platform.TINT); lv.text(e.x, e.y - e.bh - 20, "¡Eclipse!", 0xFFD25A, true); }
             boolean crit = lv.rollCrit(e);
             if (crit) dmg *= lv.critMulOf(e);
-            float kb = (cls.id == 7 ? 230f : 120f) * (combo == 3 ? 1.6f : 1f);
+            int kind = Impact.kindOfWeapon(crit, combo);
+            boolean counter = lv.counterT > 0;
+            if (counter) {      // contraataque tras parry/esquiva perfectos: +50 % de dano y golpe pesado (una sola vez)
+                dmg *= 1.5f; lv.counterT = 0; if (kind < Impact.HEAVY) kind = Impact.HEAVY;
+                lv.text(e.x, e.y - e.bh - 22, "¡Contra!", 0xFFFFFF, true);
+                lv.fx("fx_ring", "pulse", e.cx(), e.cy(), 0.8f, 0xFFFFFF, Platform.ADD | Platform.TINT);
+            }
+            float kb = (cls.id == 7 ? 230f : 120f) * (kind == Impact.HEAVY || combo == 3 ? 1.6f : (kind == Impact.CRIT ? 1.2f : 1f));
+            lv.hitKind = kind;
             lv.damageEnemy(e, dmg, crit, dir() * kb, combo == 3 ? -140 : -50);
+            lv.hitKind = 0;
             lv.onWeaponHit(e, dmg, crit, combo);
             hitCount++;
-            Snd.sfxv(hitSfxFor(e, crit), 0.85f);
-            lv.fx("fx_hit", crit ? "crit" : (combo == 3 ? "big" : "spark"), e.cx() + (right ? -4 : 4), e.cy(), 1f, 0, 0);
-            lv.ps.burst(lv.rng, e.cx(), e.cy(), crit ? 0xFFD25A : 0xFFFFFF, crit ? 10 : 5, 110, 0.25f, 2, 200, true);
-            lv.hitstop(crit ? 0.09f : (combo == 3 ? 0.075f : 0.045f));
-            lv.shake(crit ? 3f : (combo == 3 ? 2.5f : 1.3f), 0.12f);
-            if (crit && Save.S.vibOn) lv.P.vibrate(12);
+            Impact.hit(lv, e, kind, dir(), !e.alive, hitSfxFor(e, crit));
             if (a.name.startsWith("attack")) {
                 // contragolpe: pequeño retroceso
                 vx -= dir() * 20;
@@ -609,10 +613,7 @@ public final class Player extends Ent {
             lv.dmgSrc = 0;
             if (dashStatus >= 0) e.applyStatus(dashStatus, dashSDur, 6f);
             if (dashHeal) lv.healPlayer(lv.rs.stats.maxHp * 0.04f);
-            Snd.sfxv(cls.key.equals("storm") ? "hit_shock" : "hit_metal_" + (1 + lv_i(2)), 0.8f);
-            lv.fx("fx_hit", "big", e.cx(), e.cy(), 1f, 0, 0);
-            lv.hitstop(0.05f);
-            lv.shake(2f, 0.1f);
+            Impact.hit(lv, e, Impact.SPECIAL, dashDir, !e.alive, cls.key.equals("storm") ? "hit_shock" : "hit_metal_" + (1 + lv_i(2)));
         }
     }
 

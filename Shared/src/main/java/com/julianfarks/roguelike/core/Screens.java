@@ -174,6 +174,7 @@ final class Screens {
             int i = 0;
             add(x, y + st * i++, bw, bh, "Música: " + (s.musicOn ? "SÍ" : "NO"), () -> { s.musicOn = !s.musicOn; Snd.applyVolumes(); s.write(); layout(); });
             add(x, y + st * i++, bw, bh, "Sonidos: " + (s.sfxOn ? "SÍ" : "NO"), () -> { s.sfxOn = !s.sfxOn; Snd.applyVolumes(); s.write(); layout(); });
+            add(x, y + st * i++, bw, bh, "Efectos intensos: " + (s.reduceFx ? "REDUCIDOS" : "NORMALES"), () -> { s.reduceFx = !s.reduceFx; s.write(); layout(); });
             boolean pc = game.P.isDesktop();     // PC: sin vibracion ni controles tactiles; con ajustes de video
             if (!pc) {
                 add(x, y + st * i++, bw, bh, "Vibración: " + (s.vibOn ? "SÍ" : "NO"), () -> { s.vibOn = !s.vibOn; s.write(); layout(); });

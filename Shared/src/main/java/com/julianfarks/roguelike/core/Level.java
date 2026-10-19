@@ -37,6 +37,15 @@ public final class Level {
     public float time;
     public float hitstop;
     public float timeScale = 1f;
+    // ---- sensacion de combate (ver Impact)
+    float slowT, slowScale = 1f;         // ralentizacion breve (parry perfecto): no toca entradas ni temporizadores reales
+    public int hitKind;                  // tipo del golpe que se esta aplicando (Impact.LIGHT/HEAVY/CRIT/SPECIAL); lo lee Enemy.onHit
+    float hsWinT, hsUsed;                // presupuesto de pausas de impacto por segundo (evita sensacion de congelamiento)
+    public float counterT;               // ventana de contraataque tras un parry/esquiva perfectos
+    public float flowT;                  // recompensa temporal por encadenar acciones defensivas precisas
+    public int defStreak; float defT;    // racha de parries/esquivas perfectas
+    float dodgeFxT = -9f;                // antirrebote del efecto de esquiva perfecta
+    public int dbgImpacts, dbgHitstops;  // contadores para pruebas
     public float freezeEnemies;         // detiene a los enemigos (Ejecucion Dimensional)
     public float camX, camY, camZoom = 1f;
     float shakeT, shakeMag, flashT, flashMax; int flashColor;
@@ -254,13 +263,53 @@ public final class Level {
         return f;
     }
 
-    public void shake(float mag, float time) { if (mag >= shakeMag || shakeT <= 0) { shakeMag = mag; shakeT = time; } }
-    public void flash(int rgb, float t) { flashColor = rgb; flashT = t; flashMax = t; }
-    public void hitstop(float t) { if (t > hitstop) hitstop = t; }
+    public void shake(float mag, float time) {
+        if (Save.S.reduceFx) mag *= 0.35f;                     // accesibilidad: menos movimiento de camara
+        if (mag >= shakeMag || shakeT <= 0) { shakeMag = mag; shakeT = time; }
+    }
+    public void flash(int rgb, float t) {
+        if (Save.S.reduceFx) { if (t > 0.06f) t = 0.06f; }      // accesibilidad: destellos muy breves
+        flashColor = rgb; flashT = t; flashMax = t;
+    }
+    public void hitstop(float t) { if (Save.S.reduceFx) t *= 0.5f; if (t > hitstop) hitstop = t; }
+
+    /** Pausa de impacto de golpes normales: con presupuesto (max 0,30 s de pausa por segundo) para que una lluvia de golpes no congele el juego. */
+    public void hitstopSoft(float t) {
+        if (Save.S.reduceFx) t *= 0.5f;
+        if (hsUsed + t > 0.30f) return;
+        if (t > hitstop) { hsUsed += t - Math.max(0f, hitstop); hitstop = t; dbgHitstops++; }
+    }
+
+    /** Ralentizacion breve del mundo (no se acumula; desactivada con efectos reducidos). */
+    public void slowmo(float dur, float scale) {
+        if (Save.S.reduceFx || slowT > 0) return;
+        slowT = dur; slowScale = scale;
+    }
 
     public void text(float x, float y, String s, int color, boolean big) {
         DmgText d = new DmgText();
         d.x = x; d.y = y; d.vy = -34; d.life = d.maxLife = big ? 0.9f : 0.7f; d.text = s; d.color = color; d.big = big;
+        if (texts.size() > 40) texts.remove(0);
+        texts.add(d);
+    }
+
+    /** Numero de dano legible: los golpes rapidos al mismo enemigo se suman en un solo numero, el critico es mayor, dorado y con "!";
+     *  sobre los jefes se desplaza a un lado para no taparlos. */
+    void dmgText(Ent e, float dmg, boolean crit) {
+        int amt = Math.round(dmg);
+        for (int i = texts.size() - 1; i >= 0 && i >= texts.size() - 8; i--) {
+            DmgText d = texts.get(i);
+            if (d.target == e && !crit && !d.crit && d.life > d.maxLife - 0.22f) {
+                d.amount += amt; d.text = String.valueOf(d.amount); d.life = Math.max(d.life, d.maxLife * 0.8f);
+                return;
+            }
+        }
+        boolean boss = e instanceof Boss;
+        float ox = boss ? (rng.chance(0.5f) ? 1 : -1) * (e.bw * 0.5f + 12f) : rng.f(-6, 6);
+        float oy = boss ? -e.bh * 0.55f : -e.bh - 4;
+        DmgText d = new DmgText();
+        d.x = e.x + ox; d.y = e.y + oy; d.vy = crit ? -46 : -34; d.life = d.maxLife = crit ? 1.0f : 0.7f;
+        d.amount = amt; d.text = crit ? amt + "!" : String.valueOf(amt); d.color = crit ? 0xFFD25A : 0xFFFFFF; d.big = crit; d.crit = crit; d.target = e;
         if (texts.size() > 40) texts.remove(0);
         texts.add(d);
     }
@@ -329,7 +378,7 @@ public final class Level {
         dmg = BlessFx.modDamage(this, e, dmg, crit, src);
         e.hp -= dmg;
         e.hitFlash = 0.1f;
-        text(e.x + rng.f(-6, 6), e.y - e.bh - 4, String.valueOf(Math.round(dmg)), crit ? 0xFFD25A : 0xFFFFFF, crit);
+        dmgText(e, dmg, crit);
         if (e instanceof Enemy) ((Enemy) e).onHit(this, kx, ky, dmg);
         else if (e instanceof Boss) ((Boss) e).onHit(this, dmg);
         rs.ult = Math.min(100f, rs.ult + dmg * 0.06f * rs.stats.ultGain);
@@ -435,7 +484,7 @@ public final class Level {
         if (rs.sandbox) return false;
         Player p = pl;
         if (p == null || !p.alive || cinematic) return false;
-        if (p.invuln > 0 || p.rolling()) { if (p.rolling()) BlessFx.onDodge(this); return false; }
+        if (p.invuln > 0 || p.rolling()) { if (p.rolling()) { BlessFx.onDodge(this); Impact.perfectDodge(this, p); } return false; }
         dbgHurt++;
         Stats s = rs.stats;
         boolean blocked = false;
@@ -530,14 +579,20 @@ public final class Level {
 
     // ------------------------------------------------------------------ actualizacion
     public void update(float rawDt) {
+        hsWinT += rawDt; if (hsWinT >= 1f) { hsWinT = 0; hsUsed = 0; }
         if (hitstop > 0) {
             hitstop -= rawDt;
+            in.keep = true;                               // no perder pulsaciones durante la pausa de impacto
             // los efectos visuales siguen un poco
             updateFx(rawDt * 0.3f);
             updateCamera(rawDt);
             return;
         }
         float dt = rawDt * timeScale;
+        if (slowT > 0) { slowT -= rawDt; dt *= slowScale; }
+        if (counterT > 0) counterT -= rawDt;
+        if (flowT > 0) flowT -= rawDt;
+        if (defT > 0) { defT -= rawDt; if (defT <= 0) defStreak = 0; }
         time += dt;
         moteT -= dt;
         if (moteT <= 0) {
@@ -946,11 +1001,9 @@ public final class Level {
         p.parryT = 0; p.invuln = Math.max(p.invuln, 0.5f);
         float fx = p.x + p.dir() * 12;
         text(p.x, p.y - p.bh - 14, "¡PARRY!", 0xFFE070, true);
-        Snd.sfx("hit_metal_2", 1f); Snd.sfxv("block", 0.9f);
-        fx("fx_ring", "pulse", fx, p.y - 16, 0.9f, 0xFFE070, Platform.ADD | Platform.TINT);
         fx("fx_hit", "big", fx, p.y - 16, 1f, 0, 0);
-        ps.burst(rng, fx, p.y - 16, 0xFFE070, 22, 170, 0.5f, 2, 0, true);
-        hitstop(0.16f); shake(3.5f, 0.2f); flash(0xFFE8A0, 0.14f);
+        Impact.perfectParry(this, p, fx, p.y - 16);
+        hitstop(0.12f); shake(3.5f, 0.2f); flash(0xFFE8A0, 0.12f);
         rs.ult = Math.min(100f, rs.ult + 8f);
         healPlayer(rs.stats.maxHp * 0.015f);
         if (Save.S.vibOn) P.vibrate(25);
@@ -1150,12 +1203,17 @@ public final class Level {
     }
 
     private void drawText(Platform.Gfx g, DmgText d) {
-        Font f = d.big ? UI.small : UI.small;
+        Font f = UI.small;
         if (f == null) return;
         float a = Mth.clamp(d.life / 0.25f, 0, 1);
         float w = f.width(d.text);
-        f.draw(g, d.text, Math.round(d.x - w / 2f), Math.round(d.y), d.color, a);
-        if (d.big) f.draw(g, d.text, Math.round(d.x - w / 2f) + 1, Math.round(d.y), d.color, a * 0.6f);
+        int x = Math.round(d.x - w / 2f), y = Math.round(d.y);
+        // contorno oscuro (legibilidad sobre cualquier fondo) y, en criticos, doble trazo dorado: no depende solo del color
+        int ol = 0x180818;
+        f.draw(g, d.text, x - 1, y, ol, a * 0.85f); f.draw(g, d.text, x + 1, y, ol, a * 0.85f);
+        f.draw(g, d.text, x, y - 1, ol, a * 0.85f); f.draw(g, d.text, x, y + 1, ol, a * 0.85f);
+        f.draw(g, d.text, x, y, d.color, a);
+        if (d.big) f.draw(g, d.text, x + 1, y, d.color, a * 0.7f);
     }
 
     // ------------------------------------------------------------------ interaccion

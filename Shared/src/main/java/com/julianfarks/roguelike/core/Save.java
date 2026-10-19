@@ -36,6 +36,7 @@ public final class Save {
     public int ascension = 0;                        // nivel de dificultad desbloqueado
     public int ascensionSel = 0;
     public boolean musicOn = true, sfxOn = true, vibOn = true;
+    public boolean reduceFx = false;                 // accesibilidad: reduce destellos, sacudidas de camara, pausas de impacto y particulas
     public boolean tutorialDone = false;
     public int lastClass = 0;
     public int diffSel = 1;                          // 0 facil, 1 normal, 2 dificil
@@ -114,7 +115,7 @@ public final class Save {
                 int[] cw = Json.ints(d, "cw");
                 if (cw != null) for (int i = 0; i < Math.min(10, cw.length); i++) s.classWins[i] = cw[i];
                 s.ascension = Json.i(d, "asc", 0); s.ascensionSel = Json.i(d, "ascSel", 0);
-                s.musicOn = Json.bool(d, "music", true); s.sfxOn = Json.bool(d, "sfx", true); s.vibOn = Json.bool(d, "vib", true);
+                s.musicOn = Json.bool(d, "music", true); s.sfxOn = Json.bool(d, "sfx", true); s.vibOn = Json.bool(d, "vib", true); s.reduceFx = Json.bool(d, "rfx", false);
                 s.tutorialDone = Json.bool(d, "tut", false);
                 s.lastClass = Json.i(d, "last", 0);
                 s.diffSel = Math.max(0, Math.min(2, Json.i(d, "diff", 1)));
@@ -184,7 +185,7 @@ public final class Save {
             d.put("runs", runs); d.put("wins", wins); d.put("kills", kills); d.put("bestRooms", bestRooms); d.put("bossKills", bossKills);
             d.put("cw", classWins);
             d.put("asc", ascension); d.put("ascSel", ascensionSel);
-            d.put("music", musicOn); d.put("sfx", sfxOn); d.put("vib", vibOn); d.put("tut", tutorialDone); d.put("last", lastClass); d.put("diff", diffSel);
+            d.put("music", musicOn); d.put("sfx", sfxOn); d.put("vib", vibOn); d.put("rfx", reduceFx); d.put("tut", tutorialDone); d.put("last", lastClass); d.put("diff", diffSel);
             int[] un = new int[Unlocks.COUNT]; for (int i = 0; i < un.length; i++) un[i] = unlocked[i] ? 1 : 0;
             d.put("unl", un);
             int[] cl = new int[ctl.length]; for (int i = 0; i < cl.length; i++) cl[i] = Math.round(ctl[i] * 10f);
@@ -205,7 +206,7 @@ public final class Save {
 
     public void reset() {
         Save n = new Save();
-        n.lang = lang; n.musicOn = musicOn; n.sfxOn = sfxOn; n.vibOn = vibOn; n.ctl = ctl; n.kb = kb; n.pb = pb; n.inputMode = inputMode;
+        n.lang = lang; n.musicOn = musicOn; n.sfxOn = sfxOn; n.vibOn = vibOn; n.reduceFx = reduceFx; n.ctl = ctl; n.kb = kb; n.pb = pb; n.inputMode = inputMode;
         n.story[Story.S_INTRO] = story[Story.S_INTRO];
         n.devUnlocked = devUnlocked; n.codesUsed = codesUsed;
         // la moneda premium, lo comprado y los registros competitivos NO se borran al reiniciar el progreso del juego

@@ -977,28 +977,30 @@ final class RunScreen extends Screen implements Level.Listener {
                     break;
                 }
                 add(bx, by, bw, 22, "Continuar", this::closeOv);
-                add(bx, by + 28, bw, 22, "Música: " + (s.musicOn ? "SÍ" : "NO"), () -> { s.musicOn = !s.musicOn; Snd.applyVolumes(); s.write(); layoutOverlay(); });
-                add(bx, by + 56, bw, 22, "Sonidos: " + (s.sfxOn ? "SÍ" : "NO"), () -> { s.sfxOn = !s.sfxOn; Snd.applyVolumes(); s.write(); layoutOverlay(); });
+                add(bx, by + 25, bw, 22, "Música: " + (s.musicOn ? "SÍ" : "NO"), () -> { s.musicOn = !s.musicOn; Snd.applyVolumes(); s.write(); layoutOverlay(); });
+                add(bx, by + 50, bw, 22, "Sonidos: " + (s.sfxOn ? "SÍ" : "NO"), () -> { s.sfxOn = !s.sfxOn; Snd.applyVolumes(); s.write(); layoutOverlay(); });
                 if (game.P.video() != null) {     // PC: sin vibracion; atajo para alternar pantalla completa (sin bordes)
-                    add(bx, by + 84, bw, 22, "Pantalla completa: " + (VideoCfg.cur.mode != VideoCfg.MODE_WINDOW ? "SÍ" : "NO"), () -> {
+                    add(bx, by + 75, bw, 22, "Pantalla completa: " + (VideoCfg.cur.mode != VideoCfg.MODE_WINDOW ? "SÍ" : "NO"), () -> {
                         VideoCfg c = VideoCfg.cur.copy();
                         c.mode = c.mode == VideoCfg.MODE_WINDOW ? VideoCfg.MODE_BORDERLESS : VideoCfg.MODE_WINDOW;
                         if (game.P.video().apply(c)) VideoCfg.save(game.P, c);
                         layoutOverlay();
                     });
-                } else add(bx, by + 84, bw, 22, "Vibración: " + (s.vibOn ? "SÍ" : "NO"), () -> { s.vibOn = !s.vibOn; s.write(); layoutOverlay(); });
+                } else add(bx, by + 75, bw, 22, "Vibración: " + (s.vibOn ? "SÍ" : "NO"), () -> { s.vibOn = !s.vibOn; s.write(); layoutOverlay(); });
                 if (isTestSession()) {      // prueba del Modo Desarrollador: sin "Guardar partida"; solo continuar o salir
-                    add(bx, by + 112, bw + 12, 22, "Salir del modo de prueba", () -> { exitTest(); });
-                    add(bx, by + 140, bw, 22, "Bendiciones y sinergias", this::openBlessList);
+                    add(bx, by + 100, bw + 12, 22, "Salir del modo de prueba", () -> { exitTest(); });
+                    add(bx, by + 125, bw, 22, "Bendiciones y sinergias", this::openBlessList);
+                    add(bx, by + 150, bw, 22, "Efectos intensos: " + (s.reduceFx ? "REDUCIDOS" : "NORMALES"), () -> { s.reduceFx = !s.reduceFx; s.write(); layoutOverlay(); });
                     break;
                 }
-                add(bx, by + 112, bw, 22, "Guardar partida", () -> { if (isTestSession()) return; saveMenu = true; layoutOverlay(); });
-                add(bx, by + 140, bw, 22, quitConfirm ? "¿Seguro? Toca otra vez" : "Abandonar partida", () -> {
+                add(bx, by + 100, bw, 22, "Guardar partida", () -> { if (isTestSession()) return; saveMenu = true; layoutOverlay(); });
+                add(bx, by + 125, bw, 22, quitConfirm ? "¿Seguro? Toca otra vez" : "Abandonar partida", () -> {
                     if (isTestSession()) { exitTest(); return; }
                     if (quitConfirm) { endRun(false); game.go(new Ops(game)); }
                     else { quitConfirm = true; layoutOverlay(); }
                 });
-                add(bx, by + 168, bw, 22, "Bendiciones y sinergias", this::openBlessList);
+                add(bx, by + 150, bw, 22, "Bendiciones y sinergias", this::openBlessList);
+                add(bx, by + 175, bw, 22, "Efectos intensos: " + (s.reduceFx ? "REDUCIDOS" : "NORMALES"), () -> { s.reduceFx = !s.reduceFx; s.write(); layoutOverlay(); });
                 break;
             }
             case OV_BLESSLIST: {

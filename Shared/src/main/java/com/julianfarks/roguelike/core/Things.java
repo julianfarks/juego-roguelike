@@ -83,5 +83,5 @@ final class Prop {
 
 /** Texto de daño flotante. */
 final class DmgText {
-    float x, y, vy, life, maxLife; String text; int color; boolean big;
+    float x, y, vy, life, maxLife; String text; int color; boolean big, crit; int amount; Ent target;
 }

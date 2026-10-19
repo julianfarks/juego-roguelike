@@ -147,6 +147,10 @@ public final class Save {
                 if (kk != null) for (int i = 0; i < Math.min(s.kb.length, kk.length); i++) s.kb[i] = kk[i];
                 int[] pp = Json.ints(d, "pb");
                 if (pp != null) for (int i = 0; i < Math.min(s.pb.length, pp.length); i++) s.pb[i] = pp[i];
+                // acciones nuevas (cambiar arma, inventario): si su tecla/boton por defecto ya la usaba otra accion del jugador, se deja sin asignar (sin conflictos)
+                for (int a = 16; a < s.kb.length; a++) {
+                    for (int o = 0; o < 16; o++) { if (s.kb[o] == s.kb[a] && (kk == null || kk.length <= a)) s.kb[a] = 0; if (s.pb[o] == s.pb[a] && (pp == null || pp.length <= a)) s.pb[a] = 0; }
+                }
                 int[] cl = Json.ints(d, "ctl");
                 if (cl != null) for (int i = 0; i < Math.min(s.ctl.length, cl.length); i++) s.ctl[i] = cl[i] / 10f;
             }

@@ -10,6 +10,7 @@ public final class Player extends Ent {
     public final ClassDef cls;
     public int state = IDLE;
     public int skinTint;
+    public float swapCd, swapAnimT, wpnT, swapBuf; public int wpnId, wandEl; public String swapIcon;
     public float secCd, grenCd, safeX, safeY, invuln, shield, skinT, hurtT, furia;
     public float extVx;                       // empuje externo (atraccion de jefes)
     public float guardT;                      // guardia de acero
@@ -18,7 +19,7 @@ public final class Player extends Ent {
     public int combo, hitCount;
 
     private float rollBuf, skillBuf, ultBuf; private int skillBufIdx;
-    private float rollCd, atkBuf, jumpBuf, coyote, comboWin, stepT, safeT, dustT, trailT, actionT;
+    float atkBuf; private float rollCd, jumpBuf, coyote, comboWin, stepT, safeT, dustT, trailT, actionT;
     private int jumpsLeft, skillIdx, lastFrame = -1;
     private boolean jumping, skillFired, swingFx, deathSent;
     private final HashSet<Ent> swingHit = new HashSet<>();
@@ -143,6 +144,11 @@ public final class Player extends Ent {
         if (dropT > 0) dropT -= dt;
         sq += (0f - sq) * Math.min(1f, dt * 11f);
         if (secCd > 0) secCd -= dt;
+        if (swapCd > 0) swapCd -= dt;
+        if (swapAnimT > 0) swapAnimT -= dt;
+        if (wpnT > 0) wpnT -= dt;
+        if (swapBuf > 0) swapBuf -= dt;
+        if (lv.rs.sec == 0) lv.rs.secActive = false;
         if (grenCd > 0) grenCd -= dt;
         for (int i = 0; i < 4; i++) if (i < 3 && rs.cd[i] > 0) rs.cd[i] = Math.max(0, rs.cd[i] - dt);
         if (s.eclipseCd > 0 && eclipseT > 0) eclipseT -= dt;
@@ -200,6 +206,8 @@ public final class Player extends Ent {
             if (in.pressed(Input.B_JUMP)) jumpBuf = 0.17f;
             if (in.pressed(Input.B_ATTACK)) atkBuf = 0.22f;
             if (in.pressed(Input.B_POTION)) drinkPotion(lv);
+            if (in.pressed(Input.B_SWAP)) swapBuf = 0.16f;
+            if (swapBuf > 0 && (state == IDLE || state == RUN || state == AIR) && !guarding) { if (Arsenal.swap(lv, this) || swapCd > 0) swapBuf = 0; }
             if (state != HURT && state != ULT && state != ROLL) {
                 if (in.pressed(Input.B_SEC)) Items.useSecondary(lv, this);
                 if (in.pressed(Input.B_GREN)) Items.throwGrenade(lv, this);
@@ -228,7 +236,10 @@ public final class Player extends Ent {
         if (state == IDLE || state == RUN || state == AIR) {
             canAct = true;
             if (ctl && !frozenNow) {
-                if (atkBuf > 0 && !guarding) { startAttack(lv); canAct = false; }
+                boolean secOn = lv.rs.secActive && lv.rs.sec != 0;
+                if (secOn) {      // arma secundaria activa: el boton de ataque la dispara (mantener = repetir)
+                    if ((atkBuf > 0 || in.held(Input.B_ATTACK)) && !guarding && secCd <= 0 && swapCd <= 0) { atkBuf = 0; Items.useSecondary(lv, this); canAct = false; }
+                } else if (atkBuf > 0 && !guarding) { startAttack(lv); canAct = false; }
             }
         }
 
@@ -823,6 +834,14 @@ public final class Player extends Ent {
             Sheet sh = Assets.fx("fx_shield");
             Anim sa = sh.anim("bubble");
             sh.drawCentered(g, sa, (int) (lv.time * 10) % sa.n, Math.round(x), Math.round(y - 18), 0, 1f, Platform.ADD, 0, 0.5f);
+        }
+        if (wpnT > 0 && alive && wpnId > 0 && wpnId < Items.SEC_COUNT) {      // el arma 2ª se adelanta al disparar
+            float f = wpnT / 0.22f;
+            UI.iconC(g, Items.SEC_ICON[wpnId], x + dir() * (9 + 9 * (1f - f)), y - 19, 1f, Mth.clamp(f * 1.6f, 0f, 1f));
+        }
+        if (swapAnimT > 0 && alive && swapIcon != null) {                     // cambio de arma: el icono sube sobre la cabeza
+            float f = swapAnimT / 0.32f;
+            UI.iconC(g, swapIcon, x, y - bh - 10 - 8 * (1f - f), 1f, Mth.clamp(f * 1.8f, 0f, 1f));
         }
         if (state == ATK || state == SKILL) { /* nada extra */ }
     }

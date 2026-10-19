@@ -52,6 +52,8 @@ final class RunSave {
             d.put("infRooms", rs.infRooms); d.put("infBK", rs.infBaseKills); d.put("infBB", rs.infBaseBoss); d.put("infT0", (int) rs.infT0);
             d.put("credK", rs.credKills); d.put("credB", rs.credBoss); d.put("seed", (double) rs.seed); d.put("chalK", rs.chalKind); d.put("streak", rs.streak); d.put("pstreak", rs.perfectStreak);
             d.put("cb", rs.cb); d.put("grenLvl", rs.grenLvl); d.put("secLvl", rs.secLvl);
+            d.put("ver", 2); d.put("secAct", rs.secActive); d.put("wst", rs.wState);       // v2: arsenal (arma activa) e inventario (objetos nuevos / vistos). Solo claves nuevas.
+            d.put("unseen", new ArrayList<Object>(rs.unseen)); d.put("seen", new ArrayList<Object>(rs.seen));
             d.put("ts", (double) System.currentTimeMillis());
             p.store().put(key(slot), Json.write(d));
             p.store().commit();
@@ -94,6 +96,16 @@ final class RunSave {
             rs.special = Json.i(d, "special", 0); rs.shield = Json.i(d, "shield", 0); rs.secretsFound = Json.i(d, "secrets", 0);
             int[] cbv = Json.ints(d, "cb"); if (cbv != null) for (int i = 0; i < Math.min(cbv.length, rs.cb.length); i++) rs.cb[i] = cbv[i];
             rs.grenLvl = Json.i(d, "grenLvl", 0); rs.secLvl = Json.i(d, "secLvl", 0);
+            // migracion v1 -> v2: copia de seguridad intacta de la partida antigua (una sola vez) antes de que se vuelva a escribir
+            if (!d.containsKey("ver")) {
+                try { String raw = g.P.store().get(key(slot), ""); if (raw != null && !raw.isEmpty() && g.P.store().get(key(slot) + "_bak", "").isEmpty()) { g.P.store().put(key(slot) + "_bak", raw); g.P.store().commit(); } } catch (RuntimeException ignore) { }
+            }
+            rs.sec = rs.sec >= 0 && rs.sec < Items.SEC_COUNT ? rs.sec : 0;
+            rs.secActive = rs.sec != 0 && Json.bool(d, "secAct", false);
+            int[] ws = Json.ints(d, "wst"); if (ws != null) for (int i = 0; i < Math.min(ws.length, rs.wState.length); i++) rs.wState[i] = Math.max(0, Math.min(3, ws[i]));
+            if (rs.sec != 0) rs.wState[rs.sec] = 1;      // partidas antiguas: la secundaria equipada cuenta como obtenida
+            for (Object o : Save.arrOf(d, "unseen")) if (o instanceof String) rs.unseen.add((String) o);
+            for (Object o : Save.arrOf(d, "seen")) if (o instanceof String) rs.seen.add((String) o);
             rs.devAssisted = Json.bool(d, "devAsst", false); rs.infinite = Json.bool(d, "inf", false); rs.infFromCampaign = Json.bool(d, "infCamp", false);
             rs.mods = rs.infinite && !rs.isTest() ? Json.i(d, "mods", 0) & Infinite.MOD_ALL : 0;
             rs.floor = Math.max(1, Json.i(d, "floor", 1)); rs.floorsDone = Json.i(d, "floorsDone", 0);

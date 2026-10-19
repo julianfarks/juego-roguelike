@@ -29,6 +29,7 @@ public final class Level {
     public final List<Enemy> enemies = new ArrayList<>();
     final List<Proj> projs = new ArrayList<>();
     final List<Prop> props = new ArrayList<>();
+    final List<Arsenal.Summon> summons = new ArrayList<>();      // espiritus del Cetro de invocacion (temporales, se pierden al salir de la sala)
     final List<Pickup> pickups = new ArrayList<>();
     final List<FxObj> fxs = new ArrayList<>();
     final List<DmgText> texts = new ArrayList<>();
@@ -622,6 +623,7 @@ public final class Level {
         if (pl.alive || timeScale < 1f) pl.update(this, dt);
         secrets.update(dt);
         updateCompanion(dt);
+        Arsenal.updateSummons(this, dt);
         if (!pl.alive && timeScale < 1f) timeScale = Math.min(1f, timeScale + rawDt * 0.0f);
         if (freezeEnemies > 0) freezeEnemies -= dt;
         long bt0 = System.nanoTime();
@@ -721,6 +723,8 @@ public final class Level {
         p.t += dt;
         p.animT += dt;
         if (p.shakeT > 0) p.shakeT -= dt;
+        if (p.pickLock > 0) p.pickLock -= dt;
+        if (p.popT > 0) p.popT -= dt;
         if (p.kind.equals("pot") && p.open && p.sheet.anim("break").done(p.animT)) p.dead = true;
     }
 
@@ -737,6 +741,8 @@ public final class Level {
             p.t += dt;
             p.life -= dt;
             if (p.life <= 0) { projDie(p, false); continue; }
+            if (p.ramp > 0) { if (p.dmg0 <= 0) p.dmg0 = p.dmg; p.dmg = p.dmg0 * Math.min(p.rampMax, 1f + p.ramp * p.t); }
+            if (p.special == 3 && Arsenal.updateChakram(this, p, dt)) continue;
             if (p.homing > 0) {
                 Ent tgt = p.friendly ? nearestEnemy(p.x, p.y, 200, true) : (pl.alive ? pl : null);
                 if (tgt != null) {
@@ -1103,6 +1109,7 @@ public final class Level {
         for (Enemy e : enemies) e.render(g, this);
         if (boss != null) boss.render(g, this);
         drawCompanion(g);
+        Arsenal.drawSummons(g, this);
         pl.render(g, this);
         drawSecretMarks(g);
         for (Proj p : projs) drawProj(g, p);
@@ -1200,6 +1207,7 @@ public final class Level {
 
     private void drawProp(Platform.Gfx g, Prop p) {
         if (p.hidden) return;
+        if (p.kind.equals("weapon")) { Arsenal.drawGround(g, this, p); return; }
         if (p.kind.equals("chest") && p.roundChest && !p.used) { UI.light(g, p.x, p.y - 10, 26 + 3 * (float) Math.sin(time * 5), 0xFFD25A, 0.35f); if (rng.chance(0.05f)) ps.spawn(p.x + rng.f(-8, 8), p.y - 4, rng.f(-6, 6), -rng.f(15, 35), 0.8f, 2, 0, 0xFFE9A0, true); }
         if (p.kind.equals("chest") && p.arg >= 3 && !p.used) { UI.light(g, p.x, p.y - 8, 30 + 4 * (float) Math.sin(time * 4), 0xB070FF, 0.40f); if (rng.chance(0.06f)) ps.spawn(p.x + rng.f(-8, 8), p.y - 4, rng.f(-6, 6), -rng.f(15, 35), 0.8f, 2, 0, 0xD8B0FF, true); }
         if (p.sheet == null) return;
@@ -1245,6 +1253,7 @@ public final class Level {
             boolean can = false;
             switch (p.kind) {
                 case "altar": case "forge": case "merchant": case "fountain": case "chest": case "portal": case "sanctuary": case "npc": can = !p.used || p.kind.equals("merchant"); break;
+                case "weapon": can = !p.used && p.pickLock <= 0; break;
                 case "spirit": case "shrine": case "cage": case "relic": case "cursed": can = !p.done && !p.used; break;
                 case "door": can = !p.locked; break;
                 default: break;

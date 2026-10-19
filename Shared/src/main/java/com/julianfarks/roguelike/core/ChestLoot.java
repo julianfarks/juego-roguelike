@@ -60,7 +60,7 @@ final class ChestLoot {
     // ---- armas extra (se suman a las especiales existentes en Items)
     private static final int[] SP_RAR = {0, 1, 1, 1, 2, 2, 3, 2, 1};
     private static final String[] SP_ICON = {"", "burn", "freeze", "poison", "bleed", "shock", "star", "b_gigante", "b_furia"};
-    private static final int[] SEC_RAR = {0, 0, 1, 2, 3};
+    private static final int[] SEC_RAR = Items.SEC_RAR;   // las rarezas viven con el resto de datos del arma (Items)
     private static final int[] SH_RAR = {0, 1, 2, 2};
     private static final String[] SH_ICON = {"shield", "shield", "shield", "shield"};
     private static final int[] GR_RAR = {0, 1, 1, 1, 2, 2};
@@ -209,6 +209,7 @@ final class ChestLoot {
         if (cat == 0) { for (int i = 1; i < Items.SP_COUNT; i++) if (i != rs.special) c.add(i); }
         else if (cat == 1) { for (int i = 1; i < Items.SEC_COUNT; i++) if (i != rs.sec) c.add(i); }
         else { for (int i = 0; i < Items.SH_COUNT; i++) if (i != rs.shield) c.add(i); }
+        if (cat == 1 && rs.sec != 0 && rs.secLvl < 3 && r.chance(0.18f)) return secUp(rs);   // arma repetida: en vez de un duplicado, mejora de nivel
         if (c.isEmpty()) return null;
         // elige entre los candidatos el de rareza mas cercana a la tirada
         int best = -1, bd = 99;
@@ -338,11 +339,11 @@ final class ChestLoot {
             case K_GREN_NEW: rs.gren = x.id; rs.grenCount = x.val; break;
             case K_GREN_MORE: rs.grenCount = Math.min(12, rs.grenCount + x.val); break;
             case K_GREN_UP: rs.grenLvl = Math.min(3, rs.grenLvl + 1); break;
-            case K_SEC_NEW: rs.sec = x.id; rs.secAmmo = Items.SEC_AMMO[x.id]; break;
+            case K_SEC_NEW: Arsenal.equip(rs, x.id, 0); break;
             case K_SEC_AMMO: rs.secAmmo = Math.min(Items.SEC_AMMO[rs.sec] * 2, rs.secAmmo + x.val); break;
             case K_SEC_UP: rs.secLvl = Math.min(3, rs.secLvl + 1); break;
-            case K_SPECIAL: rs.special = x.id; rs.recalc(); break;
-            case K_SHIELD: rs.shield = x.id; break;
+            case K_SPECIAL: rs.special = x.id; rs.markNew("o:sp" + x.id); rs.recalc(); break;
+            case K_SHIELD: rs.shield = x.id; rs.markNew("o:sh" + x.id); break;
             default: break;
         }
         return x.name;

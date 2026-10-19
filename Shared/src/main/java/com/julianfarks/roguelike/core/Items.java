@@ -4,12 +4,30 @@ package com.julianfarks.roguelike.core;
 final class Items {
     private Items() {}
 
-    // ---- armas secundarias (boton SEC, gastan municion)
-    static final int SEC_NONE = 0, SEC_KNIFE = 1, SEC_BOLT = 2, SEC_AXE = 3, SEC_ORB = 4, SEC_COUNT = 5;
-    static final String[] SEC_NAME = {"-", "Cuchillos arrojadizos", "Ballesta rúnica", "Hacha arrojadiza", "Orbe arcano"};
-    static final String[] SEC_ICON = {"", "attack", "shock", "bleed", "star"};
-    static final int[] SEC_AMMO = {0, 14, 9, 7, 10};
-    static final int[] SEC_COL = {0xFFFFFF, 0xD0D8E8, 0xFFD25A, 0xFF7A5A, 0xA060FF};
+    // ---- armas secundarias (gastan municion). Los ids 1-4 son los originales (los guardados los usan): NO renumerar.
+    static final int SEC_NONE = 0, SEC_KNIFE = 1, SEC_BOLT = 2, SEC_AXE = 3, SEC_ORB = 4, SEC_BOW = 5, SEC_CHAKRAM = 6, SEC_WAND = 7, SEC_SPEAR = 8, SEC_EMBER = 9, SEC_SUMMON = 10, SEC_COUNT = 11;
+    static final String[] SEC_NAME = {"-", "Cuchillos arrojadizos", "Ballesta rúnica", "Hacha arrojadiza", "Orbe arcano",
+            "Arco de cazador", "Chakram", "Varita prismática", "Lanza arrojadiza", "Cañón de brasas", "Cetro de invocación"};
+    static final String[] SEC_ICON = {"", "w_knife", "w_bolt", "w_axe", "w_orb", "w_bow", "w_chakram", "w_wand", "w_spear", "w_ember", "w_summon"};
+    static final int[] SEC_AMMO = {0, 14, 9, 7, 10, 16, 12, 18, 6, 10, 5};
+    static final int[] SEC_COL = {0xFFFFFF, 0xD0D8E8, 0xFFD25A, 0xFF7A5A, 0xA060FF, 0x7AE04A, 0x7AF0FF, 0xFF9ADC, 0xC8B090, 0xFF8A30, 0x70F0D0};
+    /** Rareza (0 comun .. 3 epica). Antes vivia en ChestLoot con 5 valores. */
+    static final int[] SEC_RAR = {0, 0, 1, 2, 3, 1, 3, 2, 1, 2, 3};
+    /** Estadisticas de ficha (las mismas que usa el codigo de disparo): dano por proyectil (x dano base), proyectiles por uso, enfriamiento (s), alcance (px). */
+    static final float[] SEC_DMG = {0, 0.65f, 2.1f, 2.4f, 1.5f, 1.5f, 1.1f, 1.2f, 2.6f, 0.7f, 0.55f};
+    static final int[] SEC_SHOTS = {0, 3, 1, 1, 1, 1, 1, 1, 1, 3, 1};
+    static final float[] SEC_CD = {0, 0.32f, 0.32f, 0.32f, 0.32f, 0.42f, 0.55f, 0.28f, 0.75f, 0.50f, 1.0f};
+    static final int[] SEC_RANGE = {0, 420, 750, 330, 420, 640, 165, 400, 600, 135, 220};
+    /** Estilo de combate (una linea). */
+    static final String[] SEC_STYLE = {"", "Ráfaga en abanico: cubre muchos enemigos cercanos.", "Disparo recto y potente que atraviesa.",
+            "Arco alto y pesado: golpea por encima y atraviesa.", "Esfera que persigue y explota al impactar.",
+            "Flecha en parábola: cuanto más lejos vuela, más daño hace.", "Gira hacia delante y regresa a tu mano: golpea a la ida y a la vuelta.",
+            "Alterna fuego, hielo y rayo en cada disparo.", "Lanzamiento largo: atraviesa y gana daño con cada enemigo.",
+            "Ráfaga corta de brasas que prende fuego de cerca.", "Invoca espíritus temporales que atacan por ti."};
+    /** Efecto especial (texto de ficha). */
+    static final String[] SEC_FX = {"", "-", "Atraviesa 2 enemigos", "Atraviesa 3 enemigos", "Persigue y explota",
+            "+90% de daño a máxima distancia", "Vuelve al jugador (máx. 1 en vuelo)", "Quema · congela · aturde (rota)", "Atraviesa 5 · +15% de daño por enemigo",
+            "Quema 2.5 s · 3 proyectiles", "Hasta 2 espíritus · 10 s cada uno"};
 
     // ---- granadas (boton GRAN)
     static final int GR_NONE = 0, GR_FRAG = 1, GR_FIRE = 2, GR_ICE = 3, GR_POISON = 4, GR_STORM = 5, GR_COUNT = 6;
@@ -30,7 +48,8 @@ final class Items {
     static final int[] SH_COL = {0x9A6A3A, 0xA8B4C8, 0x7A60E0, 0x5AB04A};
     static final String[] SH_DESC = {"Parry 0.20s · bloquea 55%", "Parry 0.28s · bloquea 70%", "Parry 0.36s · explosión al parry · bloquea 70%", "Parry 0.33s · devuelve daño al bloquear"};
 
-    static final String[] SEC_DESC = {"", "3 cuchillos en abanico · daño 0.65x", "Atraviesa 2 enemigos · daño 2.1x", "Arco alto, atraviesa 3 · daño 2.4x", "Persigue y explota · daño 1.5x"};
+    static final String[] SEC_DESC = {"", "3 cuchillos en abanico · daño 0.65x", "Atraviesa 2 enemigos · daño 2.1x", "Arco alto, atraviesa 3 · daño 2.4x", "Persigue y explota · daño 1.5x",
+            "Flecha en parábola · hasta +90% de daño lejos", "Regresa tras lanzarlo · daño 1.1x", "Fuego, hielo y rayo · daño 1.2x", "Atraviesa 5 · daño 2.6x", "3 brasas cortas · quema · daño 0.7x", "2 espíritus · 10 s"};
     static final String[] GR_DESC = {"", "Explosión grande · daño 3.0x", "Quema 4s · daño 1.7x", "Congela 1.8s · daño 1.3x", "Veneno 5s · radio enorme", "Aturde 1.2s · daño 1.8x"};
 
     // ---- armas especiales (mejoran el arma principal toda la partida)
@@ -57,12 +76,14 @@ final class Items {
     static void useSecondary(Level lv, Player p) {
         RunState rs = lv.rs;
         if (rs.sec == SEC_NONE || p.secCd > 0) return;
-        if (rs.secAmmo <= 0) { lv.text(p.x, p.y - p.bh - 8, "sin munición", 0xA0A0A8, false); Snd.sfx("ui_error", 0.5f); p.secCd = 0.4f; return; }
+        if (rs.secAmmo <= 0) { lv.text(p.x, p.y - p.bh - 8, "sin munición", 0xA0A0A8, false); Snd.sfx("ui_error", 0.5f); p.secCd = 0.4f; Arsenal.onEmpty(lv, p); return; }
         float d = p.dir();
         float x = p.x + d * 12, y = p.y - 17;
         float base = p.baseDmg(lv) * (1f + 0.25f * rs.secLvl);
+        if (rs.sec >= SEC_BOW) { Arsenal.fire(lv, p, rs.sec, base); return; }
         rs.secAmmo--;
         p.secCd = 0.32f * (1f - 0.12f * rs.secLvl);
+        base = Arsenal.counterBoost(lv, base);          // contra a distancia: tras un parry perfecto el siguiente disparo hace +50%
         switch (rs.sec) {
             case SEC_KNIFE:
                 for (int i = -1; i <= 1; i++) {
@@ -73,14 +94,14 @@ final class Items {
                 break;
             case SEC_BOLT: {
                 Proj pr = lv.proj(x, y, d * 540, 0, base * 2.1f, true, "arrow", 0xFFD25A);
-                pr.pierce = 2; pr.life = 1.4f; pr.radius = 6; pr.knock = 150;
+                pr.pierce += 2; pr.life = 1.4f; pr.radius = 6; pr.knock = 150;
                 Snd.sfxv("arrow_shot", 0.9f);
                 lv.fx("fx_ring", "pulse", x, y, 0.25f, 0xFFD25A, Platform.ADD | Platform.TINT);
                 break;
             }
             case SEC_AXE: {
                 Proj pr = lv.proj(x, y, d * 230, -230, base * 2.4f, true, "blade", 0xFF7A5A);
-                pr.grav = 520; pr.spin = true; pr.spinRate = d * 16; pr.pierce = 3; pr.life = 1.8f; pr.radius = 8; pr.knock = 180; pr.scale = 1.2f;
+                pr.grav = 520; pr.spin = true; pr.spinRate = d * 16; pr.pierce += 3; pr.life = 1.8f; pr.radius = 8; pr.knock = 180; pr.scale = 1.2f;
                 Snd.sfxv("swing_great_1", 0.8f);
                 break;
             }

@@ -25,6 +25,14 @@ public final class RunState {
     public int asc;
     public int diff = 1;                // 0 facil, 1 normal, 2 dificil
     public int sec, secAmmo, gren, grenCount, special, shield;   // objetos de cofres
+    public boolean secActive;         // true = el boton de ataque dispara el arma secundaria (cambio de arma); false = arma principal
+    /** Inventario: objetos obtenidos que aun no se han inspeccionado y los ya vistos (claves "w:id", "b:id", "r:i", "o:..."). Solo de esta partida. */
+    public final java.util.LinkedHashSet<String> unseen = new java.util.LinkedHashSet<>();
+    public final java.util.HashSet<String> seen = new java.util.HashSet<>();
+    public void markNew(String key) { if (!seen.contains(key)) unseen.add(key); }
+    public void markSeen(String key) { if (unseen.remove(key) || true) seen.add(key); }
+    /** Estado de cada arma secundaria en esta partida: 0 nunca la tuviste, 1 equipada, 2 en el suelo de esta sala, 3 dejada atras (sala abandonada). */
+    public final int[] wState = new int[Items.SEC_COUNT];
     public int secretsFound;
     public final int[] cb = new int[ChestLoot.N];     // mejoras de cofres (ver ChestLoot)
     public int grenLvl, secLvl;                      // niveles de mejora de granada y arma secundaria
@@ -70,6 +78,7 @@ public final class RunState {
         this.companion = Companions.active(Save.S);
         stats.recalc(this);
         Unlocks.applyStart(this);
+        if (sec != 0) { wState[sec] = 1; seen.add("w:" + sec); }     // arma de partida: ya la conoces
         stats.recalc(this);
         hp = stats.maxHp;
         potions = stats.potionsMax;

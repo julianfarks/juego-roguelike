@@ -5,7 +5,7 @@ import java.util.List;
 
 /** La partida: salas, HUD, controles tactiles, altares, tienda, forja, jefes, muerte y victoria. */
 final class RunScreen extends Screen implements Level.Listener {
-    static final int OV_NONE = 0, OV_PAUSE = 1, OV_BLESS = 2, OV_SHOP = 3, OV_FORGE = 4, OV_DEAD = 5, OV_WIN = 6, OV_CHEST = 7, OV_TALK = 8, OV_REVIVE = 9, OV_EVENT = 10, OV_BLESSLIST = 11;
+    static final int OV_NONE = 0, OV_PAUSE = 1, OV_BLESS = 2, OV_SHOP = 3, OV_FORGE = 4, OV_DEAD = 5, OV_WIN = 6, OV_CHEST = 7, OV_TALK = 8, OV_REVIVE = 9, OV_EVENT = 10, OV_BLESSLIST = 11, OV_WCMP = 12, OV_INV = 13;
     static final String[] RELIC_NAMES = {"Corona Exánime", "Corazón de Magma", "Lágrima de Escarcha", "Ojo del Vacío", "Savia Ancestral", "Chispa del Titán", "Cáliz de Sangre", "Disco del Eclipse"};
 
     static final class ShopItem {
@@ -40,6 +40,8 @@ final class RunScreen extends Screen implements Level.Listener {
     private int blTab, blPage;         // lista de bendiciones activas: pestana (0 bendiciones, 1 sinergias) y pagina
     private int[] blRows = new int[0];
     ChestLoot.Reward[] cOffer;      // las 3 opciones del cofre abierto
+    private ChestLoot.Reward wcmp;  // arma de cofre pendiente de confirmar el intercambio (OV_WCMP)
+    private int wcmpSel;            // 0 = Conservar la actual (por defecto), 1 = Intercambiar
     int cMode;
     Prop ovProp;
     // ---- laboratorio (Modo Desarrollador)
@@ -190,7 +192,9 @@ final class RunScreen extends Screen implements Level.Listener {
         Room rm = RoomGen.generate(type, b, rs.rng, rs.stage, rs.roomNo, type == Room.EVENT ? rs.curEvent : 0);
         RoomGen.extraTraps = 0;
         rm.bake(P);
+        String left = Arsenal.leaveRoom(rs, lv);          // armas que se quedaron en el suelo de la sala anterior
         lv = new Level(P, rs, rm, in);
+        if (left != null) { toast = left; toastT = 3f; }
         lv.viewW = game.viewW;
         lv.listener = this;
         Player pl = new Player(rs);
@@ -346,6 +350,12 @@ final class RunScreen extends Screen implements Level.Listener {
         }
         l.text(l.pl.x, l.pl.y - 66, perfect ? "¡RONDA PERFECTA! 2 cofres" : "Ronda completada: 1 cofre", perfect ? 0xFFE9A0 : 0xFFD25A, true);
         lastRoundChests = n;
+        // hallazgo extra: a veces queda un arma secundaria en el suelo junto a los cofres (no sustituye ninguna recompensa)
+        if (!sandbox && l.rng.chance(l.room.type == Room.ELITE ? 0.5f : 0.2f)) {
+            int wid = Arsenal.rollWeapon(rs, l.rng, rs.sec);
+            Arsenal.dropWeapon(l, wid, 0, l.room.exitX - 70 - n * 38 - 36, l.room.exitY, false, false);
+            l.text(l.pl.x, l.pl.y - 82, "Hay un arma en el suelo", Items.SEC_COL[wid], false);
+        }
         Save s = Save.S;
         if (!sandbox) {
             rs.roundsThisRun++; rs.streak++;
@@ -408,6 +418,12 @@ final class RunScreen extends Screen implements Level.Listener {
             winT = 0; winPending = true;
             endRun(true);
             return;
+        }
+        // jefe normal: a veces suelta un arma secundaria (al menos poco comun)
+        if (l.rng.chance(0.5f)) {
+            int wid = Arsenal.rollWeapon(rs, l.rng, rs.sec);
+            Arsenal.dropWeapon(l, wid, 0, l.room.exitX - 56, l.room.exitY, false, false);
+            l.text(l.pl.x, l.pl.y - 82, "El jefe dejó un arma", Items.SEC_COL[wid], false);
         }
         // jefe normal: puerta de salida
         Room rm = l.room;
@@ -566,6 +582,7 @@ final class RunScreen extends Screen implements Level.Listener {
             case "cursed": openCursed(p); break;
             case "cage": rescue(p); break;
             case "relic": openChest(p); break;
+            case "weapon": { String m = Arsenal.takeGround(lv, p); if (m != null) { toast = m; toastT = 2.2f; } break; }
             case "merchant":
                 ovProp = p;
                 if (shop == null) shop = p.arg == 1 ? genWanderShop() : genShop();
@@ -673,9 +690,17 @@ final class RunScreen extends Screen implements Level.Listener {
     private void confirmChest() {
         if (ov != OV_CHEST || offerSel < 0 || ovT < 0.3f || cOffer == null) return;
         ChestLoot.Reward x = cOffer[offerSel];
+        // nunca se sustituye la arma secundaria sin consentimiento: se muestra la comparacion y se pide confirmar
+        if (x.kind == ChestLoot.K_SEC_NEW && rs.sec != 0 && rs.sec != x.id) { wcmp = x; wcmpSel = 0; openOv(OV_WCMP); sel = 0; return; }
+        finishChest(x);
+    }
+
+    /** Aplica la recompensa elegida. Si sustituye a una arma 2ª equipada, esa queda en el suelo (en un punto seguro): jamas se destruye en silencio. */
+    private void finishChest(ChestLoot.Reward x) {
+        if (x.kind == ChestLoot.K_SEC_NEW && rs.sec != 0 && rs.sec != x.id) Arsenal.dropWeapon(lv, rs.sec, rs.secAmmo, lv.pl.x, lv.pl.y, true, false);
         ChestLoot.apply(rs, x);
         if (x.kind == ChestLoot.K_BARRIER) lv.pl.shield = Math.min(70, lv.pl.shield + x.val);
-        cOffer = null;
+        cOffer = null; wcmp = null;
         closeOv();
         int col = ChestLoot.R_COL[x.rar] & 0xFFFFFF;
         lv.text(lv.pl.x, lv.pl.y - 50, x.name + (x.amount.isEmpty() ? "" : "  " + x.amount), col, true);
@@ -684,6 +709,17 @@ final class RunScreen extends Screen implements Level.Listener {
         Snd.sfx("secret", 0.9f);
         // reliquia, cofre secreto u objeto raro: reaccion de asombro (solo cosmetica, la recompensa ya se aplico arriba)
         if (x.rar >= 2 || (ovProp != null && (ovProp.arg >= 3 || ovProp.kind.equals("relic")))) lv.pl.react("awe", 1.5f);
+    }
+
+    // ganchos solo para las pruebas headless (ArsenalProbe)
+    void dbgChest(int sel) { if (ov != OV_CHEST) openOv(OV_CHEST); offerSel = sel; ovT = 1f; }
+    void dbgConfirm() { ovT = 1f; confirmChest(); }
+    void dbgWcmp(boolean swap) { ovT = 1f; wcmpConfirm(swap); }
+
+    private void wcmpConfirm(boolean swap) {
+        if (ov != OV_WCMP || wcmp == null || ovT < 0.25f) return;
+        if (swap) { ChestLoot.Reward x = wcmp; ov = OV_CHEST; finishChest(x); }
+        else { ov = OV_CHEST; ovT = 0.3f; wcmp = null; layoutOverlay(); Snd.sfx("ui_back", 0.7f); }     // rechazar: vuelve a las 3 opciones, sin perder ninguna
     }
 
     // =============================================================== overlays
@@ -1225,6 +1261,12 @@ final class RunScreen extends Screen implements Level.Listener {
                 layoutBlessList(w);
                 break;
             }
+            case OV_WCMP: {
+                float bw = 150;
+                Hit keep = add(w / 2f - bw - 6, 222, bw, 24, "Conservar la actual", () -> wcmpConfirm(false)); keep.tag = 0;
+                Hit swp = add(w / 2f + 6, 222, bw, 24, "Intercambiar", () -> wcmpConfirm(true)); swp.tag = 1;
+                break;
+            }
             case OV_REVIVE: {
                 java.util.List<Infinite.Offer> offs = Infinite.offers(rs);
                 float by = 126;
@@ -1343,6 +1385,7 @@ final class RunScreen extends Screen implements Level.Listener {
         if (ov == OV_NONE) { openOv(OV_PAUSE); return true; }
         if (ov == OV_PAUSE && saveMenu) { saveMenu = false; layoutOverlay(); return true; }
         if (ov == OV_BLESSLIST) { ov = OV_PAUSE; ovT = 0.3f; layoutOverlay(); return true; }
+        if (ov == OV_WCMP) { wcmpConfirm(false); return true; }
         if (ov == OV_TALK) { talk = null; closeOv(); return true; }
         if (ov == OV_REVIVE) return true;
         if (ov == OV_PAUSE || ov == OV_SHOP || ov == OV_FORGE || ov == OV_EVENT) { closeOv(); return true; }
@@ -1458,6 +1501,12 @@ final class RunScreen extends Screen implements Level.Listener {
             if (ov == OV_TALK && isDown) {
                 if (tphase != 1 && (code == 10 || code == 32 || code == 'J')) { talkTap(); return; }
                 if (code == 27) { back(); return; }
+            }
+            if (ov == OV_WCMP && isDown) {
+                if (code == 37 || code == 'A' || code == 39 || code == 'D') { wcmpSel = 1 - wcmpSel; sel = wcmpSel; Snd.sfx("ui_hover", 0.5f); }
+                else if ((code == 10 || code == 32 || code == 'J') && ovT > 0.25f) wcmpConfirm(wcmpSel == 1);
+                else if (code == 27) wcmpConfirm(false);
+                return;
             }
             if (ov == OV_CHEST && isDown) {
                 if (code == 37 || code == 'A') offerSel = offerSel < 0 ? 0 : (offerSel + 2) % 3;
@@ -1575,8 +1624,10 @@ final class RunScreen extends Screen implements Level.Listener {
             UI.small.draw(g, "Reliquia obtenida", w / 2f - 98, 58, UI.GOLD, a);
             UI.small.draw(g, relicBanner, w / 2f - 98, 70, UI.WHITE, a);
         }
+        if (!lv.cinematic && ov == OV_NONE) ArsenalUI.slots(g, lv, rs, cls, w);
         // pista de interaccion
         Prop near = ov == OV_NONE ? lv.nearestInteractable() : null;
+        if (near != null && near.kind.equals("weapon") && lv.pl.alive && !lv.cinematic) ArsenalUI.groundCard(g, lv, rs, near, w, hintFor(near));
         if (near != null && lv.pl.alive && !lv.cinematic) {
             String lab = hintFor(near);
             if (game.touchUiVisible()) {
@@ -1612,6 +1663,7 @@ final class RunScreen extends Screen implements Level.Listener {
             case "relic": return "Tomar";
             case "fountain": return "Beber";
             case "npc": return "Hablar";
+            case "weapon": return rs.sec == 0 ? "Recoger" : rs.sec == p.arg ? "Mejorar" : "Intercambiar";
             case "chest": return p.arg == 4 ? "¡Cofre superior!" : p.arg == 3 ? "¡Cofre secreto!" : "Abrir";
             default: return "Usar";
         }
@@ -2107,6 +2159,22 @@ final class RunScreen extends Screen implements Level.Listener {
             case OV_BLESSLIST: {
                 dim(g, w, 0.8f);
                 renderBlessList(g, w);
+                break;
+            }
+            case OV_WCMP: {
+                if (wcmp == null) break;
+                dim(g, w, 0.74f * fadeIn);
+                UI.big.center(g, "¿INTERCAMBIAR ARMA?", w / 2f, 8, UI.GOLD, fadeIn);
+                UI.small.center(g, "Tu arma actual quedará en el suelo y podrás recogerla de nuevo", w / 2f, 27, UI.GREY, fadeIn);
+                float pw = Math.min(210, (w - 30) / 2f), ph = 172, x0 = w / 2f - pw - 5, x1 = w / 2f + 5;
+                UI.panel(g, wcmpSel == 0 ? 1 : 0, x0, 40, pw, ph, fadeIn);
+                UI.panel(g, wcmpSel == 1 ? 1 : 0, x1, 40, pw, ph, fadeIn);
+                UI.small.center(g, "TU ARMA 2ª · " + rs.secAmmo + " usos", x0 + pw / 2f, 45, 0xFFB8B0B8, fadeIn);
+                UI.small.center(g, "NUEVA · " + Items.SEC_AMMO[wcmp.id] + " usos", x1 + pw / 2f, 45, UI.GOLD, fadeIn);
+                ArsenalUI.sheet(g, x0 + 8, 58, pw - 16, rs.sec, 0, rs.secAmmo);
+                ArsenalUI.sheet(g, x1 + 8, 58, pw - 16, wcmp.id, rs.sec, 0);
+                UI.small.center(g, "+ mejor · - peor · = igual que tu arma actual", w / 2f, 211, 0xFF9890A0, fadeIn);
+                for (Hit h : hits) { h.plain = false; drawButton(g, h); }
                 break;
             }
             case OV_REVIVE: {

@@ -6,7 +6,7 @@ import java.util.Map;
 /** Controles tactiles y de teclado -> acciones logicas. */
 public final class Input {
     public static final int B_LEFT = 0, B_RIGHT = 1, B_DOWN = 2, B_JUMP = 3, B_ATTACK = 4, B_ROLL = 5, B_S1 = 6, B_S2 = 7, B_S3 = 8, B_ULT = 9,
-            B_INTERACT = 10, B_PAUSE = 11, B_POTION = 12, B_SEC = 13, B_GREN = 14, B_GUARD = 15, B_COUNT = 16;
+            B_INTERACT = 10, B_PAUSE = 11, B_POTION = 12, B_SEC = 13, B_GREN = 14, B_GUARD = 15, B_SWAP = 16, B_INV = 17, B_COUNT = 18;
 
     public static final class Btn {
         public float cx, cy, r;
@@ -19,8 +19,8 @@ public final class Input {
     }
 
     // ---- asignaciones: tecla por accion (Save.S.kb) y boton de mando por accion (Save.S.pb)
-    public static int[] defaultKeys() { return new int[]{'A', 'D', 'S', 'W', 'J', 'K', 'U', 'I', 'O', 'P', 'E', 27, 'Q', 'L', 'G', 'C'}; }
-    public static int[] defaultPad() { return new int[]{Pad.LS_L, Pad.LS_R, Pad.LS_D, Pad.A, Pad.X, Pad.B, Pad.RT, Pad.RB, Pad.LB, Pad.R3, Pad.Y, Pad.MENU, Pad.DUP, Pad.VIEW, Pad.L3, Pad.LT}; }
+    public static int[] defaultKeys() { return new int[]{'A', 'D', 'S', 'W', 'J', 'K', 'U', 'I', 'O', 'P', 'E', 27, 'Q', 'L', 'G', 'C', 'R', 9}; }
+    public static int[] defaultPad() { return new int[]{Pad.LS_L, Pad.LS_R, Pad.LS_D, Pad.A, Pad.X, Pad.B, Pad.RT, Pad.RB, Pad.LB, Pad.R3, Pad.Y, Pad.MENU, Pad.DUP, Pad.VIEW, Pad.L3, Pad.LT, Pad.RS_R, Pad.RS_U}; }
     /** Alternativas fijas: siguen funcionando mientras no las asignes tu a otra accion. */
     private static final int[] ALIAS_CODES = {37, 39, 40, 38, 32, 'Z', 'X', 16, '1', '2', '3', '4', 10, 'V', Pad.DLEFT, Pad.DRIGHT, Pad.DDOWN};
     private static final int[] ALIAS_ACT = {B_LEFT, B_RIGHT, B_DOWN, B_JUMP, B_JUMP, B_ATTACK, B_ROLL, B_ROLL, B_S1, B_S2, B_S3, B_ULT, B_INTERACT, B_GUARD, B_LEFT, B_RIGHT, B_DOWN};
@@ -110,13 +110,15 @@ public final class Input {
         set(B_SEC, W - 198, 178, 15, "", false);
         set(B_GREN, W - 184, 140, 15, "", false);
         set(B_GUARD, W - 168, 252, 16, "parry", true);
+        set(B_SWAP, W - 140, 104, 15, "swap", false);
+        set(B_INV, W - 44, 18, 11, "bag", false);
         btn[B_INTERACT].visible = false;
         btn[B_LEFT].visible = btn[B_RIGHT].visible = btn[B_DOWN].visible = true;
         applyCustom();
     }
 
     /** Nombres para el editor de controles. */
-    public static final String[] NAMES = {"Izquierda", "Derecha", "Abajo", "Saltar", "Atacar", "Rodar", "Habilidad 1", "Habilidad 2", "Habilidad 3", "Definitiva", "Interactuar", "Pausa", "Poción", "Arma 2ª", "Granada", "Escudo / Parry"};
+    public static final String[] NAMES = {"Izquierda", "Derecha", "Abajo", "Saltar", "Atacar", "Rodar", "Habilidad 1", "Habilidad 2", "Habilidad 3", "Definitiva", "Interactuar", "Pausa", "Poción", "Arma 2ª", "Granada", "Escudo / Parry", "Cambiar arma", "Inventario"};
 
     private final float[] baseCx = new float[B_COUNT], baseCy = new float[B_COUNT], baseR = new float[B_COUNT];
 

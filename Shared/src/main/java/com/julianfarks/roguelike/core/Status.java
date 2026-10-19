@@ -11,9 +11,12 @@ final class Status {
             if (e.st[i] > 0) {
                 if (i == Ent.BURN || i == Ent.POISON || i == Ent.BLEED) dps += e.stPow[i];
                 e.st[i] -= dt;
-                if (e.st[i] <= 0) { e.st[i] = 0; e.stPow[i] = 0; }
+                if (e.st[i] <= 0) { e.st[i] = 0; e.stPow[i] = 0; e.stk[i] = 0; }
             }
         }
+        if (e.frzImm > 0) e.frzImm -= dt;
+        if (e.intrCd > 0) e.intrCd -= dt;
+        if (e.arcT > 0) { e.arcT -= dt; if (e.arcT <= 0) e.arc = 0; }
         return dps;
     }
 

@@ -63,7 +63,12 @@ final class ArsenalUI {
             if (act) g.rect(Math.round(sx - 8), Math.round(cy + r + 2), 16, 2, 0xFFFFE070, false);
             if (keyHint != null) hint(g, keyHint[k], sx, cy, r);    // barra dorada: arma activa (no depende solo del color: ademas es mayor y mas opaca)
             if (k == 1) {
-                String n = String.valueOf(rs.secAmmo);
+                String n = Arsenal.ammoLabel(rs);
+                if (Arsenal.reloading(rs)) {       // barra de recarga bajo el icono
+                    float rk = 1f - Mth.clamp(rs.secReload / Math.max(0.01f, pl.reloadMax), 0f, 1f);
+                    g.rect(Math.round(sx - 10), Math.round(cy - r - 4), 20, 3, 0xAA000010, false);
+                    g.rect(Math.round(sx - 10), Math.round(cy - r - 4), Math.round(20 * rk), 3, 0xFFFFD25A, false);
+                }
                 g.rect(sx - UI.small.width(n) / 2f - 1, cy + r - 4, UI.small.width(n) + 2, 9, 0x99000010, false);
                 UI.small.center(g, n, sx, cy + r - 3, rs.secAmmo > 0 ? UI.WHITE : UI.RED, act ? 1f : 0.7f);
             }
@@ -95,7 +100,7 @@ final class ArsenalUI {
         UI.iconC(g, Items.SEC_ICON[id], ix + 9, yy + 9, 1f, 1f);
         UI.small.draw(g, UI.fitLabel(UI.small, Items.SEC_NAME[id], cw - 40), ix + 22, yy + 1, 0xFFF0E8E0, 1f);
         Arsenal.rarityMark(g, ix + 26, yy + 15, rar, rc & 0xFFFFFF);
-        UI.small.draw(g, ChestLoot.R_NAME[rar] + " · " + (p.wAmmo > 0 ? p.wAmmo : Items.SEC_AMMO[id]) + " usos", ix + 34, yy + 11, rc, 1f);
+        UI.small.draw(g, ChestLoot.R_NAME[rar] + " · " + (Items.infinite(id) ? "sin munición" : (p.wAmmo > 0 ? p.wAmmo : Items.SEC_AMMO[id]) + (Items.SEC_REGEN[id] > 0 ? " cargas" : " usos")), ix + 34, yy + 11, rc, 1f);
         yy += 24;
         List<Arsenal.Line> ls = Arsenal.lines(id, rs.sec);
         float colW = (cw - 22) / 2f;

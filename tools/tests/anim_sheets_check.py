@@ -16,7 +16,9 @@ for png in sorted(glob.glob(os.path.join(ROOT, 'Shared/assets/sprites/pl_*.png')
     old = Image.open(io.BytesIO(git(rel))).convert('RGBA'); new = Image.open(png).convert('RGBA')
     od = json.loads(git(rel[:-4] + '.json')); nd = json.load(open(png[:-4] + '.json'))
     errs = []
-    if old.size != new.size: errs.append('tamano de hoja distinto')
+    if new.size[0] != old.size[0] or new.size[1] < old.size[1]: errs.append('tamano de hoja distinto (solo se admiten filas nuevas al final)')
+    extra = [a for a in nd['anims'] if a not in od['anims']]
+    if any(not (a.endswith('_u') or a.endswith('_s')) for a in extra): errs.append('animaciones nuevas inesperadas: ' + str(extra))
     for an, o in od['anims'].items():
         n = nd['anims'][an]
         sm = n.get('smear', -1)

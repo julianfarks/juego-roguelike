@@ -381,7 +381,7 @@ final class Inventory {
         float tx = h.x + 38;
         UI.small.draw(g, UI.fitLabel(UI.small, it.name, h.w - 46), tx, h.y + 16, 0xFFF0E8E0, 1f);
         String line;
-        if (k == 1) line = "Munición " + rs().secAmmo + "/" + Items.SEC_AMMO[rs().sec] + (rs().secLvl > 0 ? " · Nv +" + rs().secLvl : "");
+        if (k == 1) line = Items.infinite(rs().sec) ? "Sin munición (ilimitada)" : "Munición " + (Arsenal.hasMag(rs().sec) ? Arsenal.ammoLabel(rs()) + " (cargador/reserva)" : rs().secAmmo + "/" + Items.SEC_AMMO[rs().sec]) + (rs().secLvl > 0 ? " · Nv +" + rs().secLvl : "");
         else line = rs().special != 0 ? Items.SP_NAME[rs().special] : "Sin mejora elemental";
         Arsenal.rarityMark(g, tx + 3, h.y + 31, Math.min(3, it.rar), rc);
         String full = (k == 1 ? RAR_ES[it.rar] + " · " : "") + line;
@@ -448,7 +448,7 @@ final class Inventory {
             float yy = ArsenalUI.sheet(g, x, y, w, it.wid, rs.sec != it.wid ? rs.sec : 0, 0);
             yy += 3;
             UI.small.draw(g, ST_NAME[it.state], x + 2, yy, it.state == ST_EQUIPPED ? 0xFFFFD25A : 0xFF7AC8F0, 1f); yy += ArsenalUI.lh() + 1;
-            if (it.state == ST_EQUIPPED) { UI.small.draw(g, UI.fitLabel(UI.small, "Munición " + rs.secAmmo + "/" + Items.SEC_AMMO[it.wid] + (rs.secLvl > 0 ? " · Nv +" + rs.secLvl + "/3" : ""), w - 4), x + 2, yy, 0xFFB8B0B8, 1f); yy += ArsenalUI.lh() + 1; }
+            if (it.state == ST_EQUIPPED) { UI.small.draw(g, UI.fitLabel(UI.small, (Items.infinite(it.wid) ? "Sin munición (ilimitada)" : (Arsenal.hasMag(it.wid) ? "Munición " + Arsenal.ammoLabel(rs) + " (cargador/reserva)" : "Munición " + rs.secAmmo + "/" + Items.SEC_AMMO[it.wid])) + (rs.secLvl > 0 ? " · Nv +" + rs.secLvl + "/3" : ""), w - 4), x + 2, yy, 0xFFB8B0B8, 1f); yy += ArsenalUI.lh() + 1; }
             else if (it.state == ST_FLOOR) { UI.small.draw(g, UI.fitLabel(UI.small, "Recógela con [Interactuar]", w - 4), x + 2, yy, 0xFFB8B0B8, 1f); yy += ArsenalUI.lh() + 1; }
             else UI.small.drawWrappedMax(g, "Quedó en otra sala (no se puede recoger)", x + 2, yy, (int) w - 4, 0xFFB8B0B8, 1f, ArsenalUI.lh(), 2);
             return;

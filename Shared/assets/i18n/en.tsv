@@ -115,6 +115,122 @@ E equip. · S suelo · ! nueva	E equip. · S floor · ! new
 Misma arma: sube de nivel	Same weapon: levels up
 Dejaste atrás: {}	You left behind: {}
  equipada!	 equipped!
+Cuerpo a cuerpo rápido	Fast melee
+Cuerpo a cuerpo medio	Medium melee
+Mágica	Magic
+Atraviesa 2 enemigos · cargador de 3, recarga automática	Pierces 2 enemies · 3-bolt magazine, auto-reload
+Quema 2.5 s · 3 proyectiles · cargador de 5, recarga automática	Burns 2.5 s · 3 projectiles · 5-shot magazine, auto-reload
+Cuchillos dobles	Twin knives
+Dos tajos rápidos seguidos; cada golpe seguido al mismo enemigo daña más.	Two quick slashes in a row; each consecutive hit on the same enemy hurts more.
+Precisión: +8% por golpe seguido (máx. +40%)	Precision: +8% per consecutive hit (max +40%)
+2 tajos rápidos · daño 0.55x c/u · precisión	2 quick slashes · 0.55x damage each · precision
+Tajos cruzados que alcanzan también a quien te flanquea.	Crossing slashes that also hit whoever flanks you.
+Sangrado acumulable (máx. 4) · golpea delante y detrás	Stacking bleed (max 4) · hits front and back
+Tajos cruzados · sangrado · daño 0.45x	Crossing slashes · bleed · 0.45x damage
+Estiletes	Stilettos
+Estocadas veloces y precisas: la cadencia más alta del cuerpo a cuerpo.	Fast, precise thrusts: the highest melee fire rate.
++18% probabilidad crítica · los críticos sangran	+18% crit chance · crits cause bleeding
+Estocadas muy rápidas · daño 0.34x	Very fast thrusts · 0.34x damage
+Garras mágicas	Magic claws
+Tres zarpazos arcanos: cada golpe deja una marca.	Three arcane swipes: each hit leaves a mark.
+Marca arcana: a la 3ª marca estalla (daño en área)	Arcane mark: the 3rd mark bursts (area damage)
+3 zarpazos · marcas arcanas · daño 0.42x	3 swipes · arcane marks · 0.42x damage
+Tonfas	Tonfas
+Golpe seco y corto que corta el ataque de los enemigos comunes.	A short, sharp blow that cuts off common enemies' attacks.
+Contundente: interrumpe 0.5 s a enemigos comunes (no jefes)	Blunt: interrupts common enemies for 0.5 s (not bosses)
+Golpe contundente · interrumpe · daño 0.85x	Blunt strike · interrupts · 0.85x damage
+Guanteletes	Gauntlets
+Puñetazos encadenados; el tercero seguido es un golpe pesado.	Chained punches; the third in a row is a heavy blow.
+Contundente · 3er golpe seguido: +40% daño y empuje	Blunt · 3rd consecutive hit: +40% damage and knockback
+Puñetazos · 3º pesado · daño 0.8x	Punches · heavy 3rd · 0.8x damage
+Lanza	Spear
+Estocada larga que atraviesa a los enemigos alineados.	A long thrust that pierces enemies in a line.
+Alcance extendido · atraviesa hasta 3 enemigos	Extended reach · pierces up to 3 enemies
+Estocada larga · atraviesa 3 · daño 1.25x	Long thrust · pierces 3 · 1.25x damage
+Alabarda	Halberd
+Tajo vertical lento que cubre mucha altura.	A slow vertical cleave that covers great height.
+Alcance alto · contundente (interrumpe 0.6 s)	High reach · blunt (interrupts 0.6 s)
+Tajo alto y pesado · daño 1.9x	Tall, heavy cleave · 1.9x damage
+Guadaña	Scythe
+Barrido amplio en arco que alcanza por detrás.	A wide arcing sweep that also reaches behind you.
+Sangrado acumulable · recupera algo de vida al abatir	Stacking bleed · restores a little health on kill
+Barrido amplio · sangrado · daño 1.4x	Wide sweep · bleed · 1.4x damage
+Látigo	Whip
+El mayor alcance cuerpo a cuerpo; atrae un poco a quien golpea.	The longest melee reach; slightly pulls in whoever it hits.
+Alcance extendido · atrae y ralentiza	Extended reach · pulls and slows
+Látigo largo · atrae · daño 0.85x	Long whip · pulls · 0.85x damage
+Cadena con hoja	Chain blade
+La hoja sale lanzada y vuelve: golpea a la ida y al regreso.	The blade is hurled out and returns: it hits on the way out and back.
+Doble impacto (ida y vuelta)	Double impact (out and back)
+Ida y vuelta · doble impacto · daño 0.9x c/u	Out and back · double impact · 0.9x damage each
+Espada corta	Short sword
+Ligera y fiable: tajos rápidos sin demasiada recuperación.	Light and reliable: quick slashes with little recovery.
+Ritmo: 3 golpes seguidos aceleran el siguiente	Rhythm: 3 consecutive hits speed up the next one
+Tajo rápido · ritmo · daño 0.9x	Quick slash · rhythm · 0.9x damage
+Martillo de combate	Warhammer
+Mazazo lento con onda de impacto: aturde a los enemigos comunes.	A slow smash with a shockwave: stuns common enemies.
+Contundente: aturde 0.8 s (no jefes) · onda de impacto	Blunt: stuns 0.8 s (not bosses) · shockwave
+Mazazo lento y pesado · aturde · daño 2.7x	Slow, heavy smash · stuns · 2.7x damage
+Dagas arrojadizas	Throwing daggers
+Una daga rápida y precisa; si falla, vuelve a tu mano.	A quick, precise dagger; if it misses, it returns to your hand.
+Precisión: +8% por golpe seguido · si falla, regresa y recuperas la daga	Precision: +8% per consecutive hit · if it misses, it returns and you get the dagger back
+Daga rápida · precisión · regresa si falla · daño 1.0x	Quick dagger · precision · returns on a miss · 1.0x damage
+Shurikens	Shurikens
+Tres estrellas giratorias en abanico cerrado, envenenadas.	Three spinning stars in a tight fan, poisoned.
+Veneno acumulable (máx. 3) · atraviesan 1 enemigo	Stacking poison (max 3) · pierce 1 enemy
+3 estrellas envenenadas · daño 0.45x	3 poisoned stars · 0.45x damage
+Bombas alquímicas	Alchemical bombs
+Frasco que estalla en llamas: daño en área y quemadura.	A flask that bursts into flames: area damage and burning.
+Quemadura acumulable (máx. 3) · explosión en área	Stacking burn (max 3) · area explosion
+Frasco incendiario · área · daño 1.9x	Incendiary flask · area · 1.9x damage
+Bombas adhesivas	Sticky bombs
+Se pega al primer enemigo y estalla tras un instante, ralentizando.	Sticks to the first enemy and explodes after a moment, slowing.
+Se adhiere · estalla a 1 s · ralentiza	Sticks · explodes after 1 s · slows
+Se pega y estalla · ralentiza · daño 2.0x	Sticks and explodes · slows · 2.0x damage
+Varita elemental	Elemental wand
+Fuego, hielo y rayo en ciclo: completar los tres desata una nova elemental.	Fire, ice and lightning in a cycle: completing all three unleashes an elemental nova.
+Resonancia: fuego → hielo → rayo → nova en área · energía regenerable	Resonance: fire → ice → lightning → area nova · regenerating energy
+Ciclo elemental · nova · daño 1.0x	Elemental cycle · nova · 1.0x damage
+Varita de fuego	Fire wand
+Bola de fuego que prende y acumula quemadura.	A fireball that ignites and stacks burning.
+Quemadura acumulable (máx. 3) · energía regenerable	Stacking burn (max 3) · regenerating energy
+Bola de fuego · quemadura · daño 1.05x	Fireball · burn · 1.05x damage
+Varita de hielo	Ice wand
+Esquirla helada: tres impactos congelan brevemente (los jefes solo se ralentizan).	Ice shard: three hits briefly freeze (bosses are only slowed).
+Frío acumulable: ralentiza; a la 3ª carga congela 1 s · energía regenerable	Stacking cold: slows; the 3rd stack freezes for 1 s · regenerating energy
+Esquirla helada · frío · daño 0.9x	Ice shard · cold · 0.9x damage
+Varita eléctrica	Lightning wand
+Rayo veloz que salta a enemigos cercanos.	A fast bolt that jumps to nearby enemies.
+Cadena: salta a 2 enemigos (55%) · energía regenerable	Chain: jumps to 2 enemies (55%) · regenerating energy
+Rayo en cadena · daño 0.8x	Chain lightning · 0.8x damage
+Orbe oscuro	Dark orb
+Esfera lenta que crece y atraviesa: maldice a quien toca.	A slow sphere that grows and pierces: curses whoever it touches.
+Oscuridad: +12% de daño recibido durante 4 s · atraviesa 2	Darkness: +12% damage taken for 4 s · pierces 2
+Esfera oscura · maldice · daño 1.2x	Dark sphere · curses · 1.2x damage
+Catalizador de veneno	Venom catalyst
+Frasco tóxico: la nube envenena a todos los cercanos.	A toxic flask: the cloud poisons everyone nearby.
+Veneno acumulable (máx. 5) · nube en área · energía regenerable	Stacking poison (max 5) · area cloud · regenerating energy
+Nube tóxica · veneno · daño 0.6x	Toxic cloud · poison · 0.6x damage
+Cetro de sangre	Blood sceptre
+Orbe carmesí: sangrado acumulable y un poco de vida a cambio.	Crimson orb: stacking bleed and a little health in return.
+Sangrado (máx. 4) · roba 3% del daño (límite por tiempo)	Bleed (max 4) · steals 3% of damage (rate-limited)
+Orbe carmesí · sangrado · roba vida · daño 1.1x	Crimson orb · bleed · life steal · 1.1x damage
+Cristal arcano	Arcane crystal
+Dos esquirlas guiadas que marcan al objetivo.	Two guided shards that mark the target.
+Marca arcana (3 = estallido) · el estallido devuelve 1 carga	Arcane mark (3 = burst) · the burst refunds 1 charge
+2 esquirlas guiadas · marcas · daño 0.7x	2 guided shards · marks · 0.7x damage
+Talismán explosivo	Explosive talisman
+Se adhiere y estalla con gran radio: aturde a los enemigos comunes.	Sticks and explodes with a large radius: stuns common enemies.
+Se adhiere · estalla a 0.9 s · aturde 0.4 s (no jefes)	Sticks · explodes after 0.9 s · stuns 0.4 s (not bosses)
+Talismán que estalla · aturde · daño 2.4x	Exploding talisman · stuns · 2.4x damage
+Ilimitada	Unlimited
+ (regenera)	 (regenerates)
+sin energía	out of energy
+recargando	reloading
+¡Estallido arcano!	Arcane burst!
+¡Interrumpido!	Interrupted!
+¡Contra!	Counter!
+Sin munición (ilimitada)	No ammo (unlimited)
 Filo Afilado	Keen Edge
 +15% de daño de arma por nivel.	+15% weapon damage per level.
 Corazón Robusto	Sturdy Heart
@@ -1005,7 +1121,6 @@ REDUCIDOS	REDUCED
 NORMALES	NORMAL
 ¡Esquiva!	Dodge!
 ¡Ritmo!	Rhythm!
-¡Contra!	Counter!
 Izquierda	Left
 Derecha	Right
 Abajo	Down

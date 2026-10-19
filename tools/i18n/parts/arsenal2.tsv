@@ -1,0 +1,117 @@
+# Armas secundarias nuevas (es<TAB>en<TAB>fr<TAB>zh)
+Cuerpo a cuerpo rápido	Fast melee	Mêlée rapide	快速近战
+Cuerpo a cuerpo medio	Medium melee	Mêlée moyenne	中型近战
+Mágica	Magic	Magique	魔法
+Atraviesa 2 enemigos · cargador de 3, recarga automática	Pierces 2 enemies · 3-bolt magazine, auto-reload	Perce 2 ennemis · chargeur de 3, rechargement auto	穿透2个敌人 · 3发弹匣，自动装填
+Quema 2.5 s · 3 proyectiles · cargador de 5, recarga automática	Burns 2.5 s · 3 projectiles · 5-shot magazine, auto-reload	Brûle 2,5 s · 3 projectiles · chargeur de 5, rechargement auto	灼烧2.5秒 · 3枚弹体 · 5发弹匣，自动装填
+Cuchillos dobles	Twin knives	Couteaux jumeaux	双刀
+Dos tajos rápidos seguidos; cada golpe seguido al mismo enemigo daña más.	Two quick slashes in a row; each consecutive hit on the same enemy hurts more.	Deux coups rapides d'affilée ; chaque coup consécutif sur le même ennemi fait plus mal.	连续两次快斩；对同一敌人的连续命中伤害更高。
+Precisión: +8% por golpe seguido (máx. +40%)	Precision: +8% per consecutive hit (max +40%)	Précision : +8 % par coup consécutif (max +40 %)	精准：每次连续命中+8%（最高+40%）
+2 tajos rápidos · daño 0.55x c/u · precisión	2 quick slashes · 0.55x damage each · precision	2 coups rapides · dégâts 0,55x chacun · précision	2次快斩 · 每次0.55倍伤害 · 精准
+Tajos cruzados que alcanzan también a quien te flanquea.	Crossing slashes that also hit whoever flanks you.	Coups croisés qui touchent aussi ceux qui vous prennent en tenaille.	交叉斩击，也能击中身后的敌人。
+Sangrado acumulable (máx. 4) · golpea delante y detrás	Stacking bleed (max 4) · hits front and back	Saignement cumulable (max 4) · frappe devant et derrière	可叠加流血（最多4层）· 前后同时命中
+Tajos cruzados · sangrado · daño 0.45x	Crossing slashes · bleed · 0.45x damage	Coups croisés · saignement · dégâts 0,45x	交叉斩 · 流血 · 0.45倍伤害
+Estiletes	Stilettos	Stylets	刺剑
+Estocadas veloces y precisas: la cadencia más alta del cuerpo a cuerpo.	Fast, precise thrusts: the highest melee fire rate.	Estocs rapides et précis : la cadence la plus élevée en mêlée.	又快又准的刺击：近战中最高的攻速。
++18% probabilidad crítica · los críticos sangran	+18% crit chance · crits cause bleeding	+18 % de chance critique · les critiques font saigner	+18%暴击率 · 暴击造成流血
+Estocadas muy rápidas · daño 0.34x	Very fast thrusts · 0.34x damage	Estocs très rapides · dégâts 0,34x	极速刺击 · 0.34倍伤害
+Garras mágicas	Magic claws	Griffes magiques	魔法利爪
+Tres zarpazos arcanos: cada golpe deja una marca.	Three arcane swipes: each hit leaves a mark.	Trois coups de griffe arcaniques : chaque coup laisse une marque.	三次奥术爪击：每次命中留下一个印记。
+Marca arcana: a la 3ª marca estalla (daño en área)	Arcane mark: the 3rd mark bursts (area damage)	Marque arcanique : la 3e marque explose (dégâts de zone)	奥术印记：第3个印记爆发（范围伤害）
+3 zarpazos · marcas arcanas · daño 0.42x	3 swipes · arcane marks · 0.42x damage	3 coups de griffe · marques arcaniques · dégâts 0,42x	3次爪击 · 奥术印记 · 0.42倍伤害
+Tonfas	Tonfas	Tonfas	双截棍拐
+Golpe seco y corto que corta el ataque de los enemigos comunes.	A short, sharp blow that cuts off common enemies' attacks.	Un coup sec et court qui interrompt l'attaque des ennemis communs.	短促有力的一击，可打断普通敌人的攻击。
+Contundente: interrumpe 0.5 s a enemigos comunes (no jefes)	Blunt: interrupts common enemies for 0.5 s (not bosses)	Contondant : interrompt les ennemis communs 0,5 s (pas les boss)	钝击：打断普通敌人0.5秒（对首领无效）
+Golpe contundente · interrumpe · daño 0.85x	Blunt strike · interrupts · 0.85x damage	Coup contondant · interrompt · dégâts 0,85x	钝击 · 打断 · 0.85倍伤害
+Guanteletes	Gauntlets	Gantelets	拳套
+Puñetazos encadenados; el tercero seguido es un golpe pesado.	Chained punches; the third in a row is a heavy blow.	Coups de poing enchaînés ; le troisième d'affilée est un coup lourd.	连环出拳；连续第三拳是重击。
+Contundente · 3er golpe seguido: +40% daño y empuje	Blunt · 3rd consecutive hit: +40% damage and knockback	Contondant · 3e coup consécutif : +40 % de dégâts et de recul	钝击 · 连续第3击：+40%伤害并击退
+Puñetazos · 3º pesado · daño 0.8x	Punches · heavy 3rd · 0.8x damage	Coups de poing · 3e lourd · dégâts 0,8x	出拳 · 第3击为重击 · 0.8倍伤害
+Lanza	Spear	Lance	长矛
+Estocada larga que atraviesa a los enemigos alineados.	A long thrust that pierces enemies in a line.	Un long estoc qui transperce les ennemis alignés.	长距离刺击，可穿透成一线的敌人。
+Alcance extendido · atraviesa hasta 3 enemigos	Extended reach · pierces up to 3 enemies	Allonge étendue · perce jusqu'à 3 ennemis	超长攻击距离 · 最多穿透3个敌人
+Estocada larga · atraviesa 3 · daño 1.25x	Long thrust · pierces 3 · 1.25x damage	Long estoc · perce 3 · dégâts 1,25x	长刺 · 穿透3个 · 1.25倍伤害
+Alabarda	Halberd	Hallebarde	戟
+Tajo vertical lento que cubre mucha altura.	A slow vertical cleave that covers great height.	Un coup vertical lent qui couvre une grande hauteur.	缓慢的竖劈，覆盖很高的范围。
+Alcance alto · contundente (interrumpe 0.6 s)	High reach · blunt (interrupts 0.6 s)	Grande allonge · contondant (interrompt 0,6 s)	高攻击范围 · 钝击（打断0.6秒）
+Tajo alto y pesado · daño 1.9x	Tall, heavy cleave · 1.9x damage	Coup haut et lourd · dégâts 1,9x	高位重劈 · 1.9倍伤害
+Guadaña	Scythe	Faux	镰刀
+Barrido amplio en arco que alcanza por detrás.	A wide arcing sweep that also reaches behind you.	Un large balayage en arc qui atteint aussi derrière vous.	大范围弧形横扫，也能击中身后。
+Sangrado acumulable · recupera algo de vida al abatir	Stacking bleed · restores a little health on kill	Saignement cumulable · rend un peu de vie à chaque mise à mort	可叠加流血 · 击杀时回复少量生命
+Barrido amplio · sangrado · daño 1.4x	Wide sweep · bleed · 1.4x damage	Large balayage · saignement · dégâts 1,4x	大范围横扫 · 流血 · 1.4倍伤害
+Látigo	Whip	Fouet	长鞭
+El mayor alcance cuerpo a cuerpo; atrae un poco a quien golpea.	The longest melee reach; slightly pulls in whoever it hits.	La plus grande allonge en mêlée ; attire légèrement la cible.	近战最远的攻击距离；会稍微拉近被命中的敌人。
+Alcance extendido · atrae y ralentiza	Extended reach · pulls and slows	Allonge étendue · attire et ralentit	超长攻击距离 · 拉近并减速
+Látigo largo · atrae · daño 0.85x	Long whip · pulls · 0.85x damage	Long fouet · attire · dégâts 0,85x	长鞭 · 拉近 · 0.85倍伤害
+Cadena con hoja	Chain blade	Chaîne à lame	链刃
+La hoja sale lanzada y vuelve: golpea a la ida y al regreso.	The blade is hurled out and returns: it hits on the way out and back.	La lame est projetée puis revient : elle frappe à l'aller et au retour.	刀刃掷出后收回：去程和回程都会命中。
+Doble impacto (ida y vuelta)	Double impact (out and back)	Double impact (aller et retour)	双重打击（去程与回程）
+Ida y vuelta · doble impacto · daño 0.9x c/u	Out and back · double impact · 0.9x damage each	Aller-retour · double impact · dégâts 0,9x chacun	往返 · 双重打击 · 每次0.9倍伤害
+Espada corta	Short sword	Épée courte	短剑
+Ligera y fiable: tajos rápidos sin demasiada recuperación.	Light and reliable: quick slashes with little recovery.	Légère et fiable : coups rapides avec peu de récupération.	轻巧可靠：快斩，恢复时间短。
+Ritmo: 3 golpes seguidos aceleran el siguiente	Rhythm: 3 consecutive hits speed up the next one	Rythme : 3 coups consécutifs accélèrent le suivant	节奏：连续3次命中会加快下一击
+Tajo rápido · ritmo · daño 0.9x	Quick slash · rhythm · 0.9x damage	Coup rapide · rythme · dégâts 0,9x	快斩 · 节奏 · 0.9倍伤害
+Martillo de combate	Warhammer	Marteau de guerre	战锤
+Mazazo lento con onda de impacto: aturde a los enemigos comunes.	A slow smash with a shockwave: stuns common enemies.	Un coup lent avec onde de choc : étourdit les ennemis communs.	缓慢的重击并产生冲击波：眩晕普通敌人。
+Contundente: aturde 0.8 s (no jefes) · onda de impacto	Blunt: stuns 0.8 s (not bosses) · shockwave	Contondant : étourdit 0,8 s (pas les boss) · onde de choc	钝击：眩晕0.8秒（对首领无效）· 冲击波
+Mazazo lento y pesado · aturde · daño 2.7x	Slow, heavy smash · stuns · 2.7x damage	Coup lent et lourd · étourdit · dégâts 2,7x	缓慢重击 · 眩晕 · 2.7倍伤害
+Dagas arrojadizas	Throwing daggers	Dagues de lancer	飞刀
+Una daga rápida y precisa; si falla, vuelve a tu mano.	A quick, precise dagger; if it misses, it returns to your hand.	Une dague rapide et précise ; si elle rate, elle revient dans votre main.	快速精准的飞刀；未命中会回到你手中。
+Precisión: +8% por golpe seguido · si falla, regresa y recuperas la daga	Precision: +8% per consecutive hit · if it misses, it returns and you get the dagger back	Précision : +8 % par coup consécutif · si elle rate, elle revient et vous la récupérez	精准：每次连续命中+8% · 未命中则飞回，返还飞刀
+Daga rápida · precisión · regresa si falla · daño 1.0x	Quick dagger · precision · returns on a miss · 1.0x damage	Dague rapide · précision · revient si elle rate · dégâts 1,0x	快速飞刀 · 精准 · 未命中则返回 · 1.0倍伤害
+Shurikens	Shurikens	Shurikens	手里剑
+Tres estrellas giratorias en abanico cerrado, envenenadas.	Three spinning stars in a tight fan, poisoned.	Trois étoiles tournoyantes en éventail serré, empoisonnées.	三枚旋转的毒星，呈紧密扇形射出。
+Veneno acumulable (máx. 3) · atraviesan 1 enemigo	Stacking poison (max 3) · pierce 1 enemy	Poison cumulable (max 3) · perce 1 ennemi	可叠加中毒（最多3层）· 穿透1个敌人
+3 estrellas envenenadas · daño 0.45x	3 poisoned stars · 0.45x damage	3 étoiles empoisonnées · dégâts 0,45x	3枚毒星 · 0.45倍伤害
+Bombas alquímicas	Alchemical bombs	Bombes alchimiques	炼金炸弹
+Frasco que estalla en llamas: daño en área y quemadura.	A flask that bursts into flames: area damage and burning.	Une fiole qui explose en flammes : dégâts de zone et brûlure.	会爆燃的瓶子：范围伤害并灼烧。
+Quemadura acumulable (máx. 3) · explosión en área	Stacking burn (max 3) · area explosion	Brûlure cumulable (max 3) · explosion de zone	可叠加灼烧（最多3层）· 范围爆炸
+Frasco incendiario · área · daño 1.9x	Incendiary flask · area · 1.9x damage	Fiole incendiaire · zone · dégâts 1,9x	燃烧瓶 · 范围 · 1.9倍伤害
+Bombas adhesivas	Sticky bombs	Bombes collantes	粘性炸弹
+Se pega al primer enemigo y estalla tras un instante, ralentizando.	Sticks to the first enemy and explodes after a moment, slowing.	Colle au premier ennemi et explose peu après, en ralentissant.	黏在第一个敌人身上，片刻后爆炸并减速。
+Se adhiere · estalla a 1 s · ralentiza	Sticks · explodes after 1 s · slows	Colle · explose après 1 s · ralentit	黏附 · 1秒后爆炸 · 减速
+Se pega y estalla · ralentiza · daño 2.0x	Sticks and explodes · slows · 2.0x damage	Colle et explose · ralentit · dégâts 2,0x	黏附并爆炸 · 减速 · 2.0倍伤害
+Varita elemental	Elemental wand	Baguette élémentaire	元素法杖
+Fuego, hielo y rayo en ciclo: completar los tres desata una nova elemental.	Fire, ice and lightning in a cycle: completing all three unleashes an elemental nova.	Feu, glace et foudre en cycle : compléter les trois déclenche une nova élémentaire.	火、冰、雷循环：集齐三种会释放元素新星。
+Resonancia: fuego → hielo → rayo → nova en área · energía regenerable	Resonance: fire → ice → lightning → area nova · regenerating energy	Résonance : feu → glace → foudre → nova de zone · énergie régénérable	共鸣：火 → 冰 → 雷 → 范围新星 · 能量可再生
+Ciclo elemental · nova · daño 1.0x	Elemental cycle · nova · 1.0x damage	Cycle élémentaire · nova · dégâts 1,0x	元素循环 · 新星 · 1.0倍伤害
+Varita de fuego	Fire wand	Baguette de feu	火焰法杖
+Bola de fuego que prende y acumula quemadura.	A fireball that ignites and stacks burning.	Une boule de feu qui enflamme et cumule la brûlure.	火球会点燃目标并叠加灼烧。
+Quemadura acumulable (máx. 3) · energía regenerable	Stacking burn (max 3) · regenerating energy	Brûlure cumulable (max 3) · énergie régénérable	可叠加灼烧（最多3层）· 能量可再生
+Bola de fuego · quemadura · daño 1.05x	Fireball · burn · 1.05x damage	Boule de feu · brûlure · dégâts 1,05x	火球 · 灼烧 · 1.05倍伤害
+Varita de hielo	Ice wand	Baguette de glace	寒冰法杖
+Esquirla helada: tres impactos congelan brevemente (los jefes solo se ralentizan).	Ice shard: three hits briefly freeze (bosses are only slowed).	Éclat de glace : trois coups gèlent brièvement (les boss sont seulement ralentis).	冰锥：命中三次会短暂冻结（首领仅被减速）。
+Frío acumulable: ralentiza; a la 3ª carga congela 1 s · energía regenerable	Stacking cold: slows; the 3rd stack freezes for 1 s · regenerating energy	Froid cumulable : ralentit ; à la 3e charge, gèle 1 s · énergie régénérable	可叠加寒冷：减速；第3层冻结1秒 · 能量可再生
+Esquirla helada · frío · daño 0.9x	Ice shard · cold · 0.9x damage	Éclat de glace · froid · dégâts 0,9x	冰锥 · 寒冷 · 0.9倍伤害
+Varita eléctrica	Lightning wand	Baguette électrique	闪电法杖
+Rayo veloz que salta a enemigos cercanos.	A fast bolt that jumps to nearby enemies.	Un éclair rapide qui saute vers les ennemis proches.	快速闪电，会跳向附近的敌人。
+Cadena: salta a 2 enemigos (55%) · energía regenerable	Chain: jumps to 2 enemies (55%) · regenerating energy	Chaîne : saute vers 2 ennemis (55 %) · énergie régénérable	连锁：跳向2个敌人（55%）· 能量可再生
+Rayo en cadena · daño 0.8x	Chain lightning · 0.8x damage	Foudre en chaîne · dégâts 0,8x	连锁闪电 · 0.8倍伤害
+Orbe oscuro	Dark orb	Orbe sombre	暗影法球
+Esfera lenta que crece y atraviesa: maldice a quien toca.	A slow sphere that grows and pierces: curses whoever it touches.	Une sphère lente qui grandit et traverse : maudit ce qu'elle touche.	缓慢增大并穿透的球体：诅咒被击中者。
+Oscuridad: +12% de daño recibido durante 4 s · atraviesa 2	Darkness: +12% damage taken for 4 s · pierces 2	Ténèbres : +12 % de dégâts subis pendant 4 s · perce 2	黑暗：4秒内受到的伤害+12% · 穿透2个
+Esfera oscura · maldice · daño 1.2x	Dark sphere · curses · 1.2x damage	Sphère sombre · maudit · dégâts 1,2x	暗影球 · 诅咒 · 1.2倍伤害
+Catalizador de veneno	Venom catalyst	Catalyseur de venin	毒素催化剂
+Frasco tóxico: la nube envenena a todos los cercanos.	A toxic flask: the cloud poisons everyone nearby.	Une fiole toxique : le nuage empoisonne tous ceux qui sont proches.	毒瓶：毒云会使附近所有敌人中毒。
+Veneno acumulable (máx. 5) · nube en área · energía regenerable	Stacking poison (max 5) · area cloud · regenerating energy	Poison cumulable (max 5) · nuage de zone · énergie régénérable	可叠加中毒（最多5层）· 范围毒云 · 能量可再生
+Nube tóxica · veneno · daño 0.6x	Toxic cloud · poison · 0.6x damage	Nuage toxique · poison · dégâts 0,6x	毒云 · 中毒 · 0.6倍伤害
+Cetro de sangre	Blood sceptre	Sceptre de sang	鲜血权杖
+Orbe carmesí: sangrado acumulable y un poco de vida a cambio.	Crimson orb: stacking bleed and a little health in return.	Orbe carmin : saignement cumulable et un peu de vie en échange.	猩红法球：可叠加流血，并回复少量生命。
+Sangrado (máx. 4) · roba 3% del daño (límite por tiempo)	Bleed (max 4) · steals 3% of damage (rate-limited)	Saignement (max 4) · vole 3 % des dégâts (limité dans le temps)	流血（最多4层）· 吸取3%伤害（有冷却限制）
+Orbe carmesí · sangrado · roba vida · daño 1.1x	Crimson orb · bleed · life steal · 1.1x damage	Orbe carmin · saignement · vol de vie · dégâts 1,1x	猩红法球 · 流血 · 吸血 · 1.1倍伤害
+Cristal arcano	Arcane crystal	Cristal arcanique	奥术水晶
+Dos esquirlas guiadas que marcan al objetivo.	Two guided shards that mark the target.	Deux éclats guidés qui marquent la cible.	两枚追踪晶片，会标记目标。
+Marca arcana (3 = estallido) · el estallido devuelve 1 carga	Arcane mark (3 = burst) · the burst refunds 1 charge	Marque arcanique (3 = explosion) · l'explosion rend 1 charge	奥术印记（3个=爆发）· 爆发返还1次充能
+2 esquirlas guiadas · marcas · daño 0.7x	2 guided shards · marks · 0.7x damage	2 éclats guidés · marques · dégâts 0,7x	2枚追踪晶片 · 印记 · 0.7倍伤害
+Talismán explosivo	Explosive talisman	Talisman explosif	爆裂符咒
+Se adhiere y estalla con gran radio: aturde a los enemigos comunes.	Sticks and explodes with a large radius: stuns common enemies.	Colle et explose sur un grand rayon : étourdit les ennemis communs.	黏附后大范围爆炸：眩晕普通敌人。
+Se adhiere · estalla a 0.9 s · aturde 0.4 s (no jefes)	Sticks · explodes after 0.9 s · stuns 0.4 s (not bosses)	Colle · explose après 0,9 s · étourdit 0,4 s (pas les boss)	黏附 · 0.9秒后爆炸 · 眩晕0.4秒（对首领无效）
+Talismán que estalla · aturde · daño 2.4x	Exploding talisman · stuns · 2.4x damage	Talisman explosif · étourdit · dégâts 2,4x	爆裂符咒 · 眩晕 · 2.4倍伤害
+Ilimitada	Unlimited	Illimitée	无限
+ (regenera)	 (regenerates)	 (se régénère)	（再生）
+sin energía	out of energy	plus d'énergie	能量耗尽
+recargando	reloading	rechargement	装填中
+¡Estallido arcano!	Arcane burst!	Explosion arcanique !	奥术爆发！
+¡Interrumpido!	Interrupted!	Interrompu !	被打断！
+¡Contra!	Counter!	Contre !	反击！
+Sin munición (ilimitada)	No ammo (unlimited)	Sans munitions (illimitées)	无需弹药（无限）

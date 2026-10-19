@@ -49,6 +49,22 @@ public final class Enemy extends Ent {
         spawnT = 0.0f;
     }
 
+    /** Resistencias a los estados de las armas secundarias: las criaturas de fuego no arden, los huesos y espectros no sangran ni se envenenan, etc. */
+    @Override public float statusResist(int s) {
+        String st = def.status, die = def.dieSfx;
+        boolean bone = die.contains("bone"), ghost = die.contains("ghost"), slime = die.contains("slime");
+        switch (s) {
+            case Ent.BURN: return st.equals("burn") ? 0f : 1f;
+            case Ent.SLOW: case Ent.FREEZE: return st.equals("slow") ? 0.35f : 1f;
+            case Ent.POISON: return st.equals("poison") || bone || ghost ? 0f : 1f;
+            case Ent.BLEED: return bone || ghost || slime ? 0f : 1f;
+            case Ent.SHOCK: return st.equals("shock") ? 0.35f : 1f;
+            default: return 1f;
+        }
+    }
+
+    @Override public int stackCap(int max) { return elite ? Math.min(max, 3) : max; }
+
     float dmgNow() { return dmg * (buffT > 0 ? 1.35f : 1f); }
 
     /** Invisible e intocable (el asesino mientras se desvanece). */

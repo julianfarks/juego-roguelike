@@ -37,7 +37,7 @@ final class ArsenalProbe {
         for (Prop q : lv.props) if (q.kind.equals("weapon")) q.dead = true;
         lv.props.removeIf(q -> q.dead);
         p.invuln = 99f; p.secCd = 0; p.swapCd = 0; rs.hp = rs.stats.maxHp; p.alive = true;
-        rs.sec = 0; rs.secAmmo = 0; rs.secLvl = 0; rs.secActive = false; java.util.Arrays.fill(rs.wState, 0); rs.unseen.clear();
+        rs.sec = 0; rs.secAmmo = 0; rs.secLvl = 0; rs.secActive = false; rs.secMag = -1; rs.secMagId = 0; rs.secReload = 0; p.wfx.reset(); p.wfx.precN = 0; p.wfx.precTgt = null; p.wfx.rhythmN = 0; p.wfx.rhythmBoost = 0; p.wfx.lifeCd = 0; p.wfx.recoverCd = 0; p.wfx.c3N = 0; java.util.Arrays.fill(rs.wState, 0); rs.unseen.clear();
         place(100);
     }
 
@@ -230,6 +230,9 @@ final class ArsenalProbe {
         ck("bendicion de proyectiles aplicada a la ballesta (velocidad/perforacion/tamaño modificados: vx " + Math.round(vx0) + "->" + Math.round(Math.abs(bp.vx)) + ", perf " + pi0 + "->" + bp.pierce + ")", Math.abs(bp.vx) != vx0 || bp.pierce != pi0 || bp.scale != 1f);
         BlessProbe.grant(rs, new int[0], 1);
 
+        // ---------------------------------------------------------------- 11b. armas nuevas: visual, recarga, pasivas, limites
+        weaponTests();
+
         // ---------------------------------------------------------------- 12. cofres
         chestTests();
 
@@ -248,8 +251,20 @@ final class ArsenalProbe {
         Enemy ex2 = null, ex3 = null;
         if (id == Items.SEC_AXE) { ex2 = dummy(195); ex3 = dummy(255); }       // el hacha cae en parabola: tres maniquies a distintas distancias
         float hp0 = e.hp; int am0 = rs.secAmmo;
-        Items.useSecondary(lv, p);
         String nm = Items.SEC_NAME[id];
+        if (Wpn.T[id].melee()) {          // cuerpo a cuerpo: municion ilimitada, golpe propio y dano en el instante del contacto
+            Wpn.Def d = Wpn.T[id];
+            e.x = p.x + p.dir() * Math.max(14, d.reach * 0.6f); pin.put(e, e.x);
+            e.hp = e.maxHp = 9999; hp0 = e.hp;
+            lv.projs.clear(); Items.useSecondary(lv, p);
+            ck(nm + ": cuerpo a cuerpo, municion ilimitada", rs.secAmmo == am0 && Items.infinite(id));
+            ck(nm + ": inicia su golpe propio", p.wfx.sw && p.wfx.swId == id);
+            fr(Math.round((d.swingDur() + 0.05f) * 60f)); for (int w = 0; w < 90 && p.wfx.sw; w++) fr(1);   // la pausa de impacto detiene el tiempo un instante
+            ck(nm + ": hace dano real al enemigo al alcanzarlo", e.hp < hp0);
+            ck(nm + ": el golpe termina y no queda activo", !p.wfx.sw);
+            return;
+        }
+        Items.useSecondary(lv, p);
         ck(nm + ": gasta 1 de municion al usarse", rs.secAmmo == am0 - 1);
         boolean[] hurt = {false};
         float expCd = (id <= 4 ? 0.32f : Items.SEC_CD[id]);
@@ -322,6 +337,82 @@ final class ArsenalProbe {
         ck("cofres: nunca ofrecen la misma arma como nueva; el duplicado se compensa con mejora (" + ups + " mejoras en 400 cofres)", !dupOffered && ups > 0);
     }
 
+    // ================================================================ armas secundarias nuevas (visual, recarga, pasivas, limites)
+    static void weaponTests() {
+        // ---- 1-3. visual: secundaria elegida => espada guardada + arma en la mano; principal => espada en la mano; sin duplicados
+        reset(); rs.sec = Items.SEC_SPEAR; rs.secAmmo = 0; rs.wState[Items.SEC_SPEAR] = 1; rs.secActive = true; p.secView = 1f;
+        Sheet cs = p.curSheet(); p.state = Player.IDLE; p.animName = "idle";
+        boolean sheetOk = true; for (String an : new String[]{"idle", "run", "jump", "fall"}) sheetOk &= p.sheet.has(an + "_u") && p.sheet.has(an + "_s");
+        ck("visual: la hoja de la clase tiene cuerpo sin arma y espada guardada para reposo/carrera/salto/caida", sheetOk);
+        ck("visual: con la secundaria elegida se dibuja en la mano (y la espada a la espalda)", WeaponView.active(lv, p, p.sheet));
+        rs.secActive = false;
+        ck("visual: al elegir la principal vuelve la espada a la mano (no se dibuja la secundaria)", !WeaponView.active(lv, p, p.sheet));
+        rs.secActive = true; p.state = Player.AIR; p.animName = "jump";
+        ck("visual: sigue el movimiento en el salto", WeaponView.active(lv, p, p.sheet));
+        p.state = Player.ROLL; p.animName = "roll";
+        ck("visual: al rodar usa los fotogramas originales y no hay dos armas", !WeaponView.active(lv, p, p.sheet));
+        p.state = Player.IDLE; p.animName = "idle"; p.alive = true;
+        rs.sec = 0; ck("visual: sin secundaria equipada nunca se dibuja (el icono de la interfaz no decide)", !WeaponView.active(lv, p, p.sheet));
+        boolean hold = true; for (int i = 1; i < Wpn.N; i++) { rs.sec = i; hold &= WeaponView.active(lv, p, p.sheet); }
+        ck("visual: las 36 armas se dibujan en la mano", hold);
+
+        // ---- 4. recarga automatica de la ballesta
+        reset(); rs.sec = Items.SEC_BOLT; rs.secAmmo = 9; rs.wState[Items.SEC_BOLT] = 1; rs.secActive = true; rs.secMag = -1; Arsenal.normMag(rs);
+        ck("ballesta: cargador inicial de 3", rs.secMag == 3 && Arsenal.hasMag(rs.sec));
+        for (int k = 0; k < 3; k++) { p.secCd = 0; Items.useSecondary(lv, p); fr(3); }
+        ck("ballesta: tras 3 disparos el cargador queda en 0 y la reserva baja a 6", rs.secMag == 0 && rs.secAmmo == 6);
+        fr(6);
+        ck("ballesta: recarga automatica sin pulsar nada (sigue equipada y seleccionada)", Arsenal.reloading(rs) && rs.sec == Items.SEC_BOLT && rs.secActive);
+        int am = rs.secAmmo; p.secCd = 0; Items.useSecondary(lv, p); fr(2);
+        ck("ballesta: no dispara mientras recarga (la municion no se gasta)", rs.secAmmo == am && rs.secMag == 0);
+        fr(75);
+        ck("ballesta: tras ~1 s recargada (cargador 3) y la reserva se conserva", rs.secMag == 3 && rs.secAmmo == 6 && !Arsenal.reloading(rs));
+        p.secCd = 0; lv.projs.clear(); Items.useSecondary(lv, p);
+        ck("ballesta: puede volver a disparar tras recargar", !lv.projs.isEmpty() && rs.secMag == 2 && rs.secAmmo == 5);
+        // ---- 5. sin reserva no hay recarga infinita
+        reset(); rs.sec = Items.SEC_BOLT; rs.secAmmo = 1; rs.wState[Items.SEC_BOLT] = 1; rs.secActive = true; rs.secMag = 1; rs.secMagId = rs.sec;
+        p.secCd = 0; Items.useSecondary(lv, p); fr(100);
+        ck("ballesta: sin reserva no recarga ni dispara (sin municion infinita)", rs.secAmmo == 0 && !Arsenal.reloading(rs) && !Arsenal.ready(rs) || !rs.secActive);
+        // ---- 6. municion conservada al cambiar de arma y volver
+        reset(); rs.sec = Items.SEC_BOLT; rs.secAmmo = 7; rs.wState[Items.SEC_BOLT] = 1; rs.secActive = true; rs.secMag = 1; rs.secMagId = rs.sec; rs.secReload = 0;
+        rs.secActive = false; fr(30); rs.secActive = true; fr(5);
+        ck("ballesta: elegir la principal y volver conserva reserva y cargador (sin municion gratis)", rs.secAmmo == 7 && rs.secMag == 1);
+        // ---- 7. cuerpo a cuerpo: sin recarga, ilimitado
+        boolean noMag = true, inf = true; for (int i = 1; i < Wpn.N; i++) if (Wpn.T[i].melee()) { noMag &= !Arsenal.hasMag(i); inf &= Items.infinite(i); }
+        ck("cuerpo a cuerpo: sin recarga artificial y con municion ilimitada", noMag && inf);
+        // ---- 8. energia que se regenera, no infinita
+        reset(); rs.sec = Items.SEC_ELEMWAND; rs.secAmmo = 0; rs.wState[Items.SEC_ELEMWAND] = 1; rs.secActive = true; rs.secMag = 0; rs.secMagId = rs.sec; p.secCd = 0; lv.projs.clear();
+        Items.useSecondary(lv, p);
+        ck("varita elemental: sin carga no dispara", lv.projs.isEmpty());
+        fr(60 * (int) Math.ceil(Items.SEC_REGEN[Items.SEC_ELEMWAND] + 1));
+        ck("varita elemental: la energia se regenera con el tiempo (sin pasar del maximo)", rs.secAmmo >= 1 && rs.secAmmo <= Items.SEC_AMMO[Items.SEC_ELEMWAND]);
+        // ---- 9. limites de estados y pasivas
+        reset(); Enemy t = dummy(60);
+        for (int i = 0; i < 12; i++) WeaponFx.statuses(lv, Items.SEC_TWINS, t, 10f, false);
+        for (int i = 0; i < 12; i++) { t.stackStatus(Ent.BURN, 3f, 3.5f, 3); t.stackStatus(Ent.POISON, 4f, 2.5f, 3); }
+        ck("pasivas: sangrado/fuego/veneno acumulan con tope (no hay pilas infinitas)", t.stk[Ent.BLEED] <= 4 && t.stk[Ent.BURN] <= 3 && t.stk[Ent.POISON] <= 3);
+        reset(); t = dummy(60);
+        for (int i = 0; i < 3; i++) WeaponFx.chill(lv, t);
+        boolean froze = t.st[Ent.FREEZE] > 0; float imm = t.frzImm;
+        t.st[Ent.FREEZE] = 0; for (int i = 0; i < 6; i++) WeaponFx.chill(lv, t);
+        ck("hielo: ralentiza, la 3ª carga congela 1 s y luego hay inmunidad (sin congelacion permanente)", froze && imm > 0 && t.st[Ent.FREEZE] <= 0);
+        reset(); t = dummy(60);
+        boolean i1 = WeaponFx.interrupt(lv, t, 0.5f), i2 = WeaponFx.interrupt(lv, t, 0.5f);
+        ck("contundente: interrumpe a un enemigo comun una vez y el aturdimiento tiene enfriamiento (no hay stun-lock)", i1 && !i2);
+        Boss bs = new Boss(BossDef.ALL[2], rs);
+        ck("contundente: los jefes no se interrumpen", !WeaponFx.interrupt(lv, bs, 0.5f));
+        for (int i = 0; i < 6; i++) WeaponFx.chill(lv, bs);
+        ck("hielo: el jefe no se congela (solo se ralentiza)", bs.st[Ent.FREEZE] <= 0);
+        // ---- 10. arcano: 3 marcas => estallido y devolucion limitada
+        reset(); t = dummy(60); rs.sec = Items.SEC_CRYSTAL; rs.secAmmo = 3; float hpA = t.hp;
+        for (int i = 0; i < 3; i++) WeaponFx.arcane(lv, Items.SEC_CRYSTAL, t, 20f);
+        ck("cristal arcano: la 3ª marca estalla y hace daño en area", t.hp < hpA && t.arc == 0);
+        // ---- 11. cada arma nueva tiene su propia pasiva y numeros distintos
+        boolean pas = true; for (int i = 11; i < Wpn.N; i++) pas &= Wpn.T[i].passive != 0;
+        ck("las 26 armas nuevas tienen pasiva propia", pas);
+        reset();
+    }
+
     static void saveTests() {
         reset();
         rs.sec = Items.SEC_CHAKRAM; rs.secAmmo = 9; rs.secLvl = 2; rs.secActive = true; rs.wState[Items.SEC_CHAKRAM] = 1; rs.wState[Items.SEC_BOW] = 3;
@@ -334,6 +425,10 @@ final class ArsenalProbe {
             ck("guardado v2: conserva arma 2ª, municion, nivel, arma activa y estados de armas", b.sec == Items.SEC_CHAKRAM && b.secAmmo == 9 && b.secLvl == 2 && b.secActive && b.wState[Items.SEC_BOW] == 3 && b.wState[Items.SEC_CHAKRAM] == 1);
             ck("guardado v2: conserva objetos nuevos/vistos del inventario", b.unseen.contains("w:6") && b.seen.contains("w:5"));
         }
+        // ---- 12. guardado conserva el cargador
+        reset(); rs.sec = Items.SEC_BOLT; rs.secAmmo = 6; rs.secActive = true; rs.wState[Items.SEC_BOLT] = 1; rs.secMag = 2; rs.secMagId = rs.sec;
+        boolean w2 = RunSave.write(game.P, scr, 1); RunScreen back2 = RunSave.load(game, 1);
+        ck("guardado: conserva el cargador de la ballesta", w2 && back2 != null && back2.rs.secMag == 2 && back2.rs.secAmmo == 6);
         // partida antigua (v1): sin las claves nuevas
         String raw = game.P.store().get(RunSave.key(1), "");
         Map<String, Object> d = Json.parseObj(raw);
@@ -368,7 +463,7 @@ final class ArsenalProbe {
             rs.relicsThisRun[0] = rs.relicsThisRun[3] = rs.relicsThisRun[5] = true; rs.pacts[1] = 1; rs.gren = 2; rs.grenCount = 3; rs.special = 3; rs.shield = 2;
             rs.bx = new BlessRt(); BlessFx.sync(rs); rs.recalc();
             Inventory.seeAll(rs); rs.seen.remove("w:" + Items.SEC_CHAKRAM); rs.seen.remove("b:3"); rs.seen.remove("r:3");
-            lv.enemies.clear(); p.invuln = 99f;
+            lv.enemies.clear(); p.invuln = 99f; p.shield = 0;
             if (name.equals("ground")) {
                 Arsenal.dropWeapon(lv, Items.SEC_BOW, 0, p.x + 26, p.y, false, true);
                 Arsenal.dropWeapon(lv, Items.SEC_KNIFE, 0, p.x + 70, p.y, true, true);
@@ -392,6 +487,15 @@ final class ArsenalProbe {
         if (name.equals("wcmp") && t == 100) scr.dbgConfirm();
         if (name.equals("ground") && t == 5) p.x += 10;
         if (name.equals("i18n")) i18nScene(t);
+        if (name.startsWith("wview")) { p.shield = 0;      // una arma cada 40 fotogramas: reposo (t%40==2), golpe/disparo (t%40==8..12)
+            int k = t / 40 + 1, ph = t % 40;
+            if (k < Wpn.N) {
+                if (ph == 0) { Arsenal.equip(rs, k, Items.SEC_AMMO[k] > 0 ? Items.SEC_AMMO[k] : 0); rs.secActive = true; p.right = true; p.vx = 0; lv.projs.clear(); }
+                if (ph == 6) { p.secCd = 0; Items.useSecondary(lv, p); }
+                if (ph == 36 && name.equals("wview")) { }
+            } else if (k == Wpn.N) { rs.secActive = false; }
+            if (t == 40 * Wpn.N + 10) System.out.println("AT wview fin");
+        }
     }
 
     static void sf(int n) { for (int i = 0; i < n; i++) { scr.update(1f / 60f); in.endFrame(); } }

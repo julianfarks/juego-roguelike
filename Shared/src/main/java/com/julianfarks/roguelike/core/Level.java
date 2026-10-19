@@ -29,6 +29,7 @@ public final class Level {
     public final List<Enemy> enemies = new ArrayList<>();
     final List<Proj> projs = new ArrayList<>();
     final List<Prop> props = new ArrayList<>();
+    final List<Arsenal.Sticky> stickies = new ArrayList<>();      // bombas adhesivas y talismanes pegados (temporales)
     final List<Arsenal.Summon> summons = new ArrayList<>();      // espiritus del Cetro de invocacion (temporales, se pierden al salir de la sala)
     final List<Pickup> pickups = new ArrayList<>();
     final List<FxObj> fxs = new ArrayList<>();
@@ -624,6 +625,7 @@ public final class Level {
         secrets.update(dt);
         updateCompanion(dt);
         Arsenal.updateSummons(this, dt);
+        Arsenal.tickReload(this, dt);
         if (!pl.alive && timeScale < 1f) timeScale = Math.min(1f, timeScale + rawDt * 0.0f);
         if (freezeEnemies > 0) freezeEnemies -= dt;
         long bt0 = System.nanoTime();
@@ -743,6 +745,7 @@ public final class Level {
             if (p.life <= 0) { projDie(p, false); continue; }
             if (p.ramp > 0) { if (p.dmg0 <= 0) p.dmg0 = p.dmg; p.dmg = p.dmg0 * Math.min(p.rampMax, 1f + p.ramp * p.t); }
             if (p.special == 3 && Arsenal.updateChakram(this, p, dt)) continue;
+            if (p.special == 5 && Arsenal.updateReturnDagger(this, p, dt)) continue;
             if (p.homing > 0) {
                 Ent tgt = p.friendly ? nearestEnemy(p.x, p.y, 200, true) : (pl.alive ? pl : null);
                 if (tgt != null) {
@@ -772,14 +775,21 @@ public final class Level {
             if (p.friendly) {
                 for (Ent e : enemiesIn(p.x, p.y, p.radius)) {
                     if (p.hit != null && p.hit.contains(e)) continue;
+                    if (p.special == 6) { Arsenal.stick(this, p, e); p.dead = true; break; }        // bomba adhesiva / talisman: se pega al enemigo
+                    if (p.boom) { projDie(p, false); break; }                                         // bomba: solo daña al estallar
                     int pvSrc = dmgSrc;
                     dmgSrc = p.src == 0 ? BlessFx.SRC_P : p.src;
                     try {
                         boolean crit = rollCrit(e);
                         float d = p.dmg * (crit ? critMulOf(e) : 1f);
+                        if (p.wfx > 0) d *= WeaponFx.preMul(this, p.wfx, e);
                         damageEnemy(e, d, crit, Mth.sign(p.vx) * p.knock, -40);
                         if (p.status >= 0) e.applyStatus(p.status, p.statusDur, p.statusPow);
                         onWeaponHitLite(e, d);
+                        if (p.wfx > 0) {
+                            WeaponFx.afterHit(this, p.wfx, e, d, crit, false, Mth.sign(p.vx));
+                            if (p.wfx == Items.SEC_ELEMWAND) WeaponFx.elemHit(this, p, e, d);
+                        }
                     } finally { dmgSrc = pvSrc; }
                     Snd.sfxv("hit_magic", 0.55f);
                     fx("fx_hit", "magic", p.x, p.y, 1f, p.color, Platform.ADD | Platform.TINT);
@@ -818,6 +828,7 @@ public final class Level {
 
     private void explode(Proj p) {
         explosion(p.x, p.y, p.explode, p.dmg, 120, p.status, p.statusDur, p.statusPow, p.friendly);
+        if (p.wfx > 0 && p.friendly) WeaponFx.blast(this, p.wfx, p.wmode, p.x, p.y, p.explode, p.dmg);
         String[] fx = p.explodeFx.split(":");
         if (fx.length == 2) fx(fx[0], fx[1], p.x, p.y, Math.max(0.5f, p.explode / 38f), p.color, Platform.ADD | Platform.TINT);
         ps.burst(rng, p.x, p.y, p.color, 14, 120, 0.4f, 3, 60, true);
@@ -827,6 +838,7 @@ public final class Level {
 
     private void projDie(Proj p, boolean wall) {
         if (p.dead) return;
+        if (p.special == 6 && p.friendly) { p.dead = true; Arsenal.stick(this, p, null); return; }       // sin enemigo: queda pegada al suelo / pared
         p.dead = true;
         if (p.friendly && p.src != BlessFx.SRC_X) { int pv = dmgSrc; dmgSrc = 0; try { BlessFx.onProjEnd(this, p.x, p.y, p.src); } finally { dmgSrc = pv; } }
         if (p.explode > 0) explode(p);
@@ -1110,6 +1122,7 @@ public final class Level {
         if (boss != null) boss.render(g, this);
         drawCompanion(g);
         Arsenal.drawSummons(g, this);
+        Arsenal.drawStickies(g, this);
         pl.render(g, this);
         drawSecretMarks(g);
         for (Proj p : projs) drawProj(g, p);

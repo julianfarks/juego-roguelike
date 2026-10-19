@@ -49,6 +49,28 @@ public abstract class Ent {
         return m;
     }
 
+    // ---- armas secundarias: estados acumulables con limite, resistencias e inmunidades (solo los usan las armas nuevas; los estados de siempre no cambian)
+    public final int[] stk = new int[ST_COUNT];       // cargas acumuladas de cada estado (0 = sin estado)
+    public float frzImm;                              // tras congelarse: segundos de inmunidad a otro congelamiento (evita aturdimiento permanente)
+    public float intrCd;                              // tras ser interrumpido: segundos antes de poder interrumpirse de nuevo
+    public int arc; public float arcT;                // marcas arcanas (0..3) y su caducidad
+
+    /** 1 = normal, 0 = inmune, entre medias = resistencia parcial (a la duracion y al daño del estado). */
+    public float statusResist(int s) { return 1f; }
+
+    /** Cargas maximas que admite este objetivo (los elites y jefes admiten menos). */
+    public int stackCap(int max) { return max; }
+
+    /** Añade una carga de un estado (BURN/POISON/BLEED/SLOW/SHOCK/CURSE) con limite. Cada carga suma `powPer` de daño por segundo. Devuelve las cargas actuales (0 = inmune). */
+    public int stackStatus(int s, float dur, float powPer, int max) {
+        float res = statusResist(s);
+        if (res <= 0f) return 0;
+        if (st[s] <= 0) stk[s] = 0;
+        stk[s] = Math.min(stackCap(max), stk[s] + 1);
+        applyStatus(s, dur * res, powPer * stk[s] * res);
+        return stk[s];
+    }
+
     public boolean frozen() { return st[FREEZE] > 0 || st[STUN] > 0; }
 
     public void setAnim(String n) {

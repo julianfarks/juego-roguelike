@@ -33,6 +33,16 @@ public final class Sheet {
                 a.rel = Json.i(m, "rel", -1);
                 a.muzzle = Json.ints(m, "muzzle");
                 a.smear = Json.i(m, "smear", -1);
+                Object hd = m.get("hand");
+                if (hd instanceof java.util.List) {
+                    java.util.List<?> hl = (java.util.List<?>) hd; int[][] hh = new int[hl.size()][];
+                    for (int i = 0; i < hh.length; i++) {
+                        Object o = hl.get(i);
+                        if (o instanceof java.util.List && ((java.util.List<?>) o).size() >= 2) { java.util.List<?> q = (java.util.List<?>) o; hh[i] = new int[]{((Number) q.get(0)).intValue(), ((Number) q.get(1)).intValue()}; }
+                        else hh[i] = new int[]{40, 28};
+                    }
+                    a.hand = hh;
+                }
                 Object ft = m.get("ft");
                 if (ft instanceof java.util.List) { java.util.List<?> l = (java.util.List<?>) ft; float[] w = new float[l.size()]; for (int i = 0; i < w.length; i++) w[i] = l.get(i) instanceof Number ? ((Number) l.get(i)).floatValue() : 1f; a.setWeights(w); }
                 s.anims.put(e.getKey(), a);

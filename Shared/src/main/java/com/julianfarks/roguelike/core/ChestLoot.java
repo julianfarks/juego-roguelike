@@ -263,7 +263,7 @@ final class ChestLoot {
         if (k < 62) { // secundaria
             if (rs.sec == 0) return secNew(rs, 1 + r.i(Items.SEC_COUNT - 1), r);
             if (r.chance(0.5f) && rs.secLvl < 3) return secUp(rs);
-            if (rs.secAmmo < Items.SEC_AMMO[rs.sec] * 2) return secAmmo(rs, rar);
+            if (rs.secAmmo < Items.SEC_AMMO[rs.sec] * 2 && !Items.infinite(rs.sec)) return secAmmo(rs, rar);
             return null;
         }
         return rollInstant(rs, r, luck);

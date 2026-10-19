@@ -76,6 +76,22 @@ public final class Boss extends Ent {
         super.applyStatus(s, dur * 0.6f, pow);
     }
 
+    /** Inmunidades tematicas del jefe a los estados de las armas secundarias (ademas de las que ya tenia: aturdir/inmovilizar no afectan, congelar solo ralentiza). */
+    @Override public float statusResist(int s) {
+        String el = def.element;
+        switch (s) {
+            case Ent.BURN: return el.equals("fire") ? 0f : 1f;
+            case Ent.SLOW: case Ent.FREEZE: return el.equals("ice") ? 0f : 1f;
+            case Ent.SHOCK: return el.equals("lightning") ? 0f : 1f;
+            case Ent.BLEED: return el.equals("blood") || el.equals("shadow") ? 0f : 1f;
+            case Ent.POISON: return el.equals("shadow") ? 0f : (el.equals("thorn") ? 0.5f : 1f);
+            case Ent.CURSE: return el.equals("void") ? 0f : (el.equals("holy") ? 0.5f : 1f);
+            default: return 1f;
+        }
+    }
+
+    @Override public int stackCap(int max) { return Math.min(max, 3); }
+
     private float sfxX(Level lv) { return lv.camX + lv.viewW / 2; }
     private void sfx(Level lv, String n, float v) { Snd.sfx(def.sfx + n, v); }
 

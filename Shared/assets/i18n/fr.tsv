@@ -115,6 +115,122 @@ E equip. · S suelo · ! nueva	E équip. · S sol · ! nouv.
 Misma arma: sube de nivel	Même arme : gagne un niveau
 Dejaste atrás: {}	Vous avez laissé : {}
  equipada!	 équipée !
+Cuerpo a cuerpo rápido	Mêlée rapide
+Cuerpo a cuerpo medio	Mêlée moyenne
+Mágica	Magique
+Atraviesa 2 enemigos · cargador de 3, recarga automática	Perce 2 ennemis · chargeur de 3, rechargement auto
+Quema 2.5 s · 3 proyectiles · cargador de 5, recarga automática	Brûle 2,5 s · 3 projectiles · chargeur de 5, rechargement auto
+Cuchillos dobles	Couteaux jumeaux
+Dos tajos rápidos seguidos; cada golpe seguido al mismo enemigo daña más.	Deux coups rapides d'affilée ; chaque coup consécutif sur le même ennemi fait plus mal.
+Precisión: +8% por golpe seguido (máx. +40%)	Précision : +8 % par coup consécutif (max +40 %)
+2 tajos rápidos · daño 0.55x c/u · precisión	2 coups rapides · dégâts 0,55x chacun · précision
+Tajos cruzados que alcanzan también a quien te flanquea.	Coups croisés qui touchent aussi ceux qui vous prennent en tenaille.
+Sangrado acumulable (máx. 4) · golpea delante y detrás	Saignement cumulable (max 4) · frappe devant et derrière
+Tajos cruzados · sangrado · daño 0.45x	Coups croisés · saignement · dégâts 0,45x
+Estiletes	Stylets
+Estocadas veloces y precisas: la cadencia más alta del cuerpo a cuerpo.	Estocs rapides et précis : la cadence la plus élevée en mêlée.
++18% probabilidad crítica · los críticos sangran	+18 % de chance critique · les critiques font saigner
+Estocadas muy rápidas · daño 0.34x	Estocs très rapides · dégâts 0,34x
+Garras mágicas	Griffes magiques
+Tres zarpazos arcanos: cada golpe deja una marca.	Trois coups de griffe arcaniques : chaque coup laisse une marque.
+Marca arcana: a la 3ª marca estalla (daño en área)	Marque arcanique : la 3e marque explose (dégâts de zone)
+3 zarpazos · marcas arcanas · daño 0.42x	3 coups de griffe · marques arcaniques · dégâts 0,42x
+Tonfas	Tonfas
+Golpe seco y corto que corta el ataque de los enemigos comunes.	Un coup sec et court qui interrompt l'attaque des ennemis communs.
+Contundente: interrumpe 0.5 s a enemigos comunes (no jefes)	Contondant : interrompt les ennemis communs 0,5 s (pas les boss)
+Golpe contundente · interrumpe · daño 0.85x	Coup contondant · interrompt · dégâts 0,85x
+Guanteletes	Gantelets
+Puñetazos encadenados; el tercero seguido es un golpe pesado.	Coups de poing enchaînés ; le troisième d'affilée est un coup lourd.
+Contundente · 3er golpe seguido: +40% daño y empuje	Contondant · 3e coup consécutif : +40 % de dégâts et de recul
+Puñetazos · 3º pesado · daño 0.8x	Coups de poing · 3e lourd · dégâts 0,8x
+Lanza	Lance
+Estocada larga que atraviesa a los enemigos alineados.	Un long estoc qui transperce les ennemis alignés.
+Alcance extendido · atraviesa hasta 3 enemigos	Allonge étendue · perce jusqu'à 3 ennemis
+Estocada larga · atraviesa 3 · daño 1.25x	Long estoc · perce 3 · dégâts 1,25x
+Alabarda	Hallebarde
+Tajo vertical lento que cubre mucha altura.	Un coup vertical lent qui couvre une grande hauteur.
+Alcance alto · contundente (interrumpe 0.6 s)	Grande allonge · contondant (interrompt 0,6 s)
+Tajo alto y pesado · daño 1.9x	Coup haut et lourd · dégâts 1,9x
+Guadaña	Faux
+Barrido amplio en arco que alcanza por detrás.	Un large balayage en arc qui atteint aussi derrière vous.
+Sangrado acumulable · recupera algo de vida al abatir	Saignement cumulable · rend un peu de vie à chaque mise à mort
+Barrido amplio · sangrado · daño 1.4x	Large balayage · saignement · dégâts 1,4x
+Látigo	Fouet
+El mayor alcance cuerpo a cuerpo; atrae un poco a quien golpea.	La plus grande allonge en mêlée ; attire légèrement la cible.
+Alcance extendido · atrae y ralentiza	Allonge étendue · attire et ralentit
+Látigo largo · atrae · daño 0.85x	Long fouet · attire · dégâts 0,85x
+Cadena con hoja	Chaîne à lame
+La hoja sale lanzada y vuelve: golpea a la ida y al regreso.	La lame est projetée puis revient : elle frappe à l'aller et au retour.
+Doble impacto (ida y vuelta)	Double impact (aller et retour)
+Ida y vuelta · doble impacto · daño 0.9x c/u	Aller-retour · double impact · dégâts 0,9x chacun
+Espada corta	Épée courte
+Ligera y fiable: tajos rápidos sin demasiada recuperación.	Légère et fiable : coups rapides avec peu de récupération.
+Ritmo: 3 golpes seguidos aceleran el siguiente	Rythme : 3 coups consécutifs accélèrent le suivant
+Tajo rápido · ritmo · daño 0.9x	Coup rapide · rythme · dégâts 0,9x
+Martillo de combate	Marteau de guerre
+Mazazo lento con onda de impacto: aturde a los enemigos comunes.	Un coup lent avec onde de choc : étourdit les ennemis communs.
+Contundente: aturde 0.8 s (no jefes) · onda de impacto	Contondant : étourdit 0,8 s (pas les boss) · onde de choc
+Mazazo lento y pesado · aturde · daño 2.7x	Coup lent et lourd · étourdit · dégâts 2,7x
+Dagas arrojadizas	Dagues de lancer
+Una daga rápida y precisa; si falla, vuelve a tu mano.	Une dague rapide et précise ; si elle rate, elle revient dans votre main.
+Precisión: +8% por golpe seguido · si falla, regresa y recuperas la daga	Précision : +8 % par coup consécutif · si elle rate, elle revient et vous la récupérez
+Daga rápida · precisión · regresa si falla · daño 1.0x	Dague rapide · précision · revient si elle rate · dégâts 1,0x
+Shurikens	Shurikens
+Tres estrellas giratorias en abanico cerrado, envenenadas.	Trois étoiles tournoyantes en éventail serré, empoisonnées.
+Veneno acumulable (máx. 3) · atraviesan 1 enemigo	Poison cumulable (max 3) · perce 1 ennemi
+3 estrellas envenenadas · daño 0.45x	3 étoiles empoisonnées · dégâts 0,45x
+Bombas alquímicas	Bombes alchimiques
+Frasco que estalla en llamas: daño en área y quemadura.	Une fiole qui explose en flammes : dégâts de zone et brûlure.
+Quemadura acumulable (máx. 3) · explosión en área	Brûlure cumulable (max 3) · explosion de zone
+Frasco incendiario · área · daño 1.9x	Fiole incendiaire · zone · dégâts 1,9x
+Bombas adhesivas	Bombes collantes
+Se pega al primer enemigo y estalla tras un instante, ralentizando.	Colle au premier ennemi et explose peu après, en ralentissant.
+Se adhiere · estalla a 1 s · ralentiza	Colle · explose après 1 s · ralentit
+Se pega y estalla · ralentiza · daño 2.0x	Colle et explose · ralentit · dégâts 2,0x
+Varita elemental	Baguette élémentaire
+Fuego, hielo y rayo en ciclo: completar los tres desata una nova elemental.	Feu, glace et foudre en cycle : compléter les trois déclenche une nova élémentaire.
+Resonancia: fuego → hielo → rayo → nova en área · energía regenerable	Résonance : feu → glace → foudre → nova de zone · énergie régénérable
+Ciclo elemental · nova · daño 1.0x	Cycle élémentaire · nova · dégâts 1,0x
+Varita de fuego	Baguette de feu
+Bola de fuego que prende y acumula quemadura.	Une boule de feu qui enflamme et cumule la brûlure.
+Quemadura acumulable (máx. 3) · energía regenerable	Brûlure cumulable (max 3) · énergie régénérable
+Bola de fuego · quemadura · daño 1.05x	Boule de feu · brûlure · dégâts 1,05x
+Varita de hielo	Baguette de glace
+Esquirla helada: tres impactos congelan brevemente (los jefes solo se ralentizan).	Éclat de glace : trois coups gèlent brièvement (les boss sont seulement ralentis).
+Frío acumulable: ralentiza; a la 3ª carga congela 1 s · energía regenerable	Froid cumulable : ralentit ; à la 3e charge, gèle 1 s · énergie régénérable
+Esquirla helada · frío · daño 0.9x	Éclat de glace · froid · dégâts 0,9x
+Varita eléctrica	Baguette électrique
+Rayo veloz que salta a enemigos cercanos.	Un éclair rapide qui saute vers les ennemis proches.
+Cadena: salta a 2 enemigos (55%) · energía regenerable	Chaîne : saute vers 2 ennemis (55 %) · énergie régénérable
+Rayo en cadena · daño 0.8x	Foudre en chaîne · dégâts 0,8x
+Orbe oscuro	Orbe sombre
+Esfera lenta que crece y atraviesa: maldice a quien toca.	Une sphère lente qui grandit et traverse : maudit ce qu'elle touche.
+Oscuridad: +12% de daño recibido durante 4 s · atraviesa 2	Ténèbres : +12 % de dégâts subis pendant 4 s · perce 2
+Esfera oscura · maldice · daño 1.2x	Sphère sombre · maudit · dégâts 1,2x
+Catalizador de veneno	Catalyseur de venin
+Frasco tóxico: la nube envenena a todos los cercanos.	Une fiole toxique : le nuage empoisonne tous ceux qui sont proches.
+Veneno acumulable (máx. 5) · nube en área · energía regenerable	Poison cumulable (max 5) · nuage de zone · énergie régénérable
+Nube tóxica · veneno · daño 0.6x	Nuage toxique · poison · dégâts 0,6x
+Cetro de sangre	Sceptre de sang
+Orbe carmesí: sangrado acumulable y un poco de vida a cambio.	Orbe carmin : saignement cumulable et un peu de vie en échange.
+Sangrado (máx. 4) · roba 3% del daño (límite por tiempo)	Saignement (max 4) · vole 3 % des dégâts (limité dans le temps)
+Orbe carmesí · sangrado · roba vida · daño 1.1x	Orbe carmin · saignement · vol de vie · dégâts 1,1x
+Cristal arcano	Cristal arcanique
+Dos esquirlas guiadas que marcan al objetivo.	Deux éclats guidés qui marquent la cible.
+Marca arcana (3 = estallido) · el estallido devuelve 1 carga	Marque arcanique (3 = explosion) · l'explosion rend 1 charge
+2 esquirlas guiadas · marcas · daño 0.7x	2 éclats guidés · marques · dégâts 0,7x
+Talismán explosivo	Talisman explosif
+Se adhiere y estalla con gran radio: aturde a los enemigos comunes.	Colle et explose sur un grand rayon : étourdit les ennemis communs.
+Se adhiere · estalla a 0.9 s · aturde 0.4 s (no jefes)	Colle · explose après 0,9 s · étourdit 0,4 s (pas les boss)
+Talismán que estalla · aturde · daño 2.4x	Talisman explosif · étourdit · dégâts 2,4x
+Ilimitada	Illimitée
+ (regenera)	 (se régénère)
+sin energía	plus d'énergie
+recargando	rechargement
+¡Estallido arcano!	Explosion arcanique !
+¡Interrumpido!	Interrompu !
+¡Contra!	Contre !
+Sin munición (ilimitada)	Sans munitions (illimitées)
 Filo Afilado	Lame affûtée
 +15% de daño de arma por nivel.	+15 % de dégâts d'arme par niveau.
 Corazón Robusto	Coeur robuste
@@ -1005,7 +1121,6 @@ REDUCIDOS	RÉDUITS
 NORMALES	NORMAUX
 ¡Esquiva!	Esquive !
 ¡Ritmo!	Rythme !
-¡Contra!	Contre !
 Izquierda	Gauche
 Derecha	Droite
 Abajo	Bas

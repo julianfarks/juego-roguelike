@@ -1805,7 +1805,7 @@ final class RunScreen extends Screen implements Level.Listener {
             int col = sec ? Items.SEC_COL[ty] : Items.GR_COL[ty];
             g.circle(b.cx, b.cy, b.r - 1, Mth.withAlpha(col, 70), false);
             UI.iconC(g, sec ? Items.SEC_ICON[ty] : Items.GR_ICON[ty], b.cx, b.cy - 1, 1f, n > 0 ? 1f : 0.35f);
-            UI.small.center(g, String.valueOf(n), b.cx, b.cy + b.r - 9, n > 0 ? UI.WHITE : UI.RED, 1f);
+            UI.small.center(g, sec ? Arsenal.ammoLabel(rs) : String.valueOf(n), b.cx, b.cy + b.r - 9, n > 0 ? UI.WHITE : UI.RED, 1f);
             float cdv = sec ? lv.pl.secCd : lv.pl.grenCd;
             if (cdv > 0) { g.clipBegin(b.cx - b.r, b.cy - b.r, 2 * b.r, 2 * b.r * Mth.clamp(cdv / 0.5f, 0, 1) + 1); g.circle(b.cx, b.cy, b.r - 1, 0xAA000000, false); g.clipEnd(); }
             return;

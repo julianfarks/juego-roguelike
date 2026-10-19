@@ -115,6 +115,122 @@ E equip. · S suelo · ! nueva	E 装备 · S 地面 · ! 新
 Misma arma: sube de nivel	相同武器：提升等级
 Dejaste atrás: {}	你遗落了：{}
  equipada!	 已装备！
+Cuerpo a cuerpo rápido	快速近战
+Cuerpo a cuerpo medio	中型近战
+Mágica	魔法
+Atraviesa 2 enemigos · cargador de 3, recarga automática	穿透2个敌人 · 3发弹匣，自动装填
+Quema 2.5 s · 3 proyectiles · cargador de 5, recarga automática	灼烧2.5秒 · 3枚弹体 · 5发弹匣，自动装填
+Cuchillos dobles	双刀
+Dos tajos rápidos seguidos; cada golpe seguido al mismo enemigo daña más.	连续两次快斩；对同一敌人的连续命中伤害更高。
+Precisión: +8% por golpe seguido (máx. +40%)	精准：每次连续命中+8%（最高+40%）
+2 tajos rápidos · daño 0.55x c/u · precisión	2次快斩 · 每次0.55倍伤害 · 精准
+Tajos cruzados que alcanzan también a quien te flanquea.	交叉斩击，也能击中身后的敌人。
+Sangrado acumulable (máx. 4) · golpea delante y detrás	可叠加流血（最多4层）· 前后同时命中
+Tajos cruzados · sangrado · daño 0.45x	交叉斩 · 流血 · 0.45倍伤害
+Estiletes	刺剑
+Estocadas veloces y precisas: la cadencia más alta del cuerpo a cuerpo.	又快又准的刺击：近战中最高的攻速。
++18% probabilidad crítica · los críticos sangran	+18%暴击率 · 暴击造成流血
+Estocadas muy rápidas · daño 0.34x	极速刺击 · 0.34倍伤害
+Garras mágicas	魔法利爪
+Tres zarpazos arcanos: cada golpe deja una marca.	三次奥术爪击：每次命中留下一个印记。
+Marca arcana: a la 3ª marca estalla (daño en área)	奥术印记：第3个印记爆发（范围伤害）
+3 zarpazos · marcas arcanas · daño 0.42x	3次爪击 · 奥术印记 · 0.42倍伤害
+Tonfas	双截棍拐
+Golpe seco y corto que corta el ataque de los enemigos comunes.	短促有力的一击，可打断普通敌人的攻击。
+Contundente: interrumpe 0.5 s a enemigos comunes (no jefes)	钝击：打断普通敌人0.5秒（对首领无效）
+Golpe contundente · interrumpe · daño 0.85x	钝击 · 打断 · 0.85倍伤害
+Guanteletes	拳套
+Puñetazos encadenados; el tercero seguido es un golpe pesado.	连环出拳；连续第三拳是重击。
+Contundente · 3er golpe seguido: +40% daño y empuje	钝击 · 连续第3击：+40%伤害并击退
+Puñetazos · 3º pesado · daño 0.8x	出拳 · 第3击为重击 · 0.8倍伤害
+Lanza	长矛
+Estocada larga que atraviesa a los enemigos alineados.	长距离刺击，可穿透成一线的敌人。
+Alcance extendido · atraviesa hasta 3 enemigos	超长攻击距离 · 最多穿透3个敌人
+Estocada larga · atraviesa 3 · daño 1.25x	长刺 · 穿透3个 · 1.25倍伤害
+Alabarda	戟
+Tajo vertical lento que cubre mucha altura.	缓慢的竖劈，覆盖很高的范围。
+Alcance alto · contundente (interrumpe 0.6 s)	高攻击范围 · 钝击（打断0.6秒）
+Tajo alto y pesado · daño 1.9x	高位重劈 · 1.9倍伤害
+Guadaña	镰刀
+Barrido amplio en arco que alcanza por detrás.	大范围弧形横扫，也能击中身后。
+Sangrado acumulable · recupera algo de vida al abatir	可叠加流血 · 击杀时回复少量生命
+Barrido amplio · sangrado · daño 1.4x	大范围横扫 · 流血 · 1.4倍伤害
+Látigo	长鞭
+El mayor alcance cuerpo a cuerpo; atrae un poco a quien golpea.	近战最远的攻击距离；会稍微拉近被命中的敌人。
+Alcance extendido · atrae y ralentiza	超长攻击距离 · 拉近并减速
+Látigo largo · atrae · daño 0.85x	长鞭 · 拉近 · 0.85倍伤害
+Cadena con hoja	链刃
+La hoja sale lanzada y vuelve: golpea a la ida y al regreso.	刀刃掷出后收回：去程和回程都会命中。
+Doble impacto (ida y vuelta)	双重打击（去程与回程）
+Ida y vuelta · doble impacto · daño 0.9x c/u	往返 · 双重打击 · 每次0.9倍伤害
+Espada corta	短剑
+Ligera y fiable: tajos rápidos sin demasiada recuperación.	轻巧可靠：快斩，恢复时间短。
+Ritmo: 3 golpes seguidos aceleran el siguiente	节奏：连续3次命中会加快下一击
+Tajo rápido · ritmo · daño 0.9x	快斩 · 节奏 · 0.9倍伤害
+Martillo de combate	战锤
+Mazazo lento con onda de impacto: aturde a los enemigos comunes.	缓慢的重击并产生冲击波：眩晕普通敌人。
+Contundente: aturde 0.8 s (no jefes) · onda de impacto	钝击：眩晕0.8秒（对首领无效）· 冲击波
+Mazazo lento y pesado · aturde · daño 2.7x	缓慢重击 · 眩晕 · 2.7倍伤害
+Dagas arrojadizas	飞刀
+Una daga rápida y precisa; si falla, vuelve a tu mano.	快速精准的飞刀；未命中会回到你手中。
+Precisión: +8% por golpe seguido · si falla, regresa y recuperas la daga	精准：每次连续命中+8% · 未命中则飞回，返还飞刀
+Daga rápida · precisión · regresa si falla · daño 1.0x	快速飞刀 · 精准 · 未命中则返回 · 1.0倍伤害
+Shurikens	手里剑
+Tres estrellas giratorias en abanico cerrado, envenenadas.	三枚旋转的毒星，呈紧密扇形射出。
+Veneno acumulable (máx. 3) · atraviesan 1 enemigo	可叠加中毒（最多3层）· 穿透1个敌人
+3 estrellas envenenadas · daño 0.45x	3枚毒星 · 0.45倍伤害
+Bombas alquímicas	炼金炸弹
+Frasco que estalla en llamas: daño en área y quemadura.	会爆燃的瓶子：范围伤害并灼烧。
+Quemadura acumulable (máx. 3) · explosión en área	可叠加灼烧（最多3层）· 范围爆炸
+Frasco incendiario · área · daño 1.9x	燃烧瓶 · 范围 · 1.9倍伤害
+Bombas adhesivas	粘性炸弹
+Se pega al primer enemigo y estalla tras un instante, ralentizando.	黏在第一个敌人身上，片刻后爆炸并减速。
+Se adhiere · estalla a 1 s · ralentiza	黏附 · 1秒后爆炸 · 减速
+Se pega y estalla · ralentiza · daño 2.0x	黏附并爆炸 · 减速 · 2.0倍伤害
+Varita elemental	元素法杖
+Fuego, hielo y rayo en ciclo: completar los tres desata una nova elemental.	火、冰、雷循环：集齐三种会释放元素新星。
+Resonancia: fuego → hielo → rayo → nova en área · energía regenerable	共鸣：火 → 冰 → 雷 → 范围新星 · 能量可再生
+Ciclo elemental · nova · daño 1.0x	元素循环 · 新星 · 1.0倍伤害
+Varita de fuego	火焰法杖
+Bola de fuego que prende y acumula quemadura.	火球会点燃目标并叠加灼烧。
+Quemadura acumulable (máx. 3) · energía regenerable	可叠加灼烧（最多3层）· 能量可再生
+Bola de fuego · quemadura · daño 1.05x	火球 · 灼烧 · 1.05倍伤害
+Varita de hielo	寒冰法杖
+Esquirla helada: tres impactos congelan brevemente (los jefes solo se ralentizan).	冰锥：命中三次会短暂冻结（首领仅被减速）。
+Frío acumulable: ralentiza; a la 3ª carga congela 1 s · energía regenerable	可叠加寒冷：减速；第3层冻结1秒 · 能量可再生
+Esquirla helada · frío · daño 0.9x	冰锥 · 寒冷 · 0.9倍伤害
+Varita eléctrica	闪电法杖
+Rayo veloz que salta a enemigos cercanos.	快速闪电，会跳向附近的敌人。
+Cadena: salta a 2 enemigos (55%) · energía regenerable	连锁：跳向2个敌人（55%）· 能量可再生
+Rayo en cadena · daño 0.8x	连锁闪电 · 0.8倍伤害
+Orbe oscuro	暗影法球
+Esfera lenta que crece y atraviesa: maldice a quien toca.	缓慢增大并穿透的球体：诅咒被击中者。
+Oscuridad: +12% de daño recibido durante 4 s · atraviesa 2	黑暗：4秒内受到的伤害+12% · 穿透2个
+Esfera oscura · maldice · daño 1.2x	暗影球 · 诅咒 · 1.2倍伤害
+Catalizador de veneno	毒素催化剂
+Frasco tóxico: la nube envenena a todos los cercanos.	毒瓶：毒云会使附近所有敌人中毒。
+Veneno acumulable (máx. 5) · nube en área · energía regenerable	可叠加中毒（最多5层）· 范围毒云 · 能量可再生
+Nube tóxica · veneno · daño 0.6x	毒云 · 中毒 · 0.6倍伤害
+Cetro de sangre	鲜血权杖
+Orbe carmesí: sangrado acumulable y un poco de vida a cambio.	猩红法球：可叠加流血，并回复少量生命。
+Sangrado (máx. 4) · roba 3% del daño (límite por tiempo)	流血（最多4层）· 吸取3%伤害（有冷却限制）
+Orbe carmesí · sangrado · roba vida · daño 1.1x	猩红法球 · 流血 · 吸血 · 1.1倍伤害
+Cristal arcano	奥术水晶
+Dos esquirlas guiadas que marcan al objetivo.	两枚追踪晶片，会标记目标。
+Marca arcana (3 = estallido) · el estallido devuelve 1 carga	奥术印记（3个=爆发）· 爆发返还1次充能
+2 esquirlas guiadas · marcas · daño 0.7x	2枚追踪晶片 · 印记 · 0.7倍伤害
+Talismán explosivo	爆裂符咒
+Se adhiere y estalla con gran radio: aturde a los enemigos comunes.	黏附后大范围爆炸：眩晕普通敌人。
+Se adhiere · estalla a 0.9 s · aturde 0.4 s (no jefes)	黏附 · 0.9秒后爆炸 · 眩晕0.4秒（对首领无效）
+Talismán que estalla · aturde · daño 2.4x	爆裂符咒 · 眩晕 · 2.4倍伤害
+Ilimitada	无限
+ (regenera)	（再生）
+sin energía	能量耗尽
+recargando	装填中
+¡Estallido arcano!	奥术爆发！
+¡Interrumpido!	被打断！
+¡Contra!	反击！
+Sin munición (ilimitada)	无需弹药（无限）
 Filo Afilado	锋利之刃
 +15% de daño de arma por nivel.	每级武器伤害提高15%。
 Corazón Robusto	强健之心
@@ -1005,7 +1121,6 @@ REDUCIDOS	已减弱
 NORMALES	正常
 ¡Esquiva!	闪避！
 ¡Ritmo!	节奏！
-¡Contra!	反击！
 Izquierda	向左
 Derecha	向右
 Abajo	向下

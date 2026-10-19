@@ -46,7 +46,7 @@ final class RunSave {
             d.put("relics", rl);
             d.put("finalRun", rs.finalRun);
             d.put("bless", rs.bless);
-            d.put("sec", rs.sec); d.put("secAmmo", rs.secAmmo); d.put("gren", rs.gren); d.put("grenCount", rs.grenCount);
+            d.put("sec", rs.sec); d.put("secAmmo", rs.secAmmo); d.put("secMag", rs.secMag); d.put("gren", rs.gren); d.put("grenCount", rs.grenCount);
             d.put("special", rs.special); d.put("shield", rs.shield); d.put("secrets", rs.secretsFound);
             d.put("devAsst", rs.devAssisted); d.put("inf", rs.infinite); d.put("infCamp", rs.infFromCampaign); d.put("floor", rs.floor); d.put("floorsDone", rs.floorsDone); d.put("revs", rs.revivesUsed);
             d.put("infRooms", rs.infRooms); d.put("infBK", rs.infBaseKills); d.put("infBB", rs.infBaseBoss); d.put("infT0", (int) rs.infT0);
@@ -92,7 +92,7 @@ final class RunSave {
             rs.eventBiomeDone = Json.bool(d, "evBiome", false); rs.curEvent = Math.max(0, Math.min(Events.COUNT - 1, Json.i(d, "evCur", 0)));
             rs.sideOrigin = rs.curEvent == Events.MERCHANT && Json.i(d, "room", -1) == Room.EVENT ? Json.i(d, "sOrg", -1) : -1;
             int[] bl = Json.ints(d, "bless"); if (bl != null) for (int i = 0; i < Math.min(bl.length, rs.bless.length); i++) rs.bless[i] = bl[i];
-            rs.sec = Json.i(d, "sec", 0); rs.secAmmo = Json.i(d, "secAmmo", 0); rs.gren = Json.i(d, "gren", 0); rs.grenCount = Json.i(d, "grenCount", 0);
+            rs.sec = Json.i(d, "sec", 0); rs.secAmmo = Json.i(d, "secAmmo", 0); rs.secMag = Json.i(d, "secMag", -1); rs.secMagId = rs.sec; rs.secReload = 0; rs.gren = Json.i(d, "gren", 0); rs.grenCount = Json.i(d, "grenCount", 0);
             rs.special = Json.i(d, "special", 0); rs.shield = Json.i(d, "shield", 0); rs.secretsFound = Json.i(d, "secrets", 0);
             int[] cbv = Json.ints(d, "cb"); if (cbv != null) for (int i = 0; i < Math.min(cbv.length, rs.cb.length); i++) rs.cb[i] = cbv[i];
             rs.grenLvl = Json.i(d, "grenLvl", 0); rs.secLvl = Json.i(d, "secLvl", 0);

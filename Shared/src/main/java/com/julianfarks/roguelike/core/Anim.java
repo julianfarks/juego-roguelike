@@ -11,6 +11,7 @@ public final class Anim {
     public int[] box;                   // [x,y,w,h] relativo al pivote mirando a la derecha
     public int rel = -1;                // fotograma de liberacion
     public int[] muzzle;                // [x,y] relativo al pivote
+    public int[][] hand;                // anclaje de la mano por fotograma [x,y] en la celda (filas "_u" sin arma); null = sin dato
     public int smear = -1;              // indice del fotograma smear (deformacion intencional de velocidad); -1 = ninguno
     private float[] cum;                // tiempos acumulados por fotograma (peso de duracion "ft"); null = fotogramas uniformes
 

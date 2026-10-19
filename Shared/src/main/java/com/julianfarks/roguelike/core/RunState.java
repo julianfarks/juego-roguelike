@@ -25,6 +25,8 @@ public final class RunState {
     public int asc;
     public int diff = 1;                // 0 facil, 1 normal, 2 dificil
     public int sec, secAmmo, gren, grenCount, special, shield;   // objetos de cofres
+    /** Cargador del arma 2ª equipada (solo armas de cargador, ver Arsenal.MAG): disparos listos. -1 = sin inicializar. secReload: segundos de recarga que faltan (>0 = recargando). secMagId: arma a la que pertenece el cargador. */
+    public int secMag = -1, secMagId; public float secReload, secRegenT;
     public boolean secActive;         // true = el boton de ataque dispara el arma secundaria (cambio de arma); false = arma principal
     /** Inventario: objetos obtenidos que aun no se han inspeccionado y los ya vistos (claves "w:id", "b:id", "r:i", "o:..."). Solo de esta partida. */
     public final java.util.LinkedHashSet<String> unseen = new java.util.LinkedHashSet<>();

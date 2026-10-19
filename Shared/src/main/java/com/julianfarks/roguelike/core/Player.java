@@ -10,7 +10,7 @@ public final class Player extends Ent {
     public final ClassDef cls;
     public int state = IDLE;
     public int skinTint;
-    public float swapCd, swapAnimT, wpnT, swapBuf; public int selWant; public int wpnId, wandEl; public String swapIcon;
+    public final WeaponFx.State wfx = new WeaponFx.State(); public float reloadDoneT, reloadMax = 1f; public float swapCd, swapAnimT, wpnT, swapBuf, secView; public int selWant; public int wpnId, wandEl; public String swapIcon;
     public float secCd, grenCd, safeX, safeY, invuln, shield, skinT, hurtT, furia;
     public float extVx;                       // empuje externo (atraccion de jefes)
     public float guardT;                      // guardia de acero
@@ -147,6 +147,10 @@ public final class Player extends Ent {
         if (swapCd > 0) swapCd -= dt;
         if (swapAnimT > 0) swapAnimT -= dt;
         if (wpnT > 0) wpnT -= dt;
+        { float tv = (lv.rs.secActive && lv.rs.sec > 0) ? 1f : 0f; secView += Mth.clamp(tv - secView, -dt * 8f, dt * 8f); }
+        if (reloadDoneT > 0) reloadDoneT -= dt;
+        WeaponFx.tick(this, dt);
+        Melee.update(lv, this, dt);
         if (swapBuf > 0) swapBuf -= dt;
         if (lv.rs.sec == 0) lv.rs.secActive = false;
         if (grenCd > 0) grenCd -= dt;
@@ -500,6 +504,9 @@ public final class Player extends Ent {
         Snd.sfxv(sfx, 0.85f);
     }
 
+    /** Contacto real de un golpe de arma secundaria: pose de impacto (solo visual). */
+    void registerHitPose(Level lv, int kind) { hitPoseAt = lv.time; hitPoseKind = kind; }
+
     private float atkSpeed(Level lv) { return cls.atkSpeed * lv.rs.stats.atkSpd * BlessFx.atkSpdMul(lv) * (lv.flowT > 0 ? 1.12f : 1f) * (1f + 0.03f * Math.min(furia, 6)); }
 
     private void updateAttack(Level lv, float dt, float mx, float spd) {
@@ -845,7 +852,14 @@ public final class Player extends Ent {
             cs.draw(g, a, frame, x - dir() * 15, y, right, 1f, Platform.ADD | Platform.TINT, cls.color1, 0.16f);
         }
         if (!alive) { ssx = 1f; ssy = 1f; }
-        cs.drawSq(g, a, frame, x + ox, y, right, ssx, ssy, flags, tint, alpha);
+        boolean held = WeaponView.active(lv, this, cs);
+        if (held) {            // secundaria elegida: espada a la espalda + cuerpo sin arma + secundaria en la mano
+            Anim as = cs.anim(animName + "_s"), au = cs.anim(animName + "_u");
+            int fu = Math.min(frame, au.n - 1);
+            cs.drawSq(g, as, Math.min(frame, as.n - 1), x + ox, y, right, ssx, ssy, flags, tint, alpha);
+            cs.drawSq(g, au, fu, x + ox, y, right, ssx, ssy, flags, tint, alpha);
+            WeaponView.drawHeld(g, lv, this, cs, au, fu, x + ox, y, ssx, ssy, flags, tint, alpha);
+        } else cs.drawSq(g, a, frame, x + ox, y, right, ssx, ssy, flags, tint, alpha);
         if (guarding) {
             int sc = Items.SH_COL[lv.rs.shield];
             float sx0 = x + dir() * 11, ph = parryT > 0 ? 1f : 0f;
@@ -860,7 +874,7 @@ public final class Player extends Ent {
             Anim sa = sh.anim("bubble");
             sh.drawCentered(g, sa, (int) (lv.time * 10) % sa.n, Math.round(x), Math.round(y - 18), 0, 1f, Platform.ADD, 0, 0.5f);
         }
-        if (wpnT > 0 && alive && wpnId > 0 && wpnId < Items.SEC_COUNT) {      // el arma 2ª se adelanta al disparar
+        if (wpnT > 0 && alive && wpnId > 0 && wpnId < Items.SEC_COUNT && !held) {      // el arma 2ª se adelanta al disparar
             float f = wpnT / 0.22f;
             UI.iconC(g, Items.SEC_ICON[wpnId], x + dir() * (9 + 9 * (1f - f)), y - 19, 1f, Mth.clamp(f * 1.6f, 0f, 1f));
         }

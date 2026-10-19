@@ -104,7 +104,7 @@ final class CombatProbe {
     static boolean parry(Game g, RunScreen rs, Level lv, Player p, int t) {
         RunState r = rs.rs;
         if (t < 20) { lv.enemies.clear(); r.hp = r.stats.maxHp; return false; }
-        p.invuln = 0;
+        p.invuln = 0; p.shield = 0; p.skinT = 0; lv.cinematic = false;      // sin escudos ni cinematicas residuales: la medicion de dano debe ser determinista
         switch (ps_) {
             case 0: { // dano sin guardia vs bloqueo normal (sin parry)
                 r.hp = r.stats.maxHp; p.invuln = 0; lv.hurtPlayer(10, p.x + 12 * p.dir(), -1, 0); hpU = r.stats.maxHp - r.hp;

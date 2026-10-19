@@ -19,6 +19,41 @@ public final class Boss extends Ent {
     private float floorY;
     private boolean deathHandled;
 
+    // ---- zona de vuelo (jefes voladores): limites ABSOLUTOS sacados de la geometria de la sala, nunca de la altura del jugador
+    float zoneTop, zoneBot;               // y minima (arriba) y maxima (abajo) permitidas para el pivote (pies) del jefe
+    private boolean zoneInit;
+    private float hoverTgt = Float.NaN;   // objetivo de altura suavizado (cambios limitados en velocidad: sin saltos bruscos al cambiar de plataforma)
+
+    /** Calcula la banda de vuelo: abajo = suelo de la arena - margen; arriba = el mayor de (techo + cuerpo + margen) y (plataforma alcanzable mas alta - 24),
+     *  de modo que desde cualquier plataforma el jugador siempre queda a la altura del cuerpo del jefe y este nunca se pega al techo. */
+    void computeZone(Level lv) {
+        Room rm = lv.room;
+        float floor = rm.spawnY, ceilBot = 0, topPlat = floor - 110;
+        int tx0 = 2, tx1 = rm.w - 3, topTy = Integer.MAX_VALUE;
+        for (int tx = tx0; tx <= tx1; tx++) {
+            int ty = 0;
+            while (ty < rm.h && !Room.isSolid(rm.tile(tx, ty))) ty++;
+            if (ty >= rm.h || ty * Room.TS >= floor - 2 * Room.TS) continue;         // columna sin techo (o es suelo)
+            int by = ty; while (by < rm.h && Room.isSolid(rm.tile(tx, by)) && by * Room.TS < floor - 3 * Room.TS) by++;   // fondo del bloque de techo
+            if (by * Room.TS > ceilBot && by * Room.TS < floor - 3 * Room.TS) ceilBot = by * Room.TS;
+        }
+        for (int tx = tx0; tx <= tx1; tx++) {                                         // superficie alcanzable mas alta: solida/atravesable con 2 tiles de aire encima, por encima del suelo
+            for (int ty = 2; ty * Room.TS < floor - 2 * Room.TS; ty++) {
+                int t = rm.tile(tx, ty);
+                if ((Room.isSolid(t) || t == Room.ONEWAY) && !Room.isSolid(rm.tile(tx, ty - 1)) && !Room.isSolid(rm.tile(tx, ty - 2)) && rm.tile(tx, ty - 1) != Room.ONEWAY) {
+                    if (ty < topTy && ty * Room.TS > ceilBot + Room.TS) topTy = ty;
+                    break;
+                }
+            }
+        }
+        if (topTy != Integer.MAX_VALUE) topPlat = topTy * Room.TS;
+        zoneBot = floor - 28f;
+        zoneTop = Math.max(Math.max(ceilBot + bh + 10f, ceilBot + sheet.py - 30f), topPlat - 24f);   // cuerpo con margen bajo el techo y el sprite (corona/alas) como mucho 30 px dentro de el
+        if (zoneTop > zoneBot - 48f) zoneTop = zoneBot - 48f;                           // banda minima de 48 px
+        if (System.getenv("BOT_NOZONE") != null) { zoneTop = -1e6f; zoneBot = 1e6f; }     // solo banco: reproduce el comportamiento anterior (sin limites) para comparar
+        zoneInit = true;
+    }
+
     public Boss(BossDef d, RunState rs) {
         this.def = d;
         sheet = Assets.sheet(d.sheet);
@@ -164,6 +199,11 @@ public final class Boss extends Ent {
             vy = Math.min(Level.FALL_MAX, vy + Level.GRAV * dt);
             lv.move(this, dt);
         }
+        if (flying && state != INTRO && state != DEAD) {                               // seguro final: nunca fuera de la banda de vuelo (techo, suelo, pantalla)
+            if (!zoneInit) computeZone(lv);
+            if (y < zoneTop) { y = zoneTop; if (vy < 0) vy = 0; }
+            if (y > zoneBot) { y = zoneBot; if (vy > 0) vy = 0; }
+        }
         // limites
         float minX = 2 * Room.TS + bw / 2, maxX = lv.room.pixW - 2 * Room.TS - bw / 2;
         if (x < minX) { x = minX; vx = 0; }
@@ -255,7 +295,13 @@ public final class Boss extends Ent {
 
     // ------------------------------------------------------------------ comportamiento
     private void hoverTo(Level lv, Player p, float dt, float gx, float gy, float sp) {
+        if (!zoneInit) computeZone(lv);
+        gy = Mth.clamp(gy, zoneTop, zoneBot);                                          // limite absoluto: la altura del jugador no puede empujarla mas arriba
+        if (Float.isNaN(hoverTgt)) hoverTgt = y;
+        hoverTgt = Mth.approach(hoverTgt, gy, 120f * dt);                              // reajuste controlado al cambiar de plataforma
+        gy = hoverTgt;
         float ddx = gx - x, ddy = gy - y;
+        if (Math.abs(ddy) < 6f) ddy = 0f;                                              // zona muerta: sin oscilaciones constantes
         vx = Mth.approach(vx, Mth.clamp(ddx * 2.2f, -sp, sp), 900 * dt);
         vy = Mth.approach(vy, Mth.clamp(ddy * 3f, -sp, sp), 900 * dt);
     }

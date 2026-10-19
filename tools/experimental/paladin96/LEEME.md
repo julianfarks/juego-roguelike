@@ -30,3 +30,9 @@
 - Guiado por la imagen de referencia del usuario: capa interior oscura en brazo y pierna (separa las placas), tabardo azul con panel blanco y estrella, hombrera de cuatro láminas con remaches.
 - Comparación: `comparacion_joven_izq_cerrado_der.png` (idle).
 - Sin cambios: sprite del juego, otras clases, animaciones funcionales, paleta.
+
+## Versión 192x192 (alta resolución)
+- Generador: `tools/art_players/exp192_paladin.py` -> `paladin192_sheet.png/.json` (idle, run, attack1, roll). Celda 192x192, escala x4 (personaje ~160 px de alto frente a ~80 px del de 96x96).
+- Añade detalle propio de la resolución: cuisse, rodillera con alas y gema, greba con cresta y juntas, puntera acorazada, filo claro y grabados en el peto, hombrera con reborde plateado, gemas, estrellas y ramas doradas en la capa.
+- Comparación: `comparacion_96_izq_192_der.png`.
+- Límite: el rig es de perfil lateral; el detalle de la imagen de referencia (vista 3/4, placas plateadas, filigranas) no se alcanza con este generador. Para ese nivel haría falta dibujar a mano.

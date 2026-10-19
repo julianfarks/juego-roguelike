@@ -50,6 +50,8 @@ class Frost(PClass):
         mat('leather', '#4A4668')
         mat('eye', '#80E4FF', hl='#FFFFFF')
         mat('dark', '#1A2038')
+        mat('rime', '#B8D8F0', hl='#FFFFFF')
+        mat('plate', '#4E78B0', hl='#CFEBFF')
         for m in ('armor', 'under', 'fur', 'cloak', 'leather'):
             mat_back(m)
 
@@ -63,10 +65,21 @@ class Frost(PClass):
         poly(X, tp(X, [(-3.0, -0.6), (2.8, -0.6), (3.2, 3.5), (3.3, 7.6), (2.6, 9.6), (-2.4, 9.6), (-3.2, 7), (-3.3, 3)]), 'under', dome=3.0)
         poly(X, tp(X, [(-3.3, 3.0), (3.0, 3.0), (3.8, 5.2), (3.9, 7.8), (3.0, 9.8), (-2.5, 9.8), (-3.8, 7.4), (-3.9, 4.4)]), 'armor', dome=3.0)
         poly(X, tp(X, [(-3.2, -0.6), (3.0, -0.6), (3.1, 1.5), (-3.3, 1.5)]), 'leather', dome=1.2)
+        poly(X, tp(X, [(-3.3, 6.2), (3.2, 6.2), (3.9, 7.6), (3.0, 9.8), (-2.5, 9.8), (-3.8, 7.6)]), 'plate', dome=2.6)           # placa pectoral
+        poly(X, tp(X, [(-3.4, 3.2), (3.1, 3.2), (3.8, 4.8), (3.8, 6.0), (-3.7, 6.0), (-3.8, 4.8)]), 'armor', dome=1.8)          # placa de vientre
+        for v in (6.1, 4.4):
+            poly(X, tp(X, [(-3.8, v), (3.9, v), (3.9, v + 0.18), (-3.8, v + 0.18)]), 'dark', tone=2)                              # juntas
+        poly(X, tp(X, [(-3.6, 9.6), (3.0, 9.6), (3.0, 9.9), (-3.4, 9.9)]), 'rime', tone=4)                                      # escarcha del borde
+        for (u, v) in ((-2.8, 5.4), (2.9, 5.4), (-2.6, 3.8), (2.7, 3.8)):                                                         # remaches de hielo
+            circ(X, tp(X, [(u, v)])[0], 0.26 * k, 'rime', tone=5)
         # cristal en el pecho
         c = tp(X, [(0.8, 6.0)])[0]
         poly(X, [(c[0], c[1] - 2), (c[0] + 1.2, c[1]), (c[0], c[1] + 2), (c[0] - 1.2, c[1])], 'ice', emissive=True)
         leg(X, sk.hipF, sk.kneeF, sk.ankF, 2.4, 1.9, 1.6, 'under', 'leather', p.ffa, kneepad='armor', greave='armor')
+        kn = sk.kneeF
+        poly(X, [(kn[0] + 0.6, kn[1] - 1.4), (kn[0] + 2.6, kn[1] - 0.2), (kn[0] + 0.6, kn[1] + 1.0)], 'ice', tone=4)             # esquirla de rodilla
+        an = sk.ankF
+        cap(X, (an[0] - 1.2, an[1] - 3.0), (an[0] + 1.2, an[1] - 3.0), 0.5 * k, 0.5 * k, 'rime', tone=3)                         # faja de la greba
         ribbons_draw(X, 'tailF', 'fur', dome=1.6)
         # piel en cuello
         circ(X, lerp_pt(sk.neck, sk.hip, 0.1), 2.7 * k, 'fur', dome=2.0)
@@ -74,6 +87,10 @@ class Frost(PClass):
         circ(X, hc, D.hr, 'armor', dome=3.4)
         poly(X, hp(X, [(-4, 1.5), (-2, 4.2), (1.5, 4.0), (3.4, 2.4), (1.0, 1.4)]), 'cloak', dome=1.4)
         poly(X, hp(X, [(0.6, 1.8), (4.2, 1.6), (4.1, -2.0), (1.0, -3.0)]), 'dark', tone=1)
+        poly(X, hp(X, [(0.4, 2.4), (4.6, 2.0), (4.6, 1.4), (0.4, 1.8)]), 'plate', tone=4)                                        # frente del yelmo
+        poly(X, hp(X, [(4.0, 1.6), (4.9, 0.4), (4.5, -2.4), (3.8, -2.2)]), 'rime', tone=3)                                      # proa de la visera
+        for v in (-0.9, -1.5):
+            poly(X, hp(X, [(1.4, v), (3.8, v - 0.05), (3.8, v - 0.22), (1.4, v - 0.17)]), 'ice', tone=2)                       # ranuras de la visera
         poly(X, hp(X, [(1.6, 0.7), (3.8, 0.6), (3.8, -0.3), (1.6, -0.2)]), 'eye', emissive=True)
         # capucha de piel
         for (u, v, r) in ((-3.4, 0.6, 1.7), (-3.0, -2.2, 1.6), (-1.6, -3.6, 1.5)):
@@ -85,7 +102,12 @@ class Frost(PClass):
         circ(X, sk.shB, 2.4 * k, 'fur_b', dome=2.0)
         self._sabre(X)
         arm(X, sk.shF, sk.elbF, sk.handF, 1.7, 1.5, 1.3, 'under', glove='leather', bracer='armor')
+        circ(X, (sk.shF[0] - 0.2, sk.shF[1] + 1.5), 2.9 * k, 'plate', dome=2.2)
         circ(X, sk.shF, 3.0 * k, 'armor', dome=2.8)
+        for ang in (205, 250, 295):
+            q = (sk.shF[0] + math.cos(math.radians(ang)) * 2.4 * k, sk.shF[1] + math.sin(math.radians(ang)) * 2.4 * k)
+            circ(X, q, 0.35 * k, 'rime', tone=5)
+        poly(X, [(sk.shF[0] + 0.6, sk.shF[1] - 2.6), (sk.shF[0] + 1.6, sk.shF[1] - 5.2), (sk.shF[0] + 2.4, sk.shF[1] - 2.2)], 'ice', tone=4)   # cristal de hombro
         circ(X, (sk.shF[0] + 0.2, sk.shF[1] - 1.6), 2.0 * k, 'fur', dome=1.6)
 
     def _sabre(self, X):
@@ -94,6 +116,9 @@ class Frost(PClass):
         poly(X, W([(4, -0.4), (14, -0.6), (20, 0.0), (14, 0.5), (4, 0.4)]), 'fur', tone=4)
         poly(X, W([(13, -2.0), (15, -3.3), (16.5, -1.6)]), 'ice', dome=0.8)   # esquirla
         poly(X, W([(1.6, -3.2), (2.8, -3.2), (2.8, 3.2), (1.6, 3.2)]), 'armor', dome=1.2)
+        poly(X, W([(1.4, -3.2), (2.8, -3.2), (3.8, -4.8), (2.2, -4.0)]), 'rime', tone=4)                                          # alas de la guarda
+        poly(X, W([(1.4, 3.2), (2.8, 3.2), (3.8, 4.8), (2.2, 4.0)]), 'rime', tone=4)
+        poly(X, W([(3, -1.5), (18, -1.6), (18, -1.2), (3, -1.1)]), 'rime', tone=5)                                                # filo con escarcha
         poly(X, W([(-2.6, -0.9), (1.7, -0.9), (1.7, 0.9), (-2.6, 0.9)]), 'leather', dome=1.0)
         circ(X, wpt(X, -3.4, 0), 1.2 * X.D.k, 'ice', emissive=True)
 

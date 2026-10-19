@@ -198,6 +198,22 @@ final class Arsenal {
         return true;
     }
 
+    /** El arma pedida ya es la activa (o se pide la secundaria sin tener ninguna: no hay nada que seleccionar). */
+    static boolean isSelected(RunState rs, boolean sec) { return sec ? rs.secActive : !rs.secActive; }
+
+    /** Seleccion directa: true = secundaria, false = principal. No ataca, no gasta municion ni toca cooldowns; si ya esta elegida no hace nada. */
+    static boolean select(Level lv, Player p, boolean sec) {
+        RunState rs = lv.rs;
+        if (isSelected(rs, sec)) return false;
+        if (p.swapCd > 0) return false;
+        if (sec && rs.sec == Items.SEC_NONE) {
+            lv.text(p.x, p.y - p.bh - 10, "sin arma secundaria", 0xA0A0A8, false);
+            Snd.sfx("ui_error", 0.5f); p.swapCd = 0.3f;
+            return false;
+        }
+        return swap(lv, p);
+    }
+
     // ================================================================ armas en el suelo
     static boolean freeSpot(Level lv, float x, float gy) {
         if (x < 14 || x > lv.room.pixW - 14 || gy >= lv.room.pixH - 6) return false;

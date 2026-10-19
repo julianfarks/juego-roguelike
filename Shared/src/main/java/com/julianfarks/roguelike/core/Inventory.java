@@ -476,13 +476,6 @@ final class Inventory {
                     Blessing b = Blessing.ALL[it.bid];
                     body = b.desc;
                     extra.add("Nivel " + rs.bless[it.bid] + "/" + b.max + " · " + it.sub);
-                    BSyn[] ss = BlessData.syns();
-                    int shown = 0;
-                    for (int[] s : BlessOffer.synergyInfo(rs, b)) {
-                        if (shown++ >= 2) break;
-                        int have = 0; for (int id : ss[s[0]].members) if (rs.bless[id] > 0) have++;
-                        extra.add((have >= ss[s[0]].need ? "Sinergia ACTIVA: " : "Sinergia " + have + "/" + ss[s[0]].need + ": ") + ss[s[0]].name);
-                    }
                 }
         }
         yy += wrapClip(g, body, x + 2, yy, (int) w - 4, bottom - yy - 24, 0xFFE8E0E0);

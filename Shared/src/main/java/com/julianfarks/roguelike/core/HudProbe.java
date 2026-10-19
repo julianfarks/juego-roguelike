@@ -74,7 +74,9 @@ final class HudProbe {
         if (t < 900) return false;
         int fired = r.bx.firedSyn[s];
         ck("la sinergia se dispara muchas veces (" + fired + ")", fired >= 5);
-        ck("pero su aviso por nombre sale una sola vez (" + BlessEffects.dbgAnnounced + ")", BlessEffects.dbgAnnounced == 1);
+        ck("pero el juego NO la anuncia (avisos por nombre: " + BlessEffects.dbgAnnounced + ")", BlessEffects.dbgAnnounced == 0);
+        boolean txt = false; for (DmgText d : lv.texts) if (d.text != null && (d.text.contains("inergia") || d.text.equals(sy.name))) txt = true;
+        ck("ningun texto flotante nombra la sinergia ni dice 'Sinergia activada'", !txt);
         int[] cols = new int[BlessData.SYN.length]; java.util.Set<Integer> distinct = new java.util.HashSet<>();
         for (int i = 0; i < cols.length; i++) { cols[i] = BlessEffects.synColor(i); distinct.add(cols[i]); }
         ck("el color de la senal depende del tipo de combinacion (" + distinct.size() + " tipos)", distinct.size() >= 5);

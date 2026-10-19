@@ -8,7 +8,7 @@ final class ControlsEditor extends Screen {
     private int dragId = -1, dragB = -1;
     private float offX, offY;
     private Hit minus, plus, reset, done;
-    private static final String[] ICONS = {"", "", "", "jump", "attack", "roll", "", "", "", "", "key", "pause", "potion", "attack", "burn", "parry", "swap", "bag"};
+    private static final String[] ICONS = {"", "", "", "jump", "attack", "roll", "", "", "", "", "key", "pause", "potion", "attack", "burn", "parry", "attack", "bag", "attack"};
 
     ControlsEditor(Game g, boolean fromRun) { super(g); this.fromRun = fromRun; this.in = g.input; }
 
@@ -39,6 +39,7 @@ final class ControlsEditor extends Screen {
     private int pick(float x, float y) {
         int best = -1; float bd = 1e9f;
         for (int i = 0; i < Input.B_COUNT; i++) {
+            if (i == Input.B_INTERACT || i == Input.B_SEC) continue;     // sin boton tactil propio (boton contextual / seleccion directa)
             Input.Btn b = in.btn[i];
             float d = Mth.dist(x, y, b.cx, b.cy);
             if (d <= b.r + 10 && d < bd) { bd = d; best = i; }
@@ -75,6 +76,7 @@ final class ControlsEditor extends Screen {
         UI.small.center(g, "Arrastra los botones donde quieras (izq+der = centro del joystick)", w / 2f, 34, UI.GREY, 1f);
         UI.small.center(g, "Toca uno para elegirlo y cambia su tamaño", w / 2f, 46, UI.GREY, 1f);
         for (int i = 0; i < Input.B_COUNT; i++) {
+            if (i == Input.B_INTERACT || i == Input.B_SEC) continue;
             Input.Btn b = in.btn[i];
             boolean sel = i == selB;
             UI.roundButton(g, b.cx, b.cy, b.r, sel ? 1 : 0, 0.85f);

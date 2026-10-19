@@ -16,8 +16,8 @@ Sistema de **arma principal + una arma secundaria** con cambio en combate, armas
 
 ## Reglas
 - **Una** secundaria equipada como máximo. La principal es la de la clase.
-- El botón de **cambio de arma** alterna cuál usa el botón de **Ataque**: principal (cuerpo a cuerpo de la clase) o secundaria (dispara). El botón rápido de arma 2ª (`L`) sigue disparando la secundaria sin cambiar.
-- Cambiar tarda 0,25 s (enfriamiento) y no reinicia nada: no crea proyectiles, no gasta munición, no resetea cooldowns ni bendiciones, no duplica efectos. Pulsar cambio + ataque a la vez como máximo dispara una vez. Sin secundaria el cambio no hace nada (avisa).
+- **Selección directa** (sin botón de cambio): dos espacios en el centro inferior de la pantalla, uno para la principal y otro para la secundaria. Tocar uno (o su tecla / botón de mando / clic en PC) lo deja seleccionado y el botón de **Ataque** ejecuta el arma seleccionada: principal (cuerpo a cuerpo de la clase) o secundaria (dispara). Seleccionar no es atacar; si ya está seleccionada, volver a tocarla no hace nada. El antiguo botón táctil de disparo rápido de la secundaria desapareció (su acción es seleccionar + atacar); la tecla `L` / botón de mando sigue funcionando si la tenías asignada.
+- Cambiar tarda 0,25 s (enfriamiento) y no reinicia nada: no crea proyectiles, no gasta munición, no resetea cooldowns ni bendiciones, no duplica efectos. Seleccionar + atacar a la vez como máximo dispara una vez. Sin secundaria, elegirla no hace nada (avisa).
 - Sin munición con la secundaria activa → vuelve sola a la principal.
 - Daño/cadencia de la secundaria escalan con su **nivel** (`secLvl`, máx. 3); el nivel pertenece a la ranura, igual que antes.
 
@@ -50,7 +50,7 @@ Comportamientos propios: el **arco** gana daño con la distancia; el **chakram**
 Las opciones de arma muestran icono, rareza, usos y descripción. Si ya llevas una secundaria distinta, al elegir se abre la **comparación** («Conservar la actual» / «Intercambiar»); rechazar vuelve a las 3 opciones sin perder ninguna. Con la misma arma, la compensación es una mejora de nivel (nunca se ofrece como arma «nueva»).
 
 ## Inventario
-- **Abrir:** `Tab` (configurable), botón de bolsa (táctil, bajo Pausa), `RS↑` en mando, o «Inventario» en la pausa. El juego queda en pausa y los controles de combate no actúan mientras se navega.
+- **Abrir:** `Tab` (configurable), botón de bolsa (táctil, bajo Pausa), `RS↑` en mando, (ya no hay acceso desde la pausa). El juego queda en pausa y los controles de combate no actúan mientras se navega.
 - **Categorías:** Armas (principal + secundarias obtenidas: equipada / en el suelo / dejada atrás) · Bendiciones (con nivel y sinergias) · Reliquias y especiales (reliquias de jefe, pactos, bendición inicial, compañero) · Objetos (escudo, granada, mejora especial, frascos).
 - **Estados sin depender del color:** `E` equipada/en uso (`e` equipada pero en espera), `S` en el suelo, `D` dejada atrás, `!` nueva, `+n` nivel/mejora; la rareza se ve por color **y** símbolo (punto, dos puntos, rombo, estrella).
 - **Orden:** rareza / nombre. **Filtro:** todas, nuevas, y cada rareza.
@@ -61,9 +61,10 @@ Las opciones de arma muestran icono, rareza, usos y descripción. Si ya llevas u
 ## Controles
 | Acción | Teclado | Mando | Táctil |
 |---|---|---|---|
-| Cambiar arma | `R` | `RS→` | botón de flechas (solo con secundaria) |
+| Elegir arma principal | `R` | `RS→` | tocar el espacio izquierdo de armas |
+| Elegir arma secundaria | `T` | `RS←` | tocar el espacio derecho de armas |
 | Inventario | `Tab` | `RS↑` | bolsa bajo Pausa |
-| Recoger / inspeccionar suelo | `E` (Interactuar) | botón de Interactuar | botón de llave |
+| Recoger / inspeccionar suelo y demás interacciones | `E` (Interactuar) | botón de Interactuar | botón contextual grande (ver `docs/INTERFAZ.md`) |
 | Navegar inventario | flechas/WASD, `Q`/`E` categoría, `F` filtro, `O` orden, `Enter` acción, `Esc`/`Tab` cerrar | cruceta / stick, `LB`/`RB` categoría, `X` filtro, `Y` orden, `A` acción, `B` cerrar | tocar pestañas/celdas/botones |
 Todo es reasignable en *Controles*; si una tecla/botón por defecto ya estaba usada por una partida antigua, la nueva acción queda sin asignar (sin pisar nada). La pantalla de controles y el editor táctil incluyen las dos acciones nuevas.
 

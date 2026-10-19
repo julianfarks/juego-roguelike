@@ -10,7 +10,7 @@ public final class Player extends Ent {
     public final ClassDef cls;
     public int state = IDLE;
     public int skinTint;
-    public float swapCd, swapAnimT, wpnT, swapBuf; public int wpnId, wandEl; public String swapIcon;
+    public float swapCd, swapAnimT, wpnT, swapBuf; public int selWant; public int wpnId, wandEl; public String swapIcon;
     public float secCd, grenCd, safeX, safeY, invuln, shield, skinT, hurtT, furia;
     public float extVx;                       // empuje externo (atraccion de jefes)
     public float guardT;                      // guardia de acero
@@ -206,8 +206,12 @@ public final class Player extends Ent {
             if (in.pressed(Input.B_JUMP)) jumpBuf = 0.17f;
             if (in.pressed(Input.B_ATTACK)) atkBuf = 0.22f;
             if (in.pressed(Input.B_POTION)) drinkPotion(lv);
-            if (in.pressed(Input.B_SWAP)) swapBuf = 0.16f;
-            if (swapBuf > 0 && (state == IDLE || state == RUN || state == AIR) && !guarding) { if (Arsenal.swap(lv, this) || swapCd > 0) swapBuf = 0; }
+            if (in.pressed(Input.B_WMAIN)) { selWant = 1; swapBuf = 0.16f; }
+            if (in.pressed(Input.B_WSEC)) { selWant = 2; swapBuf = 0.16f; }
+            if (swapBuf > 0 && selWant != 0) {      // seleccion directa: nunca ataca ni reinicia nada; si ya esta elegida no hace nada
+                if (Arsenal.isSelected(lv.rs, selWant == 2)) { swapBuf = 0; selWant = 0; }
+                else if ((state == IDLE || state == RUN || state == AIR) && !guarding) { Arsenal.select(lv, this, selWant == 2); swapBuf = 0; selWant = 0; }
+            } else selWant = 0;
             if (state != HURT && state != ULT && state != ROLL) {
                 if (in.pressed(Input.B_SEC)) Items.useSecondary(lv, this);
                 if (in.pressed(Input.B_GREN)) Items.throwGrenade(lv, this);

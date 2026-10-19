@@ -376,30 +376,11 @@ final class BlessEffects {
         return 0xFFE070;
     }
 
-    static void synergyFound(Level lv, int s) {
-        BSyn[] all = BlessData.syns();
-        if (s < 0 || s >= all.length || lv.pl == null) return;
-        Player p = lv.pl;
-        dbgAnnounced++;
-        lv.text(p.x, p.y - 74, all[s].name, synColor(s), true);
-        lv.fxAdd("fx_ring", "pulse", p.x, p.cy(), 1.3f, synColor(s));
-        lv.fx("fx_holy", "beam", p.x, p.y - 56, 0.7f, 0, 0);
-        Snd.sfxv("ui_pick_upgrade", 0.5f);
-    }
+    /** Primera vez que dispara una regla de sinergia: SILENCIOSO. Las sinergias funcionan igual, pero el juego no anuncia ni nombra la combinacion. */
+    static void synergyFound(Level lv, int s) { }
 
-    /** Aviso al conseguir una sinergia (al elegir la ultima bendicion necesaria). */
-    static void synergyActivated(Level lv, int s) {
-        BSyn[] all = BlessData.syns();
-        if (s < 0 || s >= all.length || lv.pl == null) return;
-        Player p = lv.pl;
-        dbgAnnounced++;
-        lv.text(p.x, p.y - 86, "¡Sinergia activada!", synColor(s), true);
-        lv.text(p.x, p.y - 74, all[s].name, 0xFFFFFF, false);
-        lv.fxAdd("fx_ring", "pulse", p.x, p.cy(), 1.5f, synColor(s));
-        lv.fx("fx_holy", "beam", p.x, p.y - 56, 0.9f, 0, 0);
-        lv.ps.burst(lv.rng, p.x, p.cy(), synColor(s), 30, 150, 0.9f, 2, -20, true);
-        Snd.sfxv("ui_pick_upgrade", 0.8f);
-    }
+    /** Al completar una sinergia: SILENCIOSO (sin texto, sonido ni efecto que revele la combinacion). */
+    static void synergyActivated(Level lv, int s) { }
 
     // ------------------------------------------------------------------ espiritus
     static void updateSpirits(Level lv, BlessRt bx, float dt) {

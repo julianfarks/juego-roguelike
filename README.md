@@ -43,7 +43,7 @@ GitHub Actions hace lo mismo en cada push: `android.yml` (solo si cambian `Andro
 Un cambio solo de PC no dispara ni afecta a la compilación de Android, y al revés.
 
 ## Arsenal, armas secundarias e inventario
-- Arma principal + una secundaria con **cambio en combate**, 10 armas secundarias con arte y comportamiento propios, armas en el suelo (inspeccionar, intercambiar, recuperar), cofres con comparación e **inventario** completo (armas, bendiciones, reliquias, objetos) con teclado, mando y táctil. Detalle: [`docs/ARSENAL.md`](docs/ARSENAL.md). Pruebas: `tools/tests/arsenal_test.sh`.
+- Arma principal + una secundaria con **selección directa** (sin botón de cambio), 10 armas secundarias con arte y comportamiento propios, armas en el suelo (inspeccionar, intercambiar, recuperar), cofres con comparación e **inventario** completo (armas, bendiciones, reliquias, objetos) con teclado, mando y táctil. Detalle: [`docs/ARSENAL.md`](docs/ARSENAL.md). Pruebas: `tools/tests/arsenal_test.sh`.
 
 ## Gran actualización: 200 bendiciones y sinergias
 - Los altares ofrecen ahora **200 bendiciones** (antes 28) en 10 categorías y 5 rarezas (común → legendaria), con **20 sinergias** que se activan al reunir varias bendiciones de una familia (fuego, hielo, electricidad, parry, escudos, proyectiles, esquivas, vida baja, recursos, compañeros, híbridas…).
@@ -60,3 +60,6 @@ Un cambio solo de PC no dispara ni afecta a la compilación de Android, y al rev
 - Desbloqueos permanentes cada 50 enemigos derrotados.
 - Opciones → Organizar controles (arrastra y cambia el tamaño de cada botón).
 - Más animaciones: squash & stretch, estelas, partículas al matar, barras de vida de enemigos.
+
+## Interfaz y controles
+Selección directa de armas, controles táctiles sin solapes, pausa simplificada, sinergias sin anunciar y botón contextual de interacción: [`docs/INTERFAZ.md`](docs/INTERFAZ.md). Tutorial inicial: [`docs/TUTORIAL.md`](docs/TUTORIAL.md).

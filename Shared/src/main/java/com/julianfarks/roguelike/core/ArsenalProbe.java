@@ -70,7 +70,7 @@ final class ArsenalProbe {
         if (done) return true;
         game = g; scr = r; lv = l; p = pl; rs = r.rs; in = l.in;
         done = true;
-        for (int c : new int[]{'A', 'D', 'W', 'S', 37, 38, 39, 40, 'J', 'K', 'R', 'E', 'C', 'L', 'I', 'U', 32}) g.key(c, false);
+        for (int c : new int[]{'A', 'D', 'W', 'S', 37, 38, 39, 40, 'J', 'K', 'R', 'T', 'E', 'C', 'L', 'I', 'U', 32}) g.key(c, false);
         System.out.println("AT inicio arsenal");
         try { run(); } catch (RuntimeException e) { e.printStackTrace(System.out); ck("sin excepciones durante las pruebas: " + e, false); }
         System.out.println("AT FIN ok=" + oks + " fallos=" + fails);
@@ -81,8 +81,11 @@ final class ArsenalProbe {
         rs.recalc();
         // ---------------------------------------------------------------- 1. sin arma secundaria
         reset();
+        tap('T');
+        ck("sin secundaria: elegir la secundaria no hace nada (arma principal activa)", !rs.secActive && rs.sec == 0);
+        p.swapCd = 0; p.swapAnimT = 0;
         tap('R');
-        ck("sin secundaria: la tecla de cambio no hace nada (arma principal activa)", !rs.secActive && rs.sec == 0);
+        ck("sin secundaria: elegir la principal (ya activa) no hace nada: sin animacion ni enfriamiento", !rs.secActive && p.swapAnimT <= 0 && p.swapCd <= 0);
         Enemy dm = dummy(40);
         hold('J', 20);
         ck("sin secundaria: el ataque sigue siendo el de la clase (sin proyectiles)", lv.projs.isEmpty());
@@ -101,12 +104,16 @@ final class ArsenalProbe {
         // ---------------------------------------------------------------- 3. cambio de arma en combate
         float hp0 = rs.hp; int n0 = lv.projs.size(); int ammo0 = rs.secAmmo;
         tap('R');
-        ck("cambio: la tecla activa la secundaria", rs.secActive);
+        ck("seleccion directa: elegir la principal estando ya activa no hace nada (sin animacion)", !rs.secActive && p.swapAnimT <= 0 && p.swapCd <= 0);
+        tap('T');
+        ck("seleccion directa: la tecla de la secundaria la deja activa", rs.secActive);
         ck("cambio: no toca vida, municion ni proyectiles", rs.hp == hp0 && rs.secAmmo == ammo0 && lv.projs.size() == n0);
         fr(20);
         hold('J', 4);
         ck("secundaria activa: el boton de ataque dispara la secundaria (flecha en vuelo, municion -1)", rs.secAmmo == ammo0 - 1 && !lv.projs.isEmpty() && p.state != Player.ATK);
         fr(60);
+        tap('T'); fr(12);
+        ck("elegir la secundaria estando ya activa no reinicia animaciones ni ataca", rs.secActive && p.swapAnimT <= 0 && rs.secAmmo == ammo0 - 1);
         tap('R');
         ck("cambio de vuelta: arma principal activa", !rs.secActive);
         int pa = rs.secAmmo; lv.projs.clear(); fr(30);
@@ -116,12 +123,12 @@ final class ArsenalProbe {
         // ---------------------------------------------------------------- 4. cambios repetidos: sin duplicar ni ataques extra
         reset(); rs.sec = Items.SEC_KNIFE; rs.secAmmo = 14; rs.wState[1] = 1; dummy(300);
         int toggles = 0; boolean prev = rs.secActive; int projsMax = 0;
-        for (int i = 0; i < 120; i++) { in.key('R', true); fr(1); in.key('R', false); fr(1); if (rs.secActive != prev) { toggles++; prev = rs.secActive; } projsMax = Math.max(projsMax, lv.projs.size()); }
+        for (int i = 0; i < 120; i++) { int kk = i % 2 == 0 ? 'T' : 'R'; in.key(kk, true); fr(1); in.key(kk, false); fr(1); if (rs.secActive != prev) { toggles++; prev = rs.secActive; } projsMax = Math.max(projsMax, lv.projs.size()); }
         ck("240 pulsaciones de cambio en 4 s: el cambio respeta su enfriamiento (" + toggles + " cambios, <= 17)", toggles <= 17 && toggles >= 8);
         ck("cambios repetidos: no se crean proyectiles, no se gasta municion", projsMax == 0 && rs.secAmmo == 14);
         // cambiar y atacar a la vez no dispara dos veces
         rs.secActive = false; p.swapCd = 0; p.secCd = 0; lv.projs.clear();
-        in.key('R', true); in.key('J', true); fr(2); in.key('R', false); in.key('J', false); fr(1);
+        in.key('T', true); in.key('J', true); fr(2); in.key('T', false); in.key('J', false); fr(1);
         ck("cambiar y atacar en el mismo fotograma: como mucho un disparo (" + (14 - rs.secAmmo) + ")", 14 - rs.secAmmo <= 1);
 
         // ---------------------------------------------------------------- 5. intercambio con el suelo
@@ -352,7 +359,7 @@ final class ArsenalProbe {
         game = g; scr = r; lv = l; p = pl; rs = r.rs; in = l.in;
         if (f0 < 0) {
             f0 = frame;
-            for (int c : new int[]{'A', 'D', 'W', 'S', 37, 38, 39, 40, 'J', 'K', 'R', 'E', 'C', 'L', 'I', 'U', 32}) g.key(c, false);
+            for (int c : new int[]{'A', 'D', 'W', 'S', 37, 38, 39, 40, 'J', 'K', 'R', 'T', 'E', 'C', 'L', 'I', 'U', 32}) g.key(c, false);
             rs.sec = Items.SEC_CHAKRAM; rs.secAmmo = 7; rs.secLvl = 1; rs.secActive = name.equals("inv") || name.equals("slots");
             java.util.Arrays.fill(rs.wState, 0);
             rs.wState[Items.SEC_CHAKRAM] = 1; rs.wState[Items.SEC_BOW] = 3; rs.wState[Items.SEC_SPEAR] = 2; rs.wState[Items.SEC_EMBER] = 3; rs.wState[Items.SEC_WAND] = 3;
@@ -515,7 +522,7 @@ final class ArsenalProbe {
             for (String x : Inventory.RAR_ES) I18n.tr(x);
             for (String x : Inventory.ST_NAME) I18n.tr(x);
         }
-        if (t == 3) { rs.secActive = false; scr.update(0.01f); in.key('R', true); fr(1); in.key('R', false); }
+        if (t == 3) { rs.secActive = false; scr.update(0.01f); in.key('T', true); fr(1); in.key('T', false); }
         if (t > 10 && t < 140 && t % 12 == 0) {                 // tarjeta del suelo de cada arma
             int id = 1 + (t - 12) / 12; if (id >= 1 && id < Items.SEC_COUNT) {
                 for (Prop q : lv.props) if (q.kind.equals("weapon")) q.dead = true;

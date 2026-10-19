@@ -36,6 +36,7 @@ final class RunScreen extends Screen implements Level.Listener {
     String bannerTitle = "", bannerSub = "";
     float bannerT;
     final Tutorial tut = new Tutorial();
+    final ContextBtn ctx = new ContextBtn();
     float bossCardT = -1;
     int[] offer = new int[3];
     int offerSel;
@@ -537,6 +538,7 @@ final class RunScreen extends Screen implements Level.Listener {
     void interact() {
         Prop p = lv.nearestInteractable();
         if (p == null || !lv.pl.alive || lv.cinematic) return;
+        ctx.cd = 0.35f;                                         // una pulsacion = una interaccion
         switch (p.kind) {
             case "door": case "portal": case "altar": case "shrine": case "spirit": case "cage": case "fountain": case "forge": case "cursed":
                 lv.pl.react("touch", 0f);   // gesto al activar (solo cosmetico: la logica de abajo no cambia)
@@ -736,7 +738,7 @@ final class RunScreen extends Screen implements Level.Listener {
         layoutOverlay();
     }
 
-    private void closeOv() {
+    void closeOv() {
         ov = OV_NONE; ovT = 0; hits.clear(); saveMenu = false;
         in.reset();
         Snd.sfx("ui_back", 0.7f);
@@ -1235,33 +1237,26 @@ final class RunScreen extends Screen implements Level.Listener {
                     add(bx, by + 3 * 28 + 6, bw, 22, "Volver", () -> { saveMenu = false; layoutOverlay(); });
                     break;
                 }
-                add(bx, by, bw, 22, "Continuar", this::closeOv);
-                add(bx, by + 25, bw, 22, "Música: " + (s.musicOn ? "SÍ" : "NO"), () -> { s.musicOn = !s.musicOn; Snd.applyVolumes(); s.write(); layoutOverlay(); });
-                add(bx, by + 50, bw, 22, "Sonidos: " + (s.sfxOn ? "SÍ" : "NO"), () -> { s.sfxOn = !s.sfxOn; Snd.applyVolumes(); s.write(); layoutOverlay(); });
+                // columna izquierda alineada (7 botones, 24 px de paso); a la derecha, el resumen agrupado
+                int row = 0;
+                add(bx, by + 24 * row++, bw, 21, "Continuar", this::closeOv);
+                if (!isTestSession()) add(bx, by + 24 * row++, bw, 21, "Guardar partida", () -> { saveMenu = true; layoutOverlay(); });
+                add(bx, by + 24 * row++, bw, 21, "Música: " + (s.musicOn ? "SÍ" : "NO"), () -> { s.musicOn = !s.musicOn; Snd.applyVolumes(); s.write(); layoutOverlay(); });
+                add(bx, by + 24 * row++, bw, 21, "Sonidos: " + (s.sfxOn ? "SÍ" : "NO"), () -> { s.sfxOn = !s.sfxOn; Snd.applyVolumes(); s.write(); layoutOverlay(); });
                 if (game.P.video() != null) {     // PC: sin vibracion; atajo para alternar pantalla completa (sin bordes)
-                    add(bx, by + 75, bw, 22, "Pantalla completa: " + (VideoCfg.cur.mode != VideoCfg.MODE_WINDOW ? "SÍ" : "NO"), () -> {
+                    add(bx, by + 24 * row++, bw, 21, "Pantalla completa: " + (VideoCfg.cur.mode != VideoCfg.MODE_WINDOW ? "SÍ" : "NO"), () -> {
                         VideoCfg c = VideoCfg.cur.copy();
                         c.mode = c.mode == VideoCfg.MODE_WINDOW ? VideoCfg.MODE_BORDERLESS : VideoCfg.MODE_WINDOW;
                         if (game.P.video().apply(c)) VideoCfg.save(game.P, c);
                         layoutOverlay();
                     });
-                } else add(bx, by + 75, bw, 22, "Vibración: " + (s.vibOn ? "SÍ" : "NO"), () -> { s.vibOn = !s.vibOn; s.write(); layoutOverlay(); });
-                if (isTestSession()) {      // prueba del Modo Desarrollador: sin "Guardar partida"; solo continuar o salir
-                    add(bx, by + 100, bw + 12, 22, "Salir del modo de prueba", () -> { exitTest(); });
-                    add(bx, by + 125, bw, 22, "Bendiciones y sinergias", this::openBlessList);
-                    add(bx + bw + 8, by, bw, 22, "Inventario", () -> openInventory(true));
-                    add(bx, by + 150, bw, 22, "Efectos intensos: " + (s.reduceFx ? "REDUCIDOS" : "NORMALES"), () -> { s.reduceFx = !s.reduceFx; s.write(); layoutOverlay(); });
-                    break;
-                }
-                add(bx, by + 100, bw, 22, "Guardar partida", () -> { if (isTestSession()) return; saveMenu = true; layoutOverlay(); });
-                add(bx, by + 125, bw, 22, quitConfirm ? "¿Seguro? Toca otra vez" : "Abandonar partida", () -> {
-                    if (isTestSession()) { exitTest(); return; }
+                } else add(bx, by + 24 * row++, bw, 21, "Vibración: " + (s.vibOn ? "SÍ" : "NO"), () -> { s.vibOn = !s.vibOn; s.write(); layoutOverlay(); });
+                add(bx, by + 24 * row++, bw, 21, "Efectos: " + (s.reduceFx ? "REDUCIDOS" : "NORMALES"), () -> { s.reduceFx = !s.reduceFx; s.write(); layoutOverlay(); });
+                if (isTestSession()) add(bx, by + 24 * row++ + 6, bw, 21, "Salir del modo de prueba", () -> { exitTest(); });
+                else add(bx, by + 24 * row++ + 6, bw, 21, quitConfirm ? "¿Seguro? Toca otra vez" : "Abandonar partida", () -> {
                     if (quitConfirm) { endRun(false); game.go(new Ops(game)); }
                     else { quitConfirm = true; layoutOverlay(); }
                 });
-                add(bx, by + 150, bw, 22, "Bendiciones y sinergias", this::openBlessList);
-                add(bx + bw + 8, by, bw, 22, "Inventario", () -> openInventory(true));
-                add(bx, by + 175, bw, 22, "Efectos intensos: " + (s.reduceFx ? "REDUCIDOS" : "NORMALES"), () -> { s.reduceFx = !s.reduceFx; s.write(); layoutOverlay(); });
                 break;
             }
             case OV_INV: inv.layout(w); break;
@@ -1438,6 +1433,7 @@ final class RunScreen extends Screen implements Level.Listener {
         }
         if (comboFlash > 0) comboFlash -= dt;
         if (bossCardT >= 0) bossCardT += dt;
+        if (ov != OV_NONE || fadeMode == 1) ctx.update(dt, null);
         tut.update(dt, in, ov == OV_NONE && fadeMode == 0 && deadT < 0 && winT < 0 && !lv.cinematic && lv.pl.alive && bannerT <= 0.6f);
         if (ov == OV_NONE) {
             if (fadeMode != 1) {
@@ -1445,8 +1441,9 @@ final class RunScreen extends Screen implements Level.Listener {
                 if (in.pressed(Input.B_INV) && deadT < 0 && winT < 0 && !lv.cinematic && lv.pl.alive) { in.consume(Input.B_INV); openInventory(false); return; }
                 Prop near = lv.nearestInteractable();
                 boolean canInt = near != null && lv.pl.alive && !lv.cinematic && deadT < 0;
-                in.btn[Input.B_INTERACT].visible = canInt;
-                if (canInt && in.pressed(Input.B_INTERACT)) { in.consume(Input.B_INTERACT); interact(); }
+                in.btn[Input.B_INTERACT].visible = false;          // sin boton pequeno: la interaccion tactil es el boton contextual (ContextBtn)
+                ctx.update(dt, canInt ? near : null);
+                if (canInt && in.pressed(Input.B_INTERACT) && ctx.cd <= 0) { in.consume(Input.B_INTERACT); interact(); }
             }
             lv.update(dt);
             challengeTick(dt);
@@ -1483,6 +1480,15 @@ final class RunScreen extends Screen implements Level.Listener {
         if (ov != OV_NONE) { super.touch(id, action, x, y); return; }
         if (fadeMode == 1) return;
         if (action == Platform.ACTION_DOWN && tut.hitButton(x, y)) { tut.close(); Snd.sfx("ui_click", 0.6f); return; }
+        if (action == Platform.ACTION_DOWN && deadT < 0 && winT < 0 && !lv.cinematic && lv.pl.alive) {
+            if (ctx.hit(x, y)) { interact(); return; }                       // toque/clic en el boton contextual: solo interactua (no ataca ni esquiva)
+            if (!game.touchUiVisible()) {                                    // PC: clic en los espacios de arma
+                for (int k = 0; k < 2; k++) {
+                    Input.Btn sb = in.btn[k == 0 ? Input.B_WMAIN : Input.B_WSEC];
+                    if (Mth.dist(x, y, sb.cx, sb.cy) <= sb.r + 2) { lv.pl.selWant = k + 1; lv.pl.swapBuf = 0.16f; return; }
+                }
+            }
+        }
         if (!game.touchUiVisible()) return;   // con mando activo los toques no tocan el juego
         in.touch(id, action, x, y);
     }
@@ -1639,32 +1645,26 @@ final class RunScreen extends Screen implements Level.Listener {
             UI.small.draw(g, "Reliquia obtenida", w / 2f - 98, 58, UI.GOLD, a);
             UI.small.draw(g, relicBanner, w / 2f - 98, 70, UI.WHITE, a);
         }
-        if (!lv.cinematic && ov == OV_NONE) ArsenalUI.slots(g, lv, rs, cls, w);
+        if (!lv.cinematic && ov == OV_NONE) ArsenalUI.slots(g, lv, rs, cls, w, in, game.touchUiVisible() ? null : new String[]{glyphText(Input.B_WMAIN), glyphText(Input.B_WSEC)});
         // pista de interaccion
         Prop near = ov == OV_NONE ? lv.nearestInteractable() : null;
         if (near != null && near.kind.equals("weapon") && lv.pl.alive && !lv.cinematic) ArsenalUI.groundCard(g, lv, rs, near, w, hintFor(near));
-        if (near != null && lv.pl.alive && !lv.cinematic) {
-            String lab = hintFor(near);
-            if (game.touchUiVisible()) {
-                Input.Btn ib = in.btn[Input.B_INTERACT];
-                UI.small.center(g, lab, ib.cx, ib.cy - ib.r - 12, UI.GOLD, 1f);
-            } else {
-                drawGlyph(g, w / 2f - UI.small.width(lab) / 2f - 4, 196, Input.B_INTERACT);
-                UI.small.draw(g, lab, w / 2f - UI.small.width(lab) / 2f + glyphW(Input.B_INTERACT) - 2, 197, UI.GOLD, 1f);
-            }
-            if (near.kind.equals("portal")) {
+        if (near != null && lv.pl.alive && !lv.cinematic && ov == OV_NONE) {
+            ctx.render(g, this, w);
+            if (near.kind.equals("portal") && ctx.vis) {
                 Biome b = Biome.ALL[near.nextBiome];
                 BossDef bd = BossDef.byBiome(b.id);
-                UI.panel(g, 0, w / 2f - 110, 214, 220, 44, 0.9f);
-                UI.small.center(g, b.name, w / 2f, 219, b.color, 1f);
-                UI.small.center(g, "Jefe: " + bd.name, w / 2f, 232, UI.WHITE, 1f);
-                UI.small.center(g, b.tagline, w / 2f, 244, UI.GREY, 1f);
+                float py = Math.max(40, ctx.y - 48);
+                UI.panel(g, 0, w / 2f - 110, py, 220, 44, 0.9f);
+                UI.small.center(g, b.name, w / 2f, py + 5, b.color, 1f);
+                UI.small.center(g, "Jefe: " + bd.name, w / 2f, py + 18, UI.WHITE, 1f);
+                UI.small.center(g, b.tagline, w / 2f, py + 30, UI.GREY, 1f);
             }
-        }
+        } else ctx.vis = false;
         if (hintT > 0) UI.small.center(g, "No tienes suficiente oro", w / 2f, 120, UI.RED, Mth.clamp(hintT, 0, 1));
     }
 
-    private String hintFor(Prop p) {
+    String hintFor(Prop p) {
         switch (p.kind) {
             case "door": return p.nextType == -2 ? "Salir" : p.nextType == -3 ? "Volver" : "Entrar";
             case "portal": return "Viajar";
@@ -1722,7 +1722,7 @@ final class RunScreen extends Screen implements Level.Listener {
 
     /** Con mando: sin botones en pantalla, pero se siguen viendo habilidades, recargas y municion con su boton asignado. */
     private void renderPadHud(Platform.Gfx g, int w) {
-        int[] acts = {Input.B_S1, Input.B_S2, Input.B_S3, Input.B_ULT, Input.B_GUARD, Input.B_SEC, Input.B_GREN};
+        int[] acts = {Input.B_S1, Input.B_S2, Input.B_S3, Input.B_ULT, Input.B_GUARD, Input.B_GREN};
         float x = w - 20, y = 237;
         Input.Btn tmp = new Input.Btn();
         for (int k = 0; k < acts.length; k++) {
@@ -1819,10 +1819,10 @@ final class RunScreen extends Screen implements Level.Listener {
     }
 
     private void renderControls(Platform.Gfx g, int w) {
-        in.btn[Input.B_INTERACT].visible = in.btn[Input.B_INTERACT].visible && !lv.cinematic;
-        in.btn[Input.B_SEC].visible = rs.sec != 0 && !lv.cinematic;
+        in.btn[Input.B_INTERACT].visible = false;                       // sustituido por el boton contextual
+        in.btn[Input.B_SEC].visible = false;                            // el disparo secundario es el boton de ataque con la secundaria seleccionada
         in.btn[Input.B_GREN].visible = rs.gren != 0 && !lv.cinematic;
-        in.btn[Input.B_SWAP].visible = rs.sec != 0 && !lv.cinematic;      // cambio de arma: solo con una secundaria equipada
+        in.btn[Input.B_WMAIN].visible = in.btn[Input.B_WSEC].visible = !lv.cinematic;   // espacios de seleccion directa (se dibujan en renderHud)
         in.btn[Input.B_INV].visible = !lv.cinematic;
         // iconos de habilidades
         for (int i = 0; i < 3; i++) in.btn[Input.B_S1 + i].icon = cls.skills[i].icon;
@@ -1833,6 +1833,7 @@ final class RunScreen extends Screen implements Level.Listener {
             if (!b.visible) continue;
             if (i == Input.B_PAUSE) { UI.roundButton(g, b.cx, b.cy, b.r, b.pointer >= 0 ? 1 : 0, 0.7f); UI.iconC(g, "pause", b.cx, b.cy, 1f, 0.9f); continue; }
             if (i == Input.B_LEFT || i == Input.B_RIGHT || i == Input.B_DOWN) continue;   // dibujados por el joystick
+            if (i == Input.B_WMAIN || i == Input.B_WSEC) continue;                        // dibujados como espacios de arma (ArsenalUI.slots)
             drawBtn(g, i, b, 0.7f);
         }
         // peligro de vida baja
@@ -1896,8 +1897,8 @@ final class RunScreen extends Screen implements Level.Listener {
         UI.small.center(g, cur == 0 ? "NUEVA" : "Nv " + cur + " > " + (cur + 1), cx, ty + 1, cur == 0 ? UI.GREEN : UI.CYAN, fadeIn);
         ty += 14;
         // descripcion: el interlineado se ajusta para que nunca se corte
-        int[] sy = bestSyn(b);
-        float bottom = y + h.h - (sy != null ? 30 : 8);
+        int[] sy = null;       // las combinaciones no se anuncian: se descubren jugando
+        float bottom = y + h.h - 8;
         int lines = UI.small.wrap(b.desc, (int) h.w - 14).size();
         int step = (int) Math.max(8, Math.min(UI.small.lineHeight() + 1, (bottom - ty) / Math.max(1, lines)));
         UI.small.drawWrapped(g, b.desc, h.x + 7, ty, (int) h.w - 14, 0xE8E0E0, fadeIn, step);
@@ -2147,7 +2148,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 UI.big.center(g, "PAUSA", w / 2f, 22, UI.GOLD, 1f);
                 drawButtons(g);
                 // info
-                float ix = px + 184;
+                float ix = px + 182;
                 if (saveMenu) {
                     for (int i = 0; i < RunSave.SLOTS; i++) {
                         String inf = RunSave.info(game.P, i);
@@ -2162,31 +2163,43 @@ final class RunScreen extends Screen implements Level.Listener {
                     if (toastT > 0) UI.small.draw(g, toast, ix, 57 + 3 * 28 + 10, UI.GOLD, 1f);
                     break;
                 }
-                UI.small.draw(g, cls.name, ix, 54, cls.color1, 1f);
-                UI.small.draw(g, rs.biome == null ? "Santuario" : rs.biome.name + " · Sala " + Math.min(5, rs.roomNo + 1), ix, 66, UI.GREY, 1f);
+                float iw = px + 440 - 12 - ix;                       // ancho util de la columna derecha
                 Stats s = rs.stats;
-                UI.small.draw(g, "Daño x" + fmt(s.dmgMul) + "   Crítico " + Math.round(s.critChance * 100) + "%", ix, 82, UI.WHITE, 1f);
-                UI.small.draw(g, "Velocidad x" + fmt(s.speedMul) + "   Defensa " + Math.round((1 - s.dmgTaken) * 100) + "%", ix, 94, UI.WHITE, 1f);
-                UI.small.draw(g, "Arma nivel " + rs.weaponLvl + "   Frascos " + rs.potions + "/" + s.potionsMax, ix, 106, UI.WHITE, 1f);
-                UI.small.draw(g, "Enemigos " + rs.kills + "   Tiempo " + time(rs.time), ix, 118, UI.GREY, 1f);
-                UI.small.draw(g, "Especial: " + (rs.special == 0 ? "-" : Items.SP_NAME[rs.special]), ix, 130, rs.special == 0 ? UI.GREY : Items.SP_COL[rs.special], 1f);
-                UI.small.draw(g, "Sec: " + (rs.sec == 0 ? "-" : Items.SEC_NAME[rs.sec] + " x" + rs.secAmmo) + (rs.gren == 0 ? "" : "  Gran: x" + rs.grenCount), ix, 141, UI.WHITE, 1f);
-                UI.small.draw(g, Items.SH_NAME[rs.shield] + " (parry " + Math.round(Items.SH_WIN[rs.shield] * 1000) + "ms)", ix, 152, Items.SH_COL[rs.shield] | 0x404040, 1f);
-                UI.small.draw(g, "Bendiciones", ix, 167, UI.GOLD, 1f);
+                float yy = 52;
+                UI.small.draw(g, UI.fitLabel(UI.small, cls.name, iw), ix, yy, cls.color1, 1f);
+                UI.small.draw(g, UI.fitLabel(UI.small, rs.biome == null ? "Santuario" : rs.biome.name + " · Sala " + Math.min(5, rs.roomNo + 1), iw), ix, yy + 11, UI.GREY, 1f);
+                g.rect(ix, yy + 24, iw, 1, 0x55FFD25A, false);
+                yy += 29;       // -- estadisticas
+                String[] st = {"Daño x" + fmt(s.dmgMul) + "   Crítico " + Math.round(s.critChance * 100) + "%",
+                        "Velocidad x" + fmt(s.speedMul) + "   Defensa " + Math.round((1 - s.dmgTaken) * 100) + "%",
+                        "Arma nivel " + rs.weaponLvl + "   Frascos " + rs.potions + "/" + s.potionsMax,
+                        "Enemigos " + rs.kills + "   Tiempo " + time(rs.time)};
+                for (int i = 0; i < st.length; i++) UI.small.draw(g, UI.fitLabel(UI.small, st[i], iw), ix, yy + i * 11, i == 3 ? UI.GREY : UI.WHITE, 1f);
+                yy += 4 * 11 + 3;
+                g.rect(ix, yy, iw, 1, 0x55FFD25A, false);
+                yy += 5;        // -- equipo
+                UI.small.draw(g, UI.fitLabel(UI.small, "Especial: " + (rs.special == 0 ? "-" : Items.SP_NAME[rs.special]), iw), ix, yy, rs.special == 0 ? UI.GREY : Items.SP_COL[rs.special], 1f);
+                UI.small.draw(g, UI.fitLabel(UI.small, "Sec: " + (rs.sec == 0 ? "-" : Items.SEC_NAME[rs.sec] + " x" + rs.secAmmo) + (rs.gren == 0 ? "" : "  Gran: x" + rs.grenCount), iw), ix, yy + 11, UI.WHITE, 1f);
+                UI.small.draw(g, UI.fitLabel(UI.small, Items.SH_NAME[rs.shield] + " (parry " + Math.round(Items.SH_WIN[rs.shield] * 1000) + "ms)", iw), ix, yy + 22, Items.SH_COL[rs.shield] | 0x404040, 1f);
+                yy += 36;
+                g.rect(ix, yy, iw, 1, 0x55FFD25A, false);
+                yy += 4;        // -- bendiciones (solo sus iconos; las combinaciones no se revelan)
+                UI.small.draw(g, "Bendiciones", ix, yy, UI.GOLD, 1f);
                 int n = 0, total = 0;
                 for (Blessing b : Blessing.ALL) {
                     int lv2 = rs.bless[b.id];
                     if (lv2 <= 0) continue;
                     total++;
                     if (n >= 20) continue;
-                    float bx = ix + (n % 10) * 24, by = 180 + (n / 10) * 24;
-                    UI.panel(g, 0, bx, by, 22, 22, 1f);
-                    UI.iconC(g, b.icon, bx + 11, by + 11, 1f, 1f);
-                    if (lv2 > 1) UI.small.draw(g, String.valueOf(lv2), bx + 15, by + 13, UI.GOLD, 1f);
+                    float bx = ix + (n % 10) * 23, by = yy + 12 + (n / 10) * 23;
+                    UI.panel(g, 0, bx, by, 21, 21, 1f);
+                    UI.iconC(g, b.icon, bx + 10.5f, by + 10.5f, 1f, 1f);
+                    if (lv2 > 1) UI.small.draw(g, String.valueOf(lv2), bx + 14, by + 12, UI.GOLD, 1f);
                     n++;
                 }
-                if (total == 0) UI.small.draw(g, "Aún no tienes ninguna.", ix, 182, UI.GREY, 1f);
-                else if (total > 20) UI.small.draw(g, "+" + (total - 20) + " más", ix + 180, 167, UI.GREY, 1f);
+                if (total == 0) UI.small.draw(g, "Aún no tienes ninguna.", ix, yy + 13, UI.GREY, 1f);
+                else if (total > 20) UI.small.right(g, "+" + (total - 20) + " más", ix + iw, yy, UI.GREY, 1f);
+                PrepScreen.fitErr("pausa panel inferior", yy + 12 + (Math.min(total, 20) > 10 ? 2 : 1) * 23, 250, 0);
                 break;
             }
             case OV_INV: inv.render(g, w); break;

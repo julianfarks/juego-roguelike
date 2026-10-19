@@ -44,27 +44,38 @@ final class ArsenalUI {
     }
 
     /** Ranuras de arma en el HUD (arma principal y secundaria, con la activa resaltada y la municion). */
-    static void slots(Platform.Gfx g, Level lv, RunState rs, ClassDef cls, int w) {
+    /** Espacios de seleccion directa de arma. Se dibujan en la posicion de los botones B_WMAIN / B_WSEC (la misma zona que recibe el toque). */
+    static void slots(Platform.Gfx g, Level lv, RunState rs, ClassDef cls, int w, Input in, String[] keyHint) {
         Player pl = lv.pl;
-        float cx = w / 2f, cy = ViewSize.h - 17;
         boolean sec = rs.sec != 0;
         for (int k = 0; k < 2; k++) {
             boolean act = k == 0 ? !rs.secActive : rs.secActive;
-            float sx = cx + (k == 0 ? -16 : 16);
+            Input.Btn sb = in.btn[k == 0 ? Input.B_WMAIN : Input.B_WSEC];
+            float sx = sb.cx, cy = sb.cy;
+            float sk = sb.r / 17f;
             float pulse = pl.swapAnimT > 0 ? 1f + 0.18f * (pl.swapAnimT / 0.32f) : 1f;
-            float r = (act ? 12f : 10f) * (act ? pulse : 1f);
-            if (k == 1 && !sec) { UI.roundButton(g, sx, cy, 9, 0, 0.3f); continue; }
+            float r = (act ? 14f : 11.5f) * sk * (act ? pulse : 1f);
+            if (k == 1 && !sec) { UI.roundButton(g, sx, cy, 10 * sk, 0, 0.3f); if (keyHint != null) hint(g, keyHint[k], sx, cy, 10 * sk); continue; }
             int col = k == 0 ? (cls.color1 & 0xFFFFFF) : Items.SEC_COL[rs.sec];
             UI.roundButton(g, sx, cy, r, act ? 1 : 0, act ? 0.92f : 0.55f);
             g.circle(sx, cy, r - 1, Mth.withAlpha(col, act ? 90 : 40), false);
             UI.iconC(g, k == 0 ? "c_" + cls.key : Items.SEC_ICON[rs.sec], sx, cy - 1, 1f, act ? 1f : 0.55f);
-            if (act) g.rect(Math.round(sx - 7), Math.round(cy + r + 2), 14, 2, 0xFFFFE070, false);    // barra dorada: arma activa (no depende solo del color: ademas es mayor y mas opaca)
+            if (act) g.rect(Math.round(sx - 8), Math.round(cy + r + 2), 16, 2, 0xFFFFE070, false);
+            if (keyHint != null) hint(g, keyHint[k], sx, cy, r);    // barra dorada: arma activa (no depende solo del color: ademas es mayor y mas opaca)
             if (k == 1) {
                 String n = String.valueOf(rs.secAmmo);
                 g.rect(sx - UI.small.width(n) / 2f - 1, cy + r - 4, UI.small.width(n) + 2, 9, 0x99000010, false);
                 UI.small.center(g, n, sx, cy + r - 3, rs.secAmmo > 0 ? UI.WHITE : UI.RED, act ? 1f : 0.7f);
             }
         }
+    }
+
+    /** Etiqueta de la tecla / boton de mando asignado, pegada sobre el espacio del arma (solo PC y mando). */
+    private static void hint(Platform.Gfx g, String t, float sx, float cy, float r) {
+        if (t == null || t.isEmpty() || t.equals("-")) return;
+        float tw = UI.small.width(t);
+        g.rect(sx - tw / 2f - 3, cy - r - 12, tw + 6, 10, 0xB0000010, false);
+        UI.small.center(g, t, sx, cy - r - 11, 0xFFE8E0D0, 1f);
     }
 
     /** Tarjeta contextual del arma del suelo: nombre, rareza, estadisticas (comparadas con la equipada), efecto y la accion disponible. Compacta para no tapar el combate. */

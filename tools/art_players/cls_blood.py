@@ -53,6 +53,7 @@ class Blood(PClass):
         mat('wood', '#4A3040', hl='#9A7080')
         mat('leather', '#2A1E26')
         mat('eye', '#FF6A7C', hl='#FFFFFF')
+        mat('silver', '#B8B0C8', hl='#FFFFFF')
         for m in ('coat', 'coat2', 'red', 'leather', 'hat'):
             mat_back(m)
 
@@ -68,6 +69,13 @@ class Blood(PClass):
         poly(X, tp(X, [(0.0, 9.6), (2.4, 9.4), (1.6, 0.6), (0.0, 0.6)]), 'red', dome=1.2)   # chaleco rojo
         poly(X, tp(X, [(-2.9, 1.7), (2.8, 1.7), (2.8, 0.7), (-2.9, 0.7)]), 'leather', dome=1.0)
         circ(X, tp(X, [(1.0, 1.2)])[0], 0.7, 'metal', tone=4)
+        poly(X, tp(X, [(-2.9, 1.0), (2.8, 1.0), (2.8, 1.15), (-2.9, 1.15)]), 'coat2', tone=1)                                  # costura del cinturon
+        poly(X, tp(X, [(-2.8, 0.7), (-1.0, 0.7), (-1.1, -1.6), (-2.7, -1.2)]), 'leather', dome=1.0)                              # bolsa
+        circ(X, tp(X, [(-1.9, -0.2)])[0], 0.3 * k, 'silver', tone=4)
+        for v in (8.4, 6.8, 5.2, 3.6):                                                                                           # botones de plata del chaleco
+            circ(X, tp(X, [(1.0, v)])[0], 0.27 * k, 'silver', tone=4)
+        poly(X, tp(X, [(-0.1, 9.6), (0.5, 9.6), (0.9, 0.8), (0.3, 0.8)]), 'redL', tone=3)                                       # ribete claro del chaleco
+        poly(X, tp(X, [(-2.8, 5.8), (2.5, 6.0), (2.5, 6.15), (-2.8, 5.95)]), 'coat2', tone=1)                                   # costura del abrigo
         leg(X, sk.hipF, sk.kneeF, sk.ankF, 2.0, 1.6, 1.35, 'coat2', 'leather', p.ffa, greave='leather')
         ribbons_draw(X, 'coatF', 'coat', dome=1.8)
         # cuello alto
@@ -76,16 +84,24 @@ class Blood(PClass):
         circ(X, hc, D.hr, 'skin', dome=3.0)
         poly(X, hp(X, [(1.2, 1.0), (4.0, 0.6), (4.0, -2.8), (0.8, -3.4)]), 'coat2', dome=1.2)   # media mascara/sombra
         poly(X, hp(X, [(1.6, 0.5), (3.4, 0.4), (3.4, -0.4), (1.6, -0.3)]), 'eye', emissive=True)
+        poly(X, hp(X, [(1.2, 1.2), (4.0, 0.9), (4.0, 0.7), (1.2, 1.0)]), 'coat', tone=1)                                         # linea de la mascara
+        poly(X, hp(X, [(2.8, -0.6), (3.9, -0.7), (3.9, -2.6), (3.2, -3.0)]), 'silver', tone=2)                                   # placa de la mascara
         # sombrero de ala ancha
         ell(X, (hc[0] - 0.3, hc[1] - D.hr * 0.55), 7.6 * k, 1.6 * k, math.degrees(math.atan2(sk.hf[1], sk.hf[0])) * 0.5, 'hat', dome=1.6)
         poly(X, hp(X, [(-2.8, 1.8), (-2.2, 6.4), (2.4, 6.4), (3.0, 1.8)]), 'hat', dome=2.2)
         poly(X, hp(X, [(-2.8, 2.2), (3.0, 2.2), (3.0, 3.2), (-2.8, 3.2)]), 'red', dome=1.0)
+        poly(X, hp(X, [(0.6, 2.2), (1.9, 2.2), (1.9, 3.2), (0.6, 3.2)]), 'silver', tone=3)                                       # hebilla del sombrero
+        poly(X, hp(X, [(1.0, 2.5), (1.6, 2.5), (1.6, 2.9), (1.0, 2.9)]), 'coat2', tone=1)
+        cap(X, hpt(X, -7.2, -1.0), hpt(X, 7.0, -1.0), 0.18 * k, 0.18 * k, 'hat', tone=5)                                         # filo de luz del ala
         circ(X, sk.shB, 2.3 * k, 'coat_b', dome=2.0)
         if p.two >= 0.5:
             arm(X, sk.shB, sk.elbB, sk.handB, 1.5, 1.3, 1.1, 'coat', glove='leather')
         self._scythe(X)
-        arm(X, sk.shF, sk.elbF, sk.handF, 1.6, 1.4, 1.2, 'coat', glove='leather')
+        arm(X, sk.shF, sk.elbF, sk.handF, 1.6, 1.4, 1.2, 'coat', glove='leather', bracer='metal')
         circ(X, sk.shF, 2.7 * k, 'coat', dome=2.4)
+        circ(X, (sk.shF[0] + 0.2, sk.shF[1] - 0.6), 1.2 * k, 'red', dome=1.2)                                                    # charretera roja
+        for i in range(3):
+            cap(X, (sk.shF[0] - 1.0 + i * 0.8, sk.shF[1] + 1.1), (sk.shF[0] - 1.3 + i * 0.8, sk.shF[1] + 2.4), 0.16 * k, 0.16 * k, 'redL', tone=3)   # cordones
 
     def _scythe(self, X):
         W = lambda pts: wpoly(X, pts)
@@ -95,6 +111,10 @@ class Blood(PClass):
         poly(X, W([(10.5, 2.0), (15, 4.0), (20, 4.8), (22.5, 4.2), (18, 3.8), (14, 2.6)]), 'redL', tone=4)
         poly(X, W([(7, -1.8), (9.5, -1.8), (9.5, 1.8), (7, 1.8)]), 'metal', dome=1.0)
         circ(X, wpt(X, -16.5, 0), 1.0 * X.D.k, 'metal', dome=1.0)
+        for x in (-8, -3, 2):                                                                                                  # abrazaderas del mango
+            poly(X, W([(x, -1.2), (x + 0.9, -1.2), (x + 0.9, 1.2), (x, 1.2)]), 'metal', tone=3)
+        poly(X, W([(-12, -0.8), (-9, -0.8), (-9, 0.8), (-12, 0.8)]), 'leather', dome=0.8)                                      # empunadura de cuero
+        poly(X, W([(11, 0.4), (14.5, 2.8), (19.5, 3.6), (22, 3.2), (19, 3.0), (14.5, 1.8), (11.5, 0.2)]), 'metal', tone=2)      # filo de acero
 
     def fx(self, X, name, i, n):
         ov = X.of

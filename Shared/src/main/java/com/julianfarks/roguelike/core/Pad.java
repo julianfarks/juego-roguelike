@@ -125,6 +125,10 @@ public final class Pad {
         switch (code) {
             case A: return 10;
             case B: case MENU: return 27;
+            case LB: return 'Q';      // categoria anterior (inventario / listas)
+            case RB: return 'E';      // categoria siguiente
+            case X: return 'F';       // filtro
+            case Y: return 'O';       // orden
             case DUP: case LS_U: return 38;
             case DDOWN: case LS_D: return 40;
             case DLEFT: case LS_L: return 37;

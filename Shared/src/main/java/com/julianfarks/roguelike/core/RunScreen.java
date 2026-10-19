@@ -25,6 +25,7 @@ final class RunScreen extends Screen implements Level.Listener {
 
     final ClassDef cls;
     final RunState rs;
+    final Inventory inv = new Inventory(this);
     final Input in;
     Level lv;
     int ov;
@@ -125,6 +126,7 @@ final class RunScreen extends Screen implements Level.Listener {
         cls = c;
         in = g.input;
         rs = new RunState(c, System.nanoTime() ^ 0x5DEECE66DL, asc);
+        Inventory.seeAll(rs);
     }
 
     @Override void enter() {
@@ -1244,6 +1246,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 if (isTestSession()) {      // prueba del Modo Desarrollador: sin "Guardar partida"; solo continuar o salir
                     add(bx, by + 100, bw + 12, 22, "Salir del modo de prueba", () -> { exitTest(); });
                     add(bx, by + 125, bw, 22, "Bendiciones y sinergias", this::openBlessList);
+                    add(bx + bw + 8, by, bw, 22, "Inventario", () -> openInventory(true));
                     add(bx, by + 150, bw, 22, "Efectos intensos: " + (s.reduceFx ? "REDUCIDOS" : "NORMALES"), () -> { s.reduceFx = !s.reduceFx; s.write(); layoutOverlay(); });
                     break;
                 }
@@ -1254,9 +1257,11 @@ final class RunScreen extends Screen implements Level.Listener {
                     else { quitConfirm = true; layoutOverlay(); }
                 });
                 add(bx, by + 150, bw, 22, "Bendiciones y sinergias", this::openBlessList);
+                add(bx + bw + 8, by, bw, 22, "Inventario", () -> openInventory(true));
                 add(bx, by + 175, bw, 22, "Efectos intensos: " + (s.reduceFx ? "REDUCIDOS" : "NORMALES"), () -> { s.reduceFx = !s.reduceFx; s.write(); layoutOverlay(); });
                 break;
             }
+            case OV_INV: inv.layout(w); break;
             case OV_BLESSLIST: {
                 layoutBlessList(w);
                 break;
@@ -1386,6 +1391,7 @@ final class RunScreen extends Screen implements Level.Listener {
         if (ov == OV_PAUSE && saveMenu) { saveMenu = false; layoutOverlay(); return true; }
         if (ov == OV_BLESSLIST) { ov = OV_PAUSE; ovT = 0.3f; layoutOverlay(); return true; }
         if (ov == OV_WCMP) { wcmpConfirm(false); return true; }
+        if (ov == OV_INV) { invClose(); return true; }
         if (ov == OV_TALK) { talk = null; closeOv(); return true; }
         if (ov == OV_REVIVE) return true;
         if (ov == OV_PAUSE || ov == OV_SHOP || ov == OV_FORGE || ov == OV_EVENT) { closeOv(); return true; }
@@ -1409,6 +1415,7 @@ final class RunScreen extends Screen implements Level.Listener {
         }
         if (lv == null) return;
         ovT += dt;
+        if (ov == OV_INV) inv.update(dt);
         if (!sandbox && ov != OV_PAUSE) { Save.S.playMs += (long) (dt * 1000f); playSave += dt; if (playSave > 30f) { playSave = 0; Save.S.write(); } }
         if (sandbox && sbRespawnT > 0) { sbRespawnT -= dt; if (sbRespawnT <= 0) { sbRespawnT = -1; loadRoom(sbBoss >= 0 ? Room.BOSS : Room.COMBAT); } }
         if (ov == OV_TALK && tdlg != null) tdlg.update(dt);
@@ -1431,6 +1438,7 @@ final class RunScreen extends Screen implements Level.Listener {
         if (ov == OV_NONE) {
             if (fadeMode != 1) {
                 if (in.pressed(Input.B_PAUSE) && deadT < 0 && winT < 0) { openOv(OV_PAUSE); return; }
+                if (in.pressed(Input.B_INV) && deadT < 0 && winT < 0 && !lv.cinematic && lv.pl.alive) { in.consume(Input.B_INV); openInventory(false); return; }
                 Prop near = lv.nearestInteractable();
                 boolean canInt = near != null && lv.pl.alive && !lv.cinematic && deadT < 0;
                 in.btn[Input.B_INTERACT].visible = canInt;
@@ -1483,6 +1491,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 else if ((code == 10 || code == 32 || code == 'J') && ovT > 0.35f) { for (Hit h : hits) if (h.tag == offerSel) { click(h); break; } }
                 return;
             }
+            if (ov == OV_INV) { if (isDown) inv.key(code); return; }
             if (ov == OV_BLESSLIST && isDown) {
                 if (code == 37 || code == 'A') blPage(-1);
                 else if (code == 39 || code == 'D') blPage(1);
@@ -1807,6 +1816,8 @@ final class RunScreen extends Screen implements Level.Listener {
         in.btn[Input.B_INTERACT].visible = in.btn[Input.B_INTERACT].visible && !lv.cinematic;
         in.btn[Input.B_SEC].visible = rs.sec != 0 && !lv.cinematic;
         in.btn[Input.B_GREN].visible = rs.gren != 0 && !lv.cinematic;
+        in.btn[Input.B_SWAP].visible = rs.sec != 0 && !lv.cinematic;      // cambio de arma: solo con una secundaria equipada
+        in.btn[Input.B_INV].visible = !lv.cinematic;
         // iconos de habilidades
         for (int i = 0; i < 3; i++) in.btn[Input.B_S1 + i].icon = cls.skills[i].icon;
         in.btn[Input.B_ULT].icon = cls.skills[3].icon;
@@ -1899,6 +1910,22 @@ final class RunScreen extends Screen implements Level.Listener {
         }
     }
 
+    void openInventory(boolean fromPause) {
+        if (lv == null || deadT >= 0 || winT >= 0) return;
+        in.reset();
+        inv.open(fromPause);
+        ov = OV_INV; ovT = 0.3f; saveMenu = false;
+        Snd.sfx("ui_open", 0.7f);
+        layoutOverlay();
+    }
+
+    /** Cierra el inventario: vuelve al menu de pausa si se abrio desde ahi, o al juego. */
+    void invClose() {
+        if (ov != OV_INV) return;
+        if (inv.fromPause) { ov = OV_PAUSE; ovT = 0.3f; in.reset(); Snd.sfx("ui_back", 0.7f); layoutOverlay(); }
+        else closeOv();
+    }
+
     private void openBlessList() {
         blTab = 0; blPage = 0;
         ov = OV_BLESSLIST; ovT = 0.3f;
@@ -1988,7 +2015,7 @@ final class RunScreen extends Screen implements Level.Listener {
         }
     }
 
-    private void dim(Platform.Gfx g, int w, float a) { g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x000008, (int) (a * 255)), false); }
+    void dim(Platform.Gfx g, int w, float a) { g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x000008, (int) (a * 255)), false); }
 
     private void renderOverlay(Platform.Gfx g, int w) {
         if (ov == OV_NONE) return;
@@ -2137,7 +2164,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 UI.small.draw(g, "Arma nivel " + rs.weaponLvl + "   Frascos " + rs.potions + "/" + s.potionsMax, ix, 106, UI.WHITE, 1f);
                 UI.small.draw(g, "Enemigos " + rs.kills + "   Tiempo " + time(rs.time), ix, 118, UI.GREY, 1f);
                 UI.small.draw(g, "Especial: " + (rs.special == 0 ? "-" : Items.SP_NAME[rs.special]), ix, 130, rs.special == 0 ? UI.GREY : Items.SP_COL[rs.special], 1f);
-                UI.small.draw(g, "2ª: " + (rs.sec == 0 ? "-" : Items.SEC_NAME[rs.sec] + " x" + rs.secAmmo) + (rs.gren == 0 ? "" : "  Gran: x" + rs.grenCount), ix, 141, UI.WHITE, 1f);
+                UI.small.draw(g, "Sec: " + (rs.sec == 0 ? "-" : Items.SEC_NAME[rs.sec] + " x" + rs.secAmmo) + (rs.gren == 0 ? "" : "  Gran: x" + rs.grenCount), ix, 141, UI.WHITE, 1f);
                 UI.small.draw(g, Items.SH_NAME[rs.shield] + " (parry " + Math.round(Items.SH_WIN[rs.shield] * 1000) + "ms)", ix, 152, Items.SH_COL[rs.shield] | 0x404040, 1f);
                 UI.small.draw(g, "Bendiciones", ix, 167, UI.GOLD, 1f);
                 int n = 0, total = 0;
@@ -2156,6 +2183,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 else if (total > 20) UI.small.draw(g, "+" + (total - 20) + " más", ix + 180, 167, UI.GREY, 1f);
                 break;
             }
+            case OV_INV: inv.render(g, w); break;
             case OV_BLESSLIST: {
                 dim(g, w, 0.8f);
                 renderBlessList(g, w);
@@ -2169,7 +2197,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 float pw = Math.min(210, (w - 30) / 2f), ph = 172, x0 = w / 2f - pw - 5, x1 = w / 2f + 5;
                 UI.panel(g, wcmpSel == 0 ? 1 : 0, x0, 40, pw, ph, fadeIn);
                 UI.panel(g, wcmpSel == 1 ? 1 : 0, x1, 40, pw, ph, fadeIn);
-                UI.small.center(g, "TU ARMA 2ª · " + rs.secAmmo + " usos", x0 + pw / 2f, 45, 0xFFB8B0B8, fadeIn);
+                UI.small.center(g, "TU ARMA SEC. · " + rs.secAmmo + " usos", x0 + pw / 2f, 45, 0xFFB8B0B8, fadeIn);
                 UI.small.center(g, "NUEVA · " + Items.SEC_AMMO[wcmp.id] + " usos", x1 + pw / 2f, 45, UI.GOLD, fadeIn);
                 ArsenalUI.sheet(g, x0 + 8, 58, pw - 16, rs.sec, 0, rs.secAmmo);
                 ArsenalUI.sheet(g, x1 + 8, 58, pw - 16, wcmp.id, rs.sec, 0);

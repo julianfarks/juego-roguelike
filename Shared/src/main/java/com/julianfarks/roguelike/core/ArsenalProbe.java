@@ -200,7 +200,10 @@ final class ArsenalProbe {
         // ---------------------------------------------------------------- 12. cofres
         chestTests();
 
-        // ---------------------------------------------------------------- 13. guardado
+        // ---------------------------------------------------------------- 13. inventario
+        invTests();
+
+        // ---------------------------------------------------------------- 14. guardado
         saveTests();
     }
 
@@ -311,5 +314,164 @@ final class ArsenalProbe {
         RunScreen bad = RunSave.load(game, 2);
         ck("arma desconocida en el guardado: se ignora sin romper la partida", bad != null && bad.rs.sec == 0);
         game.P.store().put(RunSave.key(1), ""); game.P.store().put(RunSave.key(2), ""); game.P.store().put(RunSave.key(2) + "_bak", "");
+    }
+
+    // ================================================================ escenas para capturas (BOT_ARSENALSCENE=inv|ground|wcmp|chest)
+    static int f0 = -1;
+    static void scene(Game g, RunScreen r, Level l, Player pl, int frame, String name) {
+        game = g; scr = r; lv = l; p = pl; rs = r.rs; in = l.in;
+        if (f0 < 0) {
+            f0 = frame;
+            for (int c : new int[]{'A', 'D', 'W', 'S', 37, 38, 39, 40, 'J', 'K', 'R', 'E', 'C', 'L', 'I', 'U', 32}) g.key(c, false);
+            rs.sec = Items.SEC_CHAKRAM; rs.secAmmo = 7; rs.secLvl = 1; rs.secActive = name.equals("inv") || name.equals("slots");
+            java.util.Arrays.fill(rs.wState, 0);
+            rs.wState[Items.SEC_CHAKRAM] = 1; rs.wState[Items.SEC_BOW] = 3; rs.wState[Items.SEC_SPEAR] = 2; rs.wState[Items.SEC_EMBER] = 3; rs.wState[Items.SEC_WAND] = 3;
+            rs.seen.clear(); rs.unseen.clear();
+            int n = 0; for (Blessing b : Blessing.ALL) { if (n >= 46) break; if (b.id % 3 == 0) { rs.bless[b.id] = 1 + (b.id % Math.max(1, b.max)); n++; } }
+            rs.relicsThisRun[0] = rs.relicsThisRun[3] = rs.relicsThisRun[5] = true; rs.pacts[1] = 1; rs.gren = 2; rs.grenCount = 3; rs.special = 3; rs.shield = 2;
+            rs.bx = new BlessRt(); BlessFx.sync(rs); rs.recalc();
+            Inventory.seeAll(rs); rs.seen.remove("w:" + Items.SEC_CHAKRAM); rs.seen.remove("b:3"); rs.seen.remove("r:3");
+            lv.enemies.clear(); p.invuln = 99f;
+            if (name.equals("ground")) {
+                Arsenal.dropWeapon(lv, Items.SEC_BOW, 0, p.x + 26, p.y, false, true);
+                Arsenal.dropWeapon(lv, Items.SEC_KNIFE, 0, p.x + 70, p.y, true, true);
+            }
+            System.out.println("AT escena " + name + " f0=" + frame);
+        }
+        int t = frame - f0;
+        if (name.equals("inv")) {
+            if (t == 3) scr.openInventory(false);
+            if (t == 100) scr.inv.setCat(1);
+            if (t == 180) scr.inv.setCat(2);
+            if (t == 260) scr.inv.setCat(3);
+            if (t == 340) { scr.inv.setCat(1); scr.inv.filter = 3; scr.inv.rebuild(); scr.layoutOverlay(); }
+            if (t == 420) { scr.inv.setCat(0); scr.inv.filter = 0; scr.inv.rebuild(); scr.inv.focus = 1; scr.inv.slot = 1; scr.layoutOverlay(); }
+        }
+        if (name.equals("wcmp") && t == 3) {
+            scr.cOffer = new ChestLoot.Reward[]{ChestLoot.secNew(rs, Items.SEC_SPEAR, rs.rng), ChestLoot.secNew(rs, Items.SEC_EMBER, rs.rng), ChestLoot.secNew(rs, Items.SEC_SUMMON, rs.rng)};
+            scr.cMode = ChestLoot.MODE_WEAPONS; scr.dbgChest(0);
+            scr.layoutOverlay();
+        }
+        if (name.equals("wcmp") && t == 100) scr.dbgConfirm();
+        if (name.equals("ground") && t == 5) p.x += 10;
+    }
+
+    static void sf(int n) { for (int i = 0; i < n; i++) { scr.update(1f / 60f); in.endFrame(); } }
+
+    static void invTests() {
+        reset();
+        int dex0 = Save.S.dex.hashCode(); boolean[] rel0 = Save.S.relics.clone();
+        // estado variado de la run
+        rs.sec = Items.SEC_CHAKRAM; rs.secAmmo = 8; rs.secLvl = 1; rs.wState[Items.SEC_CHAKRAM] = 1; rs.wState[Items.SEC_BOW] = 3; rs.wState[Items.SEC_SPEAR] = 2;
+        java.util.Arrays.fill(rs.bless, 0); int nb = 0;
+        for (Blessing b : Blessing.ALL) if (b.id % 2 == 0 && nb < 120) { rs.bless[b.id] = 1; nb++; }
+        rs.relicsThisRun[1] = rs.relicsThisRun[4] = true; rs.pacts[0] = 1; rs.gren = 3; rs.grenCount = 2; rs.special = 2; rs.shield = 1;
+        rs.bx = new BlessRt(); BlessFx.sync(rs); rs.recalc();
+        Inventory.seeAll(rs);
+        ck("inventario: una run recien armada no marca nada como nuevo", rs.unseen.isEmpty());
+        float time0 = lv.time;
+        // abrir con la tecla (Tab)
+        in.key(9, true); sf(2); in.key(9, false); sf(1);
+        ck("inventario: la tecla Tab lo abre", scr.ov == RunScreen.OV_INV);
+        sf(60);
+        ck("inventario abierto: el juego queda en pausa (el tiempo no avanza)", Math.abs(lv.time - time0) < 0.1f);
+        // teclas de combate NO actuan mientras se navega
+        rs.secActive = true; int am = rs.secAmmo; lv.projs.clear(); p.secCd = 0;
+        for (int k : new int[]{'J', 'K', 'L', 'R', 'U', 'C', 'W', 'A', 32}) { game.key(k, true); sf(1); game.key(k, false); sf(1); }
+        ck("inventario abierto: atacar, rodar, disparar, cambiar arma o saltar no hacen nada en el combate", rs.secAmmo == am && lv.projs.isEmpty() && scr.ov == RunScreen.OV_INV);
+        rs.secActive = false;
+        Inventory iv = scr.inv;
+        // listas = estado real
+        iv.setCat(Inventory.C_WEAPONS);
+        int expectW = 1 + 3;
+        ck("armas: principal + las 3 secundarias vistas (equipada, suelo, dejada) = " + iv.items.size(), iv.items.size() == expectW && iv.items.get(0).kind == 1 && iv.items.get(1).state == Inventory.ST_EQUIPPED);
+        boolean sts = true; for (Inventory.Item it : iv.items) if (it.wid == Items.SEC_BOW && it.state != Inventory.ST_LEFT || it.wid == Items.SEC_SPEAR && it.state != Inventory.ST_FLOOR) sts = false;
+        ck("armas: estados reales (equipada / en el suelo / dejada atras)", sts);
+        iv.setCat(Inventory.C_BLESS);
+        int bl = 0; for (int v : rs.bless) if (v > 0) bl++;
+        ck("bendiciones: la lista coincide con las que tiene la run (" + bl + ")", iv.items.size() == bl);
+        iv.setCat(Inventory.C_RELICS);
+        ck("reliquias y especiales: 2 reliquias + 1 pacto + bendicion inicial / companero si hay (" + iv.items.size() + ")", iv.items.size() == 3 + (rs.startBless >= 0 ? 1 : 0) + (rs.companion >= 0 ? 1 : 0));
+        iv.setCat(Inventory.C_OBJECTS);
+        ck("objetos: escudo, granada, mejora especial y frascos", iv.items.size() == 4);
+        // orden
+        iv.setCat(Inventory.C_BLESS); iv.sort = 0; iv.rebuild();
+        boolean ord = true; for (int i = 1; i < iv.items.size(); i++) if (iv.items.get(i - 1).rar < iv.items.get(i).rar) ord = false;
+        ck("orden por rareza: de mayor a menor", ord);
+        iv.sort = 1; iv.rebuild();
+        ord = true; for (int i = 1; i < iv.items.size(); i++) if (iv.items.get(i - 1).name.compareToIgnoreCase(iv.items.get(i).name) > 0) ord = false;
+        ck("orden por nombre: alfabetico", ord);
+        // filtros
+        iv.filter = 4; iv.rebuild(); boolean fl = !iv.items.isEmpty(); for (Inventory.Item it : iv.items) if (it.rar != 2) fl = false;
+        ck("filtro por rareza: solo muestra esa rareza (" + iv.items.size() + ")", fl);
+        iv.filter = 0; iv.rebuild();
+        // desplazamiento y diseño en varios tamaños
+        boolean lay = true; String why = "";
+        for (int w : new int[]{480, 576, 640}) for (int h : new int[]{270, 320}) {
+            int ow = game.viewW, oh = ViewSize.h; game.viewW = w; ViewSize.h = h;
+            for (int c = 0; c < Inventory.C_COUNT; c++) {
+                iv.setCat(c); iv.sel = Math.max(0, iv.items.size() - 1); iv.scroll = 0; iv.clampScroll(); scr.layoutOverlay();
+                for (Screen.Hit a : scr.hits) {
+                    if (a.x < 0 || a.y < 0 || a.x + a.w > w || a.y + a.h > h) { lay = false; why += " fuera(" + w + "x" + h + " tag" + a.tag + ")"; }
+                    boolean cellA = a.tag >= 400;
+                    for (Screen.Hit b : scr.hits) {
+                        if (a == b || a.tag >= b.tag) continue;
+                        boolean cellB = b.tag >= 400;
+                        if ((a.tag == 210 || a.tag == 211 || b.tag == 210 || b.tag == 211)) continue;      // flechas de desplazamiento: dentro del panel de la rejilla
+                        boolean ov2 = a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+                        if (ov2 && !(a.tag >= 300 && a.tag < 302 && false)) { lay = false; why += " solape(" + w + "x" + h + " " + a.tag + "/" + b.tag + ")"; }
+                    }
+                    if (cellA && (a.x < iv.gx || a.x + a.w > iv.gx + iv.gw || a.y < iv.gy || a.y + a.h > iv.gy + iv.gh)) { lay = false; why += " celda fuera de rejilla"; }
+                    if (cellA && a.x + a.w > iv.dx) { lay = false; why += " celda sobre el detalle"; }
+                }
+                int totalRows = (iv.items.size() + iv.cols - 1) / iv.cols;
+                if (iv.sel / iv.cols < iv.scroll || iv.sel / iv.cols >= iv.scroll + iv.rows) { lay = false; why += " cursor fuera de vista"; }
+            }
+            game.viewW = ow; ViewSize.h = oh;
+        }
+        ck("inventario en 480/576/640 x 270/320: ningun boton se sale, se solapa ni queda sobre otro panel" + why, lay);
+        scr.layoutOverlay();
+        // recorrer toda la rejilla con el teclado: el cursor siempre queda visible y el nº de movimientos coincide
+        iv.setCat(Inventory.C_BLESS); iv.sel = 0; iv.scroll = 0; iv.focus = 0; scr.layoutOverlay();
+        int steps = 0; boolean vis = true;
+        for (int i = 0; i < iv.items.size() + 5 && steps < 400; i++) { scr.key(40, true); steps++; if (iv.focus == 0 && (iv.sel / iv.cols < iv.scroll || iv.sel / iv.cols >= iv.scroll + iv.rows)) vis = false; }
+        ck("navegar por toda la lista con el teclado: el cursor siempre queda a la vista", vis);
+        // nuevas
+        iv.setCat(Inventory.C_WEAPONS);
+        rs.wState[Items.SEC_BOW] = 0; rs.sec = Items.SEC_CHAKRAM;
+        Arsenal.equip(rs, Items.SEC_WAND, 0);
+        iv.rebuild();
+        boolean newFlag = false; for (Inventory.Item it : iv.items) if (it.wid == Items.SEC_WAND && it.isNew) newFlag = true;
+        ck("arma recien obtenida: aparece marcada como nueva", newFlag && iv.catNew[Inventory.C_WEAPONS] >= 1);
+        iv.focus = 0; for (int i = 0; i < iv.items.size(); i++) if (iv.items.get(i).wid == Items.SEC_WAND) iv.sel = i;
+        scr.layoutOverlay(); sf(60);
+        ck("tras inspeccionarla un momento deja de ser nueva", rs.seen.contains("w:" + Items.SEC_WAND) && iv.catNew[Inventory.C_WEAPONS] == 0);
+        // activar el arma desde el inventario
+        iv.rebuild(); iv.focus = 1; iv.slot = 1; p.swapCd = 0; rs.secActive = false; scr.layoutOverlay();
+        scr.key(10, true);
+        ck("accion 'Usar esta arma' del inventario: activa la secundaria una sola vez", rs.secActive);
+        scr.key(10, true);
+        ck("pulsar aceptar de nuevo no la desactiva por error (la accion ya no aplica)", rs.secActive);
+        // cerrar: con Esc y el juego no recibe pulsaciones fantasma
+        scr.key(27, true);
+        ck("Esc cierra el inventario y vuelve al juego", scr.ov == RunScreen.OV_NONE);
+        lv.projs.clear(); int am2 = rs.secAmmo; sf(30);
+        ck("al cerrar no queda ninguna accion pendiente (ni disparo ni ataque)", rs.secAmmo == am2 && lv.projs.isEmpty());
+        // desde la pausa
+        scr.openInventory(true); scr.key(27, true);
+        ck("abierto desde la pausa, 'volver' regresa a la pausa", scr.ov == RunScreen.OV_PAUSE);
+        scr.key(27, true); sf(2);
+        ck("la coleccion permanente no se toca al usar el inventario (bestiario y reliquias intactos)", Save.S.dex.hashCode() == dex0 && java.util.Arrays.equals(rel0, Save.S.relics));
+        // tras soltar y recoger: el inventario refleja el suelo
+        reset(); rs.sec = Items.SEC_BOW; rs.secAmmo = 5; rs.wState[Items.SEC_BOW] = 1; Inventory.seeAll(rs);
+        Arsenal.dropWeapon(lv, Items.SEC_AXE, 0, p.x + 3, p.y, false, true); sf(2);
+        scr.interact();
+        iv.open(false); iv.rebuild();
+        int fl2 = 0, eq = 0; for (Inventory.Item it : iv.items) { if (it.state == Inventory.ST_FLOOR) fl2++; if (it.state == Inventory.ST_EQUIPPED && it.kind != 1) eq++; }
+        ck("tras intercambiar con el suelo, el inventario muestra 1 equipada y 1 en el suelo", eq == 1 && fl2 == 1);
+        // en el inventario no puede haber dos secundarias equipadas
+        int sec = 0; for (Inventory.Item it : iv.items) if (it.state == Inventory.ST_EQUIPPED && it.kind != 1) sec++;
+        ck("nunca aparecen dos secundarias equipadas", sec == 1);
+        scr.invClose();
     }
 }

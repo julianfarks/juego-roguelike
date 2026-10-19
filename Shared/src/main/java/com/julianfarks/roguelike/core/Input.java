@@ -111,14 +111,14 @@ public final class Input {
         set(B_GREN, W - 184, 140, 15, "", false);
         set(B_GUARD, W - 168, 252, 16, "parry", true);
         set(B_SWAP, W - 140, 104, 15, "swap", false);
-        set(B_INV, W - 44, 18, 11, "bag", false);
+        set(B_INV, W - 18, 44, 11, "bag", false);
         btn[B_INTERACT].visible = false;
         btn[B_LEFT].visible = btn[B_RIGHT].visible = btn[B_DOWN].visible = true;
         applyCustom();
     }
 
     /** Nombres para el editor de controles. */
-    public static final String[] NAMES = {"Izquierda", "Derecha", "Abajo", "Saltar", "Atacar", "Rodar", "Habilidad 1", "Habilidad 2", "Habilidad 3", "Definitiva", "Interactuar", "Pausa", "Poción", "Arma 2ª", "Granada", "Escudo / Parry", "Cambiar arma", "Inventario"};
+    public static final String[] NAMES = {"Izquierda", "Derecha", "Abajo", "Saltar", "Atacar", "Rodar", "Habilidad 1", "Habilidad 2", "Habilidad 3", "Definitiva", "Interactuar", "Pausa", "Poción", "Arma secundaria", "Granada", "Escudo / Parry", "Cambiar arma", "Inventario"};
 
     private final float[] baseCx = new float[B_COUNT], baseCy = new float[B_COUNT], baseR = new float[B_COUNT];
 

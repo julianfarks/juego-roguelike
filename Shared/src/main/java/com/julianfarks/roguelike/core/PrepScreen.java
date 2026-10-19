@@ -210,6 +210,7 @@ final class PrepScreen extends Screen {
         final boolean inf = infiniteMode && s.finalBeaten;
         final RunScreen r = inf ? RunScreen.infinite(game, c, asc) : new RunScreen(game, c, asc);
         r.rs.applyStartBlessing(bl);
+        Inventory.seeAll(r.rs);
         if (inf) r.rs.mods = Infinite.validMods(r.rs, s.infMods);
         if (!inf && !Story.introSeen()) game.go(new Cinematic(game, Story.INTRO, () -> game.go(r)));
         else game.go(r);

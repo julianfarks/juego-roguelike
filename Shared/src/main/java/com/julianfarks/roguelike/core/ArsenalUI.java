@@ -35,8 +35,7 @@ final class ArsenalUI {
             yy += 10;
         }
         yy += 2;
-        UI.small.draw(g, "Efecto: " + Items.SEC_FX[id], x + 2, yy, 0xFFFFD25A, 1f);
-        yy += 11;
+        yy += UI.small.drawWrapped(g, "Efecto: " + Items.SEC_FX[id], x + 2, yy, (int) w - 4, 0xFFFFD25A, 1f, 9) + 2;
         yy += UI.small.drawWrapped(g, Items.SEC_STYLE[id], x + 2, yy, (int) w - 4, 0xFFC8C0C8, 1f);
         return yy;
     }
@@ -65,19 +64,41 @@ final class ArsenalUI {
         }
     }
 
-    /** Tarjeta contextual del arma del suelo: nombre, rareza, estadisticas comparadas con la equipada, efecto y estilo, y la accion disponible. */
+    /** Tarjeta contextual del arma del suelo: nombre, rareza, estadisticas (comparadas con la equipada), efecto y la accion disponible. Compacta para no tapar el combate. */
     static void groundCard(Platform.Gfx g, Level lv, RunState rs, Prop p, int w, String actionLabel) {
         int id = p.arg;
         if (id <= 0 || id >= Items.SEC_COUNT) return;
-        float cw = 196, ch = 126;
-        float x = w / 2f - cw / 2f, y = 30;
+        float cw = Math.min(252, w - 16);
+        List<String> fx = UI.small.wrap("Efecto: " + Items.SEC_FX[id], (int) cw - 16);
+        int fxl = Math.min(2, fx.size());
+        boolean cmp = rs.sec != 0 && rs.sec != id;
+        float ch = 6 + 20 + 3 * 10 + 3 + fxl * 9 + 4 + (cmp ? 10 : 0) + 14;
+        float x = w / 2f - cw / 2f, y = 36;
         UI.panel(g, 0, x, y, cw, ch, 0.94f);
-        float yy = sheet(g, x + 8, y + 7, cw - 16, id, rs.sec, p.wAmmo > 0 ? p.wAmmo : Items.SEC_AMMO[id]);
-        String foot;
-        if (rs.sec == 0) foot = "Recoger y equipar";
-        else if (rs.sec == id) foot = "Misma arma: mejora de nivel";
-        else foot = "Intercambiar con " + Items.SEC_NAME[rs.sec];
-        UI.small.center(g, UI.fitLabel(UI.small, actionLabel + " · " + foot, cw - 12), x + cw / 2f, y + ch - 12, UI.GOLD, 1f);
-        if (rs.sec != 0 && rs.sec != id) UI.small.center(g, "(+ mejor, - peor que tu arma actual)", x + cw / 2f, y + ch - 22, 0xFF9890A0, 1f);
+        float ix = x + 8, yy = y + 6;
+        int rar = Items.SEC_RAR[id], rc = rarCol(rar);
+        UI.iconC(g, Items.SEC_ICON[id], ix + 9, yy + 9, 1f, 1f);
+        UI.small.draw(g, UI.fitLabel(UI.small, Items.SEC_NAME[id], cw - 40), ix + 22, yy + 1, 0xFFF0E8E0, 1f);
+        Arsenal.rarityMark(g, ix + 26, yy + 15, rar, rc & 0xFFFFFF);
+        UI.small.draw(g, ChestLoot.R_NAME[rar] + " · " + (p.wAmmo > 0 ? p.wAmmo : Items.SEC_AMMO[id]) + " usos", ix + 34, yy + 11, rc, 1f);
+        yy += 24;
+        List<Arsenal.Line> ls = Arsenal.lines(id, rs.sec);
+        float colW = (cw - 22) / 2f;
+        for (int i = 0; i < ls.size() && i < 5; i++) {
+            if (i == 3) { /* Municion ya va en la cabecera */ continue; }
+            int k = i > 3 ? 3 : i;
+            float cx = ix + (k % 2) * (colW + 6), cy = yy + (k / 2) * 10;
+            Arsenal.Line l = ls.get(i);
+            String v = l.val.replace(" casillas", " cas.");
+            UI.small.draw(g, l.label, cx, cy, 0xFFB8B0B8, 1f);
+            UI.small.right(g, v, cx + colW - 12, cy, 0xFFF0E8E0, 1f);
+            cmpMark(g, cx + colW - 9, cy, l.cmp);
+        }
+        yy += 20 + 3;
+        for (int i = 0; i < fxl; i++) UI.small.draw(g, i == fxl - 1 && fx.size() > fxl ? UI.fitLabel(UI.small, fx.get(i) + "…", cw - 16) : fx.get(i), ix, yy + i * 9, 0xFFFFD25A, 1f);
+        yy += fxl * 9 + 3;
+        if (cmp) { UI.small.center(g, "+ mejor · - peor que tu arma actual", x + cw / 2f, yy, 0xFF9890A0, 1f); yy += 10; }
+        String foot = rs.sec == 0 ? actionLabel + " y equipar" : rs.sec == id ? actionLabel + " (misma arma: sube de nivel)" : actionLabel + " por " + Items.SEC_NAME[rs.sec];
+        UI.small.center(g, UI.fitLabel(UI.small, foot, cw - 12), x + cw / 2f, yy + 2, UI.GOLD, 1f);
     }
 }

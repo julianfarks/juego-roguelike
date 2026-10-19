@@ -58,12 +58,12 @@ final class ChestLoot {
     }
 
     // ---- armas extra (se suman a las especiales existentes en Items)
-    private static final int[] SP_RAR = {0, 1, 1, 1, 2, 2, 3, 2, 1};
-    private static final String[] SP_ICON = {"", "burn", "freeze", "poison", "bleed", "shock", "star", "b_gigante", "b_furia"};
+    static final int[] SP_RAR = {0, 1, 1, 1, 2, 2, 3, 2, 1};
+    static final String[] SP_ICON = {"", "burn", "freeze", "poison", "bleed", "shock", "star", "b_gigante", "b_furia"};
     private static final int[] SEC_RAR = Items.SEC_RAR;   // las rarezas viven con el resto de datos del arma (Items)
-    private static final int[] SH_RAR = {0, 1, 2, 2};
-    private static final String[] SH_ICON = {"shield", "shield", "shield", "shield"};
-    private static final int[] GR_RAR = {0, 1, 1, 1, 2, 2};
+    static final int[] SH_RAR = {0, 1, 2, 2};
+    static final String[] SH_ICON = {"shield", "shield", "shield", "shield"};
+    static final int[] GR_RAR = {0, 1, 1, 1, 2, 2};
 
     // ================================================================ estadisticas
     static void applyStats(RunState rs, Stats s) {
@@ -234,7 +234,7 @@ final class ChestLoot {
     static Reward secNew(RunState rs, int id, Rng r) {
         Reward x = new Reward();
         x.kind = K_SEC_NEW; x.id = id; x.rar = SEC_RAR[id]; x.name = Items.SEC_NAME[id]; x.icon = Items.SEC_ICON[id]; x.col = Items.SEC_COL[id] | 0xFF000000;
-        x.amount = "Arma 2ª · " + Items.SEC_AMMO[id] + " usos"; x.desc = Items.SEC_DESC[id];
+        x.amount = "Arma secundaria · " + Items.SEC_AMMO[id] + " usos"; x.desc = Items.SEC_DESC[id];
         if (rs.sec != 0) x.replaces = "Sustituye a " + Items.SEC_NAME[rs.sec];
         return x;
     }
@@ -309,7 +309,7 @@ final class ChestLoot {
     static Reward secUp(RunState rs) {
         Reward x = new Reward();
         x.kind = K_SEC_UP; x.id = rs.sec; x.val = rs.secLvl + 1; x.rar = rs.secLvl == 0 ? 1 : (rs.secLvl == 1 ? 2 : 3);
-        x.name = "Arma 2ª mejorada"; x.icon = Items.SEC_ICON[rs.sec]; x.col = Items.SEC_COL[rs.sec] | 0xFF000000;
+        x.name = "Arma secundaria mejorada"; x.icon = Items.SEC_ICON[rs.sec]; x.col = Items.SEC_COL[rs.sec] | 0xFF000000;
         x.amount = "Nivel " + rs.secLvl + " > " + x.val; x.desc = "Tu arma secundaria hace +25% de daño y se dispara más rápido.";
         return x;
     }

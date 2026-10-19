@@ -1,0 +1,6 @@
+# Prueba experimental: Paladin del Alba a 96x96 (NO usada por el juego)
+
+- `paladin96_sheet.png` / `.json`: celdas de 96x96 (filas: idle 6, run 8, attack1 7, roll 8 fotogramas). Mismo rig y poses que el Paladin v3, renderizado vectorialmente a doble resolucion (sin interpolacion) con detalle extra: iris/pupila/parpado/ceja arqueada, remaches del yelmo y segmentos de cresta, peto en 3 placas con juntas y remaches, gorjal en anillos, hombrera de 3 laminas, brazal con bandas, nudillos, capa con 5 pliegues y forro, escudo con filo de luz, remaches y sol de 8 rayos, espada con filos, canal, punta y empunadura vendada.
+- Generador aislado: `tools/art_players/exp96_paladin.py` (subclase de `cls_paladin.Paladin`; no modifica el generador actual).
+- Comparaciones: `comparacion_ampliada_actual_izq_96_der.png` (actual a 2x NN = mismo tamano de personaje, vs 96x96, ambos x7) y `comparacion_escala_juego_actual_arriba_96_abajo.png` (sobre un fondo real de partida, ambos con el personaje del mismo tamano en pantalla: el actual se amplia 2x para igualar el tamano y el 96 se muestra nativo; luego ambos x3).
+- Nota: las celdas 96x96 no incluyen smear/hurt/ult ni filas `_u/_s`; el aura/efectos de clase estan desactivados. Para integrar al juego habria que migrar celda, pivote, cajas, anclas de mano y todas las animaciones (no hecho).

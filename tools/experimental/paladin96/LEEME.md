@@ -4,3 +4,9 @@
 - Generador aislado: `tools/art_players/exp96_paladin.py` (subclase de `cls_paladin.Paladin`; no modifica el generador actual).
 - Comparaciones: `comparacion_ampliada_actual_izq_96_der.png` (actual a 2x NN = mismo tamano de personaje, vs 96x96, ambos x7) y `comparacion_escala_juego_actual_arriba_96_abajo.png` (sobre un fondo real de partida, ambos con el personaje del mismo tamano en pantalla: el actual se amplia 2x para igualar el tamano y el 96 se muestra nativo; luego ambos x3).
 - Nota: las celdas 96x96 no incluyen smear/hurt/ult ni filas `_u/_s`; el aura/efectos de clase estan desactivados. Para integrar al juego habria que migrar celda, pivote, cajas, anclas de mano y todas las animaciones (no hecho).
+
+## Version heroica (adulto, robusto)
+- `paladin96_heroico_sheet.png/.json` (generador aislado `tools/art_players/exp96_paladin_v2.py`; el prototipo anterior `paladin96_sheet.png` se conserva para comparar).
+- Cambios: cabeza algo menor (proporcion adulta), hombros mas anchos (sw 1,25 -> 1,6), torso y ropa un 18 % mas anchos, piernas, brazos, hombreras de 3 laminas y guanteletes mas gruesos, botas propias con puno dorado y puntera, postura mas erguida (inclinacion x0,55). Rostro: frente plana, mandibula ancha y cuadrada con sombra de barba, menton y pomulo marcados, ceja gruesa inclinada, ojo mas estrecho con parpado pesado, nariz con puente y fosa en sombra, patilla larga y mechones mas claros.
+- Comparacion a igual tamano: `comparacion_prototipo_arriba_heroico_abajo.png` (idle, run, attack1, roll; x6).
+- Limite conocido: en la pose de rodar el personaje queda recortado por el borde inferior de la celda 96x96 (igual en el prototipo anterior); habria que reajustar el origen de esa fila.

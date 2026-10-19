@@ -11,6 +11,7 @@ import polish
 BASE = '8e44cff'
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 CW, CH = 64, 48
+REDESIGNED = {'paladin'}   # clases con rediseno real (fase 3)
 def git(path):
     return subprocess.run(['git', 'show', f'{BASE}:{path}'], cwd=ROOT, capture_output=True, check=True).stdout
 bad = 0
@@ -37,7 +38,15 @@ for png in sorted(glob.glob(os.path.join(ROOT, 'Shared/assets/sprites/pl_*.png')
             j = i - 1 if (sm >= 0 and i > sm) else i
             a = old.crop((j * CW, o['row'] * CH, (j + 1) * CW, (o['row'] + 1) * CH)); b = new.crop((i * CW, n['row'] * CH, (i + 1) * CW, (n['row'] + 1) * CH))
             # fase 2 visual: el pulido cambia el RGB, pero la silueta (alfa) debe ser identica al original
-            if ImageChops.difference(a.getchannel('A'), b.getchannel('A')).getbbox(): errs.append(f'{an}: fotograma {i}: silueta distinta del original')
+            da = ImageChops.difference(a.getchannel('A'), b.getchannel('A'))
+            if name[3:-4] in REDESIGNED:
+                # fase 3 (rediseno): se admite una variacion pequena de silueta, pero los pies (ancla) y el tamano total se mantienen
+                ao, bo = a.getchannel('A').getbbox(), b.getchannel('A').getbbox()
+                npx = max(1, sum(1 for v in a.getchannel('A').getdata() if v))
+                dpx = sum(1 for v in da.getdata() if v)
+                if ao and bo and (abs(ao[3] - bo[3]) > 1 or abs(ao[1] - bo[1]) > 4 or abs(ao[0] - bo[0]) > 5 or abs(ao[2] - bo[2]) > 5): errs.append(f'{an}: fotograma {i}: caja de silueta desplazada {ao}->{bo}')
+                if dpx / npx > 0.12: errs.append(f'{an}: fotograma {i}: silueta cambia {dpx * 100 // npx}%')
+            elif da.getbbox(): errs.append(f'{an}: fotograma {i}: silueta distinta del original')
         if sm >= 0:   # el smear conserva la paleta del sprite (sin colores nuevos) y no esta vacio
             f = new.crop((sm * CW, n['row'] * CH, (sm + 1) * CW, (n['row'] + 1) * CH))
             base = set()

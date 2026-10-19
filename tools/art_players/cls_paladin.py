@@ -55,7 +55,10 @@ class Paladin(PClass):
         mat('skin', '#E3AE84')
         mat('plume', '#FFF6C8', hl='#FFFFFF')
         mat('shield', '#E9ECF6', hl='#FFFFFF')
-        mat_back('gold'); mat_back('under'); mat_back('leather'); mat_back('cloth', 0.8)
+        mat('eye', '#8FEFFF', hl='#FFFFFF')
+        mat('crimson', '#B5333F', hl='#FF8A8A')
+        mat('goldD', '#B07A22', hl='#F2C45A')
+        mat_back('gold'); mat_back('goldD'); mat_back('under'); mat_back('leather'); mat_back('cloth', 0.8)
 
     def draw(self, X):
         D, p, sk = X.D, X.p, X.sk
@@ -78,22 +81,39 @@ class Paladin(PClass):
         # tabardo
         poly(X, tp(X, [(0.2, 1.5), (3.3, 1.5), (3.9, -1), (3.6, -4.8), (1.8, -5.8), (0.4, -4.8), (0.0, -1)]), 'cloth', dome=2.0)
         poly(X, tp(X, [(0.2, -4.0), (3.7, -4.0), (3.5, -4.9), (1.8, -5.8), (0.4, -4.9)]), 'goldL', tone=3)
+        # cinturon con hebilla y faldones (placas colgantes) para dar cintura y volumen a la armadura
+        poly(X, tp(X, [(-3.3, 9.0), (3.4, 9.0), (3.5, 10.3), (-3.3, 10.3)]), 'leather', dome=1.0)
+        poly(X, tp(X, [(0.6, 8.8), (2.4, 8.8), (2.4, 10.5), (0.6, 10.5)]), 'goldL', tone=4)
+        poly(X, tp(X, [(-3.0, 10.2), (-0.4, 10.2), (-0.8, 13.0), (-2.9, 12.6)]), 'goldD', dome=1.2)
+        poly(X, tp(X, [(0.4, 10.2), (3.2, 10.2), (3.0, 13.4), (0.8, 13.2)]), 'gold', dome=1.4)
         # gorjal + cabeza
         circ(X, lerp_pt(sk.neck, sk.hip, 0.0), 2.4 * k, 'gold', dome=1.6)
         # brazo trasero con escudo
         self._shield_arm(X)
-        # cabeza
+        # cabeza: yelmo con cresta, visor en T con ojo luminoso, guardas de mejilla y babera
         hc = sk.head
         circ(X, hc, D.hr, 'gold', dome=3.6)
-        poly(X, hp(X, [(0.2, 0.9), (4.3, 0.9), (4.3, -0.2), (0.2, -0.2)]), 'dark', tone=2)
-        poly(X, hp(X, [(2.4, 4.0), (3.2, 4.0), (3.2, -3.4), (2.4, -3.4)]), 'goldL', tone=3)
-        poly(X, hp(X, [(0.2, -1.0), (4.0, -1.0), (3.0, -4.0), (0.0, -3.2)]), 'gold', dome=1.8)
-        # cresta/pluma
+        # cresta que recorre el yelmo (de la frente a la nuca)
+        poly(X, hp(X, [(-3.6, 2.2), (-1.0, 4.3), (2.6, 4.3), (3.6, 2.6), (2.6, 3.0), (-1.0, 3.2), (-3.0, 1.4)]), 'goldL', dome=1.4)
+        # frente y cejas del yelmo
+        poly(X, hp(X, [(0.0, 2.2), (4.2, 2.0), (4.4, 1.0), (0.0, 1.2)]), 'goldD', tone=3)
+        # visor en T: ranura horizontal oscura + ojo luminoso
+        poly(X, hp(X, [(0.2, 1.7), (4.7, 1.7), (4.7, -0.7), (0.2, -0.7)]), 'dark', tone=1)
+        poly(X, hp(X, [(1.7, 1.3), (4.3, 1.3), (4.3, -0.3), (1.7, -0.3)]), 'eye', tone=5)
+        # barra nasal
+        poly(X, hp(X, [(3.3, 3.2), (4.2, 3.2), (4.2, -3.2), (3.3, -3.2)]), 'goldL', tone=4)
+        # guarda de mejilla y babera (parte baja de la cara)
+        poly(X, hp(X, [(-1.8, -0.4), (2.8, -0.4), (3.6, -1.0), (3.2, -3.2), (-0.6, -3.6), (-2.4, -2.4)]), 'gold', dome=1.8)
+        poly(X, hp(X, [(0.4, -1.4), (3.4, -1.4), (3.2, -1.9), (0.4, -1.9)]), 'dark', tone=2)
+        # remache
+        circ(X, hpt(X, -1.0, 1.8), 0.45 * k, 'cloth', tone=5)
+        # pluma
         ribbons_draw(X, 'plume', 'plume', dome=1.6)
-        poly(X, hp(X, [(-2.5, 3.0), (1.5, 4.4), (1.5, 3.3), (-2.5, 2.2)]), 'goldL', dome=1.2)
         # hombrera delantera
+        circ(X, (sk.shF[0] - 0.2, sk.shF[1] + 1.4), 3.0 * k, 'goldD', dome=2.4)
         circ(X, sk.shF, 3.0 * k, 'gold', dome=2.8)
-        circ(X, (sk.shF[0] + 0.8, sk.shF[1] + 0.9), 1.2 * k, 'goldL', tone=4)
+        circ(X, (sk.shF[0] + 0.5, sk.shF[1] - 0.6), 1.6 * k, 'goldL', dome=1.6)
+        circ(X, (sk.shF[0] + 0.9, sk.shF[1] + 0.9), 0.55 * k, 'cloth', tone=5)
         # brazo delantero
         arm(X, sk.shF, sk.elbF, sk.handF, 1.8, 1.55, 1.35, 'gold', glove='goldL', bracer='goldL')
         # espada
@@ -117,7 +137,8 @@ class Paladin(PClass):
         W = lambda pts: wpoly(X, pts)
         poly(X, W([(2.2, -1.5), (17.0, -1.6), (20.6, 0), (17.0, 1.6), (2.2, 1.5)]), 'steel', dome=1.8)
         poly(X, W([(3.0, -0.35), (17.5, -0.35), (17.5, 0.35), (3.0, 0.35)]), 'steel', tone=5)
-        poly(X, W([(1.4, -3.9), (2.7, -3.9), (2.7, 3.9), (1.4, 3.9)]), 'gold', dome=1.4)
+        poly(X, W([(1.2, -4.6), (2.9, -3.3), (2.9, 3.3), (1.2, 4.6), (0.6, 3.3), (0.6, -3.3)]), 'gold', dome=1.4)
+        circ(X, wpt(X, 1.9, 0), 0.8 * X.D.k, 'crimson', tone=4)
         poly(X, W([(-2.4, -0.9), (1.5, -0.9), (1.5, 0.9), (-2.4, 0.9)]), 'leather', dome=1.0)
         circ(X, wpt(X, -3.2, 0), 1.25 * X.D.k, 'goldL', dome=1.2)
 

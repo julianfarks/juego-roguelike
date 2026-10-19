@@ -348,8 +348,8 @@ def death_bruja_s(c, i, n):
 
 # ------------------------------------------------------------------ MURCIELAGO
 BATF = Mat(ramp=['#12060a', '#2c0e14', '#4e1a22', '#7a2c34', '#a84a50'], bevel=2.4, tex=0.35, ts=1.2, seed=121, bias=0.5)
-BATM = Mat(ramp=['#240812', '#4e0f20', '#7e1a30', '#a82a44', '#d44c62'], bevel=1.4, dith=0.5, outcol='#1c050c')
-BATM_B = Mat(ramp=['#180610', '#380c18', '#5a1424', '#80203a'], bevel=1.4, dith=0.5, outcol='#120409')
+BATM = Mat(ramp=['#3a0c22', '#7a1c40', '#b4325c', '#de5f88', '#f6a0b8'], bevel=1.8, dith=0.35, outcol='#1c050c')
+BATM_B = Mat(ramp=['#240814', '#4e1228', '#7c2040', '#a63058'], bevel=1.6, dith=0.4, outcol='#120409')
 BATBONE = Mat(ramp=['#2c1418', '#5a343a', '#8c5e5c', '#c09a8a'], bevel=0.8, dith=0.2)
 
 
@@ -371,29 +371,28 @@ def mur_pose(a, i, n):
 
 
 def bat_wing(c, S, wang, L1, L2, mem, bone, sweep):
+    """Ala de murcielago (rediseno fase 3): brazo + 4 dedos con membrana festoneada profunda y garra en el pulgar."""
     W = (S[0] + L1 * math.cos(wang), S[1] + L1 * math.sin(wang))
     tips = []
-    for off in (-0.35, 0.35, 0.95):
+    for off, sc in ((-0.55, 1.0), (0.0, 1.05), (0.55, 0.95), (1.1, 0.72)):
         ang = wang + sweep + off
-        tips.append((W[0] + L2 * math.cos(ang) * (1.0 if off < 0.9 else 0.8), W[1] + L2 * math.sin(ang) * (1.0 if off < 0.9 else 0.8)))
-    lowp = (S[0] - 1, S[1] + 8)
-    # festoneado
+        tips.append((W[0] + L2 * sc * math.cos(ang), W[1] + L2 * sc * math.sin(ang)))
+    lowp = (S[0] - 1.5, S[1] + 9)
     pts = [S, W, tips[0]]
     for k in range(3):
-        a_, b_ = tips[k], tips[min(k + 1, 2)] if k < 2 else lowp
-        if k < 2:
-            mid = ((tips[k][0] + tips[k + 1][0]) / 2, (tips[k][1] + tips[k + 1][1]) / 2)
-            mid = (lerp(mid[0], W[0], 0.30), lerp(mid[1], W[1], 0.30))
-            pts += [mid, tips[k + 1]]
-    mid = ((tips[2][0] + lowp[0]) / 2, (tips[2][1] + lowp[1]) / 2)
-    pts += [(lerp(mid[0], W[0] * 0.5 + S[0] * 0.5, 0.35), lerp(mid[1], W[1] * 0.3 + S[1] * 0.7, 0.35)), lowp]
-    with c.part(mem, line=0.0, bevel=1.6) as p:
+        mid = ((tips[k][0] + tips[k + 1][0]) / 2, (tips[k][1] + tips[k + 1][1]) / 2)
+        mid = (lerp(mid[0], W[0], 0.38), lerp(mid[1], W[1], 0.38))      # festones mas profundos
+        pts += [mid, tips[k + 1]]
+    mid = ((tips[3][0] + lowp[0]) / 2, (tips[3][1] + lowp[1]) / 2)
+    pts += [(lerp(mid[0], S[0], 0.45), lerp(mid[1], S[1], 0.35)), lowp]
+    with c.part(mem, line=0.0, bevel=1.8) as p:
         p.poly(pts)
     with c.part(bone, bevel=0.5) as p:
-        p.tube([S, W], 1.0, 0.7)
+        p.tube([S, W], 1.1, 0.8)
         for t_ in tips:
-            p.tube([W, t_], 0.7, 0.25)
-    return W, tips
+            p.tube([W, t_], 0.8, 0.25)
+        d = (math.cos(wang - 0.5), math.sin(wang - 0.5))               # pulgar con garra
+        p.tube([W, (W[0] + d[0] * 3.2, W[1] + d[1] * 3.2 - 1.2)], 0.8, 0.2)
 
 
 def murc_body(c, P, a='idle', wings=True):
@@ -404,13 +403,14 @@ def murc_body(c, P, a='idle', wings=True):
         S = (-1.5, -3)
         if wings:
             wa_far = -3.0 + 1.1 * w * (1 - fold) + 3.0 * fold
-            bat_wing(c, (S[0] + 1.5, S[1] + 0.5), wa_far, 13 * (1 - 0.3 * fold), 14 * (1 - 0.4 * fold), BATM_B, BATBONE, 0.7 * (1 - fold) + 0.2)
+            bat_wing(c, (S[0] + 1.5, S[1] + 0.5), wa_far, 12.5 * (1 - 0.3 * fold), 12.5 * (1 - 0.4 * fold), BATM_B, BATBONE, 0.7 * (1 - fold) + 0.2)
         # cuerpo peludo
         with c.part(BATF, line=0.5, bevel=3.0) as p:
             p.ell(0, 0, 5.2, 6.2)
             p.ell(-0.5, 4, 3.4, 3.0)
-        with c.part(BATM, bevel=0.8) as p:
-            p.ell(2, 2.4, 2.0, 3.0)
+        with c.part(BATBONE, bevel=1.0) as p:
+            p.ell(2.2, 2.0, 2.4, 3.6)
+            p.poly([(0.6, 5.2), (2.2, 8.0), (3.4, 5.0)])
         # patas con garras
         cl = P['claw']
         for dx_ in (-1.5, 1.8):
@@ -424,10 +424,11 @@ def murc_body(c, P, a='idle', wings=True):
             with c.part(BATF, line=0.5, bevel=2.2) as p:
                 p.ell(0, 0, 4.4, 4.0)
                 p.poly([(1.5, -1.5), (6, 0.5), (5.5, 2.6), (1, 2.8)])
-                p.poly([(-2.6, -2.5), (-3.6, -8.5), (0.2, -3.6)])
-                p.poly([(0.8, -3.4), (2.6, -9), (3.6, -2.6)])
+                p.poly([(-3.4, -2.2), (-5.4, -11.0), (0.6, -3.6)])
+                p.poly([(0.8, -3.4), (2.6, -10.6), (3.8, -2.4)])
             with c.part(BATM, bevel=0.6) as p:
-                p.poly([(-2.3, -3), (-3, -6.8), (-0.2, -3.6)])
+                p.poly([(-2.9, -3.0), (-4.2, -8.8), (-0.2, -3.8)])
+                p.poly([(1.4, -3.6), (2.6, -8.6), (3.2, -3.4)])
             with c.part(DARK) as p:
                 p.poly([(2.0, 1.6), (6.2, 2.0), (6, 2.6 + P['mouth'] * 0.9), (2.4, 3.0 + P['mouth'] * 0.7)])
             with c.part(BEYE) as p:
@@ -435,11 +436,11 @@ def murc_body(c, P, a='idle', wings=True):
                 p.ell(0.3, -0.7, 0.7, 0.6)
             c.glow(3, -0.6, 3.2, RED, 0.35 + 0.45 * P['eye'])
             with c.part(BONEC, bevel=0.4) as p:
-                p.poly([(2.8, 2.2), (3.4, 2.2), (3.1, 3.8 + P['mouth'] * 0.5)])
-                p.poly([(5.0, 2.2), (5.6, 2.3), (5.2, 3.9 + P['mouth'] * 0.5)])
+                p.poly([(2.6, 2.2), (3.6, 2.2), (3.1, 4.2 + P['mouth'] * 0.5)])
+                p.poly([(4.9, 2.2), (5.9, 2.3), (5.3, 4.3 + P['mouth'] * 0.5)])
         if wings:
             wa = -2.75 + 1.25 * w * (1 - fold) + 2.8 * fold
-            bat_wing(c, S, wa, 14 * (1 - 0.3 * fold), 15 * (1 - 0.4 * fold), BATM, BATBONE, 0.7 * (1 - fold) + 0.2)
+            bat_wing(c, S, wa, 13.5 * (1 - 0.3 * fold), 13.5 * (1 - 0.4 * fold), BATM, BATBONE, 0.7 * (1 - fold) + 0.2)
 
 
 def draw_murcielago(c, a, i, n):

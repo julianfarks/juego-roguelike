@@ -2,6 +2,7 @@ package com.julianfarks.roguelike.core;
 
 /** Bot de pruebas para el banco de escritorio (--bot): navega menus y juega sin ayuda. No se usa en Android. */
 public final class DebugBot {
+    private int escStep, escT;
     private int roomModStep, roomModT, hurt0; private float hp0;
     private int endlessT = -1; private boolean endlessTapped;
     private String watchK = "";
@@ -602,6 +603,11 @@ public final class DebugBot {
             Save.S.write();
             Save.S = new Save(); Save.S.load(rs.game.P);
             System.out.println("REG recarga: brasas=" + Save.S.blessUse[ids[0]] + " (" + q.blessUse[ids[0]] + ")");
+        }
+        if (System.getenv("BOT_ESCORTTEST") != null && !rs.sandbox) {
+            RunState r = rs.rs;
+            if (escStep == 0 && frame == 700) { r.infinite = true; r.floor = 5; r.stage = 2; r.biome = Biome.ALL[0]; r.roomNo = 4; rs.debugLoadBoss(); escStep = 1; escT = frame; System.out.println("ESC jefe cargado en piso 5: enemigos=" + rs.lv.enemies.size()); }
+            else if (escStep == 1 && frame > escT + 30 * 60 * 0 + 1500) { System.out.println("ESC tras ~25 s: enemigos/escoltas=" + rs.lv.enemies.size() + " jefeVivo=" + (rs.lv.boss != null && rs.lv.boss.alive) + " (piso 5: 2 por oleada, oleadas cada 18 s)"); escStep = 2; }
         }
         if (System.getenv("BOT_BALTEST") != null && !rs.sandbox && frame == 700) {
             RunState r = rs.rs; int kd = r.dungeonNo, ks = r.stage, kr = r.roomNo;

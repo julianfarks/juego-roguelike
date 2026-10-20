@@ -401,6 +401,7 @@ public final class Level {
         if (e instanceof Enemy) ((Enemy) e).onHit(this, kx, ky, dmg);
         else if (e instanceof Boss) ((Boss) e).onHit(this, dmg);
         rs.ult = Math.min(100f, rs.ult + dmg * 0.06f * rs.stats.ultGain);
+        if (crit && !Save.S.reduceFx && e.alive) ps.burst(rng, e.cx(), e.cy(), 0xFFE070, 5, 90, 0.25f, 2, 0, true);   // destello dorado de critico
         BlessFx.afterDamage(this, e, dmg, crit, src);
         if (e.hp <= 0 && e.alive) {
             e.hp = 0;

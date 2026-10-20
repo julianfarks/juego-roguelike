@@ -137,8 +137,8 @@ public final class Boss extends Ent {
         lv.projs.removeIf(pr -> !pr.friendly);
         for (Enemy e : lv.enemies) if (e.alive) { e.hp = 0; e.die(lv); }
         RunState rs = lv.rs;
-        lv.dropGold(x, y - 40, Math.round((60 + 25 * rs.stage) * rs.stats.goldMul));
-        lv.dropSouls(x, y - 40, Math.round((14 + 6 * rs.stage + 8 * def.form) * rs.stats.soulMul));
+        lv.dropGold(x, y - 40, Math.round((80 + 40 * rs.tierF()) * rs.stats.goldMul));
+        lv.dropSouls(x, y - 40, Math.round((14 + 6 * rs.tierF() + 8 * def.form) * rs.stats.soulMul));
         lv.drop(Pickup.HEART, x - 14, y - 40, 1);
         lv.drop(Pickup.HEART, x + 14, y - 40, 1);
         rs.bossKills++;

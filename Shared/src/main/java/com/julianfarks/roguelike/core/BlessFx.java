@@ -390,6 +390,9 @@ public final class BlessFx {
         if (src == SRC_NONE) return;
         if (bx.t - bx.lastKillT < 3f) bx.killChain++; else bx.killChain = 1;
         bx.lastKillT = bx.t;
+        // feedback de cadena: aro naranja en bajas causadas por reacciones (no por el golpe directo) y rotulo cada 4 bajas seguidas
+        if (bx.depth > 0 && !Save.S.reduceFx) lv.fxAdd("fx_ring", "pulse", e.cx(), e.cy(), 0.9f, 0xFF9030);
+        if (bx.killChain >= 4 && bx.killChain % 4 == 0) { lv.text(lv.pl.x, lv.pl.y - 70, "¡Cadena x" + bx.killChain + "!", 0xFF9030, true); lv.shake(2f, 0.12f); }
         fire(lv, BRule.T_KILL, e, e.maxHp, false, src, e.cx(), e.cy());
     }
 

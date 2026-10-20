@@ -262,6 +262,22 @@ final class RunScreen extends Screen implements Level.Listener {
         }
     }
 
+    /** Endless: variante de jefe con refuerzos que llegan en oleadas (cada ~18 s mientras viva), mas numerosos a mayor profundidad. */
+    private void escortWave(final Boss bs, final int wave) {
+        final Level L = lv;
+        lv.later(wave == 1 ? 10f : 18f, () -> {
+            if (lv != L || !bs.alive || L.boss != bs || wave > 4) return;
+            String[] pool = rs.biome.enemies;
+            int n = Math.min(4, 1 + (rs.floor - 3) / 2);
+            for (int i = 0; i < n && pool.length > 0; i++) {
+                float x = Mth.clamp(L.pl.x + (i % 2 == 0 ? 1 : -1) * (120 + 40 * i), 40, L.room.pixW - 40);
+                L.spawnEnemy(pool[L.rng.i(pool.length)], false, x, L.room.spawnY);
+            }
+            L.text(L.pl.x, L.pl.y - 80, "¡Refuerzos!", 0xFF6040, true);
+            escortWave(bs, wave + 1);
+        });
+    }
+
     private void setupBoss(BossDef force) {
         Room rm = lv.room;
         BossDef d = force != null ? force : BossDef.byBiome(rs.biome.id);
@@ -275,6 +291,7 @@ final class RunScreen extends Screen implements Level.Listener {
         lv.bossBarShow = 0;
         Snd.music(d.music, true);
         bossCardT = 0;
+        if (rs.infinite && rs.floor >= 3 && d.idx < 8) escortWave(bs, 1);      // Endless: el jefe llega con escoltas desde el piso 3
         if (d.idx == 8) {
             bannerTitle = ""; bannerSub = "";
         }
@@ -435,8 +452,11 @@ final class RunScreen extends Screen implements Level.Listener {
             Arsenal.dropWeapon(l, wid, 0, l.room.exitX - 56, l.room.exitY, false, false);
             l.text(l.pl.x, l.pl.y - 82, "El jefe dejó un arma", Items.SEC_COL[wid], false);
         }
-        // jefe normal: puerta de salida
+        // jefe normal: cofre de botin de calidad superior (una sola vez: onBossDead solo corre al morir el jefe) y puerta de salida
         Room rm = l.room;
+        Prop loot = l.addProp(new Room.PropSpec("chest", rm.exitX - 96, rm.exitY, 2));
+        loot.label = "Botín del jefe";
+        l.ps.burst(l.rng, loot.x, loot.y - 12, 0xFFD25A, 22, 110, 0.7f, 2, 0, true);
         Prop door = l.addProp(new Room.PropSpec("door", rm.exitX, rm.exitY, 0));
         door.nextType = -2; door.label = "Salida"; door.anim = "open"; door.animT = 0;
         Snd.music(rs.biome.music, true);
@@ -1381,6 +1401,7 @@ final class RunScreen extends Screen implements Level.Listener {
     // ---- ganchos de prueba (solo los usa DebugBot)
     void debugNextFloor() { afterBoss(); }
     void debugOpenPause() { openOv(OV_PAUSE); }
+    void debugLoadBoss() { loadRoom(Room.BOSS); }
     void debugLoadCombat() { loadRoom(Room.COMBAT); }
     void debugEnd2Close() { closeOv(); }
     void debugOpenForge() { ovProp = lv.addProp(new Room.PropSpec("forge", lv.pl.x, lv.pl.y, 0)); openOv(OV_FORGE); }

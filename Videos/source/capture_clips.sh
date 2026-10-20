@@ -1,35 +1,60 @@
 #!/usr/bin/env bash
-# Graba las escenas de gameplay REAL (modo PC limpio: sin controles tactiles ni elementos de depuracion) a 1920x1080, 60 fps.
-# Usa el banco de pruebas headless del repo (PC/run.sh --headless --pc --record ...). El bot (DebugBot) solo juega; no se dibuja nada suyo.
-# Uso: bash Videos/source/capture_clips.sh [carpeta_salida]      (tarda ~1 h en 2 CPU; ejecutar de a una escena, nunca en paralelo)
+# Graba las escenas de gameplay REAL de la version actual (modo PC limpio: sin controles tactiles ni elementos de depuracion), 1920x1080, 60 fps.
+# Cada escena se graba DOS veces con la misma semilla (BOT_SEED): con el juego en espanol (clips/es) y en ingles (clips/en). Con la semilla fija
+# la partida es identica en los dos idiomas (se comprueba comparando el registro de sonidos), asi los dos trailers muestran las mismas jugadas.
+# Uso: bash Videos/source/capture_clips.sh [carpeta_salida]     (secuencial: nunca dos grabaciones a la vez)
 set -e
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-OUT="${1:-$ROOT/Videos/source/clips}"; mkdir -p "$OUT"
-clip() {  # NOMBRE CLASE WARP FRAMES   (WARP = tipo:bioma; boss/combat/elite/shop/bless/treasure/forge/evN)
-  local N=$1 C=$2 W=$3 F=$4
-  [ -f "$OUT/$N.mp4" ] && return 0
-  ( cd "$ROOT" && BOT_CLASS=$C BOT_GOD=1 BOT_WARP=$W BOT_ULT=1 SWR_OUT=/tmp/swr_build_trailer \
-    bash PC/run.sh --headless --pc --bot --w 480 --frames $((150+F)) --store "/tmp/trailer_store_$N" \
-    --record "$OUT/$N.mp4" --rec-from 140 --rec-to $((150+F)) --shots "/tmp/trailer_shots_$N" > "$OUT/$N.log" 2>&1 )
+OUT="${1:-$ROOT/Videos/source/clips}"
+rec() {  # LANG NOMBRE FOTOGRAMAS VARIABLES...
+  local L=$1 N=$2 F=$3; shift 3
+  local D="$OUT/$L"; mkdir -p "$D"
+  [ -f "$D/$N.mp4" ] && return 0
+  local LG=0; [ "$L" = en ] && LG=1
+  ( cd "$ROOT" && env BOT_SEED=${SEED:-4242} BOT_LANG=$LG BOT_GOD=1 "$@" SWR_OUT=/tmp/swr_build_trailer \
+    bash PC/run.sh --headless --pc --bot --w 480 --frames $F --store "/tmp/trailer_store_${L}_$N" \
+    --record "$D/$N.mp4" --rec-from 140 --rec-to $F > "$D/$N.log" 2>&1 ) || echo "FALLO $L $N"
+  echo "$(date +%T) $L $N"
 }
-clip b0_paladin 0 boss:0 800;  clip b1_flame 2 boss:1 800;   clip b2_frost 4 boss:2 800;   clip b3_shadow 1 boss:3 800
-clip b4_verdant 5 boss:4 800;  clip b5_storm 3 boss:5 800;   clip b6_blood 6 boss:6 800;   clip b7_earth 7 boss:7 800
-clip b8_astral 8 boss:8 900
-clip c0_shadow 1 combat:0 700; clip c1_flame 2 combat:1 700; clip c2_frost 4 combat:2 700; clip c3_astral 8 combat:3 700
-clip c4_verdant 5 combat:4 700; clip c5_storm 3 combat:5 700; clip c6_blood 6 combat:6 700; clip c7_steel 9 combat:7 700
-clip e1_elite 0 elite:1 700;   clip e3_elite 3 elite:3 700
-clip s_shop 0 shop:0 500; clip s_bless 0 bless:0 500; clip s_treasure 0 treasure:0 500; clip s_forge 0 forge:1 500
-clip s_ev1 0 ev1:0 500; clip s_ev2 0 ev2:0 500; clip s_ev4 0 ev4:0 500; clip s_ev5 0 ev5:0 500; clip s_ev6 0 ev6:0 500
-# Escenas nuevas (altar de 200 bendiciones, parry perfecto, sinergia Infierno): usan TrailerProbe (solo captura; llama a las pantallas y reglas reales del juego).
-# BOT_TRAILER=bless|parry|fire. La ventana de grabacion (--rec-from/--rec-to) esta en fotogramas.
-probe() {  # NOMBRE MODO CLASE WARP DESDE HASTA
-  local N=$1 M=$2 C=$3 W=$4 A=$5 B=$6
-  [ -f "$OUT/$N.mp4" ] && return 0
-  ( cd "$ROOT" && BOT_TRAILER=$M BOT_CLASS=$C BOT_GOD=1 BOT_WARP=$W BOT_ULT=1 BOT_PARRYBOSS=$([ $M = parry ] && echo 1 || echo 0) SWR_OUT=/tmp/swr_build_trailer \
-    bash PC/run.sh --headless --pc --bot --w 480 --frames $B --store "/tmp/trailer_store_$N" \
-    --record "$OUT/$N.mp4" --rec-from $A --rec-to $B > "$OUT/$N.log" 2>&1 )
+all() {
+  for L in es en; do
+    # ambiente (salas sin enemigos)
+    rec $L i_cat 900 BOT_TRAILER=calm BOT_CLASS=0 BOT_WARP=bless:0
+    rec $L i_eclipse 900 BOT_TRAILER=calm BOT_CLASS=8 BOT_WARP=bless:7
+    rec $L i_forge 900 BOT_TRAILER=calm BOT_CLASS=2 BOT_WARP=forge:1
+    rec $L i_still 1000 BOT_TRAILER=still BOT_CLASS=8 BOT_WARP=bless:7
+    rec $L i_s0 900 BOT_TRAILER=still BOT_CLASS=0 BOT_WARP=bless:0
+    rec $L i_s4 900 BOT_TRAILER=still BOT_CLASS=5 BOT_WARP=bless:4
+    # combate por biomas (clase distinta en cada uno)
+    rec $L c0 1000 BOT_ULT=1 BOT_CLASS=1 BOT_WARP=combat:0
+    rec $L c1 1000 BOT_ULT=1 BOT_CLASS=2 BOT_WARP=combat:1
+    rec $L c2 1000 BOT_ULT=1 BOT_CLASS=4 BOT_WARP=combat:2
+    rec $L c3 1000 BOT_ULT=1 BOT_CLASS=8 BOT_WARP=combat:3
+    rec $L c4 1000 BOT_ULT=1 BOT_CLASS=5 BOT_WARP=combat:4
+    rec $L c5 1000 BOT_ULT=1 BOT_CLASS=3 BOT_WARP=combat:5
+    rec $L c6 1000 BOT_ULT=1 BOT_CLASS=6 BOT_WARP=combat:6
+    rec $L c7 1000 BOT_ULT=1 BOT_CLASS=9 BOT_WARP=combat:7
+    rec $L e1 1100 BOT_ULT=1 BOT_CLASS=0 BOT_WARP=elite:1
+    rec $L e5 1100 BOT_ULT=1 BOT_CLASS=7 BOT_WARP=elite:5
+    # jefes
+    rec $L b0 1300 BOT_ULT=1 BOT_CLASS=0 BOT_WARP=boss:0
+    rec $L b1 1300 BOT_ULT=1 BOT_CLASS=2 BOT_WARP=boss:1
+    rec $L b2 1300 BOT_ULT=1 BOT_CLASS=4 BOT_WARP=boss:2
+    rec $L b3 1300 BOT_ULT=1 BOT_CLASS=1 BOT_WARP=boss:3
+    rec $L b4 1300 BOT_ULT=1 BOT_CLASS=5 BOT_WARP=boss:4
+    rec $L b5 1300 BOT_ULT=1 BOT_CLASS=3 BOT_WARP=boss:5
+    rec $L b6 1300 BOT_ULT=1 BOT_CLASS=6 BOT_WARP=boss:6
+    rec $L b7 1300 BOT_ULT=1 BOT_CLASS=7 BOT_WARP=boss:7
+    rec $L b8 1400 BOT_ULT=1 BOT_CLASS=8 BOT_WARP=boss:8
+    # escenas con TrailerProbe (solo coloca la situacion; pantallas y reglas reales del juego)
+    rec $L t_chest 2200 BOT_TRAILER=chest BOT_OVLOG=1 BOT_OVWAIT=2.6 BOT_ULT=1 BOT_CLASS=0 BOT_WARP=combat:0
+    rec $L t_arsenal 1500 BOT_TRAILER=arsenal BOT_CLASS=1 BOT_WARP=combat:6
+    rec $L t_charge 1300 BOT_TRAILER=charge BOT_CLASS=9 BOT_WARP=combat:7
+    rec $L t_inv 800 BOT_TRAILER=inv BOT_CLASS=0 BOT_WARP=combat:0
+    rec $L t_bless 800 BOT_TRAILER=bless BOT_ULT=1 BOT_CLASS=0 BOT_WARP=combat:0
+    rec $L t_parry 2100 BOT_TRAILER=parry BOT_PARRYBOSS=1 BOT_ULT=1 BOT_CLASS=0 BOT_WARP=boss:7
+    rec $L t_fire 900 BOT_TRAILER=fire BOT_ULT=1 BOT_CLASS=2 BOT_WARP=combat:1
+  done
 }
-probe tb_bless bless 0 combat:0 335 800     # altar: ofertas, lista de activas, pestaña de sinergias, sinergia activada
-probe tp_parry parry 0 boss:7 140 2100      # Rey Exanime: parry perfecto + contra
-probe ts_fire  fire  2 combat:1 140 700     # Infierno: Brasas Eternas + Llama Voraz + Contagio Igneo
+all
 echo "Escenas en $OUT"

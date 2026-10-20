@@ -53,9 +53,10 @@ final class Impact {
 
     /** Presupuesto de sonidos de impacto: como mucho 3 capas de golpe por ventana de 60 ms (varios enemigos a la vez no saturan el audio). */
     private static long sfxWin; private static int sfxN;
+    static long simMs;      // reloj simulado (ms) que avanza Level.update; solo se usa con BOT_SEED
     static boolean sfxOkForTest() { return sfxOk(); }
     private static boolean sfxOk() {
-        long now = System.currentTimeMillis();
+        long now = Mth.DET_ON ? simMs : System.currentTimeMillis();   // con BOT_SEED: reloj del juego (reproducible)
         if (now - sfxWin > 60) { sfxWin = now; sfxN = 0; }
         return ++sfxN <= 3;
     }

@@ -49,7 +49,7 @@ final class PrepScreen extends Screen {
         for (int x : new int[]{9, 17, 23, 31}) r.deco[3 * 40 + x] = (short) ((2 << 8) | (x & 7));
         r.bake(g.P);
         baked = r.baked;
-        if (offered == null) offered = StartBlessing.roll(new Rng(System.nanoTime() ^ 0x9E3779B97F4A7C15L));
+        if (offered == null) offered = StartBlessing.roll(new Rng((System.getenv("BOT_SEED") != null ? Long.parseLong(System.getenv("BOT_SEED").trim()) : System.nanoTime()) ^ 0x9E3779B97F4A7C15L));   // BOT_SEED: banco de pruebas reproducible
         mine = offered;
         if (chosen < 0 || chosen > 2) chosen = 0;
         if (infiniteMode && !Save.S.finalBeaten) infiniteMode = false;

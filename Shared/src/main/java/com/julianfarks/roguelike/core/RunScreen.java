@@ -404,6 +404,7 @@ final class RunScreen extends Screen implements Level.Listener {
         if (Math.abs(s[0] - px) > 1 || Math.abs(s[1] - py) > 1) ChestSpot.dbgMoved++;
         if (s[2] >= 2) ChestSpot.dbgFallback++;
         if (s[2] >= 3) ChestSpot.dbgForced++;
+        if (System.getenv("BOT_CHESTDBG") != null) System.out.println("CHESTDBG pedido=" + Math.round(px) + "," + Math.round(py) + " colocado=" + Math.round(s[0]) + "," + Math.round(s[1]) + " nivel=" + (int) s[2] + " jugador=" + Math.round(l.pl.x) + "," + Math.round(l.pl.y) + " salida=" + Math.round(l.room.exitX) + "," + Math.round(l.room.exitY));
         return l.addProp(new Room.PropSpec("chest", s[0], s[1], 2));
     }
 

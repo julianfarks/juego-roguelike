@@ -1,105 +1,115 @@
-"""Guion del trailer de 30 s (ES/EN). Todos los planos son gameplay REAL del juego (capture_clips.sh). Rejilla de cortes = 0.4 s (150 BPM de mus_boss_a)."""
+"""Guion del trailer de 40 s (ES / EN / sin textos). Todo es gameplay REAL de la version actual, grabado con capture_clips.sh
+(la misma partida en espanol y en ingles gracias a BOT_SEED). Rejilla de cortes: 0,4 s (150 BPM de mus_boss_a, que entra en 4,8 s).
+Cada inicio de plano es aproximado; clipmetrics.best() lo ajusta +-0,6 s para evitar destellos blancos y tintes de pantalla completa."""
+import os
 import numpy as np
 from PIL import Image
-import pixtext
+import pixtext, clipmetrics
 
 W, H = 1920, 1080
-MUSIC = 'mus_boss_a'
-WHITE, RED, ORANGE, PINK = (255, 255, 255), (255, 70, 50), (255, 150, 40), (255, 120, 230)
+WHITE, RED, ORANGE, PINK, GOLD, CYAN = (255, 255, 255), (255, 70, 50), (255, 150, 40), (255, 120, 230), (255, 220, 120), (150, 220, 255)
+HERE = os.path.dirname(os.path.abspath(__file__))
+REF = os.path.join(HERE, 'clips', 'es')        # metricas de referencia (las partidas ES y EN son identicas)
 
-# (clip, inicio en el clip [s], duracion [s], extras)
+# (clip, inicio aproximado [s], duracion [s], extras). auto=False: inicio exacto (escenas de interfaz con el momento ya medido)
 S = [
-    # ---- GANCHO 0-2.4
-    ('b3_shadow', 2.9, 0.8, dict(flash=(WHITE, .9), shake=22, zoom=(1.0, 1.16), focus=(.73, .37))),
-    ('b1_flame', 8.3, 0.8, dict(flash=(ORANGE, .8), shake=16, zoom=(1.0, 1.12), focus=(.6, .6))),
-    ('b8_astral', 10.0, 0.8, dict(flash=(PINK, .8), shake=16, zoom=(1.0, 1.1))),
-    # ---- PRESENTACION 2.4-8.0
-    ('b0_paladin', 3.0, 2.4, dict(flash=(WHITE, .5), shake=10, zoom=(1.0, 1.22), focus=(.55, .72))),
-    ('b2_frost', 5.0, 1.6, dict(zoom=(1.12, 1.2), focus=(.6, .6))),
-    ('c1_flame', 5.0, 1.6, dict(flash=(ORANGE, .5), zoom=(1.1, 1.2), focus=(.5, .75))),
-    # ---- ENEMIGOS Y JEFES 8.0-15.2
-    ('c3_astral', 5.0, 1.2, dict(zoom=(1.1, 1.25), focus=(.5, .75))),
-    ('c4_verdant', 6.0, 1.2, dict(zoom=(1.1, 1.25), focus=(.5, .75))),
-    ('b4_verdant', 2.9, 1.2, dict(flash=(WHITE, .6), shake=14, zoom=(1.0, 1.15), focus=(.8, .45))),
-    ('b5_storm', 2.9, 1.2, dict(flash=(WHITE, .6), shake=14, zoom=(1.0, 1.15), focus=(.8, .45))),
-    ('b6_blood', 2.9, 1.2, dict(flash=(RED, .6), shake=14, zoom=(1.0, 1.15), focus=(.8, .45))),
-    ('b7_earth', 2.9, 1.2, dict(flash=(ORANGE, .6), shake=14, zoom=(1.0, 1.15), focus=(.8, .45))),
-    # ---- CLASES 15.2-18.4
-    ('b1_flame', 0.1, 0.8, dict(flash=(WHITE, .35))),
-    ('b3_shadow', 0.1, 0.8, dict(flash=(WHITE, .35))),
-    ('b5_storm', 0.1, 0.8, dict(flash=(WHITE, .35))),
-    ('b7_earth', 0.1, 0.8, dict(flash=(WHITE, .35))),
-    # ---- 200 BENDICIONES Y SINERGIAS 18.4-25.6 (escenas reales del altar: tb_bless, grabadas con TrailerProbe)
-    ('tb_bless', 0.25, 1.6, dict(flash=(WHITE, .35))),
-    ('tb_bless', 1.9, 1.6, dict()),
-    ('tb_bless', 3.55, 0.8, dict()),
-    ('tb_bless', 4.35, 0.8, dict()),
-    ('tb_bless', 5.1, 1.2, dict()),
-    ('tb_bless', 6.3, 1.2, dict(flash=(ORANGE, .5), zoom=(1.0, 1.12), focus=(.35, .72))),
-    # ---- PARRY PERFECTO 25.6-29.2 (jefe real; el bot hace el parry y despues pulsa atacar en la ventana de contraataque)
-    ('tp_parry', 15.7, 1.6, dict(zoom=(1.0, 1.1), focus=(.62, .72))),
-    ('tp_parry', 23.4, 2.0, dict(zoom=(1.0, 1.1), focus=(.7, .72))),
-    # ---- SINERGIA INFIERNO 29.2-34.0 (build real: Brasas Eternas + Llama Voraz + Contagio Igneo)
-    ('ts_fire', 2.0, 1.6, dict(flash=(ORANGE, .5), shake=10)),
-    ('ts_fire', 5.0, 1.6, dict(flash=(ORANGE, .5), zoom=(1.0, 1.1), focus=(.5, .75))),
-    ('ts_fire', 6.0, 1.6, dict(zoom=(1.0, 1.1), focus=(.5, .75))),
-    # ---- DEFINITIVAS 34.0-37.2
-    ('b7_earth', 10.0, 0.8, dict(flash=(ORANGE, .6), shake=18, zoom=(1.0, 1.15))),
-    ('b6_blood', 8.4, 0.8, dict(flash=(RED, .6), shake=14, zoom=(1.0, 1.15))),
-    ('b2_frost', 7.2, 0.8, dict(flash=(WHITE, .6), shake=14, zoom=(1.0, 1.12))),
-    ('b5_storm', 12.4, 0.8, dict(flash=(WHITE, .7), shake=16, zoom=(1.0, 1.12))),
-    # ---- TITULO 37.2-40
-    ('b8_astral', 11.4, 2.8, dict(overlay='title')),
+    # ---- 0-4.8 INTRODUCCION: salas reales sin enemigos, luz de antorchas y particulas; el logo aparece en 1,6-4,6
+    ('i_s0', 5.4, 2.0, dict(auto=False, fade_in=0.9, zoom=(1.25, 1.25), focus=(.5, .5), pan=(-12, 12))),
+    ('i_still', 5.4, 2.0, dict(auto=False, zoom=(1.25, 1.25), focus=(.5, .5), pan=(12, -12), dark=0.45)),
+    ('i_s4', 6.0, 0.8, dict(auto=False, zoom=(1.25, 1.25), focus=(.55, .55), dark=0.45)),
+    # ---- 4.8-12.0 EXPLORACION Y COMBATE: seis biomas, enemigos, trampas y plataformas
+    ('c4', 4.3, 1.2, dict(flash=(WHITE, .7), shake=12, zoom=(1.25, 1.25), focus=(.4, .55))),
+    ('c0', 5.3, 1.2, dict(zoom=(1.25, 1.25), focus=(.55, .5))),
+    ('c1', 5.6, 1.2, dict(auto=False, flash=(ORANGE, .4), zoom=(1.25, 1.25), focus=(.55, .55))),
+    ('c2', 6.4, 1.2, dict(zoom=(1.25, 1.25), focus=(.5, .45))),
+    ('c5', 5.0, 1.2, dict(flash=(CYAN, .4), zoom=(1.25, 1.25), focus=(.45, .5))),
+    ('c3', 5.5, 1.2, dict(zoom=(1.25, 1.25), focus=(.5, .45))),
+    # ---- 12.0-20.0 ARMAS Y MEJORAS
+    ('t_arsenal', 5.3, 0.8, dict(flash=(WHITE, .5), zoom=(1.25, 1.25), focus=(.5, .5))),
+    ('t_arsenal', 9.2, 0.8, dict(zoom=(1.25, 1.25), focus=(.5, .5))),
+    ('t_inv', 4.2, 1.2, dict(auto=False)),                       # inventario: ficha del arma secundaria equipada
+    ('t_chest', 16.0, 1.2, dict(auto=False, flash=(GOLD, .4), zoom=(1.25, 1.25), focus=(.55, .55))),   # sala despejada: cofres con flecha
+    ('t_chest', 19.7, 1.6, dict(auto=False)),                    # premio del cofre: se recorren las opciones
+    ('t_bless', 3.2, 1.2, dict(auto=False)),                     # altar: ofertas de bendiciones reales
+    ('t_bless', 6.5, 1.2, dict(auto=False)),                     # bendiciones activas y sinergias (listas reales del juego)
+    # ---- 20.0-28.0 ACCION INTENSA: cortes rapidos
+    ('e1', 6.9, 0.8, dict(auto=False, flash=(WHITE, .6), shake=14, zoom=(1.25, 1.25), focus=(.45, .55))),
+    ('t_charge', 15.6, 0.8, dict(auto=False, zoom=(1.25, 1.25), focus=(.42, .55))),          # ataque cargado: carga y golpe
+    ('t_parry', 12.4, 1.2, dict(zoom=(1.25, 1.25), focus=(.55, .65))),         # parry perfecto y contraataque
+    ('c7', 5.4, 0.8, dict(auto=False, flash=(WHITE, .6), shake=16)),
+    ('c1', 8.1, 0.8, dict(auto=False, flash=(ORANGE, .5), zoom=(1.25, 1.25), focus=(.5, .55))),
+    ('c6', 8.4, 0.8, dict(auto=False, flash=(RED, .5), zoom=(1.25, 1.25), focus=(.45, .5))),
+    ('c0', 12.3, 0.8, dict(flash=(PINK, .5), shake=12)),
+    ('e5', 9.0, 0.8, dict(flash=(ORANGE, .5), shake=12, zoom=(1.25, 1.25), focus=(.45, .5))),
+    ('c2', 8.3, 0.4, dict(flash=(WHITE, .5))),
+    ('c4', 6.3, 0.4, dict(flash=(WHITE, .5))),
+    ('c5', 6.3, 0.4, dict(flash=(WHITE, .5))),
+    # ---- 28.0-35.2 JEFES
+    ('b1', 7.2, 1.2, dict(flash=(ORANGE, .6), shake=16, zoom=(1.25, 1.25), focus=(.6, .55))),
+    ('b2', 6.6, 1.2, dict(flash=(WHITE, .5), shake=12, zoom=(1.25, 1.25), focus=(.6, .5))),
+    ('b6', 7.6, 1.2, dict(flash=(RED, .6), shake=12, zoom=(1.25, 1.25), focus=(.55, .5))),
+    ('b3', 14.3, 1.2, dict(auto=False, flash=(PINK, .5), shake=12, zoom=(1.25, 1.25), focus=(.6, .45))),
+    ('b8', 8.8, 1.2, dict(flash=(PINK, .6), shake=14, zoom=(1.25, 1.25), focus=(.6, .55))),
+    ('b5', 12.4, 1.2, dict(flash=(CYAN, .6), shake=14, zoom=(1.25, 1.25), focus=(.6, .55))),
+    # ---- 35.2-40 CIERRE: explosiones de la derrota real del Guardian del Eclipse en la partida grabada y tarjeta final con el logo
+    ('b7', 14.2, 1.2, dict(auto=False, flash=(GOLD, .7), shake=20, zoom=(1.25, 1.25), focus=(.45, .6))),
+    ('i_still', 6.0, 3.6, dict(auto=False, overlay='title')),
 ]
 
 SHOTS = []
 _t = 0.0
 for c, ss, d, ex in S:
     sh = dict(clip=c, ss=ss, dur=d, t0=_t); sh.update(ex)
+    if sh.get('auto', True):
+        sh['ss'] = clipmetrics.best(os.path.join(REF, c + '.mp4'), ss, d, 1.5 if c[0] == 'b' else 0.6)
     SHOTS.append(sh); _t += d
 assert abs(_t - 40.0) < 1e-6, _t
 
-# Textos: cada idioma esta ESCRITO por separado (no es traduccion literal). "A|B" = linea principal + linea secundaria mas pequena.
-# y = centro del bloque. Arriba (y~235) no tapa ni a los jefes ni al aviso inferior del juego (nombre del jefe y subtitulo); en las
-# pantallas de interfaz (clases, bendiciones, forja) el texto va abajo sobre una placa oscura. band = opacidad de la placa.
+# Textos: cada idioma escrito por separado. "A|B" = linea principal + secundaria. y = centro del bloque; band = opacidad de la placa.
+# Arriba (y~225) en gameplay; abajo (y~960) sobre las pantallas de interfaz, donde solo tapa la fila de botones inferior.
 TEXTS = [
-    dict(t0=0.4, t1=2.4, y=235, scale=6, band=.5, es='CADA DESCENSO ES DISTINTO', en='NO TWO DESCENTS ALIKE'),
-    dict(t0=2.8, t1=5.4, y=235, scale=6, band=.5, es='EMPUÑA LA ESPADA.|DOMINA LA MAGIA.', en='WIELD THE SWORD.|MASTER THE MAGIC.', ss=5),
-    dict(t0=5.6, t1=8.0, y=235, scale=4, band=.5, anim='rise', es='ROGUELIKE DE ACCIÓN EN PIXEL ART', en='PIXEL-ART ACTION ROGUELIKE'),
-    dict(t0=8.2, t1=11.4, y=235, scale=7, band=.5, es='ATRAVIESA 9 BIOMAS', en='CROSS 9 BIOMES'),
-    dict(t0=11.6, t1=15.0, y=235, scale=7, band=.5, es='ENFRÉNTATE A 9 JEFES', en='FACE 9 BOSSES'),
-    dict(t0=15.2, t1=18.4, y=905, scale=8, band=.85, es='10 ESPADACHINES|CADA UNO CON SU ESTILO', en='10 SWORDSMEN|10 WAYS TO FIGHT', ss=4),
-    dict(t0=18.6, t1=21.4, y=925, scale=6, band=.75, es='200 BENDICIONES|INFINITAS FORMAS DE LUCHAR', en='200 BLESSINGS|ENDLESS WAYS TO FIGHT', ss=4),
-    dict(t0=21.6, t1=25.4, y=925, scale=5, band=.75, es='20 SINERGIAS ESPECIALES|CADA ELECCIÓN CAMBIA TU PARTIDA', en='20 SPECIAL SYNERGIES|EVERY PICK CHANGES YOUR RUN', ss=4),
-    dict(t0=25.8, t1=29.0, y=235, scale=6, band=.5, es='DOMINA EL MOMENTO|CONVIERTE LA DEFENSA EN ATAQUE', en='MASTER THE TIMING|TURN DEFENSE INTO OFFENSE', ss=4),
-    dict(t0=29.4, t1=33.0, y=235, scale=6, band=.5, es='COMBINA BENDICIONES.|DESATA SINERGIAS DEVASTADORAS', en='COMBINE BLESSINGS.|UNLEASH POWERFUL SYNERGIES', ss=4),
-    dict(t0=31.2, t1=33.9, y=915, scale=4, band=.7, anim='rise', es='SINERGIA · INFIERNO|Brasas Eternas + Llama Voraz + Contagio Ígneo', en='SYNERGY · INFIERNO|Brasas Eternas + Llama Voraz + Contagio Ígneo', ss=3),
-    dict(t0=34.2, t1=37.0, y=235, scale=7, band=.5, es='DESATA TUS DEFINITIVAS', en='UNLEASH YOUR ULTIMATES'),
-    dict(t0=38.3, t1=40.0, y=815, scale=6, band=0, es='DESAFÍA EL ABISMO', en='DARE TO DESCEND'),
-    dict(t0=38.7, t1=40.0, y=935, scale=4, band=0, anim='rise', es='PC · ANDROID', en='PC · ANDROID'),
+    dict(t0=5.2, t1=8.2, y=225, scale=6, ss=4, band=.5, es='EXPLORA LAS MAZMORRAS|9 biomas · salas nuevas en cada partida', en='EXPLORE THE DUNGEONS|9 biomes · new rooms every run'),
+    dict(t0=8.6, t1=11.8, y=225, scale=6, band=.5, es='ESQUIVA, SALTA Y COMBATE', en='DODGE, LEAP AND FIGHT'),
+    dict(t0=12.2, t1=14.7, y=975, scale=6, ss=4, band=.8, es='ENCUENTRA TU ARMA|36 armas secundarias', en='FIND YOUR WEAPON|36 secondary weapons'),
+    dict(t0=15.0, t1=19.8, y=975, scale=6, ss=4, band=.85, es='CONSTRUYE TU ESTRATEGIA|200 bendiciones · 23 sinergias', en='BUILD YOUR STRATEGY|200 blessings · 23 synergies'),
+    dict(t0=20.2, t1=23.4, y=225, scale=6, ss=4, band=.5, es='DOMINA EL COMBATE|Ataques cargados · parry · habilidades', en='MASTER THE FIGHT|Charged attacks · parries · skills'),
+    dict(t0=24.0, t1=27.8, y=225, scale=6, ss=4, band=.5, es='10 ESPADACHINES|CADA UNO CON SU ESTILO', en='10 SWORDSMEN|10 WAYS TO FIGHT'),
+    dict(t0=28.4, t1=32.0, y=225, scale=6, ss=4, band=.5, es='ENFRÉNTATE A LOS JEFES|9 jefes · cada uno con sus propios ataques', en='FACE THE BOSSES|9 bosses · each with its own attacks'),
+    dict(t0=37.3, t1=40.0, y=800, scale=6, band=0, anim='rise', es='DESAFÍA EL ABISMO', en='DARE TO DESCEND'),
 ]
 
 _logo = np.array(Image.open(pixtext.ROOT + '/Shared/assets/ui/ui_logo.png').convert('RGBA'))
+_logo5 = np.array(Image.fromarray(_logo, 'RGBA').resize((_logo.shape[1] * 5, _logo.shape[0] * 5), Image.NEAREST))
+_logo6 = np.array(Image.fromarray(_logo, 'RGBA').resize((_logo.shape[1] * 6, _logo.shape[0] * 6), Image.NEAREST))
+
+
+def logo(fr, lt, cy, a_mul=1.0, big_t=0.08):
+    """Logo oficial (ui_logo.png) a x5 por vecino mas cercano; entra a x6 durante unos fotogramas (siempre escala entera)."""
+    a = min(lt / 0.12, 1.0) * a_mul
+    img = _logo6 if lt < big_t else _logo5
+    pixtext.blit(fr, img, W // 2, cy, a, 1.0, 0, 0)
+    if lt < 0.12:
+        f = 0.6 * (1 - lt / 0.12)
+        fr[:] = (fr * (1 - f) + 255 * f).astype(np.uint8)
+
+
+def intro_logo(fr, t):
+    """1,6-4,6: el nombre del juego sobre la mazmorra (oscurecida por el plano) y se desvanece justo antes del primer golpe de musica."""
+    lt = t - 1.6
+    out = min(max((4.6 - t) / 0.35, 0.0), 1.0)
+    logo(fr, lt, 500, out)
+    return fr
 
 
 def title_overlay(fr, lt, t, lang):
-    """27.2-30: fondo oscurecido y logo oficial (ui_logo.png) a x5 por vecino mas cercano."""
+    """36,4-40: tarjeta final. Fondo de mazmorra oscurecido, logo oficial y lema."""
     k = min(lt / 0.3, 1.0)
-    dark = 1.0 - 0.45 * k
-    fr[:] = (fr * dark).astype(np.uint8)
-    a = min(lt / 0.12, 1.0)
-    sc = 1.0 + 0.5 * (1 - min(lt / 0.25, 1.0) ** 0.5)
-    import random
-    dx = dy = 0
-    if lt < 0.2:
-        amp = int(18 * (1 - lt / 0.2)); dx = random.randint(-amp, amp); dy = random.randint(-amp, amp)
-    big = np.array(Image.fromarray(_logo, 'RGBA').resize((1500, 420), Image.NEAREST))
-    pixtext.blit(fr, big, W // 2, 420, a, sc, dx, dy)
-    if lt < 0.15:
-        f = 0.8 * (1 - lt / 0.15)
-        fr[:] = (fr * (1 - f) + 255 * f).astype(np.uint8)
+    fr[:] = (fr * (1.0 - 0.55 * k)).astype(np.uint8)
+    logo(fr, lt, 470)
     return fr
 
+
+OVERLAYS = [(1.6, 4.6, intro_logo)]
 
 for _s in SHOTS:
     if _s.get('overlay') == 'title':
@@ -107,16 +117,15 @@ for _s in SHOTS:
 
 
 def audio(mx, lang, clips):
-    import os
-    mx.add_music(MUSIC, 0.0, 0.0, 40.0, vol=0.62, fade_in=0.15, fade_out=1.2)
+    import mixer as M
+    mx.add_music('mus_title', 0.0, 0.0, 5.4, vol=0.55, fade_in=0.6, fade_out=0.9)     # introduccion atmosferica
+    mx.add_music('mus_boss_a', 0.0, 4.8, 35.2, vol=0.62, fade_in=0.02, fade_out=1.6)  # entra con el primer combate
     for sh in SHOTS:
         tsv = os.path.join(clips, sh['clip'] + '.mp4.audio.tsv')
         mx.add_scene_sfx(tsv, sh['ss'], sh['ss'] + sh['dur'], sh['t0'], vol=0.8, skip=('ui_click', 'ui_start_run'))
-    S_ = mixer_sfx = __import__('mixer')
-    mx.add(S_.sfx('boss_title'), 0.0, 1.0)
-    mx.add(S_.sfx('explosion_big'), 0.8, 0.8)
-    mx.add(S_.sfx('explosion_big'), 34.0, 0.9)
-    mx.add(S_.sfx('level_up'), 18.4, 0.5)
-    mx.add(S_.sfx('boss_title'), 37.2, 1.0)
-    mx.add(S_.sfx('explosion_big'), 37.2, 1.0, pitch=0.8)
-    mx.add(S_.sfx('level_up'), 38.4, 0.6)
+    mx.add(M.sfx('boss_title'), 1.6, 0.8)
+    mx.add(M.sfx('explosion_big'), 4.8, 0.8)
+    mx.add(M.sfx('level_up'), 12.0, 0.45)
+    mx.add(M.sfx('explosion_big'), 28.0, 0.7)
+    mx.add(M.sfx('boss_title'), 36.4, 0.9)
+    mx.add(M.sfx('explosion_big'), 36.4, 0.9, pitch=0.8)

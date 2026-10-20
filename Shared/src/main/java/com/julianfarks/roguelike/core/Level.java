@@ -669,6 +669,7 @@ public final class Level {
     /** Segundos reales del fotograma actual (sin escala de tiempo): la carga del ataque se mide con esto, no con fotogramas. */
     public float rawDt;
     public void update(float rawDt) {
+        Impact.simMs += Math.round(rawDt * 1000f);
         this.rawDt = rawDt;
         hsWinT += rawDt; if (hsWinT >= 1f) { hsWinT = 0; hsUsed = 0; }
         if (hitstop > 0) {
@@ -1184,6 +1185,7 @@ public final class Level {
         secrets.renderScenery(g);
         drawAnimatedDeco(g);
         if (room.glow != 0) { float gp = 0.12f + 0.04f * (float) Math.sin(time * 1.7f); UI.light(g, room.pixW / 2f, room.exitY - 70, 190, room.glow, gp); UI.light(g, room.pixW / 2f - 150, room.exitY - 40, 90, room.glow, gp * 0.7f); UI.light(g, room.pixW / 2f + 150, room.exitY - 40, 90, room.glow, gp * 0.7f); }
+        labelRects.clear();
         for (Prop p : props) drawProp(g, p);
         for (FxObj f : fxs) if (f.behind) drawFx(g, f);
         for (Pickup p : pickups) drawPickup(g, p);
@@ -1299,6 +1301,8 @@ public final class Level {
         }
     }
 
+    private final List<float[]> labelRects = new ArrayList<>();
+
     private void drawProp(Platform.Gfx g, Prop p) {
         if (p.hidden) return;
         if (p.kind.equals("weapon")) { Arsenal.drawGround(g, this, p); return; }
@@ -1326,8 +1330,25 @@ public final class Level {
             UI.iconC(g, p.icon != null ? p.icon : RunState.roomIcon(p.nextType), p.x, p.y - 64 + bob, 1f, p.locked ? 0.4f : 1f);
             if (p.event > 0) UI.light(g, p.x, p.y - 30, 34, Events.GLOW[p.event], 0.28f);
         }
-        if (p.label != null && UI.small != null && (!p.kind.equals("door") || Math.abs(pl.x - p.x) < 40 && Math.abs(pl.y - p.y) < 40))
-            UI.small.center(g, p.label, p.x, p.kind.equals("door") ? p.y - 92 : p.y - 62, p.locked ? 0x9AA0B0 : 0xFFD25A, 1f);
+        if (p.label != null && UI.small != null && (!p.kind.equals("door") || Math.abs(pl.x - p.x) < 40 && Math.abs(pl.y - p.y) < 40)) {
+            // rotulos sin solaparse: si otro objeto cercano ya muestra el MISMO rotulo (p. ej. dos cofres de la ronda) se dibuja uno solo,
+            // centrado entre ambos; si es distinto, se sube una linea
+            float lw = UI.small.width(p.label), ly = p.kind.equals("door") ? p.y - 92 : p.y - 62, lx = p.x;
+            boolean skip = false;
+            for (float[] r : labelRects) {
+                if (Math.abs(r[1] - ly) < 10 && Math.abs(r[0] - lx) < (r[2] + lw) / 2f + 4) {
+                    if (r[3] == p.label.hashCode()) { skip = true; break; }
+                    ly = r[1] - 11;
+                }
+            }
+            if (!skip) {
+                float cx = lx; int n = 1;
+                for (Prop q : props) if (q != p && !q.dead && !q.hidden && p.label.equals(q.label) && !q.kind.equals("door") && Math.abs(q.y - p.y) < 8 && Math.abs(q.x - p.x) < lw + 8) { cx += q.x; n++; }
+                cx /= n;
+                labelRects.add(new float[]{cx, ly, lw, p.label.hashCode()});
+                UI.small.center(g, p.label, cx, ly, p.locked ? 0x9AA0B0 : 0xFFD25A, 1f);
+            }
+        }
     }
 
     private void drawText(Platform.Gfx g, DmgText d) {

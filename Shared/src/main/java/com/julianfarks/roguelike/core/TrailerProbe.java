@@ -13,7 +13,7 @@ final class TrailerProbe {
 
     static int id(String k) { return BlessProbe.idOf(k); }
 
-    static int chargeHold = -1;
+    static int chargeHold = -1, chargeEnd = -999;
     static final int[] SHOWCASE = {6, 9, 23, 4, 19, 36, 34, 10};     // armas secundarias reales que se muestran en "arsenal"
 
     private static void tap(Game g, int c) { g.key(c, true); g.key(c, false); }
@@ -21,6 +21,7 @@ final class TrailerProbe {
     /** Devuelve true si este fotograma lo controla la herramienta de captura (el bot no juega). */
     static boolean step(Game g, RunScreen rs, Level lv, Player p, int frame) {
         String m0 = System.getenv("BOT_TRAILER");
+        if (m0.equals("still")) { for (int c : new int[]{'A', 'D', 'W', 'J', 'K'}) g.key(c, false); return true; }   // el personaje queda quieto en la sala (fondo de la tarjeta final)
         if (m0.equals("arsenal") || m0.equals("inv") || m0.equals("charge") || m0.equals("chest") || m0.equals("calm")) return step2(g, rs, lv, p, frame, m0);
         step1(g, rs, lv, p, frame);
         return false;
@@ -43,12 +44,12 @@ final class TrailerProbe {
             }
             case "charge": {     // ataque cargado real: mantener el ataque ~1 s junto a un enemigo y soltar
                 if (chargeHold >= 0) {
-                    if (frame - chargeHold >= 62) { g.key('J', false); chargeHold = -1; System.out.println("TRAILER carga soltada frame=" + frame); }
+                    if (frame - chargeHold >= 62) { g.key('J', false); chargeHold = -1; chargeEnd = frame; System.out.println("TRAILER carga soltada frame=" + frame); }
                     return true;
                 }
                 Ent near = null;
                 for (Enemy e : lv.enemies) if (e.alive && Math.abs(e.x - p.x) < 44 && Math.abs(e.y - p.y) < 30) near = e;
-                if (near != null && p.onGround && p.state <= Player.AIR && frame % 20 == 0 && r.cd[0] > 0) {
+                if (near != null && p.onGround && p.state <= Player.RUN && frame - chargeEnd > 50) {
                     p.right = near.x > p.x;
                     for (int c : new int[]{'A', 'D', 'W', 'J'}) g.key(c, false);
                     g.key('J', true); chargeHold = frame; System.out.println("TRAILER carga empieza frame=" + frame);

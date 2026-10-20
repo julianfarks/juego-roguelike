@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Monta y renderiza un trailer (ES o EN) de exactamente 40 s, 1920x1080, 60 fps, H.264 + AAC estereo.
-Uso:  python3 edit_trailer.py es|en SALIDA.mp4 [--clips DIR] [--audio-only] [--preview]
+Uso:  python3 edit_trailer.py es|en|nt SALIDA.mp4 [--clips DIR] [--audio-only] [--preview]
+  es / en: textos en ese idioma sobre el gameplay grabado con el juego en ese idioma (clips/es, clips/en).
+  nt: sin textos promocionales (gameplay en espanol), para futuras traducciones.
 Entrada: clips de gameplay real grabados con capture_clips.sh (carpeta --clips, por defecto ./clips) y storyboard.py.
-Los pixeles se escalan SIEMPRE por vecino mas cercano. Nada de los .ogg ni de los sprites originales se modifica."""
+Los pixeles se escalan SIEMPRE por vecino mas cercano y solo a escalas enteras del pixel nativo (x4, x5, x6, x8): nunca se deforman. Nada de los .ogg ni de los sprites originales se modifica."""
 import os, sys, subprocess, math, random
 import numpy as np
 from PIL import Image
@@ -18,8 +20,17 @@ def ease_out(x):
     return 1 - (1 - x) ** 3
 
 
+ZOOMS = (1.0, 1.25, 1.5, 2.0)      # pixel nativo a x4, x5, x6, x8: siempre un numero entero de pixeles de pantalla
+
+
+def snap_zoom(z):
+    return min(ZOOMS, key=lambda q: abs(q - z))
+
+
 def zoom_crop(fr, z, fx, fy, dx=0, dy=0):
-    """Recorta centrado en el foco (fx,fy en 0..1) con zoom z y reescala a 1920x1080 con vecino mas cercano."""
+    """Recorta centrado en el foco (fx,fy en 0..1) con zoom z (ajustado a una escala entera del pixel nativo) y reescala a 1920x1080
+    con vecino mas cercano. dx, dy desplazan la camara (paneo/temblor) en pixeles de pantalla."""
+    z = snap_zoom(z)
     if abs(z - 1.0) < 1e-4 and dx == 0 and dy == 0:
         return fr
     cw, ch = W / z, H / z
@@ -76,6 +87,8 @@ def draw_band(fr, cy, h, k):
 
 
 def draw_texts(fr, t, lang):
+    if lang == 'nt':
+        return
     for tx in SB.TEXTS:
         s = tx['t0']; e = tx['t1']
         if not (s <= t < e):
@@ -86,8 +99,9 @@ def draw_texts(fr, t, lang):
         a_out = min((e - t) / 0.25, 1.0)
         alpha = a_in * a_out
         sc = 1.0; dx = dy = 0
+        bump = 0
         if tx.get('anim', 'slam') == 'slam':
-            sc = 1.0 + 0.3 * (1 - ease_out(lt / 0.22))
+            bump = 2 if lt < 0.05 else 1 if lt < 0.1 else 0     # entrada: escala entera +2, +1 y la definitiva (pixeles nitidos)
             if lt < 0.14:
                 amp = 7 * (1 - lt / 0.14)
                 dx = random.randint(-int(amp), int(amp)); dy = random.randint(-int(amp), int(amp))
@@ -95,11 +109,12 @@ def draw_texts(fr, t, lang):
             dy = int(40 * (1 - ease_out(lt / 0.35)))
         imgs = []
         for pi, part in enumerate(parts):
-            r = get_text(part, tx['scale'] if pi == 0 else tx.get('ss', 3), tx.get('glow', 10) if pi == 0 else 4)
-            f = 1.0
-            if r.shape[1] * sc > W - 120:
-                f = (W - 120) / (r.shape[1] * sc)
-            imgs.append((r, f))
+            base = tx['scale'] if pi == 0 else tx.get('ss', 3)
+            sc_i = base + (bump if pi == 0 else 0)
+            while sc_i > 2 and pixtext.width_px(part, sc_i) > W - 120:     # nunca se sale: baja a la escala entera que cabe
+                sc_i -= 1
+            r = get_text(part, sc_i, tx.get('glow', 10) if pi == 0 else 4)
+            imgs.append((r, 1.0))
         gap = 14
         hs = [int(r.shape[0] * sc * f) for r, f in imgs]
         total = sum(hs) + gap * (len(imgs) - 1)
@@ -113,24 +128,29 @@ def draw_texts(fr, t, lang):
 
 def build_frame(src, lt, shot, tl):
     z0, z1 = shot.get('zoom', (1.0, 1.0))
-    z = z0 + (z1 - z0) * min(lt / max(shot['dur'], 1e-3), 1.0)
+    k = min(lt / max(shot['dur'], 1e-3), 1.0)
+    z = z0 if k < shot.get('zoom_at', 0.5) else z1          # acercamiento por corte (escala entera), nunca un zoom continuo que deforme
     dx = dy = 0
+    px0, px1 = shot.get('pan', (0, 0))                       # paneo de camara en pixeles nativos (multiplos de 4 en pantalla)
+    dx += int(round(px0 + (px1 - px0) * k)) * 4
     sh = shot.get('shake', 0)
     if sh and lt < shot.get('shake_t', 0.35):
         a = sh * (1 - lt / shot.get('shake_t', 0.35))
-        dx = random.uniform(-a, a); dy = random.uniform(-a, a)
-        z = max(z, 1.06)
+        dx += random.randint(-int(a), int(a)); dy += random.randint(-int(a), int(a))
     fx, fy = shot.get('focus', (0.5, 0.5))
     fr = zoom_crop(src, z, fx, fy, dx, dy)
     fl = shot.get('flash')
-    if fl and lt < 0.12:
+    if fl and lt < 0.08 and shot['dur'] > 0.5:          # destello corto y suave en el corte (no tapa el gameplay)
         col, amt = fl
-        k = amt * (1 - lt / 0.12)
+        k = 0.5 * amt * (1 - lt / 0.08)
         fr = (fr * (1 - k) + np.array(col, np.float32) * k).astype(np.uint8)
     fd = shot.get('fade_in')
     if fd and lt < fd:
-        k = 0.25 + 0.75 * (lt / fd)       # nunca llega a negro puro
+        k = (lt / fd) ** 1.5              # el trailer abre desde negro
         fr = (fr * k).astype(np.uint8)
+    dk = shot.get('dark')
+    if dk:
+        fr = (fr * (1.0 - dk)).astype(np.uint8)
     return fr
 
 
@@ -142,12 +162,13 @@ def render_audio(lang, clips, out_raw):
 
 def main():
     lang = sys.argv[1]; out = sys.argv[2]
-    clips = './clips'
+    root = './clips'
     if '--clips' in sys.argv:
-        clips = sys.argv[sys.argv.index('--clips') + 1]
+        root = sys.argv[sys.argv.index('--clips') + 1]
+    clips = os.path.join(root, 'en' if lang == 'en' else 'es')      # el trailer ingles usa el juego grabado en ingles
     random.seed(7)
     raw = out + '.audio.raw'
-    render_audio(lang, clips, raw)
+    render_audio(lang, os.path.join(root, 'es'), raw)                # misma mezcla en todas las versiones (partidas identicas)
     if '--audio-only' in sys.argv:
         return
     vf = ['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', '%dx%d' % (W, H), '-r', str(FPS), '-i', '-',
@@ -173,6 +194,9 @@ def main():
             fr = build_frame(src, lt, shot, t)
             if shot.get('overlay'):
                 fr = shot['overlay'](fr, lt, t, lang)
+            for o0, o1, fn in getattr(SB, 'OVERLAYS', []):
+                if o0 <= t < o1:
+                    fr = fn(fr, t)
             draw_texts(fr, t, lang)
             enc.stdin.write(fr.tobytes())
             f += 1

@@ -90,12 +90,14 @@ public final class Level {
         for (Room.Spawn s : room.spawns) {
             EnemyDef d = EnemyDef.get(s.enemy);
             if (d == null) continue;
-            boolean el = s.elite || (rs.infinite && rng.chance(Infinite.eliteChance(rs.floor) + (Infinite.has(rs, Infinite.M_ELITE) ? 0.15f : 0f)));
+            boolean el = s.elite || (rs.infinite && rng.chance(Infinite.eliteChance(rs.floor) + (Infinite.has(rs, Infinite.M_ELITE) ? 0.15f : 0f)))
+                    || (!rs.infinite && rs.campaignEliteChance() > 0 && !s.optional && rng.chance(rs.campaignEliteChance()));
             Enemy e = new Enemy(d, el, hpMul, dmgMul);
             e.x = s.x; e.y = s.y;
             e.home = s.x;
             e.optional = s.optional;
             if (Infinite.has(rs, Infinite.M_FAST)) e.modSpeed = 1.2f;
+            else if (rs.campaignSpeedMul() > 1f) e.modSpeed = rs.campaignSpeedMul();
             enemies.add(e);
         }
         toKill = 0;

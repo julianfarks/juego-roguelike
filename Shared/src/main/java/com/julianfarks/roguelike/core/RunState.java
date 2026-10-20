@@ -110,6 +110,12 @@ public final class RunState {
     }
 
     public int power() { return infinite ? Infinite.power(floor, roomNo) + asc * 3 : Math.round(dungeonNo * 2.25f) + roomNo + asc * 3; }
+    // ---- Balance de campana (8 mazmorras + Cazador): todo escala de forma continua con dungeonNo, no a saltos por tramo
+    /** Tramo continuo 0..3 para jefes y recompensas: nunca baja del tramo discreto y sube suave con cada mazmorra superada. */
+    public float tierF() { return Math.max(stage, dungeonNo * 0.375f); }
+    /** Retos de la campana mas alla de la vida: elites y velocidad crecientes en las ultimas mazmorras. */
+    public float campaignEliteChance() { return infinite ? 0f : dungeonNo < 3 ? 0f : Math.min(0.30f, 0.05f * (dungeonNo - 2)); }
+    public float campaignSpeedMul() { return infinite ? 1f : dungeonNo >= 7 ? 1.15f : dungeonNo >= 5 ? 1.08f : 1f; }
     public float diffHp() { return diff == 0 ? 0.72f : (diff == 2 ? 1.35f : 1f); }
     public float diffDmg() { return diff == 0 ? 0.6f : (diff == 2 ? 1.4f : 1f); }
     public float diffSouls() { return diff == 0 ? 0.7f : (diff == 2 ? 1.4f : 1f); }

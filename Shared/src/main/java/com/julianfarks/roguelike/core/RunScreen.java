@@ -675,8 +675,8 @@ final class RunScreen extends Screen implements Level.Listener {
             Items.secretChestDrops(lv, rs, p.x, p.y);
             if (p.arg == 4) Items.secretChestDrops(lv, rs, p.x, p.y);   // cofre superior: doble botin
         } else if (p.arg == 0) {
-            lv.dropGold(p.x, p.y - 14, Math.round((45 + 12 * rs.stage + lv.rng.i(30)) * rs.stats.goldMul));
-            lv.dropSouls(p.x, p.y - 14, 6 + 2 * rs.stage);
+            lv.dropGold(p.x, p.y - 14, Math.round((45 + 12 * rs.tierF() + lv.rng.i(30)) * rs.stats.goldMul));
+            lv.dropSouls(p.x, p.y - 14, 6 + Math.round(2 * rs.tierF()));
         }
         p.label = null;
         ovProp = p;

@@ -539,6 +539,17 @@ public final class DebugBot {
                 }
             }
         }
+        if (System.getenv("BOT_BALTEST") != null && !rs.sandbox && frame == 700) {
+            RunState r = rs.rs; int kd = r.dungeonNo, ks = r.stage, kr = r.roomNo;
+            System.out.println("BAL mazmorra | tramo | poder(sala0/sala4) | vidaEnem x | danoEnem x | elite | vel | jefeVida x");
+            for (int d = 0; d <= 8; d++) {
+                r.dungeonNo = d; r.stage = RunState.tierOf(d);
+                r.roomNo = 0; float h0 = r.enemyHpMul(), m0 = r.enemyDmgMul(); int p0 = r.power();
+                r.roomNo = 4; int p4 = r.power(); float h4 = r.enemyHpMul();
+                System.out.println(String.format("BAL %d | %d | %d/%d | %.2f-%.2f | %.2f | %.2f | %.2f | %.2f", d, r.stage, p0, p4, h0, h4, m0, r.campaignEliteChance(), r.campaignSpeedMul(), 1f + 0.08f * r.tierF()));
+            }
+            r.dungeonNo = kd; r.stage = ks; r.roomNo = kr;
+        }
         if (System.getenv("BOT_WEAPONTEST") != null && !rs.sandbox && frame == 700) {
             RunState r = rs.rs; int keep = r.weaponLvl; StringBuilder sb = new StringBuilder();
             for (int l = 0; l <= RunState.WEAPON_MAX; l += (l < 6 ? 1 : 5)) { r.weaponLvl = l; r.stats.recalc(r); sb.append(" L").append(l).append(":x").append(String.format("%.2f", r.stats.dmgMul)).append("/").append(r.forgeCost()).append("o"); }

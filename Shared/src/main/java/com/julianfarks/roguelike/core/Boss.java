@@ -238,6 +238,9 @@ public final class Boss extends Ent {
         if (ph2() && Mth.rnd() < dt * 25) lv.ps.spawn(x + lv.rng.f(-bw / 2, bw / 2), y - lv.rng.f(5, bh * 0.9f), lv.rng.f(-10, 10), -lv.rng.f(20, 60), 0.7f, 2, 0, def.color, true);
     }
 
+    /** La Reina de la Escarcha combate en el suelo (antes flotaba); sus equivalentes terrestres usan esta marca. */
+    private boolean iceQueen() { return def.key.equals("reina_escarcha"); }
+
     private void face(float dx) { if (Math.abs(dx) > 4) right = dx > 0; }
 
     private void updateIntro(Level lv, float dt) {
@@ -331,6 +334,14 @@ public final class Boss extends Ent {
             float gx = ad > 150 ? p.x + side * 90 : p.x + side * 60;
             hoverTo(lv, p, dt, gx, p.y - 60 + (float) Math.sin(bob * 2) * 8, sp * 1.1f);
             animName = "idle";
+        } else if (iceQueen() && ad > 120) {
+            // Reina de la Escarcha (terrestre): en lugar de volar hacia el jugador se desliza sobre el hielo, rapida y con poca friccion;
+            // sustituye el reposicionamiento aereo que tenia. Siempre pegada al suelo (gravedad normal).
+            vx = Mth.approach(vx, Mth.sign(dx) * sp * 1.8f, 420 * dt);
+            animName = "walk";
+            if (onGround && Mth.rnd() < dt * 40) lv.ps.spawn(x + lv.rng.f(-bw / 2, bw / 2), y - 2, -vx * 0.2f, -lv.rng.f(10, 40), 0.5f, 2, 0, 0xC8F4FF, true);
+            stepT -= dt;
+            if (stepT <= 0) { stepT = 0.35f; Snd.sfxAt(def.sfx + "step", x, sfxX(lv), 0.4f); }
         } else if (wantClose) {
             vx = Mth.approach(vx, Mth.sign(dx) * sp, 1100 * dt);
             animName = "walk";
@@ -346,6 +357,7 @@ public final class Boss extends Ent {
         float w1 = ad < 92 ? 3 : 0, w2 = (ad < 150 && ad > 40) ? 3 : 0, w3 = (ad < 110 || ph2() && ad < 150) ? 2.2f : 0, wc = ad > 70 ? 2.2f : 1.2f;
         if (castsRow >= 2) wc = 0;
         if (flying) { w1 = ad < 120 ? 3 : 0; w2 = ad < 160 ? 2 : 0; w3 = ad < 130 ? 2 : 0; }
+        if (iceQueen() && p.y < y - 40) { wc *= 2f; w1 *= 0.5f; }    // jugador en una plataforma alta: antes subia volando; ahora le lanza el abanico de hielo
         if (lastAtk == 1) w1 *= 0.4f; else if (lastAtk == 2) w2 *= 0.4f; else if (lastAtk == 3) w3 *= 0.4f;
         float tot = w1 + w2 + w3 + wc;
         float r = lv.rng.f() * tot;

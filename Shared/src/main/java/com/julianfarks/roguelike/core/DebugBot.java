@@ -416,6 +416,7 @@ public final class DebugBot {
         if (System.getenv("BOT_ARSENALSCENE") != null && warped && frame > warpFrame + 30) { ArsenalProbe.scene(g, rs, lv, p, frame, System.getenv("BOT_ARSENALSCENE")); return; }
         if (System.getenv("BOT_ARSENAL") != null && warped && frame > warpFrame + 30) { if (ArsenalProbe.step(g, rs, lv, p, frame)) System.exit(ArsenalProbe.fails == 0 ? 0 : 1); return; }
         if (System.getenv("BOT_ANIMTEST") != null && warped && frame > warpFrame + 30) { if (AnimProbe.step(g, rs, lv, p, frame)) System.exit(AnimProbe.fails == 0 ? 0 : 1); return; }
+        if (System.getenv("BOT_BOSSGROUND") != null && warped && frame > warpFrame + 30) { if (BossGroundProbe.step(g, rs, lv, p, frame)) System.exit(BossGroundProbe.fails == 0 ? 0 : 1); return; }
         if (System.getenv("BOT_BOSSFLY") != null && warped && frame > warpFrame + 30) { if (BossFlyProbe.step(g, rs, lv, p, frame)) System.exit(BossFlyProbe.fails == 0 ? 0 : 1); return; }
         if (System.getenv("BOT_COMBATTEST") != null && warped && frame > warpFrame + 30) { if (CombatProbe.step(g, rs, lv, p, frame)) System.exit(CombatProbe.fails == 0 ? 0 : 1); return; }
         if (System.getenv("BOT_BLESSTEST") != null && warped && frame > warpFrame + 30) { if (BlessProbe.step(g, rs, lv, p, frame)) System.exit(BlessProbe.fails == 0 ? 0 : 1); return; }
@@ -665,6 +666,9 @@ public final class DebugBot {
                 System.out.println("SKILL C1 golpe DESPUES de liberar: proyectiles " + n0 + "->" + n1 + " (iguales) cd " + Math.round(cd0 * 10) / 10f + "->" + Math.round(r.cd[0] * 10) / 10f + " (igual: ni se borra ni se duplica)"); skStep = 7; }
             else if (skStep == 5 && t > 80) { skStep = 7; System.out.println("SKILL B3 FALLA: no se libero"); }
             if (frame >= 690 && skStep < 7) return;     // el bot no interfiere mientras dura la prueba
+        }
+        if (System.getenv("BOT_MELEETEST") != null && !rs.sandbox && !MeleeProbe.done()) {
+            if (MeleeProbe.step(g, rs, lv, p, frame)) return;
         }
         if (System.getenv("BOT_INVTEST") != null && !rs.sandbox && frame >= 700 && ivStep < 99) {
             invProbe(g, rs, lv, frame);

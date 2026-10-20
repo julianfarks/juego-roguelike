@@ -79,13 +79,17 @@ final class Melee {
             }
         }
         if (p.onGround && s.swT < d.wind + d.act) p.vx *= 0.9f;
+        if (p.vx * s.swDir > 0 && s.swT < d.wind + d.hits * d.gap + d.act && lv.frontBlocked(p, s.swDir)) p.vx = 0;   // no atraviesa al enemigo pegado
         if (s.swT >= s.swDur) { s.sw = false; }
     }
 
     private static void hitPass(Level lv, Player p, Wpn.Def d, WeaponFx.State s, int idx) {
         float dir = s.swDir;
         float rch = d.reach * BlessFx.reach(lv);
-        float bx = dir > 0 ? p.x + 2 : p.x - 2 - rch;
+        float back = p.bw / 2f;                                    // zona cercana: cubre tambien el propio cuerpo (enemigo pegado o solapado)
+        float rch0 = rch;
+        float bx = dir > 0 ? p.x - back : p.x - 2 - rch;           // el alcance hacia delante no cambia (p.x + 2 + rch)
+        rch = rch + 2 + back;
         float by, bh;
         switch (d.swing) {
             case Wpn.S_SMASH: case Wpn.S_SWEEP: by = p.y - d.hgt - 2; bh = d.hgt + 2; break;
@@ -94,7 +98,7 @@ final class Melee {
         lv.breakRect(bx, by, rch, bh, 1);
         List<Ent> list = new ArrayList<>(lv.enemiesInBox(bx, by, rch, bh));
         if ((d.passive & Wpn.P_BACK) != 0) {                      // golpe cruzado / barrido: tambien alcanza por detras
-            float rb = Math.max(14f, rch * 0.6f);
+            float rb = Math.max(14f, rch0 * 0.6f);
             float bx2 = dir > 0 ? p.x - 2 - rb : p.x + 2;
             for (Ent e : lv.enemiesInBox(bx2, by, rb, bh)) if (!list.contains(e)) list.add(e);
         }
@@ -108,6 +112,7 @@ final class Melee {
         int n = 0;
         RunState rs = lv.rs;
         float base = p.baseDmg(lv) * (1f + 0.25f * rs.secLvl);
+        list.removeIf(e -> !lv.meleeReach(p, e));                 // nunca a traves de una pared
         for (Ent e : list) {
             if (n >= cap) break;
             if (s.sets[Math.min(idx, 3)].contains(e)) continue;

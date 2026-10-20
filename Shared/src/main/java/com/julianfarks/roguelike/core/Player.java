@@ -619,6 +619,7 @@ public final class Player extends Ent {
         Anim a = sheet.anim(animName);
         animT += dt * atkSpeed(lv);
         // evitar caer inmediatamente al suelo en ataque aereo -> mantiene estado hasta terminar
+        if (vx * dir() > 0 && lv.frontBlocked(this, dir())) vx = 0;      // el impulso no lleva al jugador a traves del enemigo que golpea
         if (a.hitActive(animT)) {
             if (!swingFx) { swingFx = true; slashFx(lv); }
             if (a.worldBox(x, y, right, box)) hitBox(lv, a);
@@ -668,6 +669,14 @@ public final class Player extends Ent {
 
     private int lv_i(int n) { return (int) (Mth.rnd() * n); }
 
+    /** Zona cercana: la caja del arma empieza unos px delante del centro; se extiende hacia atras hasta el borde del propio cuerpo para que
+     *  un enemigo pegado (solapado con el jugador) reciba el golpe. Solo el ancho del cuerpo: no alcanza a nadie que este detras. */
+    void closeZone(float[] b) {
+        float back = x - dir() * (bw / 2f);
+        if (right) { if (b[0] > back) { b[2] += b[0] - back; b[0] = back; } }
+        else { float end = b[0] + b[2]; if (end < back) b[2] = back - b[0]; }
+    }
+
     private void hitBox(Level lv, Anim a) {
         RunState rs = lv.rs; Stats s = rs.stats;
         float rch = BlessFx.reach(lv);
@@ -678,10 +687,12 @@ public final class Player extends Ent {
             box[1] -= eh * 0.6f; box[3] += eh;
         }
         lv.breakRect(box[0], box[1], box[2], box[3], 1);
+        closeZone(box);
         List<Ent> list = lv.enemiesInBox(box[0], box[1], box[2], box[3]);
         lv.dmgSrc = BlessFx.SRC_W;
         for (Ent e : list) {
             if (swingHit.contains(e)) continue;
+            if (!lv.meleeReach(this, e)) continue;            // nunca a traves de una pared
             swingHit.add(e);
             float mul = animName.equals("airatk") ? 1.0f : (combo == 3 ? 1.5f * BlessFx.finishMul(lv) : (combo == 2 ? 1.1f : 1f));
             if (combo == 3 && s.giant > 0) mul *= 1 + 0.4f * s.giant;

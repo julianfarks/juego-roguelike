@@ -65,12 +65,17 @@ final class HudProbe {
             int[] mem = java.util.Arrays.copyOfRange(sy.members, 0, sy.need);
             BlessProbe.grant(r, mem, 1);
             lv.pl.alive = true; lv.enemies.clear(); BlessEffects.dbgAnnounced = 0;
+            // suelo plano alrededor (los maniquies se colocan a -28..+210 px): sin fosos ni pinchos que los saquen de la prueba
+            // (antes, segun la sala generada, un maniqui caia en un foso y la cuenta de disparos salia baja: prueba inestable)
+            Room rm = lv.room; int gx = (int) (p.x / Room.TS), gy = (int) (p.y / Room.TS);
+            for (int i = -4; i <= 16; i++) { rm.set(gx + i, gy, Room.SOLID); for (int j = 1; j <= 6; j++) rm.set(gx + i, gy - j, Room.AIR); }
             ck("la sinergia '" + sy.name + "' se activa con " + sy.need + " miembros", r.bx.synOn[s]);
             return false;
         }
         BlessProbe.ensureDummies(lv, p);
         p.alive = true;
         BlessProbe.driveEvents(lv, p, t, false);
+        if (System.getenv("HUD_SYNDBG") != null && t % 150 == 0) { StringBuilder sb = new StringBuilder("SYNDBG t=" + t + " p=" + (int) p.x + "," + (int) p.y + " fired=" + r.bx.firedSyn[s]); for (Enemy e : lv.enemies) sb.append(" [").append((int) e.x).append(",").append((int) e.y).append(" burn=").append(e.st[Ent.BURN] > 0).append(" alive=").append(e.alive).append("]"); System.out.println(sb); }
         if (t < 900) return false;
         int fired = r.bx.firedSyn[s];
         ck("la sinergia se dispara muchas veces (" + fired + ")", fired >= 5);

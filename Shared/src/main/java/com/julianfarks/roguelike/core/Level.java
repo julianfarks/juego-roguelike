@@ -184,6 +184,31 @@ public final class Level {
         return room.pixH;
     }
 
+    /** Linea horizontal libre de bloques solidos entre x0 y x1 a la altura y (golpes cuerpo a cuerpo: no atraviesan paredes). */
+    public boolean lineClear(float x0, float x1, float y) {
+        int ty = (int) Math.floor(y / Room.TS);
+        int a = (int) Math.floor(Math.min(x0, x1) / Room.TS), b = (int) Math.floor(Math.max(x0, x1) / Room.TS);
+        for (int tx = a; tx <= b; tx++) if (Room.isSolid(room.tile(tx, ty))) return false;
+        return true;
+    }
+
+    /** Un enemigo dentro de una caja de golpe solo cuenta si no hay pared entre el pecho del atacante y el borde mas cercano del enemigo. */
+    public boolean meleeReach(Ent att, Ent e) {
+        float ex = Mth.clamp(att.x, e.x - e.bw / 2f + 1, e.x + e.bw / 2f - 1);
+        float cy = att.y - Math.min(16f, att.bh * 0.55f), ey = Mth.clamp(cy, e.y - e.bh + 2, e.y - 2);
+        return lineClear(att.x, ex, cy) || lineClear(att.x, ex, ey);
+    }
+
+    /**
+     * Impulso de un golpe cuerpo a cuerpo: el jugador no atraviesa al enemigo que tiene justo delante (antes el impulso del ataque lo llevaba
+     * 10-15 px hacia delante y, si el enemigo estaba pegado, al llegar el fotograma activo quedaba detras de el y el golpe fallaba).
+     */
+    public boolean frontBlocked(Ent p, float dir) {
+        float fx = dir > 0 ? p.x : p.x - p.bw / 2f - 3, fw = p.bw / 2f + 3;
+        for (Ent e : enemiesInBox(fx, p.y - p.bh + 2, fw, p.bh - 2)) if ((e.x - p.x) * dir > -e.bw / 2f) return true;
+        return false;
+    }
+
     /** true si una caja de la altura h con los pies en (x, y) no toca ningun bloque solido. */
     public boolean boxFree(Ent e, float x, float y, float h) {
         float hw = e.bw / 2f;

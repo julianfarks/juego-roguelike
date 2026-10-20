@@ -35,7 +35,8 @@ public final class BossDef {
                     SLAM_ERUPT_LINE, CAST_SUMMON, "bone", 3, "shadow", INTRO_RISE, m("esqueleto", "arquero_hueso")),
             new BossDef(1, 0, "coloso_magma", "coloso_magma", "Coloso de Magma", "El corazón de la Forja", 1250, false, "mus_boss_a", 0xFF7A1A, 28, 48, 110,
                     SLAM_ERUPT_LINE, CAST_FAN, "magma", 5, "fire", INTRO_RISE, null),
-            new BossDef(2, 0, "reina_escarcha", "reina_escarcha", "Reina de la Escarcha", "Señora del Santuario Helado", 1050, true, "mus_boss_a", 0x7AF0FF, 20, 70, 190,
+            new BossDef(2, 0, "reina_escarcha", "reina_escarcha", "Reina de la Escarcha", "Señora del Santuario Helado", 1050, false,   // terrestre: se desliza sobre el hielo (ver Boss.iceGlide)
+            "mus_boss_a", 0x7AF0FF, 20, 70, 190,
                     SLAM_ERUPT_LINE, CAST_FAN, "iceshard", 7, "ice", INTRO_FALL, null),
             new BossDef(3, 0, "devorador_vacio", "devorador_vacio", "Devorador del Vacío", "El ojo que todo lo consume", 1150, true, "mus_boss_a", 0xB04CFF, 22, 55, 170,
                     SLAM_PULL, CAST_RAIN, "voidorb", 6, "void", INTRO_PORTAL, null),

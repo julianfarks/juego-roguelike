@@ -214,6 +214,9 @@ final class BlessData {
         {"reaccion_cadena", "Reacción en Cadena", "Tus golpes a enemigos rodeados tienen 15% de provocar una explosión (40% de daño, cada 1 s).", "Reúne 3 de sus bendiciones para activarla.", "3", "20,51,83,86,79,196,41,123,104,105,189,188,190", "HIT|v:crowd|EXPLODE:50,0.4|ch=0.15 icd=1"},
         {"resonancia_elemental", "Resonancia Elemental", "Golpear a un enemigo con 2 o más estados alterados lanza un rayo de 2 saltos (cada 1,2 s).", "Reúne 3 de sus bendiciones para activarla.", "3", "5,6,7,8,175,35,124,125,126,151,152,153,157", "HIT|v:multi>=2|CHAIN:2,0.4|icd=1.2"},
         {"frasco_vida", "Frasco de Vida", "Toda curación recibida es un 25% mayor y beber un frasco te da 25 de escudo.", "Reúne 3 de sus bendiciones para activarla.", "3", "140,141,142,174,196,172,169,1,93,95,94,82,155,89", "MOD||HEALMUL:0.25~POTION||SHIELD:25"},
+        {"detonacion_critica", "Detonación Crítica", "Tus críticos provocan una explosión que quema (50% de daño, cada 0,6 s).", "Reúne 3 de sus bendiciones para activarla.", "3", "12,49,195,123,104,196,188,20,51", "CRIT||EXPLODE:50,0.5,burn,2|icd=0.6"},
+        {"funeral_igneo", "Funeral Ígneo", "Los enemigos que mueren en llamas explotan y siguen quemando (50% de daño, cada 0,25 s).", "Reúne 3 de sus bendiciones para activarla.", "3", "5,48,51,47,53,20,198,52,124", "KILL|v:burn|EXPLODE:55,0.5,burn,2|icd=0.25"},
+        {"plaga_viva", "Plaga Viva", "Los enemigos que mueren envenenados esparcen el veneno a los cercanos (cada 0,25 s).", "Reúne 3 de sus bendiciones para activarla.", "3", "8,67,66,68,69,195,157,185", "KILL|v:poison|SPREAD:poison,80|icd=0.25"},
     };
 
     private static BSyn[] syns;

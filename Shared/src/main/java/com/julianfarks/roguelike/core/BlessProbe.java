@@ -145,6 +145,7 @@ final class BlessProbe {
         }
         RunState r = rs.rs;
         p.invuln = Math.min(p.invuln, 0.001f);
+        if (mode.equals("chain")) return chain(g, rs, lv, p, frame);
         if (mode.equals("stress")) return stress(g, rs, lv, p, frame);
         if (mode.equals("ui")) return ui(g, rs, lv, p, frame);
         if (mode.equals("persist")) return persist(g, rs, lv, p, frame);
@@ -316,6 +317,60 @@ final class BlessProbe {
     }
 
     // ------------------------------------------------------------------ estres: todas las bendiciones al maximo
+
+    // ------------------------------------------------------------------ cadena: un critico debe propagarse (explosion -> muerte -> explosion/veneno) y no repetirse ni entrar en bucle
+    static int chStep = 0, chT = 0; static final List<Enemy> pack = new ArrayList<>();
+    static int chainKills() { int n = 0; for (Enemy e : pack) if (!e.alive || e.hp <= 0) n++; return n; }
+    static void chainSpawn(Level lv, Player p, float hp, boolean burn, boolean poison) {
+        for (Enemy e : pack) lv.enemies.remove(e);
+        pack.clear();
+        for (int i = 0; i < 8; i++) {
+            Enemy e = new Enemy(EnemyDef.get("esqueleto"), false, 1f, 1f);
+            e.hp = e.maxHp = hp; e.x = p.x + 40 + i * 26; e.y = p.y; e.vx = e.vy = 0; e.home = e.x; e.state = Enemy.CHASE;
+            if (burn) { e.st[Ent.BURN] = 6f; e.stPow[Ent.BURN] = 0.01f; }
+            if (poison) { e.st[Ent.POISON] = 6f; e.stPow[Ent.POISON] = 0.01f; }
+            lv.enemies.add(e); pack.add(e);
+        }
+        lv.toKill = 999; lv.cleared = false;
+    }
+    static boolean chain(Game g, RunScreen rs, Level lv, Player p, int frame) {
+        RunState r = rs.rs;
+        if (chStep == 0) {
+            chStep = 1; chT = frame; lv.enemies.clear(); lv.projs.clear();
+            grant(r, new int[0], 1);
+            chainSpawn(lv, p, 22f, true, true);
+            Enemy first = pack.get(0);
+            lv.dmgSrc = BlessFx.SRC_W; try { lv.damageEnemy(first, 999f, true, 0, 0); } finally { lv.dmgSrc = 0; }          // un unico golpe critico mortal al primero
+            System.out.println("BPCHAIN base (sin bendiciones): bajas tras 1 critico = " + chainKills() + " (esperado 1)");
+            chStep = 2; chT = frame;
+        } else if (chStep == 2 && frame > chT + 120) {
+            if (chainKills() != 1) { System.out.println("BPCHAIN FALLA: sin bendiciones murieron " + chainKills()); fails++; } else oks++;
+            int[] ids = {idOf("BRASAS"), idOf("llama_voraz"), idOf("pira"), idOf("CRITICO"), idOf("brasa_critica"), idOf("veneno_critico"), idOf("proyectil_explosivo"), idOf("ESPINAS"), idOf("plaga"), idOf("ponzona_virulenta")};
+            grant(r, ids, 3);
+            StringBuilder sb = new StringBuilder();
+            for (int s = 20; s <= 22; s++) sb.append(" ").append(BlessData.syns()[s].name).append("=").append(r.bx.synOn[s]);
+            System.out.println("BPCHAIN sinergias:" + sb);
+            lv.enemies.clear(); lv.projs.clear();
+            chainSpawn(lv, p, 22f, true, true);
+            lv.dmgSrc = BlessFx.SRC_W; try { lv.damageEnemy(pack.get(0), 999f, true, 0, 0); } finally { lv.dmgSrc = 0; }
+            chStep = 3; chT = frame;
+        } else if (chStep == 3 && frame > chT + 240) {
+            int k = chainKills();
+            System.out.println("BPCHAIN con 3 sinergias: bajas tras 1 critico = " + k + "/8 (esperado >= 4) enemigos vivos=" + lv.enemies.size());
+            if (k >= 4) oks++; else { fails++; System.out.println("BPCHAIN FALLA: la cadena no se propago"); }
+            // no repeticion: sin el critico inicial no debe morir nadie solo
+            lv.enemies.clear(); lv.projs.clear(); chainSpawn(lv, p, 1e6f, true, true);
+            chStep = 4; chT = frame;
+        } else if (chStep == 4 && frame > chT + 240) {
+            int k = chainKills();
+            System.out.println("BPCHAIN estabilidad (HP altos, sin golpe): bajas=" + k + " (esperado 0)");
+            if (k == 0) oks++; else { fails++; System.out.println("BPCHAIN FALLA: bajas espontaneas"); }
+            System.out.println("BP FIN ok=" + oks + " fallos=" + fails);
+            return true;
+        }
+        return false;
+    }
+
     static boolean stress(Game g, RunScreen rs, Level lv, Player p, int frame) {
         RunState r = rs.rs;
         int f = frame - slotT0;

@@ -382,6 +382,12 @@ Resonancia Elemental	Elemental Resonance	Résonance élémentaire	元素共鸣
 Golpear a un enemigo con 2 o más estados alterados lanza un rayo de 2 saltos (cada 1,2 s).	Hitting an enemy with 2 or more status effects casts a 2-jump lightning bolt (every 1.2 s).	Frapper un ennemi avec 2 états altérés ou plus lance un éclair à 2 sauts (toutes les 1,2 s).	攻击拥有2种及以上异常状态的敌人，释放2次跳跃的闪电（每1.2秒）。
 Frasco de Vida	Life Flask	Fiole de vie	生命之瓶
 Toda curación recibida es un 25% mayor y beber un frasco te da 25 de escudo.	All healing received is 25% greater and drinking a flask gives you 25 shield.	Tous les soins reçus sont 25 % plus importants et boire une fiole vous donne 25 de bouclier.	所有受到的治疗效果+25%，饮用药瓶获得25点护盾。
+Detonación Crítica	Critical Detonation	Détonation critique	暴击爆裂
+Tus críticos provocan una explosión que quema (50% de daño, cada 0,6 s).	Your critical hits cause an explosion that burns (50% damage, every 0.6 s).	Vos critiques provoquent une explosion qui brûle (50 % de dégâts, toutes les 0,6 s).	你的暴击会引发灼烧爆炸（50%伤害，每0.6秒）。
+Funeral Ígneo	Fiery Funeral	Funérailles ardentes	烈焰葬礼
+Los enemigos que mueren en llamas explotan y siguen quemando (50% de daño, cada 0,25 s).	Enemies that die burning explode and keep burning (50% damage, every 0.25 s).	Les ennemis qui meurent en flammes explosent et continuent de brûler (50 % de dégâts, toutes les 0,25 s).	燃烧中死亡的敌人会爆炸并继续燃烧（50%伤害，每0.25秒）。
+Plaga Viva	Living Plague	Peste vivante	活体瘟疫
+Los enemigos que mueren envenenados esparcen el veneno a los cercanos (cada 0,25 s).	Enemies that die poisoned spread the poison to nearby ones (every 0.25 s).	Les ennemis qui meurent empoisonnés répandent le poison aux proches (toutes les 0,25 s).	中毒死亡的敌人会将毒素传给附近敌人（每0.25秒）。
 Reúne {} de sus bendiciones para activarla.	Gather {} of its blessings to activate it.	Réunissez {} de ses bénédictions pour l'activer.	集齐其中{}个祝福即可激活。
 Sinergia activa	Synergy active	Synergie active	协同已激活
 Sinergia {}/{}	Synergy {}/{}	Synergie {}/{}	协同 {}/{}

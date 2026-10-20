@@ -107,3 +107,21 @@ SS('frasco_vida', ('Frasco de Vida', 'Life Flask', 'Fiole de vie', '生命之瓶
     'Tous les soins reçus sont 25 % plus importants et boire une fiole vous donne 25 de bouclier.', '所有受到的治疗效果+25%，饮用药瓶获得25点护盾。'),
    3, 'alquimista reserva_pociones brebaje_extra ayuno frasco_explosivo ultimo_recurso sacrificio CORAZON vitalidad cosecha_vida sanacion_sala parry_calma espiritu_curativo supervivencia'.split(),
    ['MOD||HEALMUL:0.25', 'POTION||SHIELD:25'])
+
+# ---- Cadenas de reaccion (etapa 4): critico -> explosion elemental -> muerte -> mas explosion/propagacion.
+# Los KILL anidados estan limitados por BlessFx (profundidad < 3) y cada regla lleva su icd, asi nada se dispara en bucle.
+SS('detonacion_critica', ('Detonación Crítica', 'Critical Detonation', 'Détonation critique', '暴击爆裂'),
+   ('Tus críticos provocan una explosión que quema (50% de daño, cada 0,6 s).', 'Your critical hits cause an explosion that burns (50% damage, every 0.6 s).',
+    'Vos critiques provoquent une explosion qui brûle (50 % de dégâts, toutes les 0,6 s).', '你的暴击会引发灼烧爆炸（50%伤害，每0.6秒）。'),
+   3, 'CRITICO brasa_critica veneno_critico proyectil_explosivo salto_explosivo frasco_explosivo explosion_hielo VENGANZA pira'.split(),
+   ['CRIT||EXPLODE:50,0.5,burn,2|icd=0.6'])
+SS('funeral_igneo', ('Funeral Ígneo', 'Fiery Funeral', 'Funérailles ardentes', '烈焰葬礼'),
+   ('Los enemigos que mueren en llamas explotan y siguen quemando (50% de daño, cada 0,25 s).', 'Enemies that die burning explode and keep burning (50% damage, every 0.25 s).',
+    'Les ennemis qui meurent en flammes explosent et continuent de brûler (50 % de dégâts, toutes les 0,25 s).', '燃烧中死亡的敌人会爆炸并继续燃烧（50%伤害，每0.25秒）。'),
+   3, 'BRASAS llama_voraz pira combustion rastro_ardiente VENGANZA corazon_ardiente aliento_dragon disparo_incendiario'.split(),
+   ['KILL|v:burn|EXPLODE:55,0.5,burn,2|icd=0.25'])
+SS('plaga_viva', ('Plaga Viva', 'Living Plague', 'Peste vivante', '活体瘟疫'),
+   ('Los enemigos que mueren envenenados esparcen el veneno a los cercanos (cada 0,25 s).', 'Enemies that die poisoned spread the poison to nearby ones (every 0.25 s).',
+    'Les ennemis qui meurent empoisonnés répandent le poison aux proches (toutes les 0,25 s).', '中毒死亡的敌人会将毒素传给附近敌人（每0.25秒）。'),
+   3, 'ESPINAS plaga ponzona_virulenta toxina_nerviosa esporas veneno_critico espiritu_veneno corrupcion'.split(),
+   ['KILL|v:poison|SPREAD:poison,80|icd=0.25'])

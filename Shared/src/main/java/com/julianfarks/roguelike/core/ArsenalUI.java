@@ -50,10 +50,14 @@ final class ArsenalUI {
         int room = maxY == Float.MAX_VALUE ? 99 : Math.max(2, (int) ((maxY - yy) / (lh() + 1)));
         int fxN = UI.small.wrapLines("Efecto: " + Items.SEC_FX[id], (int) w - 4), stN = UI.small.wrapLines(Items.SEC_STYLE[id], (int) w - 4);
         int fxMax = fxN, stMax = stN;
-        if (fxN + stN > room) { stMax = Math.max(1, Math.min(stN, room - Math.min(fxN, room - 1))); fxMax = Math.max(1, room - stMax); }
-        if (fxMax < fxN || stMax < stN) clipN++;
+        // si no cabe todo: el efecto (informacion de juego) va completo y el estilo (texto descriptivo) solo si cabe entero; nunca a medias
+        if (fxN + stN > room) {
+            if (fxN <= room) { fxMax = fxN; stMax = 0; }
+            else { fxMax = room; stMax = 0; }
+        }
+        if (fxMax < fxN) clipN++;
         yy += UI.small.drawWrappedMax(g, "Efecto: " + Items.SEC_FX[id], x + 2, yy, (int) w - 4, 0xFFFFD25A, 1f, lh(), fxMax) + 2;
-        yy += UI.small.drawWrappedMax(g, Items.SEC_STYLE[id], x + 2, yy, (int) w - 4, 0xFFC8C0C8, 1f, lh() + 1, stMax);
+        if (stMax > 0) yy += UI.small.drawWrappedMax(g, Items.SEC_STYLE[id], x + 2, yy, (int) w - 4, 0xFFC8C0C8, 1f, lh() + 1, stMax);
         return yy;
     }
 
@@ -83,8 +87,9 @@ final class ArsenalUI {
                     g.rect(Math.round(sx - 10), Math.round(cy - r - 4), 20, 3, 0xAA000010, false);
                     g.rect(Math.round(sx - 10), Math.round(cy - r - 4), Math.round(20 * rk), 3, 0xFFFFD25A, false);
                 }
-                g.rect(sx - UI.small.width(n) / 2f - 1, cy + r - 4, UI.small.width(n) + 2, 9, 0x99000010, false);
-                UI.small.center(g, n, sx, cy + r - 3, rs.secAmmo > 0 ? UI.WHITE : UI.RED, act ? 1f : 0.7f);
+                float ay = Math.min(cy + r - 3, ViewSize.h - UI.small.ch - 1);          // boton pegado al borde inferior: la cifra sube para verse entera
+                g.rect(sx - UI.small.width(n) / 2f - 1, ay - 1, UI.small.width(n) + 2, 9, 0x99000010, false);
+                UI.small.center(g, n, sx, ay, rs.secAmmo > 0 ? UI.WHITE : UI.RED, act ? 1f : 0.7f);
             }
         }
     }

@@ -185,6 +185,7 @@ public final class UI {
     /** Recorta con '.' un rotulo que no cabe (traducciones largas) para que nunca se salga del boton. */
     public static String fitLabel(Font f, String label, float maxW) {
         if (f.width(label) <= maxW) return label;
+        TextAudit.cut(label, "ancho " + Math.round(f.width(label)) + ">" + Math.round(maxW));
         String s = I18n.tr(label);
         while (s.length() > 1 && f.widthRaw(s + ".") > maxW) s = s.substring(0, s.length() - 1);
         s = s + ".";

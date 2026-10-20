@@ -13,6 +13,8 @@ final class BlessData {
     /** Categoria y rareza (0 comun .. 4 legendaria) de las 28 bendiciones originales. */
     static final String LEG_CAT = "ACDACBBBBCDDAFFCBBAFJCECBADA";
     static final int[] LEG_RAR = {0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 2, 1, 1, 0, 0, 1, 0, 0, 1, 0, 2, 3, 1, 1, 1, 2, 2, 3};
+    /** Nombre corto de la categoria (cartas estrechas): se usa solo cuando el completo no cabe. */
+    static final String[] CAT_SHORT = {"Daño físico", "Magia", "Defensa", "Velocidad", "Proyectiles", "Recursos", "Invocaciones", "Riesgo", "Maldiciones", "Híbridas"};
     static final String[] CAT_ES = {"Daño físico", "Magia y elementos", "Defensa y supervivencia", "Velocidad y evasión", "Proyectiles", "Recursos y recompensas", "Invocaciones y compañeros", "Riesgo y recompensa", "Maldiciones y transformaciones", "Híbridas"};
     static final String[] LEG_KEY = {"filo", "corazon", "alas", "furia", "sangre", "brasas", "glacial", "chispa", "espinas", "piedra", "fantasma", "doble_salto", "critico", "alma", "fortuna", "escudo", "enfriamiento", "habilidad", "ejecutor", "iman", "venganza", "segunda", "onda", "egida", "sabio", "gigante", "sombra", "eclipse"};
 

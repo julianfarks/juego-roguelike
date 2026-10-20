@@ -2,6 +2,7 @@ package com.julianfarks.roguelike.core;
 
 /** Santuario: mejoras permanentes, desbloqueo de clases y reliquias. */
 final class SanctuaryScreen extends Screen {
+    @Override boolean center270() { return true; }
     private final Screens.TitleBg bg;
     private int tab;
     private float flash, flashSlot = -1;

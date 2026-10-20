@@ -8,6 +8,7 @@ import java.util.List;
  * No hay compras con dinero real ni anuncios: con el catalogo oficial vacio solo se muestra el estado vacio honesto.
  */
 final class ShopScreen extends Screen {
+    @Override boolean center270() { return true; }
     private final Screens.TitleBg bg = new Screens.TitleBg();
     private int page;                    // primera fila visible
     private String toast = ""; private float toastT;

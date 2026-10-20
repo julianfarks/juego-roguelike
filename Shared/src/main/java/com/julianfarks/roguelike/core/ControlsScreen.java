@@ -5,6 +5,7 @@ package com.julianfarks.roguelike.core;
  * Se maneja con pantalla tactil, teclado o mando (arriba/abajo/izq/der + aceptar). Los cambios se aplican al instante; "Guardar" los conserva.
  */
 final class ControlsScreen extends Screen {
+    @Override boolean center270() { return true; }
     private static final String[] MODE_NAME = {"Automática", "Táctil", "Mando"};
     private static final int VIS = 8, RH = 17, TOP = 62, ROWS = Input.B_COUNT;
 
@@ -280,7 +281,7 @@ final class ControlsScreen extends Screen {
     }
 
     private void renderModal(Platform.Gfx g, int w) {
-        g.rect(0, 0, w, ViewSize.h, 0xB0000008, false);
+        g.rect(0, -Screen.OY, w, ViewSize.h, 0xB0000008, false);
         float bw = Math.min(360, w - 30), bx = w / 2f - bw / 2f;
         UI.panel(g, 1, bx, 70, bw, 130, 1f);
         if (conflict) {

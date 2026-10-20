@@ -6,6 +6,7 @@ package com.julianfarks.roguelike.core;
  * se pide confirmacion durante 10 s y, si no se confirma (o la pantalla queda mal), se vuelve a la configuracion anterior.
  */
 final class VideoScreen extends Screen {
+    @Override boolean center270() { return true; }
     private static final float CONFIRM_SECS = 10f;
     private final Platform.Video vid;
     private final VideoCfg pend;           // lo que se esta editando
@@ -50,6 +51,8 @@ final class VideoScreen extends Screen {
         }
         String[] tn = {"Pantalla", "Rendimiento", "Calidad"};
         float tw = 76;
+        for (String s : tn) tw = Math.max(tw, UI.small.width(s) + 10);      // pestañas a la medida del idioma (dentro del panel de 272)
+        tw = Math.min(tw, 86);
         for (int i = 0; i < 3; i++) {
             final int ti = i;
             Hit h = add(cx - tw * 1.5f - 4 + i * (tw + 4), 40, tw, 18, tn[i], () -> { tab = ti; layout(); });

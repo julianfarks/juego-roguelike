@@ -23,6 +23,7 @@ final class Screens {
         }
 
         void render(Platform.Gfx g, int w, float dim) {
+            Screen.fullBegin(g);
             float s = Math.max(w / 512f, ViewSize.h / 288f);
             float dw = 512 * s, dh = 288 * s;
             float y = (ViewSize.h - dh) / 2f;
@@ -44,6 +45,7 @@ final class Screens {
             ps.render(g, 0, 0);
             if (dim > 0) g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x000000, (int) (dim * 255)), false);
             if (UI.vignette != null) g.image(UI.vignette, 0, 0, UI.vignette.w, UI.vignette.h, 0, 0, w, ViewSize.h, 0, 0, 0.75f);
+            Screen.fullEnd(g);
         }
     }
 
@@ -104,6 +106,7 @@ final class Screens {
 
     // =================================================================== titulo
     static final class Title extends Screen {
+    @Override boolean center270() { return true; }
         private final TitleBg bg;
         private float logoT;
 
@@ -166,31 +169,44 @@ final class Screens {
 
         Options(Game g, boolean fromRun) { super(g); this.fromRun = fromRun; bg = new TitleBg(); }
 
+        // Dos columnas con cabecera (Audio e imagen / Controles y datos), "Volver" dentro del panel y la version debajo: todo se calcula
+        // con el ancho y el alto reales (480-640 x 270-320), nada se sale del panel ni lo pisa la version.
+        private float px, py, pw, ph, colW, c0x, c1x, secY;
+
+        private void geom() {
+            int w = W(), h = ViewSize.h;
+            pw = Math.min(w - 16, 460); px = w / 2f - pw / 2f; py = 8; ph = h - 8 - 16;
+            colW = (pw - 30) / 2f; c0x = px + 10; c1x = px + 20 + colW; secY = py + 34;
+        }
+
         @Override void layout() {
             hits.clear();
-            int w = W();
-            float bw = 200, bh = 20, x = w / 2f - bw / 2f, y = 52, st = 24;
+            geom();
+            float bh = 20, st = 24, y0 = secY + 16;
             Save s = Save.S;
-            int i = 0;
-            add(x, y + st * i++, bw, bh, "Música: " + (s.musicOn ? "SÍ" : "NO"), () -> { s.musicOn = !s.musicOn; Snd.applyVolumes(); s.write(); layout(); });
-            add(x, y + st * i++, bw, bh, "Sonidos: " + (s.sfxOn ? "SÍ" : "NO"), () -> { s.sfxOn = !s.sfxOn; Snd.applyVolumes(); s.write(); layout(); });
-            add(x, y + st * i++, bw, bh, "Efectos intensos: " + (s.reduceFx ? "REDUCIDOS" : "NORMALES"), () -> { s.reduceFx = !s.reduceFx; s.write(); layout(); });
             boolean pc = game.P.isDesktop();     // PC: sin vibracion ni controles tactiles; con ajustes de video
-            if (!pc) {
-                add(x, y + st * i++, bw, bh, "Vibración: " + (s.vibOn ? "SÍ" : "NO"), () -> { s.vibOn = !s.vibOn; s.write(); layout(); });
-                add(x, y + st * i++, bw, bh, "Entrada: " + new String[]{"Automática", "Táctil", "Mando"}[s.inputMode], () -> { s.inputMode = (s.inputMode + 1) % 3; s.write(); layout(); });
-            }
+            java.util.List<Object[]> a = new java.util.ArrayList<>(), b = new java.util.ArrayList<>();
+            a.add(new Object[]{"Música: " + (s.musicOn ? "SÍ" : "NO"), (Runnable) () -> { s.musicOn = !s.musicOn; Snd.applyVolumes(); s.write(); layout(); }});
+            a.add(new Object[]{"Sonidos: " + (s.sfxOn ? "SÍ" : "NO"), (Runnable) () -> { s.sfxOn = !s.sfxOn; Snd.applyVolumes(); s.write(); layout(); }});
+            a.add(new Object[]{"Efectos: " + (s.reduceFx ? "REDUCIDOS" : "NORMALES"), (Runnable) () -> { s.reduceFx = !s.reduceFx; s.write(); layout(); }});
+            if (!pc) a.add(new Object[]{"Vibración: " + (s.vibOn ? "SÍ" : "NO"), (Runnable) () -> { s.vibOn = !s.vibOn; s.write(); layout(); }});
+            if (!fromRun && game.P.video() != null) a.add(new Object[]{"Vídeo y gráficos", (Runnable) () -> game.go(new VideoScreen(game))});
+            if (!pc) b.add(new Object[]{"Entrada: " + new String[]{"Automática", "Táctil", "Mando"}[s.inputMode], (Runnable) () -> { s.inputMode = (s.inputMode + 1) % 3; s.write(); layout(); }});
             if (!fromRun) {
-                add(x, y + st * i++, bw, bh, pc ? "Teclado, ratón y mando" : "Controles (teclado y mando)", () -> game.go(new ControlsScreen(game)));
-                if (game.P.video() != null) add(x, y + st * i++, bw, bh, "Vídeo y gráficos", () -> game.go(new VideoScreen(game)));
-                if (!pc) add(x, y + st * i++, bw, bh, "Organizar controles táctiles", () -> game.go(new ControlsEditor(game, false)));
-                add(x, y + st * i++, bw, bh, confirmT > 0 ? "¿Seguro? Toca otra vez" : "Borrar progreso", () -> {
+                b.add(new Object[]{pc ? "Teclado, ratón y mando" : "Teclado y mando", (Runnable) () -> game.go(new ControlsScreen(game))});
+                if (!pc) b.add(new Object[]{"Controles táctiles", (Runnable) () -> game.go(new ControlsEditor(game, false))});
+                b.add(new Object[]{confirmT > 0 ? "¿Seguro? Toca otra vez" : "Borrar progreso", (Runnable) () -> {
                     if (confirmT > 0) { Save.S.reset(); Snd.applyVolumes(); confirmT = 0; Snd.sfx("ui_back", 1f); }
                     else confirmT = 3f;
                     layout();
-                });
+                }});
             }
-            add(x, y + st * i, bw, bh, "Volver", () -> back());
+            int rows = Math.max(a.size(), b.size());
+            float room = py + ph - 32 - y0;                      // espacio hasta "Volver"
+            if (rows * st > room) st = Math.max(bh + 2, room / rows);
+            for (int k = 0; k < a.size(); k++) add(c0x, y0 + st * k, colW, bh, (String) a.get(k)[0], (Runnable) a.get(k)[1]);
+            for (int k = 0; k < b.size(); k++) { Hit hb = add(c1x, y0 + st * k, colW, bh, (String) b.get(k)[0], (Runnable) b.get(k)[1]); if (k == b.size() - 1 && !fromRun) hb.tag = 77; }
+            add(px + pw / 2f - 60, py + ph - 28, 120, 20, "Volver", () -> back());
         }
 
         @Override boolean back() { if (fromRun) return false; game.go(home(game)); return true; }
@@ -202,11 +218,16 @@ final class Screens {
 
         @Override void render(Platform.Gfx g) {
             int w = W();
+            geom();
             bg.render(g, w, 0.45f);
-            UI.panel(g, 0, w / 2f - 120, 26, 240, 224, 0.95f);
-            UI.big.center(g, "OPCIONES", w / 2f, 34, UI.GOLD, 1f);
+            UI.panel(g, 0, px, py, pw, ph, 0.95f);
+            UI.title(g, "OPCIONES", w / 2f, py + 8, UI.GOLD, 1f);
+            UI.small.draw(g, "Audio e imagen", c0x + 2, secY, 0xFFB8A050, 1f);
+            UI.small.draw(g, "Controles y datos", c1x + 2, secY, 0xFFB8A050, 1f);
+            UI.divider(g, c0x, secY + 11, colW); UI.divider(g, c1x, secY + 11, colW);
             drawButtons(g);
-            UI.small.center(g, "SwordsmanMagic: Eternal Abyss v2.1", w / 2f, 255, UI.GREY, 1f);   // fuera del panel (que acaba en 250)
+            for (Hit hb : hits) if (hb.tag == 77 && confirmT > 0) { g.rect(hb.x, hb.y, hb.w, 1, 0xFFFF5A4A, false); g.rect(hb.x, hb.y + hb.h - 1, hb.w, 1, 0xFFFF5A4A, false); }
+            UI.small.center(g, "SwordsmanMagic: Eternal Abyss v2.1", w / 2f, py + ph + 4, UI.GREY, 1f);   // debajo del panel
         }
     }
 

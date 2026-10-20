@@ -41,6 +41,15 @@ abstract class Screen {
 
     protected int W() { return game.viewW; }
 
+    /** Menus disenados para 270 px de alto: en pantallas mas altas (hasta 320) se centran en vertical en lugar de dejar
+     *  una franja vacia abajo. El fondo (TitleBg) sigue ocupando toda la pantalla. */
+    boolean center270() { return false; }
+    /** Desplazamiento vertical aplicado a la pantalla actual (px virtuales). */
+    static float OY;
+    /** Dibuja algo que debe ocupar toda la pantalla real (fondos, velos) aunque la pantalla este centrada. */
+    static void fullBegin(Platform.Gfx g) { if (OY != 0) g.pushTransform(0, -OY, 1f); }
+    static void fullEnd(Platform.Gfx g) { if (OY != 0) g.popTransform(); }
+
     protected Hit add(float x, float y, float w, float h, String label, Runnable act) {
         Hit hh = new Hit(x, y, w, h, label, act);
         hits.add(hh);

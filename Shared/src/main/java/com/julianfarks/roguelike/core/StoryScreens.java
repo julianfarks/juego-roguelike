@@ -13,6 +13,7 @@ final class StoryScreens {
 
     // =================================================================== menu Historia
     static final class Historia extends Screen {
+    @Override boolean center270() { return true; }
         private final Screens.TitleBg bg = new Screens.TitleBg();
         private final boolean devAll;
 

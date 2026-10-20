@@ -16,6 +16,7 @@ final class CodexScreens {
 
     // =================================================================== companeros
     static final class Comp extends Screen {
+    @Override boolean center270() { return true; }
         private final Screens.TitleBg bg = new Screens.TitleBg();
         private String news;
         Comp(Game g) { super(g); news = Companions.refresh(Save.S); }
@@ -59,6 +60,7 @@ final class CodexScreens {
 
     // =================================================================== jardin
     static final class GardenScr extends Screen {
+    @Override boolean center270() { return true; }
         private final Screens.TitleBg bg = new Screens.TitleBg();
         private float pop; private int popPlot = -1;
         GardenScr(Game g) { super(g); }
@@ -110,6 +112,7 @@ final class CodexScreens {
     }
 
     static final class CodexScr extends Screen {
+    @Override boolean center270() { return true; }
         private final Screens.TitleBg bg = new Screens.TitleBg();
         private static final String[] TABS = {"Enemigos", "Jefes", "Sucesos", "Reliquias", "Mejoras", "Espadachines"};
         private static final int PER = 8;
@@ -170,7 +173,12 @@ final class CodexScreens {
         @Override void layout() {
             hits.clear();
             int w = W(); float tw = (w - 20) / (float) TABS.length;
-            for (int i = 0; i < TABS.length; i++) { final int k = i; Hit h = add(10 + i * tw, 30, tw - 3, 16, TABS[i], () -> { tab = k; page = 0; selIdx = 0; build(); layout(); }); h.disabled = false; }
+            // pestañas con ancho proporcional al texto de cada una (en 480 px "Espadachines" ya no se recorta)
+            float avail = W() - 20, need = 0; float[] tws = new float[TABS.length];
+            for (int i = 0; i < TABS.length; i++) { tws[i] = UI.small.width(TABS[i]) + 8; need += tws[i] + 3; }
+            float extra = (avail - need) / TABS.length;
+            float tx = 10;
+            for (int i = 0; i < TABS.length; i++) { final int k = i; float ww = tws[i] + extra; Hit h = add(tx, 30, ww, 16, TABS[i], () -> { tab = k; page = 0; selIdx = 0; build(); layout(); }); h.disabled = false; tx += ww + 3; }
             add(10, 244, 70, 22, "Volver", () -> back());
             Hit pv = add(w / 2f - 130, 244, 40, 22, "<", () -> { if (page > 0) { page--; selIdx = page * PER; } }); pv.noSound = false;
             add(w / 2f - 82, 244, 40, 22, ">", () -> { if (page < pageMax[0]) { page++; selIdx = page * PER; } });
@@ -234,6 +242,7 @@ final class CodexScreens {
 
     // =================================================================== retos del modo infinito
     static final class Challenges extends Screen {
+    @Override boolean center270() { return true; }
         private final Screens.TitleBg bg = new Screens.TitleBg();
         Challenges(Game g) { super(g); }
         @Override void layout() {

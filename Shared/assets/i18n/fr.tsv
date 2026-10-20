@@ -1511,6 +1511,20 @@ Quedó en otra sala	Laissée dans une autre salle
 {} (carg. {})	{} (charg. {})
 +{}% de daño	+{} % de dégâts
 +{}% de velocidad de ataque	+{} % de vitesse d'attaque
+Audio e imagen	Audio et image
+Controles y datos	Commandes et données
+Magia	Magie
+Defensa	Défense
+Recursos	Ressources
+Invocaciones	Invocations
+Riesgo	Risque
+Maldiciones	Malédictions
+Sin mejora	Aucune
+Comprar	Acheter
+Vendido	Vendu
+Ya comprado	Déjà acheté
+Precio: {}	Prix : {}
+Precio: {} (te faltan {})	Prix : {} (il manque {})
 Desciende al Abismo como {}	Descendez dans l'Abîme en tant que {}
 Descubierto: {}	Découvert : {}
 Dificultad: {}	Difficulté : {}

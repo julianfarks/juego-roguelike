@@ -2,6 +2,7 @@ package com.julianfarks.roguelike.core;
 
 /** Selector de idioma (menu principal). Cambia la interfaz al instante y guarda la preferencia; no toca ningun dato de la partida. */
 final class LanguageScreen extends Screen {
+    @Override boolean center270() { return true; }
     private final Screens.TitleBg bg = new Screens.TitleBg();
     private float flash;
 

@@ -15,3 +15,17 @@ Quedó en otra sala	Left in another room	Laissée dans une autre salle	留在了
 {} (carg. {})	{} (mag. {})	{} (charg. {})	{}（弹匣{}）
 +{}% de daño	+{}% damage	+{} % de dégâts	伤害+{}%
 +{}% de velocidad de ataque	+{}% attack speed	+{} % de vitesse d'attaque	攻击速度+{}%
+Audio e imagen	Audio & display	Audio et image	音频与画面
+Controles y datos	Controls & data	Commandes et données	控制与数据
+Magia	Magic	Magie	魔法
+Defensa	Defense	Défense	防御
+Recursos	Resources	Ressources	资源
+Invocaciones	Summons	Invocations	召唤
+Riesgo	Risk	Risque	风险
+Maldiciones	Curses	Malédictions	诅咒
+Sin mejora	No upgrade	Aucune	无强化
+Comprar	Buy	Acheter	购买
+Vendido	Sold	Vendu	已售出
+Ya comprado	Already bought	Déjà acheté	已购买
+Precio: {}	Price: {}	Prix : {}	价格：{}
+Precio: {} (te faltan {})	Price: {} ({} short)	Prix : {} (il manque {})	价格：{}（还差{}）

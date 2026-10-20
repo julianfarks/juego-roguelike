@@ -2,6 +2,7 @@ package com.julianfarks.roguelike.core;
 
 /** Pantalla "Codigos": campo de texto + teclado en pantalla (tactil) o teclado fisico/mando. */
 final class CodesScreen extends Screen {
+    @Override boolean center270() { return true; }
     private final Screens.TitleBg bg = new Screens.TitleBg();
     private final StringBuilder text = new StringBuilder();
     private String msg = "";

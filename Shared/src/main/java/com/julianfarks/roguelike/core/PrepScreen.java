@@ -6,6 +6,7 @@ package com.julianfarks.roguelike.core;
  * iniciales, el modo y la dificultad. «COMENZAR EXPEDICION» lanza una transicion animada y despues la run.
  */
 final class PrepScreen extends Screen {
+    @Override boolean center270() { return true; }
     // opciones ofrecidas: se mantienen hasta que empieza una expedicion (salir y volver no permite re-tirar)
     private static int[] offered;
     private final int[] mine;           // copia local: la pantalla sigue mostrandose mientras dura la transicion
@@ -232,6 +233,7 @@ final class PrepScreen extends Screen {
 
     @Override void render(Platform.Gfx g) {
         int w = W();
+        Screen.fullBegin(g);
         g.clear(0xFF080408);
         float[] fac = {3f, 6f, 11f};
         for (int i = 0; i < 3; i++) {
@@ -244,13 +246,16 @@ final class PrepScreen extends Screen {
         }
         if (baked != null) g.image(baked, 0, 0, baked.w, baked.h, Math.round((w - 640) / 2f), 0, baked.w, baked.h, 0, 0, 1f);
         g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x0A0408, 150), false);
+        Screen.fullEnd(g);
         ClassDef c = cls();
         drawShowcase(g, c);
         drawInfo(g, c, w);
         drawCards(g, w);
         drawSummary(g, c, w);
         ps.render(g, 0, 0);
+        Screen.fullBegin(g);
         if (UI.vignette != null) g.image(UI.vignette, 0, 0, UI.vignette.w, UI.vignette.h, 0, 0, w, ViewSize.h, 0, 0, 0.6f);
+        Screen.fullEnd(g);
         UI.big.center(g, "PREPARACIÓN", (156 + w) / 2f, 4, UI.GOLD, 1f);
         Hit fh = focusHit(); sel = fh == null ? -1 : hits.indexOf(fh);
         drawButtons(g);
@@ -264,7 +269,7 @@ final class PrepScreen extends Screen {
         }
         if (toastT > 0) { UI.panel(g, 0, w / 2f - 160, 120, 320, 18, 0.95f); UI.small.center(g, toast, w / 2f, 124, UI.GOLD, Mth.clamp(toastT, 0, 1)); }
         float fin = Mth.clamp(enterT / 0.5f, 0, 1);
-        if (fin < 1) g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x000000, (int) ((1 - fin) * 255)), false);
+        if (fin < 1) g.rect(0, -Screen.OY, w, ViewSize.h, Mth.withAlpha(0x000000, (int) ((1 - fin) * 255)), false);
         if (launchT >= 0) drawLaunch(g, w, c);
     }
 
@@ -422,15 +427,18 @@ final class PrepScreen extends Screen {
         int ink = (int) wR;
         float y = SUM_Y;
         final int step = 11;
+        g.rect(x - 3, y - 2, wR + 4, SUM_END - y + 3, Mth.withAlpha(0x0A0408, 150), false);   // placa: el resumen se lee sobre el suelo de piedra
         if (b != null) {
-            String pro = "+ " + b.pro, con = "- " + b.con;
-            if (UI.small.width(pro) + 12 + UI.small.width(con) <= ink) {          // caben en una fila
-                UI.small.draw(g, pro, x, y, 0xFF6AE08A, 1f);
-                UI.small.draw(g, con, x + UI.small.width(pro) + 12, y, 0xFFFF7A7A, 1f);
+            // misma senal que en las tarjetas (flecha verde / roja) en lugar de "+ " / "- ": el texto ya trae su signo ("+12% ...")
+            String pro = b.pro, con = b.con;
+            if (UI.small.width(pro) + 9 + 12 + UI.small.width(con) + 9 <= ink) {          // caben en una fila
+                marker(g, x, y, true, 0xFF6AE08A); UI.small.draw(g, pro, x + 9, y, 0xFF6AE08A, 1f);
+                float x2 = x + 9 + UI.small.width(pro) + 12;
+                marker(g, x2, y, false, 0xFFFF7A7A); UI.small.draw(g, con, x2 + 9, y, 0xFFFF7A7A, 1f);
                 y += step;
             } else {                                                              // si no, cada una en su fila
-                y += UI.small.drawWrapped(g, pro, x, y, ink, 0xFF6AE08A, 1f, step);
-                y += UI.small.drawWrapped(g, con, x, y, ink, 0xFFFF7A7A, 1f, step);
+                marker(g, x, y, true, 0xFF6AE08A); y += UI.small.drawWrapped(g, pro, x + 9, y, ink - 9, 0xFF6AE08A, 1f, step);
+                marker(g, x, y, false, 0xFFFF7A7A); y += UI.small.drawWrapped(g, con, x + 9, y, ink - 9, 0xFFFF7A7A, 1f, step);
             }
         } else { UI.small.draw(g, "Sin bendición inicial", x, y, UI.GREY, 1f); y += step; }
         String eq = "Equipo: " + c.weapon + (sk != null ? " · " + sk.name : "");
@@ -455,7 +463,8 @@ final class PrepScreen extends Screen {
         // el portal se abre: destello radial creciente
         float r = 20 + k * k * 700;
         UI.light(g, 78, 150, r, 0xFFE0B0, Mth.clamp(k * 1.4f, 0, 0.85f));
-        if (k > 0.35f) g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x120408, (int) (Mth.clamp((k - 0.35f) / 0.5f, 0, 1) * 255)), false);
+        if (k > 0.35f) g.rect(0, -Screen.OY, w, ViewSize.h, Mth.withAlpha(0x120408, (int) (Mth.clamp((k - 0.35f) / 0.5f, 0, 1) * 255)), false);
+        if (k > 0.5f) TextAudit.cover();          // el velo ya tapa la pantalla de preparacion
         if (k > 0.5f) {
             float a = Mth.clamp((k - 0.5f) / 0.3f, 0, 1);
             UI.big.center(g, "ENTRANDO AL ABISMO", w / 2f, 112, UI.GOLD, a);

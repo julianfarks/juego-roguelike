@@ -180,7 +180,7 @@ public final class Font {
         int n = Math.min(ls.size(), Math.max(1, maxLines));
         for (int i = 0; i < n; i++) {
             String l = ls.get(i);
-            if (i == n - 1 && ls.size() > n) { while (l.length() > 1 && rawWidth(l + "…") > maxW) l = l.substring(0, l.length() - 1); l += "…"; }
+            if (i == n - 1 && ls.size() > n) { TextAudit.cut(s, "lineas " + ls.size() + ">" + n); while (l.length() > 1 && rawWidth(l + "…") > maxW) l = l.substring(0, l.length() - 1); l += "…"; }
             rawDraw(g, l, x, y + i * step, color, alpha);
         }
         return n * step;

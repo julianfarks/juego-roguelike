@@ -352,6 +352,20 @@ public final class Level {
     public void text(float x, float y, String s, int color, boolean big) {
         DmgText d = new DmgText();
         d.x = x; d.y = y; d.vy = -34; d.life = d.maxLife = big ? 0.9f : 0.7f; d.text = s; d.color = color; d.big = big;
+        // avisos (no numeros de dano): si ya hay otro aviso reciente en el mismo sitio, este se coloca encima en vez de taparlo
+        if (UI.small != null) {
+            float w = UI.small.width(s);
+            for (int k = 0; k < 6; k++) {
+                boolean hit = false;
+                for (DmgText o : texts) {
+                    if (o.target != null || o.life < 0.15f || o.text == null) continue;
+                    float ow = UI.small.width(o.text);
+                    if (Math.abs(o.x - d.x) < (ow + w) / 2f + 2 && Math.abs(o.y - d.y) < 11) { hit = true; break; }
+                }
+                if (!hit) break;
+                d.y -= 12;
+            }
+        }
         if (texts.size() > 40) texts.remove(0);
         texts.add(d);
     }
@@ -1199,6 +1213,7 @@ public final class Level {
         float tx = -camX * z + (1 - z) * w / 2f * 1f + sx, ty = -camY * z + (1 - z) * h / 2f + sy;
         if (z == 1f) { tx = Math.round(tx); ty = Math.round(ty); }
         g.pushTransform(tx, ty, z);
+        TextAudit.xf(tx, ty, z);
         // sala
         if (room.baked != null) {
             int vx0 = Math.max(0, (int) camX), vy0 = Math.max(0, (int) camY);
@@ -1232,6 +1247,7 @@ public final class Level {
         for (DmgText d : texts) drawText(g, d);
         if (tutorial != null && UI.small != null) UI.small.center(g, tutorial, room.spawnX + 40, room.spawnY - 70, 0xFFFFFF, 0.9f);
         g.popTransform();
+        TextAudit.xfEnd();
         // oscuridad ambiental y vineta
         if (darkness > 0) g.rect(0, 0, w, h, Mth.withAlpha(0x000008, (int) (darkness * 255)), false);
         if (UI.vignette != null && VideoCfg.vignette) g.image(UI.vignette, 0, 0, UI.vignette.w, UI.vignette.h, 0, 0, w, h, 0, 0, 0.55f);
@@ -1328,6 +1344,12 @@ public final class Level {
 
     private final List<float[]> labelRects = new ArrayList<>();
 
+    /** x de un texto del mundo (ancho w) desplazada para quedar dentro de la parte visible (zoom de camara y margen para el temblor). */
+    float visX(float x, float w) {
+        float z = camZoom, vx0 = camX - (1 - z) * viewW / 2f / z, vx1 = camX + (viewW - (1 - z) * viewW / 2f) / z;
+        return Mth.clamp(x, vx0 + 6, Math.max(vx0 + 6, vx1 - 6 - w));
+    }
+
     private void drawProp(Platform.Gfx g, Prop p) {
         if (p.hidden) return;
         if (p.kind.equals("weapon")) { Arsenal.drawGround(g, this, p); return; }
@@ -1371,7 +1393,8 @@ public final class Level {
                 for (Prop q : props) if (q != p && !q.dead && !q.hidden && p.label.equals(q.label) && !q.kind.equals("door") && Math.abs(q.y - p.y) < 8 && Math.abs(q.x - p.x) < lw + 8) { cx += q.x; n++; }
                 cx /= n;
                 labelRects.add(new float[]{cx, ly, lw, p.label.hashCode()});
-                UI.small.center(g, p.label, cx, ly, p.locked ? 0x9AA0B0 : 0xFFD25A, 1f);
+                float lx0 = visX(cx - lw / 2f, lw);
+                UI.small.draw(g, p.label, lx0, ly, p.locked ? 0x9AA0B0 : 0xFFD25A, 1f);
             }
         }
     }
@@ -1381,7 +1404,8 @@ public final class Level {
         if (f == null) return;
         float a = Mth.clamp(d.life / 0.25f, 0, 1);
         float w = f.width(d.text);
-        int x = Math.round(Mth.clamp(d.x - w / 2f, camX + 3, Math.max(camX + 3, camX + viewW - 3 - w))), y = Math.round(d.y);   // los avisos largos nunca se cortan en el borde de la pantalla
+        float z = camZoom, vy1 = camY + (ViewSize.h - (1 - z) * ViewSize.h / 2f) / z;
+        int x = Math.round(visX(d.x - w / 2f, w)), y = Math.round(Math.min(d.y, vy1 - 12));   // los avisos largos nunca se cortan en el borde de la pantalla
         // contorno oscuro (legibilidad sobre cualquier fondo) y, en criticos, doble trazo dorado: no depende solo del color
         int ol = 0x180818;
         f.draw(g, d.text, x - 1, y, ol, a * 0.85f); f.draw(g, d.text, x + 1, y, ol, a * 0.85f);

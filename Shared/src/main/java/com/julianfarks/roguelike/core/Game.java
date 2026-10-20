@@ -125,7 +125,10 @@ public class Game implements Platform.GameLoop {
     @Override
     public void render(Platform.Gfx g) {
         if (TextAudit.ON) TextAudit.begin(cur.getClass().getSimpleName() + (cur instanceof RunScreen ? "/ov" + ((RunScreen) cur).debugOv() : "") + "/L" + I18n.lang());
+        Screen.OY = cur.center270() && ViewSize.h > 270 ? (float) Math.floor((ViewSize.h - 270) / 2f) : 0f;
+        if (Screen.OY != 0) g.pushTransform(0, Screen.OY, 1f);
         cur.render(g);
+        if (Screen.OY != 0) g.popTransform();
         if (TextAudit.ON) TextAudit.end(viewW, ViewSize.h);
         if (P != null && P.video() != null && VideoCfg.cur.showFps) {
             String s = "FPS " + P.video().measuredFps();
@@ -139,7 +142,8 @@ public class Game implements Platform.GameLoop {
         if (fadeDir == 1) return;
         keyboardUsed = false;
         if (action == Platform.ACTION_DOWN) noteTouch();
-        cur.touch(id, action, x, y);
+        float oy = cur.center270() && ViewSize.h > 270 ? (float) Math.floor((ViewSize.h - 270) / 2f) : 0f;
+        cur.touch(id, action, x, y - oy);
     }
 
     @Override

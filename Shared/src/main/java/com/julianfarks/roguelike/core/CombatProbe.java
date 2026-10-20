@@ -125,6 +125,10 @@ final class CombatProbe {
                 ck("parry perfecto exige la ventana (parryT>0=" + win + ") y sigue funcionando: parries +1 y sin dano", win && lv.parries == par0 + 1 && r.hp >= hp0);
                 ck("parry perfecto: ventana de contraataque, ralentizacion breve y destello", lv.counterT > 0.9f && lv.slowT > 0 && lv.flashT > 0);
                 g.key('C', false);
+                // el muñeco del contraataque necesita sitio libre delante: segun la sala habia un muro a 16 px y el golpe (correctamente)
+                // no atraviesa paredes. Se despeja el hueco para medir solo la regla del contraataque.
+                { Room rm = lv.room; int gx = (int) (p.x / Room.TS), gy = (int) (p.y / Room.TS);
+                  for (int i = -1; i <= 4; i++) { rm.set(gx + i, gy, Room.SOLID); for (int j = 1; j <= 4; j++) rm.set(gx + i, gy - j, Room.AIR); } }
                 dm = dummy(lv, p, 14); dm.state = Enemy.PATROL;
                 p.right = true; ps_ = 4; pf0 = t; return false; }
             case 4: { // contraataque: el primer golpe consume la ventana

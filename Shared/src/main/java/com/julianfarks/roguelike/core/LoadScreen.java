@@ -2,6 +2,7 @@ package com.julianfarks.roguelike.core;
 
 /** Cargar partida: autoguardado y 3 ranuras. */
 final class LoadScreen extends Screen {
+    @Override boolean center270() { return true; }
     private final Screens.TitleBg bg = new Screens.TitleBg();
     private static final int[] IDS = {RunSave.AUTO, 0, 1, 2};
 

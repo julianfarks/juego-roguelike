@@ -391,8 +391,13 @@ final class Ops extends Screen {
             float pw = (float) Math.max(46, UI.small.width(NAME[i]) + 12);
             float py = FLOOR + 6;
             boolean hot = sel || i == PORTAL || i == cur;
-            UI.panel(g, hot ? 1 : 0, x - pw / 2f, py, pw, 14, 0.9f * a);
-            UI.small.center(g, NAME[i], x, py + 3, dis ? UI.GREY : (hot ? UI.GOLD : UI.WHITE), a);
+            // la placa se desvanece al salir por el borde de la pantalla: nunca se ve un nombre cortado
+            float edge = Math.min(x - pw / 2f, w - (x + pw / 2f));
+            float pa = a * Mth.clamp(1f + edge / (pw * 0.35f), 0f, 1f);
+            if (pa > 0.01f) {
+                UI.panel(g, hot ? 1 : 0, x - pw / 2f, py, pw, 14, 0.9f * pa);
+                UI.small.center(g, NAME[i], x, py + 3, dis ? UI.GREY : (hot ? UI.GOLD : UI.WHITE), pa * pa);
+            }
             if (sel) outline(g, spotHit[i]);
         }
         drawHero(g);

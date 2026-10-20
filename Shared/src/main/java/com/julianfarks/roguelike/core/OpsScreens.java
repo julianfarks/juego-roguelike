@@ -11,6 +11,7 @@ final class OpsScreens {
 
     // =================================================================== estadisticas
     static final class Stats extends Screen {
+    @Override boolean center270() { return true; }
         private final Screens.TitleBg bg = new Screens.TitleBg();
         Stats(Game g) { super(g); }
 
@@ -91,37 +92,43 @@ final class OpsScreens {
         private final Screens.TitleBg bg = new Screens.TitleBg();
         Trophy(Game g) { super(g); }
 
-        @Override void layout() { hits.clear(); add(W() / 2f - 40, 244, 80, 22, "Volver", () -> back()); }
+        @Override void layout() { hits.clear(); add(W() / 2f - 40, ViewSize.h - 26, 80, 22, "Volver", () -> back()); }
         @Override boolean back() { game.go(new Ops(game)); return true; }
         @Override void update(float dt) { bg.update(dt, W()); t += dt; }
 
+        /** Tarjeta: nombre arriba a todo el ancho, filete, copa a la izquierda y descripcion a su lado, barra de progreso abajo.
+         *  El alto de las tarjetas sale del alto real de la pantalla (270-320) y la descripcion nunca baja hasta la barra. */
         @Override void render(Platform.Gfx g) {
-            int w = W();
+            int w = W(), h = ViewSize.h;
             bg.render(g, w, 0.65f);
             Save s = Save.S;
-            UI.big.center(g, "TROFEOS", w / 2f, 6, UI.GOLD, 1f);
+            UI.title(g, "TROFEOS", w / 2f, 6, UI.GOLD, 1f);
             UI.small.center(g, Trophies.count(s) + " de " + Trophies.ALL.length + " desbloqueados", w / 2f, 23, UI.GREY, 1f);
-            int cols = 4, n = Trophies.ALL.length;
-            float cw = Math.min((w - 24) / cols - 4, 116), ch = 49, gx = w / 2f - (cols * (cw + 4) - 4) / 2f;
+            int cols = 4, n = Trophies.ALL.length, rows = (n + cols - 1) / cols;
+            float top = 35, bottom = h - 30, gap = 3;
+            float cw = Math.min((w - 20) / cols - gap, 140), ch = Math.min(64, (bottom - top - (rows - 1) * gap) / rows), gx = w / 2f - (cols * (cw + gap) - gap) / 2f;
+            int lh = I18n.lang() == I18n.ZH ? 13 : 9;
             for (int i = 0; i < n; i++) {
                 Trophies.T tr = Trophies.ALL[i];
-                float x = gx + (i % cols) * (cw + 4), y = 35 + (i / cols) * (ch + 2);
+                float x = gx + (i % cols) * (cw + gap), y = top + (i / cols) * (ch + gap);
                 boolean got = Trophies.has(s, i);
                 UI.panel(g, got ? 1 : 0, x, y, cw, ch, got ? 1f : 0.8f);
+                if (got) UI.light(g, x + cw / 2f, y + ch / 2f, cw * 0.45f, 0xFFD25A, 0.10f);
                 int col = got ? 0xFFD25A : 0x4A4658;
-                // la copa va debajo del nombre, junto a la descripcion: asi el nombre usa todo el ancho de la tarjeta
-                g.rect(x + 6, y + 17, 10, 7, Mth.withAlpha(col, 255), false);
-                g.rect(x + 9, y + 24, 4, 5, Mth.withAlpha(col, 255), false);
-                g.rect(x + 6, y + 29, 10, 2, Mth.withAlpha(col, 255), false);
-                UI.small.draw(g, tr.name, x + 6, y + 4, got ? UI.GOLD : UI.GREY, 1f);
-                PrepScreen.fitErr("trofeo nombre [" + I18n.tr(tr.name) + "]", UI.small.width(tr.name) + 8, cw - 3, -1);
-                int dh = UI.small.drawWrapped(g, tr.desc, x + 20, y + 14, (int) cw - 24, got ? 0xE8E0E0 : 0x808090, 1f, 10);
-                PrepScreen.fitErr("trofeo desc [" + I18n.tr(tr.desc) + "]", 14 + dh - 1, got ? ch - 3 : ch - 6, -1);
+                UI.small.draw(g, UI.fitLabel(UI.small, tr.name, cw - 10), x + 5, y + 3, got ? UI.GOLD : UI.GREY, 1f);
+                g.rect(x + 5, y + 3 + lh + 1, cw - 10, 1, got ? 0x88B8A050 : 0x44B8A050, false);
+                float cy = y + lh + (lh > 10 ? 5 : 7);
+                g.rect(x + 6, cy, 10, 7, Mth.withAlpha(col, 255), false);
+                g.rect(x + 9, cy + 7, 4, 5, Mth.withAlpha(col, 255), false);
+                g.rect(x + 6, cy + 12, 10, 2, Mth.withAlpha(col, 255), false);
+                float barY = y + ch - 5;                         // barra fina pegada al borde inferior: la descripcion usa todo el resto
+                int maxL = Math.max(1, (int) ((barY - cy + 1) / lh));
+                UI.small.drawWrappedMax(g, tr.desc, x + 20, cy - 1, (int) cw - 23, got ? 0xE8E0E0 : 0x9A98A8, 1f, lh, maxL);
                 if (!got) {
                     int p = Math.min(tr.goal, tr.prog.applyAsInt(s));
                     float bw = cw - 12;
-                    g.rect(x + 6, y + ch - 5, bw, 3, 0xFF1A1620, false);
-                    g.rect(x + 6, y + ch - 5, bw * p / (float) tr.goal, 3, 0xFF7AF0FF, false);
+                    g.rect(x + 6, barY, bw, 2, 0xFF1A1620, false);
+                    g.rect(x + 6, barY, bw * p / (float) tr.goal, 2, 0xFF7AF0FF, false);
                 }
             }
             drawButtons(g);
@@ -131,6 +138,7 @@ final class OpsScreens {
     // =================================================================== estaciones aun por activar
     /** Estacion cuyo sistema todavia no esta implementado: lo dice con claridad y no simula contenido. */
     static final class Pending extends Screen {
+    @Override boolean center270() { return true; }
         private final Screens.TitleBg bg = new Screens.TitleBg();
         private final String title; private final String[] lines;
         Pending(Game g, String title, String... lines) { super(g); this.title = title; this.lines = lines; }

@@ -1511,6 +1511,20 @@ Quedó en otra sala	留在了其他房间
 {} (carg. {})	{}（弹匣{}）
 +{}% de daño	伤害+{}%
 +{}% de velocidad de ataque	攻击速度+{}%
+Audio e imagen	音频与画面
+Controles y datos	控制与数据
+Magia	魔法
+Defensa	防御
+Recursos	资源
+Invocaciones	召唤
+Riesgo	风险
+Maldiciones	诅咒
+Sin mejora	无强化
+Comprar	购买
+Vendido	已售出
+Ya comprado	已购买
+Precio: {}	价格：{}
+Precio: {} (te faltan {})	价格：{}（还差{}）
 Desciende al Abismo como {}	化身为{}，踏入深渊
 Descubierto: {}	已发现：{}
 Dificultad: {}	难度：{}

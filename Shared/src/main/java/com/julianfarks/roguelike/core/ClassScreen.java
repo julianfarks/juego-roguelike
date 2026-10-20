@@ -2,6 +2,7 @@ package com.julianfarks.roguelike.core;
 
 /** Seleccion de clase y dificultad antes de empezar una partida. */
 final class ClassScreen extends Screen {
+    @Override boolean center270() { return true; }
     private final Screens.TitleBg bg;
     private int selC, selS;
     private int asc;

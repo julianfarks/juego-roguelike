@@ -424,6 +424,7 @@ public final class DebugBot {
             String[] w = warp.split(":");
             int b = w.length > 1 ? Integer.parseInt(w[1]) : 0;
             rs.rs.biome = Biome.ALL[b]; rs.rs.stage = Biome.ALL[b].tier;
+            if (System.getenv("BOT_DUNGEON") != null) { rs.rs.dungeonNo = Integer.parseInt(System.getenv("BOT_DUNGEON")); rs.rs.stage = RunState.tierOf(rs.rs.dungeonNo); }   // escala como la mazmorra N de una campana
             rs.rs.roomNo = w[0].equals("boss") ? 4 : 1;
             int type = w[0].equals("boss") ? Room.BOSS : w[0].equals("shop") ? Room.SHOP : w[0].equals("forge") ? Room.FORGE : w[0].equals("bless") ? Room.BLESSING
                     : w[0].equals("rest") ? Room.REST : w[0].equals("elite") ? Room.ELITE : w[0].equals("hub") ? Room.HUB : w[0].equals("treasure") ? Room.TREASURE : Room.COMBAT;
@@ -507,7 +508,7 @@ public final class DebugBot {
                 progT = frame;
                 if (progStep == 0) { System.out.println("PROG inicio bioma=" + rs.rs.biome.id + " visited=" + rs.rs.visited); progSeen.add(rs.rs.biome.id); rs.rs.visited.add(rs.rs.biome.id); }
                 if (progStep > 0) {
-                    System.out.println("PROG paso" + progStep + " dungeonNo=" + rs.rs.dungeonNo + " stage=" + rs.rs.stage + " bioma=" + rs.rs.biome.id + " " + rs.rs.biome.name + " power=" + rs.rs.power() + " fin_run=" + (rs.rs.finalRun) + " sala=" + lv.room.type);
+                    System.out.println("PROG paso" + progStep + " dungeonNo=" + rs.rs.dungeonNo + " stage=" + rs.rs.stage + " bioma=" + rs.rs.biome.id + " " + rs.rs.biome.name + " power=" + rs.rs.power() + " fin_run=" + (rs.rs.finalRun) + " sala=" + lv.room.type + " victoria_abierta=" + (rs.debugOv() == 6));
                     progSeen.add(rs.rs.biome.id);
                 }
                 progStep++;
@@ -618,6 +619,13 @@ public final class DebugBot {
                 r.roomNo = 4; int p4 = r.power(); float h4 = r.enemyHpMul();
                 System.out.println(String.format("BAL %d | %d | %d/%d | %.2f-%.2f | %.2f | %.2f | %.2f | %.2f", d, r.stage, p0, p4, h0, h4, m0, r.campaignEliteChance(), r.campaignSpeedMul(), 1f + 0.08f * r.tierF()));
             }
+            boolean inf0 = r.infinite; int fl0 = r.floor; r.infinite = true;
+            System.out.println("BAL Endless piso | poder | vidaEnem x | danoEnem x | elite | jefeVida x | jefeDano x | probVolatil/Enjambre");
+            for (int fl : new int[]{1, 2, 3, 5, 8, 12, 20}) {
+                r.floor = fl; r.roomNo = 2;
+                System.out.println(String.format("BAL E%d | %d | %.2f | %.2f | %.2f | %.2f | %.2f | %.2f", fl, r.power(), r.enemyHpMul(), r.enemyDmgMul(), Infinite.eliteChance(fl), Infinite.bossHpMul(fl), Infinite.bossDmgMul(fl), Math.min(0.5f, 0.15f + 0.05f * fl)));
+            }
+            r.infinite = inf0; r.floor = fl0;
             r.dungeonNo = kd; r.stage = ks; r.roomNo = kr;
         }
         if (System.getenv("BOT_WEAPONTEST") != null && !rs.sandbox && frame == 700) {

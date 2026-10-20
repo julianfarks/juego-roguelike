@@ -20,7 +20,21 @@ Ya existían 20 (200 bendiciones, `tools/blessings`). Se añadieron Detonación 
 `power = round(dungeonNo*2.25) + sala`; jefes y oro/almas con `tierF()`; élites 5–30 % desde la 4ª mazmorra; velocidad +8 %/+15 % en las últimas. Tabla: `BOT_BALTEST`.
 
 ## Pruebas (todas headless)
-`BOT_PROGTEST` (recorrido de 9 biomas con atajo), `BOT_WINTEST`, `BOT_CONTTEST`, `BOT_WEAPONTEST`, `BOT_BLESSTEST=syn|chain|stress|ui|persist`, `BOT_SAVETEST`, `BOT_BALTEST`, y el flujo real con `BOT_KILLBOSS`+`BOT_WATCH` (jefe → puerta → siguiente mazmorra; Cazador 3 formas → victoria → Endless).
+`BOT_PROGTEST` (recorrido de 9 biomas con atajo), `BOT_WINTEST`, `BOT_CONTTEST`, `BOT_WEAPONTEST`, `BOT_BLESSTEST=syn|chain|stress|ui|persist`, `BOT_SAVETEST`, `BOT_BALTEST` (campaña y Endless), `BOT_ROOMMODTEST`, `BOT_REGTEST`, `BOT_ESCORTTEST`, y el flujo real con `BOT_KILLBOSS`+`BOT_WATCH` (jefe → puerta → siguiente mazmorra; Cazador 3 formas → victoria → Endless).
+
+## Arma: mejoras por nivel y Maestría
+`WeaponPerks`: cada nivel 1–20 da una mejora distinta (velocidad de ataque, crítico, daño crítico, quemar/ralentizar/envenenar/rayo) además del daño; hitos 5/10/15/20 (el 10 da onda de energía, el 15 golpe gigante, el 20 ejecutor) con aro y texto en la forja. En Endless, con el arma al máximo, la forja vende Maestría (10 rangos: +2 % daño y +1,5 % crítico cada uno; tope fijo, se guarda en la partida). En campaña no existe.
+
+## Desafíos y variedad
+- Modificadores de sala (desde la 3ª mazmorra y en Endless): *volátil* (los enemigos explotan con aro rojo de aviso) y *enjambre* (más enemigos, más frágiles). Se eligen de forma determinista por semilla/sala.
+- Endless: los jefes llegan con escoltas en oleadas desde el piso 3.
+- Cofre de botín en cada jefe normal; oro y almas de jefes siguen la curva continua.
+
+## Registro persistente
+Pestaña «Mejoras» del Códice (mejoras usadas por partida; no da poder), bestiario existente y «Causa probable» de la derrota en el panel final (heurística: lo más cercano que pudo dañar).
+
+## Feedback
+Destello dorado en críticos, aro naranja en bajas por reacción en cadena y rótulo «¡Cadena xN!» cada 4 bajas seguidas (se respeta «reducir efectos»).
 
 ## Pendiente
-Duración real de una partida (no medida), equilibrio real del nivel 20 + sinergias frente a los jefes, pruebas en dispositivos reales, retroalimentación visual de críticos/explosiones, registro persistente de builds, y el arte de la Fase 3 (36 enemigos, 10 jefes).
+Duración real de una partida (no medida); equilibrio real del nivel 20 + sinergias frente a los jefes (el bot del banco es demasiado lento para medirlo); pruebas en dispositivos reales; comprobación visual de los efectos nuevos; arte de la Fase 3 (36 enemigos, 10 jefes).

@@ -124,7 +124,7 @@ final class UiProbe {
                 boolean done;
                 switch (kind) {
                     case "altar": done = sc.ov == RunScreen.OV_BLESS; break;
-                    case "chest": done = prop.used || prop.open || sc.ov != RunScreen.OV_NONE; break;
+                    case "chest": done = prop.used || prop.open || prop.pending != null || sc.ov != RunScreen.OV_NONE; break;      // abierto: eleccion pendiente (se consume al elegir)
                     case "merchant": done = sc.ov == RunScreen.OV_SHOP; break;
                     case "fountain": done = prop.used; break;
                     case "forge": done = sc.ov == RunScreen.OV_FORGE; break;

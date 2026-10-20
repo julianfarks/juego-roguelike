@@ -88,6 +88,8 @@ final class Prop {
     int wAmmo, wRar, wMag = -1;      // arma secundaria en el suelo (kind "weapon"): municion que conserva y rareza (arg = id de arma)
     float pickLock;       // segundos hasta poder volver a interactuar (evita intercambios dobles por una misma pulsacion)
     boolean dropped;      // la solto el jugador (no es un hallazgo)
+    // cofre abierto cuya eleccion se omitio: guarda SUS ofertas (no se vuelven a sortear) hasta que se elija una; used solo al elegir
+    ChestLoot.Reward[] pending; int pendMode;
     float popT;           // animacion de caida al soltarla
     Prop(String kind, float x, float y) { this.kind = kind; this.x = x; this.y = y; }
 }

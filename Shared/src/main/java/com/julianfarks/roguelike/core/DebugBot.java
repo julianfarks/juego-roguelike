@@ -667,6 +667,9 @@ public final class DebugBot {
             else if (skStep == 5 && t > 80) { skStep = 7; System.out.println("SKILL B3 FALLA: no se libero"); }
             if (frame >= 690 && skStep < 7) return;     // el bot no interfiere mientras dura la prueba
         }
+        if (System.getenv("BOT_CHESTFLOW") != null && !rs.sandbox && !ChestFlowProbe.done()) {
+            if (ChestFlowProbe.step(g, rs, lv, p, frame)) return;
+        }
         if (System.getenv("BOT_MELEETEST") != null && !rs.sandbox && !MeleeProbe.done()) {
             if (MeleeProbe.step(g, rs, lv, p, frame)) return;
         }
@@ -724,7 +727,7 @@ public final class DebugBot {
             rs.dbgConfirm();     // repetir: no hace nada
             System.out.println("CHESTSKIP repetir omitir no hace nada: omitidos=" + rs.chestSkips + " (1) equipo igual=" + before0.equals(chestSnap(r)));
             rs.cMode = ChestLoot.MODE_WEAPONS; rs.cOffer = ChestLoot.roll(r, ChestLoot.MODE_WEAPONS, 3); rs.dbgChest(0); rs.dbgChestOvT();
-            System.out.println("CHESTSKIP toque directo en el boton: " + rs.debugTap("Omitir / Conservar equipo") + " ov=" + rs.debugOv() + " omitidos=" + rs.chestSkips + " (2) equipo igual=" + before0.equals(chestSnap(r)));
+            System.out.println("CHESTSKIP toque directo en el boton: " + rs.debugTap("Omitir") + " ov=" + rs.debugOv() + " omitidos=" + rs.chestSkips + " (2) equipo igual=" + before0.equals(chestSnap(r)));
             // elegir un arma sigue funcionando (las tres opciones originales)
             rs.cMode = ChestLoot.MODE_WEAPONS; rs.cOffer = ChestLoot.roll(r, ChestLoot.MODE_WEAPONS, 3); rs.dbgChest(1); rs.dbgConfirm();
             System.out.println("CHESTSKIP elegir opcion 2 sigue aplicando: ov=" + rs.debugOv() + " equipo cambio=" + !before0.equals(chestSnap(r)) + " (puede ser false si abrio comparacion)");

@@ -726,6 +726,14 @@ final class RunScreen extends Screen implements Level.Listener {
 
     private void openChest(Prop p) {
         if (p.used) return;
+        if (p.pending != null && p.pending.length == 0) return;      // se esta abriendo (medio segundo de animacion): sin dobles aperturas
+        if (p.pending != null) {          // reabrir un cofre omitido: mismas tres ofertas, sin botin ni estadisticas de nuevo
+            ovProp = p; cMode = p.pendMode; cOffer = p.pending;
+            offerSel = game.keyboardUsed ? 0 : -1;
+            openOv(OV_CHEST);
+            Snd.sfx("altar_bless", 0.9f);
+            return;
+        }
         p.used = true; p.anim = "open"; p.animT = 0;
         if (!sandbox) { Save.S.chestsOpened++; if (p.arg >= 3) Save.S.secretChests++; Save.S.write(); announceTrophies(); }
         Snd.sfx("chest_open", 1f);
@@ -743,26 +751,32 @@ final class RunScreen extends Screen implements Level.Listener {
         ovProp = p;
         // al abrir un cofre siempre se eligen 1 de 3 recompensas
         final int mode = ChestLoot.modeFor(rs.rng, p.arg), lb = ChestLoot.luckBonusFor(p.arg);
+        // el cofre queda "abierto con eleccion pendiente": se puede volver a usar (used=false) hasta que se elija una recompensa
+        if (p.kind.equals("chest")) { p.used = false; p.pendMode = mode; p.pending = new ChestLoot.Reward[0]; }
         lv.later(0.5f, () -> openChestOv(mode, lb));
     }
 
     private void openChestOv(int mode, int luckBonus) {
         cMode = mode;
         cOffer = ChestLoot.roll(rs, mode, luckBonus);
+        if (ovProp != null && ovProp.pending != null && ovProp.pending.length == 0) ovProp.pending = cOffer;      // se guardan las ofertas en el cofre
         offerSel = game.keyboardUsed ? 0 : -1;
         openOv(OV_CHEST);
         Snd.sfx("altar_bless", 0.9f);
     }
 
-    static final int SKIP_SEL = 3;   // indice de seleccion de «Omitir / Conservar equipo» en el cofre
+    static final int SKIP_SEL = 3;   // indice de seleccion de «Omitir» en el cofre
 
-    /** Rechaza las tres ofertas: cierra el cofre sin tocar armas, escudos, niveles ni mejoras y sin dar nada a cambio. */
+    /** Omitir: cierra la eleccion SIN consumir el cofre. No toca el equipo ni da nada; el cofre conserva sus tres ofertas
+     *  y se puede volver a abrir (las mismas) cuantas veces se quiera hasta elegir una. */
     private void skipChest() {
         if (ov != OV_CHEST || ovT < 0.3f || cOffer == null || cMode == ChestLoot.MODE_BOSS) return;      // la recompensa de jefe no se omite
+        boolean keep = ovProp != null && ovProp.pending != null && !ovProp.used;
         cOffer = null; wcmp = null; offerSel = -1;
         closeOv();
         chestSkips++;
-        lv.text(lv.pl.x, lv.pl.y - 50, "Conservas tu equipo", 0xB8C8E0, false);
+        if (keep) { ovProp.label = "Elegir recompensa"; ovProp.pickLock = 0.4f; }
+        lv.text(lv.pl.x, lv.pl.y - 50, keep ? "El cofre sigue aquí" : "Conservas tu equipo", 0xB8C8E0, false);
         Snd.sfx("ui_back", 0.8f);
     }
     int chestSkips;    // (pruebas) cofres omitidos
@@ -783,6 +797,7 @@ final class RunScreen extends Screen implements Level.Listener {
         if (x.kind == ChestLoot.K_BLESS) { boolean taken = rs.blessingTaken; applyBless(x.id); rs.blessingTaken = taken; }   // la recompensa de jefe no gasta el altar de la mazmorra
         if (x.kind == ChestLoot.K_BARRIER) lv.pl.shield = Math.min(70, lv.pl.shield + x.val);
         boolean bossRew = cMode == ChestLoot.MODE_BOSS && rewardBoss != null;
+        if (ovProp != null && ovProp.pending != null) { ovProp.pending = null; ovProp.used = true; ovProp.label = null; }   // elegido: ahora si se consume
         cOffer = null; wcmp = null;
         closeOv();
         if (bossRew) { rewardBoss = null; bossRewardsGiven++; addBossExit(lv, true); RunSave.write(game.P, this, RunSave.AUTO); }   // la recompensa queda registrada antes de continuar
@@ -1354,10 +1369,13 @@ final class RunScreen extends Screen implements Level.Listener {
                     h.plain = true; h.tag = i; h.noSound = true;
                 }
                 float by = Math.min(ViewSize.h - 26, 44 + chH + 8);
-                Hit ok = add(cMode == ChestLoot.MODE_BOSS ? w / 2f - 60 : w / 2f - 172, by, cMode == ChestLoot.MODE_BOSS ? 120 : 112, 24, offerSel < 0 ? "Toca una carta" : offerSel == SKIP_SEL ? "Confirmar" : "Elegir", this::confirmChest);
+                // boton principal centrado bajo las cartas; «Omitir» separado, en la esquina inferior derecha (no se pulsa por error)
+                float okW = Math.max(132, UI.small.width("Toca una carta") + 24);
+                Hit ok = add(w / 2f - okW / 2f, by, okW, 24, offerSel < 0 ? "Toca una carta" : offerSel == SKIP_SEL ? "Confirmar" : "Elegir", this::confirmChest);
                 ok.disabled = offerSel < 0;
-                // cuarta opcion: rechaza las tres ofertas y conserva todo el equipo (no da recompensa; el cofre ya esta gastado, asi que no se puede repetir)
-                Hit skip = cMode == ChestLoot.MODE_BOSS ? null : add(w / 2f - 52, by, 190, 24, "Omitir / Conservar equipo", this::skipChest);   // raton/tactil: un toque directo (teclado/mando: seleccionar con izq/der y confirmar)
+                // «Omitir» cierra la eleccion sin consumir el cofre: se puede volver a abrir con las mismas ofertas
+                float skW = Math.max(72, UI.small.width("Omitir") + 24), skX = Math.max(w / 2f + okW / 2f + 24, w - 12 - skW);
+                Hit skip = cMode == ChestLoot.MODE_BOSS ? null : add(skX, Math.min(ViewSize.h - 30, by + 2), skW, 22, "Omitir", this::skipChest);   // raton/tactil: un toque directo (teclado/mando: seleccionar con izq/der y confirmar)
                 if (skip != null) skip.tag = SKIP_SEL;
                 break;
             }
@@ -1916,7 +1934,7 @@ final class RunScreen extends Screen implements Level.Listener {
             case "fountain": return "Beber";
             case "npc": return "Hablar";
             case "weapon": return rs.sec == 0 ? "Recoger" : rs.sec == p.arg ? "Mejorar" : "Intercambiar";
-            case "chest": return p.arg == 4 ? "¡Cofre superior!" : p.arg == 3 ? "¡Cofre secreto!" : "Abrir";
+            case "chest": return p.pending != null ? "Elegir" : p.arg == 4 ? "¡Cofre superior!" : p.arg == 3 ? "¡Cofre secreto!" : "Abrir";
             default: return "Usar";
         }
     }
@@ -2327,7 +2345,7 @@ final class RunScreen extends Screen implements Level.Listener {
                     int lines = UI.small.drawWrapped(g, x.desc, h.x + 8, ty, (int) h.w - 16, 0xE8E0E0, fadeIn);
                     if (!x.replaces.isEmpty()) UI.small.drawWrapped(g, x.replaces, h.x + 8, Math.max(ty + lines + 3, y + h.h - 6 - UI.small.wrapLines(x.replaces, (int) h.w - 16) * (UI.small.ch + 2)), (int) h.w - 16, 0xFFFF9A6A, fadeIn);
                 }
-                for (Hit h : hits) if (h.tag == SKIP_SEL && "Omitir / Conservar equipo".equals(h.label) && offerSel == SKIP_SEL) {      // marco claro en la opcion de omitir seleccionada
+                for (Hit h : hits) if (h.tag == SKIP_SEL && "Omitir".equals(h.label) && offerSel == SKIP_SEL) {      // marco claro en la opcion de omitir seleccionada
                     int cc = Mth.withAlpha(0xB8C8E0, (int) (255 * fadeIn));
                     g.rect(h.x - 2, h.y - 2, h.w + 4, 2, cc, false); g.rect(h.x - 2, h.y + h.h, h.w + 4, 2, cc, false);
                     g.rect(h.x - 2, h.y - 2, 2, h.h + 4, cc, false); g.rect(h.x + h.w, h.y - 2, 2, h.h + 4, cc, false);

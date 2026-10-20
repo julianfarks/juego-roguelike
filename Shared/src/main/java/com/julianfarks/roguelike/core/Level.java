@@ -1421,7 +1421,7 @@ public final class Level {
             if (p.dead || p.hidden) continue;
             boolean can = false;
             switch (p.kind) {
-                case "altar": case "forge": case "merchant": case "fountain": case "chest": case "portal": case "sanctuary": case "npc": can = !p.used || p.kind.equals("merchant"); break;
+                case "altar": case "forge": case "merchant": case "fountain": case "chest": case "portal": case "sanctuary": case "npc": can = (!p.used || p.kind.equals("merchant")) && p.pickLock <= 0; break;
                 case "weapon": can = !p.used && p.pickLock <= 0; break;
                 case "spirit": case "shrine": case "cage": case "relic": case "cursed": can = !p.done && !p.used; break;
                 case "door": can = !p.locked; break;

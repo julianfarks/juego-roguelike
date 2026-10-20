@@ -1525,6 +1525,9 @@ Vendido	Sold
 Ya comprado	Already bought
 Precio: {}	Price: {}
 Precio: {} (te faltan {})	Price: {} ({} short)
+Omitir	Skip
+Elegir recompensa	Choose reward
+El cofre sigue aquí	The chest is still here
 Desciende al Abismo como {}	Descend into the Abyss as {}
 Descubierto: {}	Discovered: {}
 Dificultad: {}	Difficulty: {}

@@ -28,3 +28,11 @@ Configuración única: `ChargeCfg.java` (tiempos, curva, efectos).
 - Balance medido (maniquí, 8 s, sin críticos): golpes rápidos ≈ 45-56 daño/s; cargados ≈ 12-20 daño/s (0,5 s ≈ 16-20; 2 s ≈ 15-19). La carga es un golpe de ráfaga (más daño por golpe, área y aturdimiento), no una opción de daño sostenido; el rápido sigue siendo mejor en DPS puro. Los valores están en `ChargeCfg` para ajustarlos.
 - No se añadieron mejoras de build de carga (solo la base); `ChargeCfg` está preparada para recibir tiempo/daño máximo como escalas.
 - Prueba: `BOT_CHARGETEST=1` (curva 0–3 s, interrupción por daño, rodar, pausa, DPS).
+
+## Cambio posterior (20-10-2026): «Omitir» ya no consume el cofre
+- El botón se llama solo **«Omitir»** y va abajo a la derecha. **«Toca una carta / Elegir»** queda centrado bajo las cartas, separado al menos 20 px (de 90 px a 480 de ancho a 170 px a 640). Ningún botón invade las cartas.
+- **Omitir** cierra la elección sin consumir el cofre. El cofre (`Prop.pending`) guarda **sus mismas tres ofertas**. Al volver a usarlo («Elegir» en el aviso de interactuar) se muestran otra vez, sin volver a sortear ni repetir el botín ni el contador de cofres abiertos.
+- El cofre solo se consume (`used`) al **elegir** una recompensa. Si es un arma y se rechaza la comparación, se vuelve a las tres cartas, como antes.
+- Tras omitir hay un bloqueo de 0,4 s, para que la misma pulsación no lo reabra.
+- La recompensa de jefe sigue sin poder omitirse.
+- Prueba: `tools/tests/chest_skip_test.sh`, con 27 comprobaciones × 8 semillas × 4 resoluciones.

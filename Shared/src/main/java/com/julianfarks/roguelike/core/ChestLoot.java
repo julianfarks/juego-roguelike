@@ -11,9 +11,9 @@ import java.util.List;
 final class ChestLoot {
     private ChestLoot() {}
 
-    static final int MODE_STATS = 0, MODE_WEAPONS = 1, MODE_ARSENAL = 2;
-    static final String[] MODE_TITLE = {"MEJORAS", "ARMAMENTO", "ARSENAL"};
-    static final String[] MODE_SUB = {"Elige una mejora para toda la partida", "Elige un arma: las otras dos se pierden", "Elige un objeto: las otras dos se pierden"};
+    static final int MODE_STATS = 0, MODE_WEAPONS = 1, MODE_ARSENAL = 2, MODE_BOSS = 3;
+    static final String[] MODE_TITLE = {"MEJORAS", "ARMAMENTO", "ARSENAL", "VICTORIA"};
+    static final String[] MODE_SUB = {"Elige una mejora para toda la partida", "Elige un arma: las otras dos se pierden", "Elige un objeto: las otras dos se pierden", "Elige tu recompensa por derrotar al jefe"};
 
     // ---- rarezas
     static final String[] R_NAME = {"Común", "Poco común", "Rara", "Épica"};
@@ -48,7 +48,7 @@ final class ChestLoot {
 
     // ---- tipos de recompensa
     static final int K_STAT = 0, K_TRADE = 1, K_HEAL = 2, K_GOLD = 3, K_POTION = 4, K_BARRIER = 5, K_RECHARGE = 6,
-            K_GREN_NEW = 7, K_GREN_MORE = 8, K_GREN_UP = 9, K_SEC_NEW = 10, K_SEC_AMMO = 11, K_SEC_UP = 12, K_SPECIAL = 13, K_SHIELD = 14;
+            K_GREN_NEW = 7, K_GREN_MORE = 8, K_GREN_UP = 9, K_SEC_NEW = 10, K_SEC_AMMO = 11, K_SEC_UP = 12, K_SPECIAL = 13, K_SHIELD = 14, K_WEAPON = 15, K_BLESS = 16;
 
     static final class Reward {
         int kind, id, rar, val;
@@ -318,6 +318,8 @@ final class ChestLoot {
     /** Aplica la recompensa elegida al estado de la run. Devuelve texto de aviso. Los efectos sobre el jugador en pantalla (barrera) los hace quien llama. */
     static String apply(RunState rs, Reward x) {
         switch (x.kind) {
+            case K_WEAPON: if (!rs.weaponMaxed()) rs.weaponLvl += x.val; else if (rs.infinite && !rs.masteryMaxed()) rs.mastery++; rs.recalc(); break;
+            case K_BLESS: break;   // lo aplica RunScreen.applyBless (reconstruye reglas y sinergias)
             case K_STAT:
                 rs.cb[x.id] += x.val;
                 rs.recalc();
@@ -347,6 +349,77 @@ final class ChestLoot {
             default: break;
         }
         return x.name;
+    }
+
+    // ================================================================ recompensa de jefe
+    /** Dones propios de cada jefe segun su elemento: {estadistica}. */
+    private static int giftStat(String element) {
+        switch (element) {
+            case "fire": return BURN;
+            case "ice": return FREEZE;
+            case "lightning": return SHOCK;
+            case "thorn": return POISON;
+            case "blood": return LS;
+            case "shadow": return CRIT;
+            case "void": return SKILL;
+            default: return DEF;       // holy, etc.
+        }
+    }
+
+    /**
+     * Las 3 opciones tras derrotar a un jefe principal. Salen de seis categorias (recursos, mejora del arma principal, defensiva,
+     * reforzar una sinergia de la build, cambiar de estrategia, don exclusivo del jefe); no aparecen todas siempre y al menos una es de impacto.
+     */
+    static Reward[] rollBoss(RunState rs, BossDef d) {
+        Rng r = rs.rng;
+        int rar = Math.min(3, 1 + (int) (rs.tierF() + 0.5f) / 2 + (rs.dungeonNo >= 5 || rs.infinite ? 1 : 0));   // jefes: Rara o superior
+        List<Reward> pool = new ArrayList<>();
+        List<Integer> wt = new ArrayList<>();
+        // recursos
+        Reward g = simple(rs, K_GOLD, rar, 0);
+        g.val = Math.round((150 + 55 * rs.tierF()) * (1f + 0.3f * rs.cb[GOLD] / 30f)); g.amount = "+" + g.val + " oro"; g.name = "Tesoro del jefe";
+        pool.add(g); wt.add(2);
+        // mejora del arma principal
+        if (!rs.weaponMaxed() || (rs.infinite && !rs.masteryMaxed())) {
+            Reward w = new Reward(); w.kind = K_WEAPON; w.id = 0; w.rar = Math.max(2, rar); w.val = rs.weaponMaxed() ? 1 : (rs.weaponLvl + 2 <= RunState.WEAPON_MAX ? 2 : 1);
+            w.name = rs.weaponMaxed() ? "Maestría del arma" : "Temple del jefe"; w.icon = "b_filo";
+            w.amount = rs.weaponMaxed() ? "+1 rango" : "+" + w.val + (w.val == 1 ? " nivel de arma" : " niveles de arma");
+            w.desc = rs.weaponMaxed() ? "Un rango de Maestría: más daño y crítico." : "Tu arma principal sube de nivel sin pagar la forja.";
+            pool.add(w); wt.add(3);
+        }
+        // defensiva
+        int[] defs = {HP, DEF, POT};
+        int di = defs[r.i(defs.length)];
+        if (ok(rs, di, S_VAL[di][rar])) { Reward x = stat(di, rar, S_VAL[di][rar]); pool.add(x); wt.add(3); }
+        // reforzar la build / cambiar de estrategia
+        int bId = BlessOffer.pickOne(rs, r), alt = -1;
+        for (int t = 0; t < 30 && alt < 0; t++) { int c = BlessOffer.pickOne(rs, r); if (c >= 0 && c != bId && BlessOffer.synergyInfo(rs, Blessing.ALL[c]).isEmpty()) alt = c; }
+        if (bId >= 0) { pool.add(bless(rs, bId, "Refuerza tu build")); wt.add(4); }
+        if (alt >= 0) { pool.add(bless(rs, alt, "Nueva estrategia")); wt.add(2); }
+        // don exclusivo del jefe
+        int gs = giftStat(d.element);
+        if (ok(rs, gs, S_VAL[gs][3])) {
+            Reward x = stat(gs, 3, S_VAL[gs][3]);
+            x.name = "Don de " + d.name; x.desc = "Reliquia exclusiva de este jefe. " + S_DESC[gs];
+            pool.add(x); wt.add(3);
+        }
+        List<Reward> out = new ArrayList<>();
+        int guard = 0;
+        while (out.size() < 3 && !pool.isEmpty() && guard++ < 50) {
+            int tot = 0; for (int w : wt) tot += w;
+            int k = r.i(tot), idx = 0;
+            while (idx < pool.size() - 1 && k >= wt.get(idx)) { k -= wt.get(idx); idx++; }
+            out.add(pool.remove(idx)); wt.remove(idx);
+        }
+        while (out.size() < 3) { Reward x = simple(rs, K_GOLD, rar, 0); x.id = 10 + out.size(); x.val = Math.round(120 + 40 * rs.tierF()); x.amount = "+" + x.val + " oro"; out.add(x); }
+        return out.toArray(new Reward[0]);
+    }
+
+    private static Reward bless(RunState rs, int id, String tag) {
+        Blessing b = Blessing.ALL[id];
+        Reward x = new Reward(); x.kind = K_BLESS; x.id = id; x.rar = Math.min(3, b.rar); x.val = 1;
+        x.name = b.name; x.icon = b.icon; x.amount = rs.bless[id] > 0 ? "Nivel " + (rs.bless[id] + 1) : tag; x.desc = b.desc;
+        return x;
     }
 
     /** Que juego de opciones sale segun el tipo de cofre (0 normal, 1 tesoro/arsenal, 2 recompensa de mini-jefe, 3 secreto). */

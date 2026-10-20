@@ -3,6 +3,7 @@ package com.julianfarks.roguelike.core;
 /** Bot de pruebas para el banco de escritorio (--bot): navega menus y juega sin ayuda. No se usa en Android. */
 public final class DebugBot {
     static String chestSnap(RunState r) { return r.sec + "/" + r.secAmmo + "/" + r.shield + "/" + r.weaponLvl + "/" + r.special + "/" + java.util.Arrays.toString(r.bless) + "/" + r.gold + "/" + r.souls; }
+    private int brStep, brT; private String brSnap = "";
     private int skStep, skT0, skProj0; private float skHp0;
     private int escStep, escT;
     private int roomModStep, roomModT, hurt0; private float hp0;
@@ -648,6 +649,28 @@ public final class DebugBot {
             // elegir un arma sigue funcionando (las tres opciones originales)
             rs.cMode = ChestLoot.MODE_WEAPONS; rs.cOffer = ChestLoot.roll(r, ChestLoot.MODE_WEAPONS, 3); rs.dbgChest(1); rs.dbgConfirm();
             System.out.println("CHESTSKIP elegir opcion 2 sigue aplicando: ov=" + rs.debugOv() + " equipo cambio=" + !before0.equals(chestSnap(r)) + " (puede ser false si abrio comparacion)");
+        }
+        if (System.getenv("BOT_BOSSREW") != null && !rs.sandbox) {
+            RunState r = rs.rs;
+            if (brStep == 0 && frame > 600 && lv.boss != null && lv.boss.alive) { brStep = 1; brT = frame; r.weaponLvl = 3; r.recalc(); brSnap = chestSnap(r) + "/" + r.cb[ChestLoot.DEF] + "/" + r.cb[ChestLoot.HP] + "/" + r.cb[ChestLoot.BURN] + "/" + r.cb[ChestLoot.SHOCK]; rs.debugKillAll(); System.out.println("BOSSREW jefe muerto (flujo real onBossDead)"); }
+            else if (brStep == 1 && rs.debugOv() == 7 && rs.debugCMode() == ChestLoot.MODE_BOSS) {
+                brStep = 2; brT = frame; ChestLoot.Reward[] o = rs.debugOffer(); StringBuilder sb = new StringBuilder();
+                for (ChestLoot.Reward x : o) sb.append(" [").append(x.kind).append(" ").append(x.name).append(" | ").append(x.amount).append(" | rar ").append(x.rar).append("]");
+                System.out.println("BOSSREW pantalla de recompensas ofertas=" + o.length + sb + " botones=" + rs.debugLabels());
+                int doors0 = 0; for (Prop q : lv.props) if (q.kind.equals("door")) doors0++;
+                System.out.println("BOSSREW antes de elegir: puertas de salida=" + doors0 + " (0: no se puede salir sin elegir)");
+                int pick = Integer.parseInt(System.getenv("BOT_BOSSPICK"));
+                rs.dbgChest(Math.min(pick, o.length - 1)); rs.dbgConfirm();
+                String after = chestSnap(r) + "/" + r.cb[ChestLoot.DEF] + "/" + r.cb[ChestLoot.HP] + "/" + r.cb[ChestLoot.BURN] + "/" + r.cb[ChestLoot.SHOCK];
+                System.out.println("BOSSREW elegida opcion " + pick + " (" + o[Math.min(pick, o.length - 1)].name + "): estado cambio=" + !after.equals(brSnap) + " weaponLvl 3->" + r.weaponLvl + " gold->" + r.gold + " ov=" + rs.debugOv());
+                int doors = 0, chests = 0; for (Prop q : lv.props) { if (q.kind.equals("door")) doors++; if (q.kind.equals("chest")) chests++; }
+                System.out.println("BOSSREW tras elegir: puerta=" + doors + " cofre de botin=" + chests + " recompensas entregadas=" + rs.bossRewardsGiven);
+                rs.debugBossDeadAgain();
+            } else if (brStep == 2 && frame > brT + 150) {
+                brStep = 3; System.out.println("BOSSREW repetir la derrota/transicion: ov=" + rs.debugOv() + " (0) recompensas entregadas=" + rs.bossRewardsGiven + " (1)");
+                RunSave.write(rs.game.P, rs, RunSave.AUTO); RunScreen back = RunSave.load(rs.game, RunSave.AUTO);
+                System.out.println("BOSSREW guardar y cargar conserva el registro: " + (back != null && back.rs.bossRewarded.equals(r.bossRewarded)) + " " + r.bossRewarded);
+            }
         }
         if (System.getenv("BOT_BALTEST") != null && !rs.sandbox && frame == 700) {
             RunState r = rs.rs; int kd = r.dungeonNo, ks = r.stage, kr = r.roomNo;

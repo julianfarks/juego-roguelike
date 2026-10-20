@@ -452,11 +452,36 @@ final class RunScreen extends Screen implements Level.Listener {
             Arsenal.dropWeapon(l, wid, 0, l.room.exitX - 56, l.room.exitY, false, false);
             l.text(l.pl.x, l.pl.y - 82, "El jefe dejó un arma", Items.SEC_COL[wid], false);
         }
-        // jefe normal: cofre de botin de calidad superior (una sola vez: onBossDead solo corre al morir el jefe) y puerta de salida
+        // jefe normal: pantalla de recompensas (una sola vez por jefe y partida) y, al elegir, cofre de botin y puerta de salida.
+        // Hasta elegir no hay salida, asi la recompensa no se puede perder ni saltar; si ya se entrego (partida cargada, transicion repetida) solo sale la puerta.
+        if (rs.markBossRewarded(d.idx)) {
+            final BossDef bd = d;
+            l.later(1.6f, () -> openBossReward(bd));
+        } else addBossExit(l, false);
+    }
+
+    private BossDef rewardBoss;
+    int bossRewardsGiven;       // (pruebas) recompensas de jefe entregadas
+
+    private void openBossReward(BossDef d) {
+        if (lv == null || sandbox) return;
+        rewardBoss = d;
+        ovProp = null;
+        cMode = ChestLoot.MODE_BOSS;
+        cOffer = ChestLoot.rollBoss(rs, d);
+        offerSel = game.keyboardUsed ? 0 : -1;
+        openOv(OV_CHEST);
+        Snd.sfx("altar_bless", 0.9f);
+    }
+
+    /** Cofre de botin del jefe (si se eligio recompensa) y puerta de salida. */
+    private void addBossExit(Level l, boolean withLoot) {
         Room rm = l.room;
-        Prop loot = l.addProp(new Room.PropSpec("chest", rm.exitX - 96, rm.exitY, 2));
-        loot.label = "Botín del jefe";
-        l.ps.burst(l.rng, loot.x, loot.y - 12, 0xFFD25A, 22, 110, 0.7f, 2, 0, true);
+        if (withLoot) {
+            Prop loot = l.addProp(new Room.PropSpec("chest", rm.exitX - 96, rm.exitY, 2));
+            loot.label = "Botín del jefe";
+            l.ps.burst(l.rng, loot.x, loot.y - 12, 0xFFD25A, 22, 110, 0.7f, 2, 0, true);
+        }
         Prop door = l.addProp(new Room.PropSpec("door", rm.exitX, rm.exitY, 0));
         door.nextType = -2; door.label = "Salida"; door.anim = "open"; door.animT = 0;
         Snd.music(rs.biome.music, true);
@@ -720,7 +745,7 @@ final class RunScreen extends Screen implements Level.Listener {
 
     /** Rechaza las tres ofertas: cierra el cofre sin tocar armas, escudos, niveles ni mejoras y sin dar nada a cambio. */
     private void skipChest() {
-        if (ov != OV_CHEST || ovT < 0.3f || cOffer == null) return;
+        if (ov != OV_CHEST || ovT < 0.3f || cOffer == null || cMode == ChestLoot.MODE_BOSS) return;      // la recompensa de jefe no se omite
         cOffer = null; wcmp = null; offerSel = -1;
         closeOv();
         chestSkips++;
@@ -742,9 +767,12 @@ final class RunScreen extends Screen implements Level.Listener {
     private void finishChest(ChestLoot.Reward x) {
         if (x.kind == ChestLoot.K_SEC_NEW && rs.sec != 0 && rs.sec != x.id) Arsenal.dropWeapon(lv, rs.sec, rs.secAmmo, lv.pl.x, lv.pl.y, true, false);
         ChestLoot.apply(rs, x);
+        if (x.kind == ChestLoot.K_BLESS) { boolean taken = rs.blessingTaken; applyBless(x.id); rs.blessingTaken = taken; }   // la recompensa de jefe no gasta el altar de la mazmorra
         if (x.kind == ChestLoot.K_BARRIER) lv.pl.shield = Math.min(70, lv.pl.shield + x.val);
+        boolean bossRew = cMode == ChestLoot.MODE_BOSS && rewardBoss != null;
         cOffer = null; wcmp = null;
         closeOv();
+        if (bossRew) { rewardBoss = null; bossRewardsGiven++; addBossExit(lv, true); RunSave.write(game.P, this, RunSave.AUTO); }   // la recompensa queda registrada antes de continuar
         int col = ChestLoot.R_COL[x.rar] & 0xFFFFFF;
         lv.text(lv.pl.x, lv.pl.y - 50, x.name + (x.amount.isEmpty() ? "" : "  " + x.amount), col, true);
         lv.ps.burst(lv.rng, lv.pl.x, lv.pl.y - 16, col, 22, 120, 0.8f, 3, 60, true);
@@ -1216,11 +1244,11 @@ final class RunScreen extends Screen implements Level.Listener {
                     });
                     h.plain = true; h.tag = i; h.noSound = true;
                 }
-                Hit ok = add(w / 2f - 172, 216, 112, 24, offerSel < 0 ? "Toca una carta" : offerSel == SKIP_SEL ? "Confirmar" : "Elegir", this::confirmChest);
+                Hit ok = add(cMode == ChestLoot.MODE_BOSS ? w / 2f - 60 : w / 2f - 172, 216, cMode == ChestLoot.MODE_BOSS ? 120 : 112, 24, offerSel < 0 ? "Toca una carta" : offerSel == SKIP_SEL ? "Confirmar" : "Elegir", this::confirmChest);
                 ok.disabled = offerSel < 0;
                 // cuarta opcion: rechaza las tres ofertas y conserva todo el equipo (no da recompensa; el cofre ya esta gastado, asi que no se puede repetir)
-                Hit skip = add(w / 2f - 52, 216, 190, 24, "Omitir / Conservar equipo", this::skipChest);   // raton/tactil: un toque directo (teclado/mando: seleccionar con izq/der y confirmar)
-                skip.tag = SKIP_SEL;
+                Hit skip = cMode == ChestLoot.MODE_BOSS ? null : add(w / 2f - 52, 216, 190, 24, "Omitir / Conservar equipo", this::skipChest);   // raton/tactil: un toque directo (teclado/mando: seleccionar con izq/der y confirmar)
+                if (skip != null) skip.tag = SKIP_SEL;
                 break;
             }
             case OV_SHOP: {
@@ -1419,6 +1447,9 @@ final class RunScreen extends Screen implements Level.Listener {
     // ---- ganchos de prueba (solo los usa DebugBot)
     void debugNextFloor() { afterBoss(); }
     void debugOpenPause() { openOv(OV_PAUSE); }
+    void debugBossDeadAgain() { onBossDead(lv); }
+    int debugCMode() { return cMode; }
+    ChestLoot.Reward[] debugOffer() { return cOffer; }
     void debugLoadBoss() { loadRoom(Room.BOSS); }
     void debugLoadCombat() { loadRoom(Room.COMBAT); }
     void debugEnd2Close() { closeOv(); }
@@ -1585,8 +1616,8 @@ final class RunScreen extends Screen implements Level.Listener {
                 return;
             }
             if (ov == OV_CHEST && isDown) {
-                if (code == 37 || code == 'A') offerSel = offerSel < 0 ? 0 : (offerSel + 3) % 4;
-                else if (code == 39 || code == 'D') offerSel = offerSel < 0 ? 0 : (offerSel + 1) % 4;
+                if (code == 37 || code == 'A') offerSel = offerSel < 0 ? 0 : (offerSel + (cMode == ChestLoot.MODE_BOSS ? 2 : 3)) % (cMode == ChestLoot.MODE_BOSS ? 3 : 4);
+                else if (code == 39 || code == 'D') offerSel = offerSel < 0 ? 0 : (offerSel + 1) % (cMode == ChestLoot.MODE_BOSS ? 3 : 4);
                 else if ((code == 10 || code == 32 || code == 'J') && ovT > 0.3f) { confirmChest(); return; }
                 layoutOverlay();
                 return;

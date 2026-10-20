@@ -71,6 +71,9 @@ public final class RunState {
     public static final int RM_NONE = 0, RM_VOLATILE = 1, RM_SWARM = 2;
     public static final String[] RM_NAME = {"", "Sala volátil", "Sala enjambre"};
     public static final String[] RM_DESC = {"", "Los enemigos explotan al morir: corre del aro rojo", "Más enemigos, más frágiles"};
+    public final java.util.Set<Integer> bossRewarded = new java.util.LinkedHashSet<>();   // jefes ya recompensados en esta partida (floor*100+idx en Endless): una sola vez
+    /** Marca la recompensa del jefe como entregada; devuelve false si ya se habia entregado (no se duplica al repetir transiciones o cargar). */
+    public boolean markBossRewarded(int idx) { return bossRewarded.add((infinite ? floor * 100 : 0) + idx); }
     public int roomMod;
     public static int forceRoomMod = -1;
     /** Elige (de forma determinista por semilla/sala) el modificador de la sala de combate actual. */

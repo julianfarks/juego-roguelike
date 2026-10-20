@@ -2,6 +2,7 @@ package com.julianfarks.roguelike.core;
 
 /** Bot de pruebas para el banco de escritorio (--bot): navega menus y juega sin ayuda. No se usa en Android. */
 public final class DebugBot {
+    private int skStep, skT0, skProj0; private float skHp0;
     private int escStep, escT;
     private int roomModStep, roomModT, hurt0; private float hp0;
     private int endlessT = -1; private boolean endlessTapped;
@@ -609,6 +610,27 @@ public final class DebugBot {
             RunState r = rs.rs;
             if (escStep == 0 && frame == 700) { r.infinite = true; r.floor = 5; r.stage = 2; r.biome = Biome.ALL[0]; r.roomNo = 4; rs.debugLoadBoss(); escStep = 1; escT = frame; System.out.println("ESC jefe cargado en piso 5: enemigos=" + rs.lv.enemies.size()); }
             else if (escStep == 1 && frame > escT + 30 * 60 * 0 + 1500) { System.out.println("ESC tras ~25 s: enemigos/escoltas=" + rs.lv.enemies.size() + " jefeVivo=" + (rs.lv.boss != null && rs.lv.boss.alive) + " (piso 5: 2 por oleada, oleadas cada 18 s)"); escStep = 2; }
+        }
+        if (System.getenv("BOT_SKILLTEST") != null && !rs.sandbox) {
+            // Politica de interrupcion de habilidades (Paladin: Alas de Egida = supervivencia; Lanza del Alba = ofensiva).
+            RunState r = rs.rs; Player pl = lv.pl;
+            int t = frame - skT0;
+            if (skStep == 0 && frame >= 700 && pl.alive && pl.state <= Player.AIR && pl.hurtT <= 0) { skT0 = frame; skStep = 1; lv.enemies.clear(); lv.projs.clear(); pl.invuln = 0; pl.shield = 0; r.cd[0] = r.cd[1] = r.cd[2] = 0; r.hp = r.stats.maxHp * 0.5f; skHp0 = r.hp; pl.debugSkill(lv, 1); skProj0 = lv.projs.size();
+                System.out.println("SKILL A1 clase=" + pl.cls.id + " Egida lanzada: estado=" + pl.state + " fired=" + pl.debugSkillFired() + " cd=" + r.cd[1] + " (14*cdMul)"); }
+            else if (skStep == 1 && t == 2) { skStep = 2; pl.invuln = 0; boolean h = lv.hurtPlayer(20f, pl.x + 30, -1, 0);
+                System.out.println("SKILL A2 golpe en la preparacion: golpeado=" + h + " escudo restante=" + Math.round(pl.shield) + " vida " + Math.round(skHp0) + "->" + Math.round(r.hp) + " (curada 20% y escudo absorbe) fired=" + pl.debugSkillFired() + " cd=" + r.cd[1]); }
+            else if (skStep == 2 && t == 60) { skStep = 3;
+                System.out.println("SKILL A3 tras la animacion: escudo=" + Math.round(pl.shield) + " (<=70, un solo efecto) estado=" + pl.state + " cd=" + Math.round(r.cd[1]) + " (se conserva)"); r.cd[0] = r.cd[1] = r.cd[2] = 0; lv.projs.clear(); pl.invuln = 0; pl.shield = 0; r.hp = r.stats.maxHp; pl.debugSkill(lv, 0); skT0 = frame; }
+            else if (skStep == 3 && t == 2) { skStep = 4; pl.invuln = 0; int p0 = lv.projs.size(); lv.hurtPlayer(10f, pl.x + 30, -1, 0);
+                System.out.println("SKILL B1 Lanza interrumpida en la preparacion: cd=" + r.cd[0] + " (0: devuelto) interrumpidas=" + pl.interruptedSkills + " estado=" + pl.state); skT0 = frame; }
+            else if (skStep == 4 && t == 50) { skStep = 5; int n = 0; for (Proj q : lv.projs) if (q.friendly) n++;
+                System.out.println("SKILL B2 tras recuperarse: proyectiles amigos=" + n + " (0: no hubo lanzamiento) estado=" + pl.state); pl.invuln = 0; r.cd[0] = 0; lv.projs.clear(); skProj0 = Level.dbgProjs; pl.debugSkill(lv, 0); skT0 = frame; }
+            else if (skStep == 5 && pl.debugSkillFired() && t > 1) { skStep = 6; int n0 = Level.dbgProjs - skProj0; float cd0 = r.cd[0];
+                System.out.println("SKILL B3 relanzada tras la interrupcion: proyectiles=" + n0 + " (3) cd=" + Math.round(cd0 * 10) / 10f + " (>0)");
+                pl.invuln = 0; lv.hurtPlayer(10f, pl.x + 30, -1, 0); int n1 = Level.dbgProjs - skProj0;
+                System.out.println("SKILL C1 golpe DESPUES de liberar: proyectiles " + n0 + "->" + n1 + " (iguales) cd " + Math.round(cd0 * 10) / 10f + "->" + Math.round(r.cd[0] * 10) / 10f + " (igual: ni se borra ni se duplica)"); skStep = 7; }
+            else if (skStep == 5 && t > 80) { skStep = 7; System.out.println("SKILL B3 FALLA: no se libero"); }
+            if (frame >= 690 && skStep < 7) return;     // el bot no interfiere mientras dura la prueba
         }
         if (System.getenv("BOT_BALTEST") != null && !rs.sandbox && frame == 700) {
             RunState r = rs.rs; int kd = r.dungeonNo, ks = r.stage, kr = r.roomNo;

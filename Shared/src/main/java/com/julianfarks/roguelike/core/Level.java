@@ -335,7 +335,9 @@ public final class Level {
 
     public void spawnProj(Proj p) { projs.add(p); }
 
+    public static int dbgProjs;   // proyectiles creados (pruebas)
     public Proj proj(float x, float y, float vx, float vy, float dmg, boolean friendly, String sprite, int color) {
+        dbgProjs++;
         Proj p = new Proj();
         p.x = x; p.y = y; p.vx = vx; p.vy = vy; p.dmg = dmg; p.friendly = friendly; p.sprite = sprite; p.color = color;
         if (friendly) {
@@ -537,6 +539,7 @@ public final class Level {
         Player p = pl;
         if (p == null || !p.alive || cinematic) return false;
         if (p.invuln > 0 || p.rolling()) { if (p.rolling()) { BlessFx.onDodge(this); Impact.perfectDodge(this, p); } return false; }
+        p.onHitDuringCast(this);
         dbgHurt++;
         Stats s = rs.stats;
         boolean blocked = false;

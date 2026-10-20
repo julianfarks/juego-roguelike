@@ -71,6 +71,22 @@ final class Skills {
         return s / l.size();
     }
 
+    // ------------------------------------------------------------------ politica de interrupcion
+    /**
+     * Habilidades de supervivencia/escape: su efecto se aplica en cuanto el jugador recibe un golpe durante la preparacion
+     * (antes de calcular ese dano), asi la proteccion nunca se pierde por ser golpeado. Las demas habilidades (ofensivas) tienen una
+     * preparacion interrumpible: si el golpe llega antes del momento de liberacion se cancelan y NO consumen enfriamiento.
+     * Paladin: Alas de Egida · Sombra: Paso Sombra · Vegetal: Floracion · Tierra: Piel de Piedra · Astral: Paso Cosmico · Acero: Guardia de Acero.
+     */
+    static boolean committed(int cls, int idx) {
+        switch (cls) {
+            case 0: case 5: case 7: case 9: return idx == 1;
+            case 1: return idx == 0;
+            case 8: return idx == 2;
+            default: return false;
+        }
+    }
+
     // ------------------------------------------------------------------ habilidades
     static void cast(Level lv, Player p, int idx) {
         switch (p.cls.id) {

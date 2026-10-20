@@ -75,6 +75,21 @@ public final class Player extends Ent {
         if (rt == Room.SHOP || rt == Room.BLESSING || rt == Room.FORGE || rt == Room.FOUNTAIN || rt == Room.TREASURE || rt == Room.REST || rt == Room.EVENT) react("touch", 0.8f);
     }
 
+    /**
+     * Politica de interrupcion de habilidades (se llama justo ANTES de aplicar un golpe al jugador):
+     *  - habilidad de supervivencia (Skills.committed) en preparacion: se libera ya, para que su proteccion cuente contra este golpe;
+     *  - habilidad ofensiva sin liberar: se cancela y se devuelve el enfriamiento (no se gasto nada);
+     *  - habilidad ya liberada: su efecto no se toca (solo se corta la animacion de recuperacion).
+     */
+    public void onHitDuringCast(Level lv) {
+        if (state != SKILL || skillFired) return;
+        if (Skills.committed(cls.id, skillIdx)) { skillFired = true; castSkills(lv); }
+        else { lv.rs.cd[skillIdx] = 0; interruptedSkills++; }
+    }
+    public int interruptedSkills;
+    void debugSkill(Level lv, int i) { trySkill(lv, i); }
+    boolean debugSkillFired() { return skillFired; }
+
     public void cancelAction() {
         if (!alive) return;
         dashT = 0; rollBuf = skillBuf = ultBuf = 0;
@@ -654,7 +669,6 @@ public final class Player extends Ent {
         atkBuf = 0;
         if (onGround) vx *= 0.3f;
         Snd.sfx(sk.sfx, 0.9f);
-        BlessFx.onSkill(lv, i);
         return 0;
     }
 
@@ -684,7 +698,7 @@ public final class Player extends Ent {
         int pv = lv.dmgSrc;
         lv.dmgSrc = BlessFx.SRC_S;
         try {
-            if (state == ULT) Skills.ult(lv, this); else Skills.cast(lv, this, skillIdx);
+            if (state == ULT) Skills.ult(lv, this); else { Skills.cast(lv, this, skillIdx); BlessFx.onSkill(lv, skillIdx); }
         } finally { lv.dmgSrc = pv; }
     }
 

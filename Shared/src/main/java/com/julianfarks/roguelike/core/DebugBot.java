@@ -4,7 +4,7 @@ package com.julianfarks.roguelike.core;
 public final class DebugBot {
     static String chestSnap(RunState r) { return r.sec + "/" + r.secAmmo + "/" + r.shield + "/" + r.weaponLvl + "/" + r.special + "/" + java.util.Arrays.toString(r.bless) + "/" + r.gold + "/" + r.souls; }
     private int spPhase, spBx, spGy, spT; private final StringBuilder spRes = new StringBuilder();
-    private boolean chestPosDone; private int rlStep, rlT, rlBad, rlFails, rlGx, rlGy, rlBx, rlBy; private float rlX0, rlHp0; private boolean rlWasLow, rlWalk; private float rlRe; private int brStep, brT; private String brSnap = "";
+    private boolean chestPosDone; private int ivScrolls, ivScrollCat = -1, ivScrollSel, ivStep, ivCat, ivSel, ivClip, ivFails, ivItems; private String ivLog = ""; private int rlStep, rlT, rlBad, rlFails, rlGx, rlGy, rlBx, rlBy; private float rlX0, rlHp0; private boolean rlWasLow, rlWalk; private float rlRe; private int brStep, brT; private String brSnap = "";
     private int skStep, skT0, skProj0; private float skHp0;
     private int escStep, escT;
     private int roomModStep, roomModT, hurt0; private float hp0;
@@ -664,6 +664,10 @@ public final class DebugBot {
             else if (skStep == 5 && t > 80) { skStep = 7; System.out.println("SKILL B3 FALLA: no se libero"); }
             if (frame >= 690 && skStep < 7) return;     // el bot no interfiere mientras dura la prueba
         }
+        if (System.getenv("BOT_INVTEST") != null && !rs.sandbox && frame >= 700 && ivStep < 99) {
+            invProbe(g, rs, lv, frame);
+            return;
+        }
         if (System.getenv("BOT_ROLLGAP") != null && !rs.sandbox) {
             rollProbe(g, lv, p, frame);
             if (frame >= 690 && rlStep < 99) return;
@@ -1259,6 +1263,108 @@ public final class DebugBot {
         }
         rlStep++;
         if (phase == 2) rlStep = (kind + 1) * 3 + 1;
+    }
+
+    private void ivOk(boolean c, String msg) { System.out.println("INVTEST " + (c ? "OK    " : "FALLA ") + msg); if (!c) ivFails++; }
+    private void invProbe(Game g, RunScreen rs, Level lv, int frame) {
+        RunState r = rs.rs; Inventory inv = rs.inv;
+        if (frame == 700) for (int c : new int[]{'A', 'D', 'S', 'W', 'J', 'K'}) hold(g, c, false);
+        if (ivStep != 4) { lv.enemies.clear(); lv.toKill = 0; lv.pl.invuln = 999; } rs.bannerT = 0;
+        if (frame == 705) {
+            rs.closeOv();
+            for (Blessing b : Blessing.ALL) r.bless[b.id] = 1;
+            for (int i = 0; i < 8; i++) r.relicsThisRun[i] = true;
+            for (int i = 0; i < Events.PACTS.length; i++) r.pacts[i] = 1;
+            r.companion = 0; r.sec = 1; r.secActive = false; r.secAmmo = 5;
+            for (int id = 1; id < Items.SEC_COUNT; id++) if (r.wState[id] == 0) r.wState[id] = 1;
+            r.gren = 1; r.grenCount = 3; r.special = 1;
+            rs.debugTxtOpenInv(); ivCat = 0; ivSel = 0; ivClip = ArsenalUI.clipN; ivStep = 1; ivItems = 0;
+            return;
+        }
+        rs.debugTxtKeep();
+        if (frame < 706) return;
+        if (ivStep == 1) {
+            // el render del cuadro anterior ya ocurrio: comprueba recortes y avanza al siguiente elemento
+            if (ArsenalUI.clipN != ivClip) { ivLog += " [recorte en " + Inventory.CAT_NAME[ivCat] + "#" + ivSel + " " + (inv.cur() == null ? "?" : inv.cur().name) + "]"; ivClip = ArsenalUI.clipN; }
+            if (inv.dMax > 0) { ivScrolls++; if (ivScrollCat < 0) { ivScrollCat = ivCat; ivScrollSel = ivSel; } }
+            if (ivSel > 0 || ivCat > 0 || true) ivItems++;
+            ivSel++;
+            inv.cat = ivCat; inv.focus = 0; inv.filter = 0; inv.rebuild();
+            if (ivSel >= inv.items.size()) {
+                System.out.println("INVTEST pestana " + Inventory.CAT_NAME[ivCat] + ": " + inv.items.size() + " elementos revisados");
+                ivCat++; ivSel = 0;
+                if (ivCat >= Inventory.C_COUNT) { ivStep = 2; return; }
+                inv.cat = ivCat; inv.rebuild();
+            }
+            inv.sel = ivSel; inv.clampScroll(); inv.relayout();
+            return;
+        }
+        if (ivStep == 2) {
+            ivOk(ivLog.isEmpty(), "ficha de arma sin recortar en " + ivItems + " elementos" + ivLog);
+            if (ivScrollCat >= 0) {
+                inv.cat = ivScrollCat; inv.rebuild(); inv.sel = ivScrollSel; inv.focus = 0; inv.relayout(); ivStep = 3; ivScrollT = frame; return;
+            }
+            System.out.println("INVTEST " + ivScrolls + " elementos necesitan desplazamiento (ninguno en esta resolucion)");
+            ivStep = 2; ivFin(g, rs, lv); return;
+        }
+        if (ivStep == 3) {
+            if (frame - ivScrollT < 3) return;
+            int m = inv.dMax; boolean hits = false; for (Screen.Hit h : rs.hits) if (h.tag == 231) hits = true;
+            inv.key(34); int a = inv.dScroll; inv.key(34); inv.key(34); inv.key(34); inv.key(34); inv.key(34); inv.key(34);
+            inv.dScroll = m; inv.key(34); int wrap = inv.dScroll; inv.key(33);
+            ivOk(m > 0 && hits && a > 0 && wrap == 0, ivScrolls + " elementos necesitan desplazamiento; con el primero: max=" + m + " pagina=" + a + " flechas=" + hits + " al final+pagina vuelve al inicio=" + (wrap == 0));
+            ivStep = 2; ivFin(g, rs, lv); return;
+        }
+        if (ivStep == 2) { ivFin(g, rs, lv); }
+        if (ivStep == 4) {      // el mundo esta en pausa mientras el inventario esta abierto: enemigos y jugador no cambian
+            Player pl = lv.pl;
+            if (ivT0 < 0) {
+                ivT0 = frame; rs.closeOv(); rs.debugTxtOpenInv();
+                Enemy en = new Enemy(EnemyDef.get("zombi"), false, 1f, 1f); en.x = pl.x + 14; en.y = pl.y; lv.enemies.add(en); lv.toKill = 1;
+                pl.invuln = 0; lv.rs.hp = lv.rs.stats.maxHp; ivSnap = pl.x + "/" + pl.y + "/" + en.x + "/" + en.y + "/" + en.hp + "/" + lv.rs.hp + "/" + lv.time;
+                return;
+            }
+            lv.pl.invuln = 0;
+            if (frame - ivT0 < 120) return;
+            Enemy en = lv.enemies.get(lv.enemies.size() - 1);
+            String now = pl.x + "/" + pl.y + "/" + en.x + "/" + en.y + "/" + en.hp + "/" + lv.rs.hp + "/" + lv.time;
+            ivOk(ivSnap.equals(now), "el mundo queda en pausa con el inventario abierto (2 s): jugador, enemigo, vida y reloj iguales " + (ivSnap.equals(now) ? "" : ivSnap + " -> " + now));
+            System.out.println("INVTEST resumen: fallos=" + ivFails);
+            ivStep = 99;
+        }
+    }
+    private int ivT0; private String ivSnap = "";
+    private int ivScrollT;
+    private void ivFin(Game g, RunScreen rs, Level lv) {
+        RunState r = rs.rs; Inventory inv = rs.inv;
+        {
+            // conteos = estado real
+            int nb = 0; for (Blessing b : Blessing.ALL) if (r.bless[b.id] > 0) nb++;
+            inv.cat = Inventory.C_BLESS; inv.rebuild(); ivOk(inv.items.size() == nb, "bendiciones en pestana=" + inv.items.size() + " reales=" + nb);
+            int nr = 0; for (boolean b : r.relicsThisRun) if (b) nr++;
+            inv.cat = Inventory.C_RELICS; inv.rebuild(); int rel = 0; for (Inventory.Item it : inv.items) if (it.kind == 7) rel++; ivOk(rel == nr, "reliquias en pestana=" + rel + " reales=" + nr);
+            inv.cat = Inventory.C_WEAPONS; inv.rebuild(); int nw = 1; for (int id = 1; id < Items.SEC_COUNT; id++) if (r.wState[id] != 0 || r.sec == id) nw++;
+            ivOk(inv.items.size() == nw, "armas en pestana=" + inv.items.size() + " reales=" + nw);
+            // cambiar el arma activa desde el inventario
+            boolean before = r.secActive;
+            inv.filter = 0; inv.rebuild(); int idx = -1; for (int i = 0; i < inv.items.size(); i++) if (inv.items.get(i).wid == r.sec && inv.items.get(i).kind != 1) idx = i;
+            inv.sel = Math.max(0, idx); inv.focus = 0; inv.relayout();
+            boolean can = idx >= 0 && inv.canActivate(inv.cur());
+            if (can) inv.activate();
+            ivOk(can && r.secActive != before, "usar el arma secundaria desde el inventario: antes=" + before + " despues=" + r.secActive);
+            inv.rebuild(); inv.sel = 0; inv.focus = 0; inv.relayout();
+            lv.pl.swapCd = 0;     // enfriamiento propio del cambio de arma (0,25 s): la prueba espera a que termine
+            boolean can2 = inv.canActivate(inv.cur()); if (can2) inv.activate();
+            ivOk(can2 && !r.secActive, "volver al arma principal desde el inventario: secActive=" + r.secActive);
+            // pestanas por teclado y regreso a la pausa
+            int c0 = inv.cat; inv.key('E'); ivOk(inv.cat == (c0 + 1) % Inventory.C_COUNT, "tecla E cambia de pestana");
+            inv.key('Q'); ivOk(inv.cat == c0, "tecla Q vuelve a la pestana anterior");
+            int f0 = inv.filter; inv.key('F'); ivOk(inv.filter != f0, "filtro cambia"); int s0 = inv.sort; inv.key('O'); ivOk(inv.sort != s0, "orden cambia");
+            inv.filter = 0; inv.rebuild();
+            ivOk(rs.debugOv() == RunScreen.OV_INV, "inventario abierto (ov=" + rs.debugOv() + ")");
+            inv.key(27); ivOk(rs.debugOv() == RunScreen.OV_PAUSE, "Esc desde la pausa vuelve a la pausa (ov=" + rs.debugOv() + ")");
+            ivStep = 4; ivT0 = -1;
+        }
     }
 
     private void chargeProbe(Game g, RunScreen rs, Level lv, Player pl, int frame) {

@@ -6,6 +6,7 @@ import java.util.List;
 final class ArsenalUI {
     private ArsenalUI() {}
 
+    static int clipN;   // pruebas: veces que una ficha tuvo que recortar efecto/estilo
     static final int OK = 0xFF5AD070, BAD = 0xFFFF6A5A, EQ = 0xFFB8B8C0;
 
     /** Alto de linea de texto pequeño: el chino necesita mas que el alfabeto latino. */
@@ -24,15 +25,20 @@ final class ArsenalUI {
     static float sheet(Platform.Gfx g, float x, float y, float w, int id, int vs, int ammo) { return sheet(g, x, y, w, id, vs, ammo, Float.MAX_VALUE); }
 
     /** Igual, pero el efecto y el estilo se limitan (con "...") para no pasar de maxY: nada se sale de su panel. */
-    static float sheet(Platform.Gfx g, float x, float y, float w, int id, int vs, int ammo, float maxY) {
+    static float sheet(Platform.Gfx g, float x, float y, float w, int id, int vs, int ammo, float maxY) { return sheet(g, x, y, w, id, vs, ammo, maxY, true); }
+
+    /** hdr=false: sin cabecera (el llamador ya dibujo icono, nombre y etiquetas, p. ej. el inventario). */
+    static float sheet(Platform.Gfx g, float x, float y, float w, int id, int vs, int ammo, float maxY, boolean hdr) {
         int rar = Items.SEC_RAR[id];
         int rc = rarCol(rar);
-        UI.iconC(g, Items.SEC_ICON[id], x + 9, y + 9, 1f, 1f);
-        String nm = UI.fitLabel(UI.small, Items.SEC_NAME[id], w - 40);
-        UI.small.draw(g, nm, x + 22, y + 1, 0xFFF0E8E0, 1f);
-        Arsenal.rarityMark(g, x + 26, y + 15, rar, rc & 0xFFFFFF);
-        UI.small.draw(g, ChestLoot.R_NAME[rar], x + 34, y + 11, rc, 1f);
-        float yy = y + 22;
+        if (hdr) {
+            UI.iconC(g, Items.SEC_ICON[id], x + 9, y + 9, 1f, 1f);
+            String nm = UI.fitLabel(UI.small, Items.SEC_NAME[id], w - 40);
+            UI.small.draw(g, nm, x + 22, y + 1, 0xFFF0E8E0, 1f);
+            Arsenal.rarityMark(g, x + 26, y + 15, rar, rc & 0xFFFFFF);
+            UI.small.draw(g, ChestLoot.R_NAME[rar], x + 34, y + 11, rc, 1f);
+        }
+        float yy = hdr ? y + 22 : y;
         List<Arsenal.Line> ls = Arsenal.lines(id, vs);
         for (Arsenal.Line l : ls) {
             UI.small.draw(g, l.label, x + 2, yy, 0xFFB8B0B8, 1f);
@@ -45,6 +51,7 @@ final class ArsenalUI {
         int fxN = UI.small.wrapLines("Efecto: " + Items.SEC_FX[id], (int) w - 4), stN = UI.small.wrapLines(Items.SEC_STYLE[id], (int) w - 4);
         int fxMax = fxN, stMax = stN;
         if (fxN + stN > room) { stMax = Math.max(1, Math.min(stN, room - Math.min(fxN, room - 1))); fxMax = Math.max(1, room - stMax); }
+        if (fxMax < fxN || stMax < stN) clipN++;
         yy += UI.small.drawWrappedMax(g, "Efecto: " + Items.SEC_FX[id], x + 2, yy, (int) w - 4, 0xFFFFD25A, 1f, lh(), fxMax) + 2;
         yy += UI.small.drawWrappedMax(g, Items.SEC_STYLE[id], x + 2, yy, (int) w - 4, 0xFFC8C0C8, 1f, lh() + 1, stMax);
         return yy;

@@ -234,7 +234,7 @@ final class Inventory {
         // zonas: rejilla a la izquierda y detalle a la derecha
         float by = ey + eh + 6;
         float bh = fy - 5 - by;
-        dw = Math.max(150, Math.min(190, w * 0.38f));
+        dw = Math.max(170, Math.min(250, w * 0.46f));
         dx = w - pad - dw; dy = by; dh = bh;
         gx = pad; gy = by; gw = dx - 6 - pad; gh = bh;
         float cell = 32, gap = 3;
@@ -252,6 +252,10 @@ final class Inventory {
         int totalRows = (items.size() + cols - 1) / cols;
         Screen.Hit up = sc.add(gx + gw - 12, gy + 2, 11, 14, "^", () -> { scroll(-1); }); up.tag = 210; up.plain = true; up.disabled = scroll <= 0;
         Screen.Hit dn = sc.add(gx + gw - 12, gy + gh - 32, 11, 14, "v", () -> { scroll(1); }); dn.tag = 211; dn.plain = true; dn.disabled = scroll + rows >= totalRows;
+        {
+            Screen.Hit du = sc.add(dx + dw - 13, dy + 3, 11, 14, "^", () -> dscroll(-18)); du.tag = 230; du.plain = true;
+            Screen.Hit dd = sc.add(dx + dw - 13, dy + dh - 44, 11, 14, "v", () -> dscroll(18)); dd.tag = 231; dd.plain = true;
+        }
         // accion del detalle
         Item it = cur();
         if (it != null && canActivate(it)) {
@@ -300,6 +304,8 @@ final class Inventory {
         int n = items.size();
         if (code == 'Q') { setCat((cat + C_COUNT - 1) % C_COUNT); return; }
         if (code == 'E') { setCat((cat + 1) % C_COUNT); return; }
+        if (code == 33) { dscroll(-48); return; }
+        if (code == 34 || code == 'K') { dscroll(48); return; }
         if (code == 'F') { cycleFilter(); return; }
         if (code == 'O') { cycleSort(); return; }
         if (code == 27 || code == 9) { sc.invClose(); return; }
@@ -365,14 +371,11 @@ final class Inventory {
         String head = k == 0 ? "ARMA PRINCIPAL" : "ARMA SECUNDARIA";
         UI.small.draw(g, head, h.x + 6, h.y + 4, 0xFF9AA0B0, 1f);
         if (active && (k == 0 || it != null)) {
-            String a = "EN USO";
-            float aw = UI.small.width(a) + 8;
-            g.rect(h.x + h.w - aw - 6, h.y + 3, aw, 10, 0xFF3A2C08, false);
-            g.rect(h.x + h.w - aw - 6, h.y + 3, aw, 1, 0xFFFFD25A, false); g.rect(h.x + h.w - aw - 6, h.y + 12, aw, 1, 0xFFFFD25A, false);
-            UI.small.draw(g, a, h.x + h.w - aw - 2, h.y + 4, 0xFFFFD25A, 1f);
+            float aw = UI.tag(g, "EN USO", 0, 0, 0xFFD25A, true, false);
+            UI.tag(g, "EN USO", h.x + h.w - aw - 5, h.y + 3, 0xFFD25A, true, true);
         }
         if (it == null) {
-            UI.small.drawWrappedMax(g, "Vacía · recoge un arma del suelo o de un cofre", h.x + 8, h.y + 18, (int) h.w - 16, 0xFF7A7A88, 1f, UI.small.ch + 2, 2);
+            UI.small.drawWrappedMax(g, "Vacía · recoge un arma del suelo o de un cofre", h.x + 8, h.y + 16, (int) h.w - 16, 0xFF7A7A88, 1f, ArsenalUI.lh(), 2);
             return;
         }
         int rc = RAR_RGB[it.rar];
@@ -397,8 +400,11 @@ final class Inventory {
         for (Screen.Hit hb : sc.hits) {
             if (hb.tag >= 100 && hb.tag < 104) {
                 int c = hb.tag - 100;
-                sc.drawButton(g, hb);
-                if (c == cat) { g.rect(hb.x + 2, hb.y + hb.h - 3, hb.w - 4, 2, 0xFFFFD25A, false); }
+                boolean on = c == cat;
+                UI.panel(g, on ? 1 : 0, hb.x, hb.y, hb.w, hb.h, on ? 1f : 0.7f);
+                UI.small.center(g, UI.fitLabel(UI.small, CAT_NAME[c], hb.w - 8), hb.x + hb.w / 2f, hb.y + (hb.h - UI.small.ch) / 2f, on ? UI.GOLD : 0xFF8A8A98, 1f);
+                if (on) { g.rect(hb.x + 3, hb.y + hb.h - 3, hb.w - 6, 2, 0xFFFFD25A, false); g.rect(hb.x + 3, hb.y + hb.h - 5, hb.w - 6, 2, 0x33FFD25A, false); }
+                if (catNew[c] > 0) { g.rect(hb.x + hb.w - 7, hb.y + 2, 5, 5, 0xFFD02030, false); }
             }
         }
         UI.small.right(g, "INVENTARIO", w - 12, 11, UI.GOLD, 1f);
@@ -437,59 +443,124 @@ final class Inventory {
         if (ha != null) sc.drawButton(g, ha);
     }
 
+    int clipN;     // pruebas: cuantas veces el detalle tuvo que recortar una descripcion (debe ser 0)
+
+    private String catTag(Item it) {
+        switch (it.kind) {
+            case 1: return "Principal";
+            case 2: return "Escudo";
+            case 3: return "Granada";
+            case 4: return "Mejora de arma";
+            case 5: return "Consumible";
+            case 6: return "Pacto";
+            case 7: return "Reliquia";
+            case 9: return "Bendición inicial";
+            default: return it.cat == C_WEAPONS ? "Secundaria" : it.sub;
+        }
+    }
+
+    /** Cabecera del detalle: icono enmarcado, nombre ajustado (hasta 2 lineas) y etiquetas de rareza, categoria y estado. Devuelve la y siguiente. */
+    private float header(Platform.Gfx g, Item it, float x, float y, float w) {
+        RunState rs = rs();
+        int rc = RAR_RGB[it.rar], lh = ArsenalUI.lh();
+        g.rect(x, y, 24, 24, 0xFF14141E, false);
+        g.rect(x, y, 24, 1, 0xFF000000 | rc, false); g.rect(x, y + 23, 24, 1, rgba(rc, 130), false); g.rect(x, y, 1, 24, rgba(rc, 130), false); g.rect(x + 23, y, 1, 24, rgba(rc, 130), false);
+        UI.iconC(g, it.icon, x + 12, y + 12, 1f, 1f);
+        float nx = x + 29;
+        int nl = Math.max(1, Math.min(2, UI.small.wrapLines(it.name, (int) (w - 29))));
+        UI.small.drawWrappedMax(g, it.name, nx, y + (nl == 1 ? 5 : 1), (int) (w - 29), 0xFFF0E8E0, 1f, lh, 2);
+        float ty = y + Math.max(26, nl * lh + 3), tx = x;
+        String[] tg = new String[3]; int[] tc = new int[3]; boolean[] tf = new boolean[3];
+        tg[0] = RAR_ES[it.rar]; tc[0] = rc;
+        tg[1] = catTag(it); tc[1] = 0x9AA0B0;
+        if (it.kind == 1) { tg[2] = rs.secActive ? "EN ESPERA" : "EN USO"; tc[2] = rs.secActive ? 0x9AA0B0 : 0xFFD25A; tf[2] = !rs.secActive; }
+        else if (it.state == ST_EQUIPPED) { tg[2] = it.active ? "EN USO" : "EQUIPADA"; tc[2] = 0xFFD25A; tf[2] = it.active; }
+        else if (it.state == ST_FLOOR) { tg[2] = "EN EL SUELO"; tc[2] = 0x7AC8F0; }
+        else if (it.state == ST_LEFT) { tg[2] = "DEJADA"; tc[2] = 0x9AA0B0; }
+        for (int k = 0; k < 3; k++) {
+            if (tg[k] == null || tg[k].isEmpty()) continue;
+            float tw = UI.tag(g, tg[k], 0, 0, 0, false, false);
+            if (tx + tw > x + w && tx > x) { tx = x; ty += UI.tagH() + 1; }
+            UI.tag(g, tg[k], tx, ty, tc[k], k == 2 && tf[k], true);
+            tx += tw + 3;
+        }
+        UI.divider(g, x, ty + UI.tagH() + 4, w);
+        return ty + UI.tagH() + 8;
+    }
+
+    int dScroll, dMax; String dKey = "";      // desplazamiento del detalle (px) y maximo; se reinicia al cambiar de elemento
+
+    void dscroll(int px) {
+        int n = Math.max(0, Math.min(dMax, dScroll + px));
+        if (px > 0 && dScroll >= dMax && dMax > 0) n = 0;       // al llegar al final, la siguiente pagina vuelve al principio
+        if (n != dScroll) { dScroll = n; Snd.sfx("ui_hover", 0.4f); }
+    }
+
     private void renderDetail(Platform.Gfx g) {
         Item it = cur();
-        float x = dx + 8, y = dy + 6, w = dw - 16;
-        if (it == null) { UI.small.drawWrapped(g, "Selecciona un objeto para ver su detalle.", x, y + 20, (int) w, 0xFF9AA0B0, 1f); return; }
-        float bottom = dy + dh - (canActivate(it) ? 28 : 6);
-        int rc = RAR_RGB[it.rar];
-        RunState rs = rs();
-        if (it.cat == C_WEAPONS && it.wid > 0) {
-            float yy = ArsenalUI.sheet(g, x, y, w, it.wid, rs.sec != it.wid ? rs.sec : 0, 0, bottom - 2 * (ArsenalUI.lh() + 1) - 4);
-            yy += 3;
-            if (it.state == ST_EQUIPPED) { UI.small.draw(g, ST_NAME[it.state], x + 2, yy, 0xFFFFD25A, 1f); yy += ArsenalUI.lh() + 1; }
-            else { UI.small.draw(g, ST_NAME[it.state], x + 2, yy, 0xFF7AC8F0, 1f); yy += ArsenalUI.lh() + 1; }
-            if (it.state == ST_EQUIPPED && yy + ArsenalUI.lh() <= bottom) { UI.small.draw(g, UI.fitLabel(UI.small, (Items.infinite(it.wid) ? "Sin munición (ilimitada)" : (Arsenal.hasMag(it.wid) ? "Munición " + Arsenal.ammoLabel(rs) + " (cargador/reserva)" : "Munición " + rs.secAmmo + "/" + Items.SEC_AMMO[it.wid])) + (rs.secLvl > 0 ? " · Nv +" + rs.secLvl + "/3" : ""), w - 4), x + 2, yy, 0xFFB8B0B8, 1f); yy += ArsenalUI.lh() + 1; }
-            else if (it.state == ST_FLOOR) { UI.small.draw(g, UI.fitLabel(UI.small, "Recógela con [Interactuar]", w - 4), x + 2, yy, 0xFFB8B0B8, 1f); yy += ArsenalUI.lh() + 1; }
-            else UI.small.drawWrappedMax(g, "Quedó en otra sala (no se puede recoger)", x + 2, yy, (int) w - 4, 0xFFB8B0B8, 1f, ArsenalUI.lh(), 2);
-            return;
+        float x = dx + 8, w = dw - 16 - (dMax > 0 ? 8 : 0);
+        if (it == null) { UI.small.drawWrapped(g, "Selecciona un objeto para ver su detalle.", x, dy + 26, (int) w, 0xFF9AA0B0, 1f); return; }
+        String key = it.key + "/" + (rs().secActive ? 1 : 0) + "/" + it.state;
+        if (!key.equals(dKey)) { dKey = key; dScroll = 0; }
+        dScroll = Math.max(0, Math.min(dMax, dScroll));
+        float top = dy + 6, viewBottom = dy + dh - (canActivate(it) ? 28 : 5);
+        g.clipBegin(dx + 2, dy + 3, dw - 4, viewBottom - (dy + 3));
+        float end = drawDetail(g, it, x, top - dScroll, w, Float.MAX_VALUE) + dScroll;
+        g.clipEnd();
+        dMax = Math.max(0, (int) Math.ceil(end - viewBottom + 2));
+        if (dMax > 0) clipN++;                                   // informativo (pruebas): este elemento necesita desplazamiento
+        if (dMax > 0) {                                          // barra de desplazamiento y flechas
+            float bx = dx + dw - 8, by = dy + 16, bh = viewBottom - by - 14;
+            g.rect(bx, by, 3, bh, 0x55000000, false);
+            float th = Math.max(8, bh * (viewBottom - top) / (end - top)), tp = by + (bh - th) * (dScroll / (float) dMax);
+            g.rect(bx, tp, 3, th, 0xFFB8A050, false);
+            for (Screen.Hit hb : sc.hits) if (hb.tag == 230 || hb.tag == 231) UI.small.center(g, hb.tag == 230 ? "^" : "v", hb.x + hb.w / 2f, hb.y + 3, (hb.tag == 230 ? dScroll <= 0 : dScroll >= dMax) ? 0xFF555560 : 0xFFFFD25A, 1f);
         }
-        // cabecera generica
-        UI.iconC(g, it.icon, x + 9, y + 9, 1f, 1f);
-        UI.small.draw(g, UI.fitLabel(UI.small, it.name, w - 24), x + 22, y + 1, 0xFFF0E8E0, 1f);
-        Arsenal.rarityMark(g, x + 26, y + 15, Math.min(3, it.rar), rc);
-        UI.small.draw(g, it.kind == 1 || it.kind == 5 ? it.sub : RAR_ES[it.rar], x + 34, y + 11, it.kind == 1 || it.kind == 5 ? 0xFFB8B0B8 : rc, 1f);
-        float yy = y + 25;
+    }
+
+    /** Dibuja el detalle completo desde y; devuelve la y final del contenido. */
+    private float drawDetail(Platform.Gfx g, Item it, float x, float y, float w, float bottom) {
+        RunState rs = rs();
+        int lh = ArsenalUI.lh();
+        float yy = header(g, it, x, y, w);
+        if (it.cat == C_WEAPONS && it.wid > 0) {
+            yy = ArsenalUI.sheet(g, x, yy, w, it.wid, rs.sec != it.wid ? rs.sec : 0, 0, bottom, false) + 3;
+            if (it.state == ST_EQUIPPED) { UI.small.draw(g, UI.fitLabel(UI.small, (Items.infinite(it.wid) ? "Sin munición (ilimitada)" : (Arsenal.hasMag(it.wid) ? "Munición " + Arsenal.ammoLabel(rs) + " (cargador/reserva)" : "Munición " + rs.secAmmo + "/" + Items.SEC_AMMO[it.wid])) + (rs.secLvl > 0 ? " · Nv +" + rs.secLvl + "/3" : ""), w - 4), x + 2, yy, 0xFFB8B0B8, 1f); yy += lh + 1; }
+            else if (it.state == ST_FLOOR) { UI.small.draw(g, UI.fitLabel(UI.small, "Recógela con [Interactuar]", w - 4), x + 2, yy, 0xFFB8B0B8, 1f); yy += lh + 1; }
+            else if (it.state == ST_LEFT) yy += UI.small.drawWrappedMax(g, "Quedó en otra sala", x + 2, yy, (int) w - 4, 0xFFB8B0B8, 1f, lh, 2);
+            return yy;
+        }
         String body = "";
         List<String> extra = new ArrayList<>();
         switch (it.kind) {
-            case 1: body = rs.cls.desc; extra.add("Arma: " + rs.cls.weapon); extra.add(rs.secActive ? "En espera (usas la secundaria)" : "En uso"); if (rs.weaponLvl > 0) extra.add("Mejora de la forja: Nv " + rs.weaponLvl); if (rs.special != 0) extra.add("Mejora activa: " + Items.SP_NAME[rs.special]); break;
+            case 1: body = rs.cls.desc; if (rs.weaponLvl > 0) extra.add("Mejora de la forja: Nv " + rs.weaponLvl); if (rs.special != 0) extra.add("Mejora activa: " + Items.SP_NAME[rs.special]); break;
             case 2: body = Items.SH_DESC[it.wid]; break;
             case 3: body = Items.GR_DESC[it.wid]; extra.add("Te quedan " + rs.grenCount); if (rs.grenLvl > 0) extra.add("Mejora: Nv +" + rs.grenLvl + "/3"); break;
             case 4: body = Items.SP_DESC[it.wid]; break;
             case 5: body = "Curan vida cuando los usas. Los recargas en tiendas y con algunos objetos."; extra.add("Llevas " + rs.potions + " de " + rs.stats.potionsMax); break;
             case 6: body = Events.PACTS[it.wid].pro; extra.add("Coste: " + Events.PACTS[it.wid].con); break;
             case 7: body = "Reliquia de " + BossDef.ALL[it.wid].name + ". La conservas en la sala de trofeos."; break;
-            case 8: body = Companions.PASSIVE[it.wid]; break;
+            case 8: body = Companions.PASSIVE[it.wid]; extra.add(Companions.KIND[it.wid]); break;
             case 9: body = StartBlessing.get(it.wid).pro; extra.add("Coste: " + StartBlessing.get(it.wid).con); break;
             default:
                 if (it.bid >= 0) {
                     Blessing b = Blessing.ALL[it.bid];
                     body = b.desc;
-                    extra.add("Nivel " + rs.bless[it.bid] + "/" + b.max + " · " + it.sub);
+                    extra.add("Nivel " + rs.bless[it.bid] + "/" + b.max);
                 }
         }
-        yy += wrapClip(g, body, x + 2, yy, (int) w - 4, bottom - yy - 24, 0xFFE8E0E0);
-        yy += 3;
-        for (String e : extra) {
-            if (yy + ArsenalUI.lh() > bottom) break;
-            yy += wrapClip(g, e, x + 2, yy, (int) w - 4, bottom - yy, 0xFFFFD25A) + 1;
-        }
+        yy += UI.small.drawWrappedMax(g, body, x + 2, yy, (int) w - 4, 0xFFE8E0E0, 1f, lh, 99);
+        if (extra.isEmpty()) return yy;
+        yy += 2;
+        UI.divider(g, x, yy + 1, w); yy += 5;
+        for (String e : extra) yy += UI.small.drawWrappedMax(g, e, x + 2, yy, (int) w - 4, 0xFFFFD25A, 1f, lh, 99) + 1;
+        return yy;
     }
 
     /** Texto con ajuste de linea que nunca se sale del espacio disponible (corta con "…"). Devuelve el alto usado. */
     private float wrapClip(Platform.Gfx g, String s, float x, float y, int w, float maxH, int col) {
         int maxL = Math.max(1, (int) (maxH / ArsenalUI.lh()));
+        if (UI.small.wrapLines(s, w) > maxL) clipN++;
         return UI.small.drawWrappedMax(g, s, x, y, w, col, 1f, ArsenalUI.lh(), maxL);
     }
 }

@@ -2156,7 +2156,7 @@ final class RunScreen extends Screen implements Level.Listener {
     private void renderBlessList(Platform.Gfx g, int w) {
         float px = 12, pw = w - 24;
         UI.panel(g, 0, px, 8, pw, 222, 0.98f);
-        UI.big.center(g, blTab == 0 ? "BENDICIONES ACTIVAS" : "SINERGIAS", w / 2f, 14, UI.GOLD, 1f);
+        UI.title(g, blTab == 0 ? "BENDICIONES ACTIVAS" : "SINERGIAS", w / 2f, 14, UI.GOLD, 1f);
         int pages = Math.max(1, (blRows.length + BL_PER_PAGE - 1) / BL_PER_PAGE);
         UI.small.right(g, "Pág. " + (blPage + 1) + "/" + pages, px + pw - 10, 16, UI.GREY, 1f);
         if (blRows.length == 0) {
@@ -2207,14 +2207,14 @@ final class RunScreen extends Screen implements Level.Listener {
         switch (ov) {
             case OV_BLESS: {
                 dim(g, w, 0.62f * fadeIn);
-                UI.big.center(g, "ELIGE UNA BENDICIÓN", w / 2f, 8, UI.GOLD, fadeIn);
+                UI.title(g, "ELIGE UNA BENDICIÓN", w / 2f, 8, UI.GOLD, fadeIn);
                 UI.small.center(g, "Mejoras que duran toda la partida", w / 2f, 26, UI.GREY, fadeIn);
                 for (Hit h : hits) drawBlessCard(g, h, fadeIn);
                 break;
             }
             case OV_EVENT: {
                 dim(g, w, 0.64f * fadeIn);
-                UI.big.center(g, evTitle, w / 2f, 14, UI.GOLD, fadeIn);
+                UI.title(g, evTitle, w / 2f, 14, UI.GOLD, fadeIn);
                 UI.small.center(g, evSub, w / 2f, 34, UI.GREY, fadeIn);
                 for (Hit h : hits) {
                     if (h.label != null) continue;
@@ -2238,7 +2238,7 @@ final class RunScreen extends Screen implements Level.Listener {
             case OV_CHEST: {
                 if (cOffer == null) break;
                 dim(g, w, 0.66f * fadeIn);
-                UI.big.center(g, ChestLoot.MODE_TITLE[cMode], w / 2f, 10, UI.GOLD, fadeIn);
+                UI.title(g, ChestLoot.MODE_TITLE[cMode], w / 2f, 10, UI.GOLD, fadeIn);
                 UI.small.center(g, ChestLoot.MODE_SUB[cMode], w / 2f, 28, UI.GREY, fadeIn);
                 for (Hit h : hits) {
                     if (h.tag < 0 || h.tag > 2 || h.label != null) continue;
@@ -2275,7 +2275,7 @@ final class RunScreen extends Screen implements Level.Listener {
             }
             case OV_SHOP: {
                 dim(g, w, 0.6f * fadeIn);
-                UI.big.center(g, "MERCADER", w / 2f, 16, UI.GOLD, 1f);
+                UI.title(g, "MERCADER", w / 2f, 16, UI.GOLD, 1f);
                 UI.icon(g, "coin", w / 2f - 24, 34, 1f);
                 UI.small.draw(g, String.valueOf(rs.gold), w / 2f - 6, 38, UI.GOLD, 1f);
                 float[][] r = shopRects(w);
@@ -2312,7 +2312,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 dim(g, w, 0.6f * fadeIn);
                 float px = w / 2f - 130;
                 UI.panel(g, 0, px, 40, 260, 168, 1f);
-                UI.big.center(g, "FORJA", w / 2f, 48, UI.ORANGE, 1f);
+                UI.title(g, "FORJA", w / 2f, 48, UI.ORANGE, 1f);
                 UI.small.center(g, cls.weapon, w / 2f, 70, UI.WHITE, 1f);
                 int lvl = rs.weaponLvl;
                 for (int i = 0; i < RunState.WEAPON_MAX; i++) g.rect(px + 20 + i * 11, 88, 9, 8, i < lvl ? 0xFFFFC040 : 0xFF303038, false);
@@ -2344,7 +2344,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 dim(g, w, 0.72f);
                 float px = w / 2f - 220;
                 UI.panel(g, 0, px, 14, 440, 238, 0.98f);
-                UI.big.center(g, "PAUSA", w / 2f, 22, UI.GOLD, 1f);
+                UI.title(g, "PAUSA", w / 2f, 22, UI.GOLD, 1f);
                 drawButtons(g);
                 // info
                 float ix = px + 182;
@@ -2410,7 +2410,7 @@ final class RunScreen extends Screen implements Level.Listener {
             case OV_WCMP: {
                 if (wcmp == null) break;
                 dim(g, w, 0.74f * fadeIn);
-                UI.big.center(g, "¿INTERCAMBIAR ARMA?", w / 2f, 8, UI.GOLD, fadeIn);
+                UI.title(g, "¿INTERCAMBIAR ARMA?", w / 2f, 8, UI.GOLD, fadeIn);
                 UI.small.center(g, "Tu arma actual quedará en el suelo y podrás recogerla de nuevo", w / 2f, 27, UI.GREY, fadeIn);
                 float pw = Math.min(210, (w - 30) / 2f), ph = 172, x0 = w / 2f - pw - 5, x1 = w / 2f + 5;
                 UI.panel(g, wcmpSel == 0 ? 1 : 0, x0, 40, pw, ph, fadeIn);
@@ -2427,7 +2427,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 dim(g, w, 0.72f * fadeIn);
                 float px = w / 2f - 130;
                 UI.panel(g, 2, px, 34, 260, 200, fadeIn);
-                UI.big.center(g, "HAS CAÍDO", w / 2f, 44, UI.RED, fadeIn);
+                UI.title(g, "HAS CAÍDO", w / 2f, 44, UI.RED, fadeIn);
                 UI.small.center(g, "Piso " + rs.floor + " · " + rs.floorsDone + " completados", w / 2f, 66, UI.GREY, fadeIn);
                 int left = rs.ruleset.maxRevives - rs.revivesUsed;
                 UI.small.center(g, "Revividas: " + rs.revivesUsed + "/" + rs.ruleset.maxRevives + " usadas", w / 2f, 82, UI.PURPLE, fadeIn);
@@ -2445,7 +2445,7 @@ final class RunScreen extends Screen implements Level.Listener {
                     Infinite.Result r = infResult;
                     float px = w / 2f - 150;
                     UI.panel(g, 2, px, 14, 300, 232, fadeIn);
-                    UI.big.center(g, "RUN INFINITA", w / 2f, 22, UI.PURPLE, fadeIn);
+                    UI.title(g, "RUN INFINITA", w / 2f, 22, UI.PURPLE, fadeIn);
                     UI.small.center(g, rs.biome == null ? "" : "Caíste en " + rs.biome.name + " · piso " + r.reached + (r.mods != 0 ? " · Retos +" + Infinite.bonusPct(r.mods) + "%" : ""), w / 2f, 44, UI.GREY, fadeIn);
                     String[][] rows = {{"Pisos completados", String.valueOf(r.floors)}, {"Piso alcanzado", String.valueOf(r.reached)}, {"Enemigos derrotados", String.valueOf(r.kills)},
                             {"Jefes derrotados", String.valueOf(r.bosses)}, {"Tiempo de supervivencia", time(r.timeS)}, {"Revividas usadas", r.revives + "/" + rs.ruleset.maxRevives}};
@@ -2472,7 +2472,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 }
                 float px = w / 2f - 150;
                 UI.panel(g, win ? 1 : 2, px, 30, 300, 210, fadeIn);
-                UI.big.center(g, win ? "¡VICTORIA!" : "HAS CAÍDO", w / 2f, 40, win ? UI.GOLD : UI.RED, fadeIn);
+                UI.title(g, win ? "¡VICTORIA!" : "HAS CAÍDO", w / 2f, 40, win ? UI.GOLD : UI.RED, fadeIn);
                 UI.small.center(g, win ? (rs.finalRun ? "El Cazador ha sido derrotado" : "Has superado las tres mazmorras") : (rs.biome == null ? "En el Santuario" : "Caíste en " + rs.biome.name + " · sala " + Math.min(5, rs.roomNo + 1)), w / 2f, 62, UI.GREY, fadeIn);
                 float y = 84;
                 String[][] rows = {{"Salas superadas", String.valueOf(rs.roomsDone)}, {"Enemigos derrotados", String.valueOf(rs.kills)}, {"Jefes derrotados", String.valueOf(rs.bossKills)},

@@ -125,9 +125,50 @@ public final class UI {
         Platform.Img im = kind == 1 ? panelLight : (kind == 2 ? panelRed : panel);
         if (im == null) { g.rect(x, y, w, h, 0xCC101018, false); return; }
         slice(g, im, 0, 32, 32, 8, x, y, w, h, alpha);
+        rivets(g, x, y, w, h, alpha);
     }
 
     public static void panel(Platform.Gfx g, int kind, float x, float y, float w, float h) { panel(g, kind, x, y, w, h, 1f); }
+
+    /** Remaches de hierro envejecido en las 4 esquinas (solo paneles grandes: discretos, nunca bajo el texto). */
+    static void rivets(Platform.Gfx g, float x, float y, float w, float h, float alpha) {
+        if (w < 64 || h < 40) return;
+        int a = Math.round(200 * alpha) << 24;
+        float[][] p = {{x + 3, y + 3}, {x + w - 5, y + 3}, {x + 3, y + h - 5}, {x + w - 5, y + h - 5}};
+        for (float[] q : p) { g.rect(Math.round(q[0]), Math.round(q[1]), 2, 2, a | 0x8A7430, false); g.rect(Math.round(q[0]), Math.round(q[1]), 1, 1, a | 0xD8C070, false); }
+    }
+
+    /** Separador de seccion: filete dorado desgastado con un rombo central. */
+    public static void divider(Platform.Gfx g, float x, float y, float w) {
+        x = Math.round(x); y = Math.round(y); w = Math.round(w);
+        g.rect(x, y, w, 1, 0x55B8A050, false);
+        g.rect(x + w / 2f - 1, y - 1, 3, 3, 0xFF8A7430, false); g.rect(x + w / 2f, y, 1, 1, 0xFFE8D080, false);
+    }
+
+    /** Titulo de pantalla: texto grande con filetes dorados a los lados. */
+    public static void title(Platform.Gfx g, String s, float cx, float y, int color, float alpha) {
+        if (big == null) return;
+        big.center(g, s, cx, y, color, alpha);
+        float tw = big.width(I18n.tr(s)) / 2f + 8, ly = Math.round(y + big.ch / 2f);
+        int a = Math.round(120 * alpha) << 24;
+        g.rect(Math.round(cx - tw - 22), ly, 22, 1, a | 0xB8A050, false); g.rect(Math.round(cx + tw), ly, 22, 1, a | 0xB8A050, false);
+        g.rect(Math.round(cx - tw - 25), ly - 1, 3, 3, a | 0x8A7430, false); g.rect(Math.round(cx + tw + 22), ly - 1, 3, 3, a | 0x8A7430, false);
+    }
+
+    public static int tagH() { return small.ch + 2; }
+
+    /** Etiqueta (rareza, categoria, estado). filled = relleno de color (p. ej. EN USO). Devuelve su ancho; con draw=false solo mide. */
+    public static float tag(Platform.Gfx g, String s, float x, float y, int rgb, boolean filled, boolean draw) {
+        String t = I18n.tr(s);
+        float w = small.width(t) + 7;
+        if (!draw) return w;
+        int c = 0xFF000000 | (rgb & 0xFFFFFF);
+        int th = tagH();
+        g.rect(x, y, w, th, filled ? 0xFF000000 | ((((rgb >> 16) & 0xFF) / 4) << 16 | (((rgb >> 8) & 0xFF) / 4) << 8 | ((rgb & 0xFF) / 4)) : 0xFF101018, false);
+        g.rect(x, y, w, 1, c, false); g.rect(x, y + th - 1, w, 1, c, false); g.rect(x, y, 1, th, c, false); g.rect(x + w - 1, y, 1, th, c, false);
+        small.draw(g, t, x + 4, y + 1, c, 1f);
+        return w;
+    }
 
     /** state 0 normal, 1 resaltado, 2 pulsado. */
     public static void button(Platform.Gfx g, String label, float x, float y, float w, float h, int state, boolean disabled) {

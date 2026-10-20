@@ -147,7 +147,7 @@ public final class Player extends Ent {
         chgFx -= lv.rawDt;
         if (chgFx <= 0f) {
             chgFx = (0.11f - 0.07f * fr) * (Save.S.reduceFx ? 2f : 1f);
-            float ang = (float) (Math.random() * Math.PI * 2), rr = 18f + 12f * fr;
+            float ang = (float) (Mth.rnd() * Math.PI * 2), rr = 18f + 12f * fr;
             float wx = x + dir() * 14, wy = y - 20;
             lv.ps.spawn(wx + (float) Math.cos(ang) * rr, wy + (float) Math.sin(ang) * rr, -(float) Math.cos(ang) * 60f, -(float) Math.sin(ang) * 60f, 0.28f, 2, 0, fr >= 1f ? 0xFFF0A0 : cls.color1, true);
         }
@@ -666,7 +666,7 @@ public final class Player extends Ent {
         return "hit_stone";
     }
 
-    private int lv_i(int n) { return (int) (Math.random() * n); }
+    private int lv_i(int n) { return (int) (Mth.rnd() * n); }
 
     private void hitBox(Level lv, Anim a) {
         RunState rs = lv.rs; Stats s = rs.stats;

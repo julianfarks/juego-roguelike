@@ -1508,7 +1508,7 @@ final class RunScreen extends Screen implements Level.Listener {
     void debugTxtShop(int from) {
         List<ShopItem> l = new ArrayList<>();
         l.add(new ShopItem("Frasco de vida", "+1 frasco de vida.", "potion", 30, 0, 0));
-        l.add(new ShopItem("Interés Compuesto", "Al limpiar una sala con 100 o más de oro, ganas 12 de oro (seca)", "coin", 160, 2, 0));
+        l.add(new ShopItem("Interés Compuesto", "Al limpiar una sala con 100 o más de oro, ganas 12 de oro extra.", "coin", 160, 2, 0));
         for (int k = 0; k < 4; k++) { Blessing b = Blessing.ALL[(from + k) % Blessing.ALL.length]; l.add(new ShopItem(b.name, b.desc, b.icon, 123 + k, 2, 0)); }
         l.get(2).sold = true;
         shop = l; openOv(OV_SHOP); ovT = 1f;

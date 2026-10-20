@@ -149,7 +149,7 @@ public final class UI {
     public static void title(Platform.Gfx g, String s, float cx, float y, int color, float alpha) {
         if (big == null) return;
         big.center(g, s, cx, y, color, alpha);
-        float tw = big.width(I18n.tr(s)) / 2f + 8, ly = Math.round(y + big.ch / 2f);
+        float tw = big.width(s) / 2f + 8, ly = Math.round(y + big.ch / 2f);
         int a = Math.round(120 * alpha) << 24;
         g.rect(Math.round(cx - tw - 22), ly, 22, 1, a | 0xB8A050, false); g.rect(Math.round(cx + tw), ly, 22, 1, a | 0xB8A050, false);
         g.rect(Math.round(cx - tw - 25), ly - 1, 3, 3, a | 0x8A7430, false); g.rect(Math.round(cx + tw + 22), ly - 1, 3, 3, a | 0x8A7430, false);
@@ -159,14 +159,13 @@ public final class UI {
 
     /** Etiqueta (rareza, categoria, estado). filled = relleno de color (p. ej. EN USO). Devuelve su ancho; con draw=false solo mide. */
     public static float tag(Platform.Gfx g, String s, float x, float y, int rgb, boolean filled, boolean draw) {
-        String t = I18n.tr(s);
-        float w = small.width(t) + 7;
+        float w = small.width(s) + 7;
         if (!draw) return w;
         int c = 0xFF000000 | (rgb & 0xFFFFFF);
         int th = tagH();
         g.rect(x, y, w, th, filled ? 0xFF000000 | ((((rgb >> 16) & 0xFF) / 4) << 16 | (((rgb >> 8) & 0xFF) / 4) << 8 | ((rgb & 0xFF) / 4)) : 0xFF101018, false);
         g.rect(x, y, w, 1, c, false); g.rect(x, y + th - 1, w, 1, c, false); g.rect(x, y, 1, th, c, false); g.rect(x + w - 1, y, 1, th, c, false);
-        small.draw(g, t, x + 4, y + 1, c, 1f);
+        small.draw(g, s, x + 4, y + 1, c, 1f);
         return w;
     }
 

@@ -22,7 +22,7 @@ public final class Particles {
         }
         int i;
         if (n < MAX) i = n++;
-        else i = (int) (Math.random() * MAX);
+        else i = (int) (Mth.rnd() * MAX);
         x[i] = px; y[i] = py; vx[i] = pvx; vy[i] = pvy; life[i] = l; maxLife[i] = l; size[i] = s; grav[i] = g; color[i] = c; add[i] = additive;
     }
 

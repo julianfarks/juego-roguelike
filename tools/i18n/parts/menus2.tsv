@@ -1,0 +1,17 @@
+# Rediseño de menús (inventario, etiquetas) y textos de fichas pendientes
+Consumible	Consumable	Consommable	消耗品
+DEJADA	LEFT BEHIND	LAISSÉE	已遗留
+EQUIPADA	EQUIPPED	ÉQUIPÉE	已装备
+EN ESPERA	STANDBY	EN ATTENTE	待命
+EN EL SUELO	ON THE FLOOR	AU SOL	在地上
+Mejora de arma	Weapon upgrade	Amélioration d'arme	武器强化
+Nivel {}/{}	Level {}/{}	Niveau {}/{}	等级 {}/{}
+Omitir / Conservar equipo	Skip / Keep gear	Passer / Garder l'équipement	跳过 / 保留装备
+Pacto	Pact	Pacte	契约
+Principal	Main	Principale	主武器
+Secundaria	Secondary	Secondaire	副武器
+Quedó en otra sala	Left in another room	Laissée dans une autre salle	留在了其他房间
+{} (regenera)	{} (regenerates)	{} (se régénère)	{}（自动恢复）
+{} (carg. {})	{} (mag. {})	{} (charg. {})	{}（弹匣{}）
++{}% de daño	+{}% damage	+{} % de dégâts	伤害+{}%
++{}% de velocidad de ataque	+{}% attack speed	+{} % de vitesse d'attaque	攻击速度+{}%

@@ -101,7 +101,7 @@ public final class Boss extends Ent {
     public void onHit(Level lv, float dmg) {
         hurtAcc += dmg;
         hurtSfxT -= 0;
-        if (hurtSfxT <= 0 && Math.random() < 0.5) { sfx(lv, "hurt", 0.6f); hurtSfxT = 0.5f; }
+        if (hurtSfxT <= 0 && Mth.rnd() < 0.5) { sfx(lv, "hurt", 0.6f); hurtSfxT = 0.5f; }
         if (state == IDLE && hurtAcc > maxHp * 0.09f && cdT > 0.15f) {
             hurtAcc = 0;
             state = HURT; stateT = 0; animName = "hurt"; animT = 0; vx = 0;
@@ -198,7 +198,7 @@ public final class Boss extends Ent {
                 break;
             case PHASE:
                 vx = 0; vy = 0;
-                if (Math.random() < 0.3) lv.ps.spawn(x + lv.rng.f(-20, 20), y - lv.rng.f(10, bh), 0, -60, 0.6f, 3, 0, def.color, true);
+                if (Mth.rnd() < 0.3) lv.ps.spawn(x + lv.rng.f(-20, 20), y - lv.rng.f(10, bh), 0, -60, 0.6f, 3, 0, def.color, true);
                 if (sheet.anim("phase").done(animT)) {
                     phase = 2; state = IDLE; stateT = 0; cdT = 0.4f;
                     hurtAcc = 0;
@@ -228,14 +228,14 @@ public final class Boss extends Ent {
         if (pullT > 0) {
             pullT -= dt;
             p.extVx = Mth.sign(x - p.x) * 150f;
-            if (Math.random() < 0.5) lv.ps.spawn(p.x + lv.rng.f(-30, 30), p.y - lv.rng.f(0, 30), Mth.sign(x - p.x) * 60, 0, 0.3f, 2, 0, def.color, true);
+            if (Mth.rnd() < 0.5) lv.ps.spawn(p.x + lv.rng.f(-30, 30), p.y - lv.rng.f(0, 30), Mth.sign(x - p.x) * 60, 0, 0.3f, 2, 0, def.color, true);
         }
         // contacto
         if (contactCd <= 0 && state != PHASE && overlaps(p.x - p.bw / 2, p.y - p.bh, p.bw, p.bh) && p.alive) {
             if (lv.hurtPlayer(dmgBase * 0.4f, x, -1, 0)) contactCd = 1.0f;
         }
         // aura en fase 2
-        if (ph2() && Math.random() < dt * 25) lv.ps.spawn(x + lv.rng.f(-bw / 2, bw / 2), y - lv.rng.f(5, bh * 0.9f), lv.rng.f(-10, 10), -lv.rng.f(20, 60), 0.7f, 2, 0, def.color, true);
+        if (ph2() && Mth.rnd() < dt * 25) lv.ps.spawn(x + lv.rng.f(-bw / 2, bw / 2), y - lv.rng.f(5, bh * 0.9f), lv.rng.f(-10, 10), -lv.rng.f(20, 60), 0.7f, 2, 0, def.color, true);
     }
 
     private void face(float dx) { if (Math.abs(dx) > 4) right = dx > 0; }
@@ -290,7 +290,7 @@ public final class Boss extends Ent {
         vy = Math.min(Level.FALL_MAX, vy + Level.GRAV * dt);
         vx *= 0.9f;
         lv.move(this, dt);
-        if (Math.random() < dt * 14) {
+        if (Mth.rnd() < dt * 14) {
             float ex = x + lv.rng.f(-bw / 2, bw / 2), ey = y - lv.rng.f(10, bh);
             lv.fxAdd("fx_explosion", "a", ex, ey, 0.5f + lv.rng.f() * 0.5f, def.color);
             Snd.sfxv("explosion_small", 0.5f);
@@ -363,7 +363,7 @@ public final class Boss extends Ent {
         state = WINDUP; stateT = 0; animName = "windup" + k; animT = 0;
         hitDone = false; extraDone = false;
         vx = 0;
-        if (Math.random() < 0.55) sfx(lv, "roar", 0.7f);
+        if (Mth.rnd() < 0.55) sfx(lv, "roar", 0.7f);
     }
 
     private void updateWindup(Level lv, float dt, Player p, float dx) {
@@ -423,7 +423,7 @@ public final class Boss extends Ent {
         face(p.x - x);
         if (flying) hoverTo(lv, p, dt, x, p.y - 80, 80);
         if (!fired && a.frameAt(animT) >= Math.max(0, a.rel)) { fired = true; doCast(lv, p); }
-        if (Math.random() < dt * 30) lv.ps.spawn(a.muzzleX(x, right) + lv.rng.f(-8, 8), a.muzzleY(y) + lv.rng.f(-8, 8), 0, -20, 0.4f, 2, 0, def.color, true);
+        if (Mth.rnd() < dt * 30) lv.ps.spawn(a.muzzleX(x, right) + lv.rng.f(-8, 8), a.muzzleY(y) + lv.rng.f(-8, 8), 0, -20, 0.4f, 2, 0, def.color, true);
         if (a.done(animT)) {
             state = RECOVER; stateT = 0; animName = "idle"; animT = 0;
             cdT = (ph2() ? 0.4f : 0.8f) + lv.rng.f() * 0.4f;

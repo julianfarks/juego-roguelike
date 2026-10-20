@@ -733,6 +733,12 @@ Resonancia Elemental	Résonance élémentaire
 Golpear a un enemigo con 2 o más estados alterados lanza un rayo de 2 saltos (cada 1,2 s).	Frapper un ennemi avec 2 états altérés ou plus lance un éclair à 2 sauts (toutes les 1,2 s).
 Frasco de Vida	Fiole de vie
 Toda curación recibida es un 25% mayor y beber un frasco te da 25 de escudo.	Tous les soins reçus sont 25 % plus importants et boire une fiole vous donne 25 de bouclier.
+Detonación Crítica	Détonation critique
+Tus críticos provocan una explosión que quema (50% de daño, cada 0,6 s).	Vos critiques provoquent une explosion qui brûle (50 % de dégâts, toutes les 0,6 s).
+Funeral Ígneo	Funérailles ardentes
+Los enemigos que mueren en llamas explotan y siguen quemando (50% de daño, cada 0,25 s).	Les ennemis qui meurent en flammes explosent et continuent de brûler (50 % de dégâts, toutes les 0,25 s).
+Plaga Viva	Peste vivante
+Los enemigos que mueren envenenados esparcen el veneno a los cercanos (cada 0,25 s).	Les ennemis qui meurent empoisonnés répandent le poison aux proches (toutes les 0,25 s).
 Reúne {} de sus bendiciones para activarla.	Réunissez {} de ses bénédictions pour l'activer.
 Sinergia activa	Synergie active
 Sinergia {}/{}	Synergie {}/{}
@@ -1489,6 +1495,22 @@ Al morir revives una vez por run con 25% (50% nv.2) de vida.	À votre mort, vous
 -{}% daño recibido	-{} % de dégâts subis
 Sin revivir	Aucune résurrection
 Revive con {}% de vida	Ressuscite avec {} % de vie
+Consumible	Consommable
+DEJADA	LAISSÉE
+EQUIPADA	ÉQUIPÉE
+EN ESPERA	EN ATTENTE
+EN EL SUELO	AU SOL
+Mejora de arma	Amélioration d'arme
+Nivel {}/{}	Niveau {}/{}
+Omitir / Conservar equipo	Passer / Garder l'équipement
+Pacto	Pacte
+Principal	Principale
+Secundaria	Secondaire
+Quedó en otra sala	Laissée dans une autre salle
+{} (regenera)	{} (se régénère)
+{} (carg. {})	{} (charg. {})
++{}% de daño	+{} % de dégâts
++{}% de velocidad de ataque	+{} % de vitesse d'attaque
 Desciende al Abismo como {}	Descendez dans l'Abîme en tant que {}
 Descubierto: {}	Découvert : {}
 Dificultad: {}	Difficulté : {}

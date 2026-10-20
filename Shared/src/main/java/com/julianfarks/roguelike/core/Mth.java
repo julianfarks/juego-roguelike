@@ -3,6 +3,9 @@ package com.julianfarks.roguelike.core;
 /** Matematicas y colores. */
 public final class Mth {
     private Mth() {}
+    /** Azar visual/menor del juego. Igual que Math.random(); solo con BOT_SEED (banco de pruebas / grabacion) es reproducible. */
+    private static final java.util.Random DET = System.getenv("BOT_SEED") != null ? new java.util.Random(Long.parseLong(System.getenv("BOT_SEED").trim())) : null;
+    public static double rnd() { return DET != null ? DET.nextDouble() : Math.random(); }
     public static float clamp(float v, float a, float b) { return v < a ? a : (v > b ? b : v); }
     public static int clamp(int v, int a, int b) { return v < a ? a : (v > b ? b : v); }
     public static float lerp(float a, float b, float t) { return a + (b - a) * t; }

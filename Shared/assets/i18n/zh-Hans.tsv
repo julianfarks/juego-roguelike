@@ -733,6 +733,12 @@ Resonancia Elemental	元素共鸣
 Golpear a un enemigo con 2 o más estados alterados lanza un rayo de 2 saltos (cada 1,2 s).	攻击拥有2种及以上异常状态的敌人，释放2次跳跃的闪电（每1.2秒）。
 Frasco de Vida	生命之瓶
 Toda curación recibida es un 25% mayor y beber un frasco te da 25 de escudo.	所有受到的治疗效果+25%，饮用药瓶获得25点护盾。
+Detonación Crítica	暴击爆裂
+Tus críticos provocan una explosión que quema (50% de daño, cada 0,6 s).	你的暴击会引发灼烧爆炸（50%伤害，每0.6秒）。
+Funeral Ígneo	烈焰葬礼
+Los enemigos que mueren en llamas explotan y siguen quemando (50% de daño, cada 0,25 s).	燃烧中死亡的敌人会爆炸并继续燃烧（50%伤害，每0.25秒）。
+Plaga Viva	活体瘟疫
+Los enemigos que mueren envenenados esparcen el veneno a los cercanos (cada 0,25 s).	中毒死亡的敌人会将毒素传给附近敌人（每0.25秒）。
 Reúne {} de sus bendiciones para activarla.	集齐其中{}个祝福即可激活。
 Sinergia activa	协同已激活
 Sinergia {}/{}	协同 {}/{}
@@ -1489,6 +1495,22 @@ Al morir revives una vez por run con 25% (50% nv.2) de vida.	死亡时每局可�
 -{}% daño recibido	受到的伤害-{}%
 Sin revivir	无法复活
 Revive con {}% de vida	复活并恢复{}%生命
+Consumible	消耗品
+DEJADA	已遗留
+EQUIPADA	已装备
+EN ESPERA	待命
+EN EL SUELO	在地上
+Mejora de arma	武器强化
+Nivel {}/{}	等级 {}/{}
+Omitir / Conservar equipo	跳过 / 保留装备
+Pacto	契约
+Principal	主武器
+Secundaria	副武器
+Quedó en otra sala	留在了其他房间
+{} (regenera)	{}（自动恢复）
+{} (carg. {})	{}（弹匣{}）
++{}% de daño	伤害+{}%
++{}% de velocidad de ataque	攻击速度+{}%
 Desciende al Abismo como {}	化身为{}，踏入深渊
 Descubierto: {}	已发现：{}
 Dificultad: {}	难度：{}

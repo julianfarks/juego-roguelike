@@ -180,5 +180,5 @@ final class Melee {
         return "hit_flesh_" + (1 + lv_i(3));
     }
 
-    private static int lv_i(int n) { return (int) (Math.random() * n); }
+    private static int lv_i(int n) { return (int) (Mth.rnd() * n); }
 }

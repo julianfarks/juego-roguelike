@@ -43,10 +43,10 @@ public final class Enemy extends Ent {
         flying = d.role == EnemyDef.FLY_SHOOT || d.role == EnemyDef.FLY_DIVE || d.id.equals("ventisca");
         gravity = !flying;
         statusId = Status.parse(d.status);
-        right = Math.random() < 0.5;
+        right = Mth.rnd() < 0.5;
         patrolDir = right ? 1 : -1;
-        bob = (float) (Math.random() * 6.28);
-        atkCd = 0.6f + (float) Math.random();
+        bob = (float) (Mth.rnd() * 6.28);
+        atkCd = 0.6f + (float) Mth.rnd();
         spawnT = 0.0f;
     }
 
@@ -124,7 +124,7 @@ public final class Enemy extends Ent {
         if (stagger && state != DEAD) {
             state = HURT; stateT = 0; animName = "hurt"; animT = 0; hitDone = false;
         }
-        Snd.sfxAt(Math.random() < 0.5 ? "en_hurt_1" : "en_hurt_2", x, lv.camX + lv.viewW / 2, 0.45f);
+        Snd.sfxAt(Mth.rnd() < 0.5 ? "en_hurt_1" : "en_hurt_2", x, lv.camX + lv.viewW / 2, 0.45f);
     }
 
     // ------------------------------------------------------------------ muerte

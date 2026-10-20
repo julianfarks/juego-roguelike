@@ -733,6 +733,12 @@ Resonancia Elemental	Elemental Resonance
 Golpear a un enemigo con 2 o más estados alterados lanza un rayo de 2 saltos (cada 1,2 s).	Hitting an enemy with 2 or more status effects casts a 2-jump lightning bolt (every 1.2 s).
 Frasco de Vida	Life Flask
 Toda curación recibida es un 25% mayor y beber un frasco te da 25 de escudo.	All healing received is 25% greater and drinking a flask gives you 25 shield.
+Detonación Crítica	Critical Detonation
+Tus críticos provocan una explosión que quema (50% de daño, cada 0,6 s).	Your critical hits cause an explosion that burns (50% damage, every 0.6 s).
+Funeral Ígneo	Fiery Funeral
+Los enemigos que mueren en llamas explotan y siguen quemando (50% de daño, cada 0,25 s).	Enemies that die burning explode and keep burning (50% damage, every 0.25 s).
+Plaga Viva	Living Plague
+Los enemigos que mueren envenenados esparcen el veneno a los cercanos (cada 0,25 s).	Enemies that die poisoned spread the poison to nearby ones (every 0.25 s).
 Reúne {} de sus bendiciones para activarla.	Gather {} of its blessings to activate it.
 Sinergia activa	Synergy active
 Sinergia {}/{}	Synergy {}/{}
@@ -1489,6 +1495,22 @@ Al morir revives una vez por run con 25% (50% nv.2) de vida.	On death, you reviv
 -{}% daño recibido	-{}% damage taken
 Sin revivir	No revive
 Revive con {}% de vida	Revive with {}% health
+Consumible	Consumable
+DEJADA	LEFT BEHIND
+EQUIPADA	EQUIPPED
+EN ESPERA	STANDBY
+EN EL SUELO	ON THE FLOOR
+Mejora de arma	Weapon upgrade
+Nivel {}/{}	Level {}/{}
+Omitir / Conservar equipo	Skip / Keep gear
+Pacto	Pact
+Principal	Main
+Secundaria	Secondary
+Quedó en otra sala	Left in another room
+{} (regenera)	{} (regenerates)
+{} (carg. {})	{} (mag. {})
++{}% de daño	+{}% damage
++{}% de velocidad de ataque	+{}% attack speed
 Desciende al Abismo como {}	Descend into the Abyss as {}
 Descubierto: {}	Discovered: {}
 Dificultad: {}	Difficulty: {}

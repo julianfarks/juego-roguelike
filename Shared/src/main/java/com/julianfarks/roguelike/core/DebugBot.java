@@ -40,6 +40,8 @@ public final class DebugBot {
         if (held[code] != down) { held[code] = down; g.key(code, down); }
     }
 
+    private static float ovWait() { String w = System.getenv("BOT_OVWAIT"); return w == null ? 1.0f : Float.parseFloat(w); }
+
     private void tap(Game g, int code) { g.key(code, true); g.key(code, false); }
 
     private boolean compDone, screenDone;
@@ -405,7 +407,7 @@ public final class DebugBot {
         Level lv = rs.lv;
         Player p = lv.pl;
         if (System.getenv("BOT_PERF") != null && frame % 60 == 0) System.out.println("PERF f=" + frame + " en=" + lv.enemies.size() + " proj=" + lv.projs.size() + " fx=" + lv.fxs.size() + " txt=" + lv.texts.size() + " delayed=" + lv.delayed.size() + " part=" + lv.ps.count() + " props=" + lv.props.size() + " heapMB=" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576);
-        if (System.getenv("BOT_TRAILER") != null && warped && frame > warpFrame + 30) TrailerProbe.step(g, rs, lv, p, frame);
+        if (System.getenv("BOT_TRAILER") != null && warped && frame > warpFrame + 30 && TrailerProbe.step(g, rs, lv, p, frame)) return;
         if (System.getenv("BOT_HUDTEST") != null && warped && frame > warpFrame + 30) { if (HudProbe.step(g, rs, lv, p, frame)) System.exit(HudProbe.fails == 0 ? 0 : 1); return; }
         if (System.getenv("BOT_EVENTTEST") != null && warped && frame > warpFrame + 30) { if (EventProbe.step(g, rs, frame)) System.exit(EventProbe.fails == 0 ? 0 : 1); return; }
         if (System.getenv("BOT_UISCENE") != null && warped && frame > warpFrame + 30) { UiProbe.scene(g, rs, lv, p, frame); return; }
@@ -915,7 +917,7 @@ public final class DebugBot {
                 if (rs.ovT > 1.3f && System.getenv("BOT_TRAILER") == null) for (Screen.Hit h : rs.hits) { rs.touch(0, 0, h.x + 5, h.y + 5); rs.touch(0, 2, h.x + 5, h.y + 5); break; }
                 return;
             case RunScreen.OV_CHEST:
-                if (rs.ovT > 1.0f && System.getenv("BOT_CHESTSHOT") == null || rs.ovT > 6f) {
+                if (rs.ovT > ovWait() && System.getenv("BOT_CHESTSHOT") == null || rs.ovT > 6f) {
                     for (Screen.Hit h : rs.hits) if (h.tag == 1 && h.label == null) { for (int k = 0; k < 2; k++) { rs.touch(0, 0, h.x + 5, h.y + 5); rs.touch(0, 2, h.x + 5, h.y + 5); } break; }
                 }
                 return;

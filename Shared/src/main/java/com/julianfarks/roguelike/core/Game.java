@@ -124,7 +124,9 @@ public class Game implements Platform.GameLoop {
 
     @Override
     public void render(Platform.Gfx g) {
+        if (TextAudit.ON) TextAudit.begin(cur.getClass().getSimpleName() + (cur instanceof RunScreen ? "/ov" + ((RunScreen) cur).debugOv() : "") + "/L" + I18n.lang());
         cur.render(g);
+        if (TextAudit.ON) TextAudit.end(viewW, ViewSize.h);
         if (P != null && P.video() != null && VideoCfg.cur.showFps) {
             String s = "FPS " + P.video().measuredFps();
             UI.small.draw(g, s, viewW - UI.small.width(s) - 5, 4, UI.GREEN, 0.9f);

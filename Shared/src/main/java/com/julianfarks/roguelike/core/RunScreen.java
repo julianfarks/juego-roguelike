@@ -1159,6 +1159,51 @@ final class RunScreen extends Screen implements Level.Listener {
         Snd.sfx("secret", 0.9f);
     }
 
+    float shopCloseY;
+    /** Ancho reservado arriba a la derecha de la tarjeta para el precio (moneda + cifra) o "VENDIDO". */
+    int shopPriceW(ShopItem it) { return it.sold ? UI.small.width("VENDIDO") + 10 : UI.small.width(String.valueOf(it.cost)) + 20; }
+    static final int SHOP_NAME_X = 44;
+
+    /**
+     * Rejilla del Mercader calculada con el texto real: cada tarjeta mide lo que necesitan su nombre y su descripcion (ajustados al ancho),
+     * mas una fila propia para el precio / VENDIDO; la altura de la fila es la mayor de sus dos tarjetas. Si no cabe en la pantalla se limitan
+     * las lineas de descripcion (con "..."). El boton Cerrar queda siempre debajo y dentro de la pantalla.
+     * Devuelve {x, y, w, h, lineasNombre, lineasDescripcion} por articulo.
+     */
+    float[][] shopRects(int w) {
+        int n = shop.size(), lh = UI.small.ch + 2;
+        float cw = Math.min(230, (w - 24) / 2f), gap = 6, x0 = w / 2f - cw - gap / 2f;
+        int tw = (int) cw - SHOP_NAME_X - 8;
+        float top = 50, bottom = ViewSize.h - 30;
+        int[] nl = new int[n], dl = new int[n], full = new int[n];
+        for (int i = 0; i < n; i++) {
+            ShopItem it = shop.get(i);
+            nl[i] = Math.min(2, UI.small.wrapLines(it.name, tw - shopPriceW(it)));
+            full[i] = dl[i] = UI.small.wrapLines(it.desc, tw);
+        }
+        float[] rowH = new float[(n + 1) / 2];
+        for (int guard = 0; guard < 40; guard++) {
+            float tot = 0;
+            for (int rI = 0; rI < rowH.length; rI++) {
+                float m = 54;
+                for (int k = rI * 2; k < Math.min(n, rI * 2 + 2); k++) m = Math.max(m, 5 + nl[k] * lh + 2 + dl[k] * lh + 5);
+                rowH[rI] = m; tot += m + gap;
+            }
+            if (top + tot - gap <= bottom || tot <= 0) break;
+            int big = -1; for (int i = 0; i < n; i++) if (dl[i] > 2 && (big < 0 || dl[i] > dl[big])) big = i;
+            if (big < 0) break;
+            dl[big]--;
+        }
+        float[][] out = new float[n][6];
+        float y = top;
+        for (int rI = 0; rI < rowH.length; rI++) {
+            for (int k = rI * 2; k < Math.min(n, rI * 2 + 2); k++) { out[k] = new float[]{x0 + (k % 2) * (cw + gap), y, cw, rowH[rI], nl[k], dl[k]}; }
+            y += rowH[rI] + gap;
+        }
+        shopCloseY = Math.min(ViewSize.h - 28, y + 2);
+        return out;
+    }
+
     private List<ShopItem> genShop() {
         List<ShopItem> l = new ArrayList<>();
         int st = rs.stage;
@@ -1220,7 +1265,7 @@ final class RunScreen extends Screen implements Level.Listener {
             }
             case OV_EVENT: {
                 int n = evOpts.size();
-                float cw = Math.min(150, (w - 40) / 3f), gap = 8, x0 = w / 2f - (n * cw + (n - 1) * gap) / 2f;
+                float gap = 8, cw = Math.min(150, (w - 16 - (Math.max(3, n) - 1) * gap) / Math.max(3, n)), x0 = w / 2f - (n * cw + (n - 1) * gap) / 2f;      // con 4 opciones (altar de riesgo) las tarjetas se estrechan para caber
                 for (int i = 0; i < n; i++) {
                     final int k = i;
                     Hit h = add(x0 + i * (cw + gap), 52, cw, 150, null, () -> {
@@ -1235,7 +1280,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 break;
             }
             case OV_CHEST: {
-                float cw = Math.min(150, (w - 40) / 3f), gap = 8, x0 = w / 2f - (3 * cw + 2 * gap) / 2f;
+                float cw = Math.min(176, (w - 30) / 3f), gap = 8, x0 = w / 2f - (3 * cw + 2 * gap) / 2f;
                 for (int i = 0; i < 3; i++) {
                     final int k = i;
                     Hit h = add(x0 + i * (cw + gap), 44, cw, 164, null, () -> {
@@ -1253,14 +1298,13 @@ final class RunScreen extends Screen implements Level.Listener {
                 break;
             }
             case OV_SHOP: {
-                float cw = Math.min(190, (w - 40) / 2f), ch = 54;
-                float x0 = w / 2f - cw - 3;
+                float[][] r = shopRects(w);
                 for (int i = 0; i < shop.size(); i++) {
                     final ShopItem it = shop.get(i);
-                    Hit h = add(x0 + (i % 2) * (cw + 6), 52 + (i / 2) * (ch + 6), cw, ch, null, () -> buy(it));
+                    Hit h = add(r[i][0], r[i][1], r[i][2], r[i][3], null, () -> buy(it));
                     h.tag = i; h.plain = true; h.noSound = true;
                 }
-                add(w / 2f - 50, 52 + 2 * (ch + 6) + 6, 100, 22, "Cerrar", this::closeOv);
+                add(w / 2f - 50, shopCloseY, 100, 22, "Cerrar", this::closeOv);
                 break;
             }
             case OV_TALK: {
@@ -1448,6 +1492,39 @@ final class RunScreen extends Screen implements Level.Listener {
     // ---- ganchos de prueba (solo los usa DebugBot)
     void debugNextFloor() { afterBoss(); }
     void debugOpenPause() { openOv(OV_PAUSE); }
+    /** Pruebas de texto: abre el Mercader con 5 articulos (los 2 basicos del juego + 3 bendiciones desde 'from'). */
+    void debugTxtShop(int from) {
+        List<ShopItem> l = new ArrayList<>();
+        l.add(new ShopItem("Frasco de vida", "+1 frasco de vida.", "potion", 30, 0, 0));
+        l.add(new ShopItem("Interés Compuesto", "Al limpiar una sala con 100 o más de oro, ganas 12 de oro (seca)", "coin", 160, 2, 0));
+        for (int k = 0; k < 4; k++) { Blessing b = Blessing.ALL[(from + k) % Blessing.ALL.length]; l.add(new ShopItem(b.name, b.desc, b.icon, 123 + k, 2, 0)); }
+        l.get(2).sold = true;
+        shop = l; openOv(OV_SHOP); ovT = 1f;
+    }
+    void debugTxtChestOv(int mode) { cMode = mode; cOffer = ChestLoot.roll(rs, mode, 3); offerSel = 0; openOv(OV_CHEST); ovT = 1f; }
+    void debugTxtOpenInv() { openInventory(true); ovT = 1f; }
+    void debugTxtKeep() { ovT = 1f; }
+    /** Eventos: 0 espiritu, 1 santuario de pactos, 2 altar de riesgo, 3 cofre maldito. */
+    void debugTxtEvent(int k) {
+        Prop p = lv.addProp(new Room.PropSpec("altar", lv.pl.x + 40, lv.pl.y, 0));
+        switch (k) { case 0: openSpirit(p); break; case 1: openShrine(p); break; case 2: openRiskAltar(p); break; default: openCursed(p); }
+        ovT = 1f;
+    }
+    void debugTxtList(int tab, int page) { dbgShowList(tab, page); ovT = 1f; }
+    /** Comparacion de armas (OV_WCMP): equipa 'cur' y ofrece 'neu' desde un cofre. */
+    void debugTxtWcmp(int cur, int neu) {
+        rs.sec = cur; rs.wState[cur] = 1; rs.secActive = false;
+        wcmp = ChestLoot.secNew(rs, neu, rs.rng); wcmpSel = 0; openOv(OV_WCMP); ovT = 1f;
+    }
+    /** Inventario con una arma secundaria concreta equipada y seleccionada (hoja de arma de ArsenalUI). */
+    void debugTxtInvWeapon(int wid) {
+        rs.sec = wid; rs.wState[wid] = 1; rs.secActive = true;
+        openInventory(true); inv.cat = Inventory.C_WEAPONS; inv.rebuild();
+        for (int i = 0; i < inv.items.size(); i++) if (inv.items.get(i).wid == wid) inv.sel = i;
+        ovT = 1f;
+    }
+    int debugTxtWeaponCount() { return Items.SEC_COUNT; }
+    int debugTxtBlessCount() { return Blessing.ALL.length; }
     void debugBossDeadAgain() { onBossDead(lv); }
     int debugCMode() { return cMode; }
     ChestLoot.Reward[] debugOffer() { return cOffer; }
@@ -2110,7 +2187,7 @@ final class RunScreen extends Screen implements Level.Listener {
         }
     }
 
-    void dim(Platform.Gfx g, int w, float a) { g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x000008, (int) (a * 255)), false); }
+    void dim(Platform.Gfx g, int w, float a) { if (a >= 0.5f) TextAudit.cover(); g.rect(0, 0, w, ViewSize.h, Mth.withAlpha(0x000008, (int) (a * 255)), false); }
 
     private void renderOverlay(Platform.Gfx g, int w) {
         if (ov == OV_NONE) return;
@@ -2135,12 +2212,13 @@ final class RunScreen extends Screen implements Level.Listener {
                     float yoff = selected ? -4 : 0, cx = h.x + h.w / 2f, a = fadeIn * (o.ok ? 1f : 0.55f);
                     UI.panel(g, selected ? 1 : 0, h.x, h.y + yoff, h.w, h.h, a);
                     UI.iconC(g, o.icon, cx, h.y + 26 + yoff, 2f, a);
-                    UI.small.center(g, o.name, cx, h.y + 52 + yoff, UI.GOLD, a);
-                    int l1 = UI.small.drawWrapped(g, "+ " + o.pro, h.x + 8, h.y + 70 + yoff, (int) h.w - 16, 0xFF6AE08A, a);
-                    UI.small.drawWrapped(g, "- " + o.con, h.x + 8, h.y + 74 + l1 + yoff, (int) h.w - 16, 0xFFFF7A7A, a);
+                    int nameH = UI.small.drawWrappedCenter(g, o.name, cx, h.y + 52 + yoff, (int) h.w - 10, UI.GOLD, a, UI.small.ch + 2);      // el nombre se parte en lineas si no cabe
+                    int by0 = 61 + nameH;
+                    int l1 = UI.small.drawWrapped(g, "+ " + o.pro, h.x + 8, h.y + by0 + yoff, (int) h.w - 16, 0xFF6AE08A, a);
+                    UI.small.drawWrapped(g, "- " + o.con, h.x + 8, h.y + by0 + 4 + l1 + yoff, (int) h.w - 16, 0xFFFF7A7A, a);
                     if (!o.ok) UI.small.center(g, "No disponible", cx, h.y + h.h - 14 + yoff, UI.GREY, fadeIn);
-                    PrepScreen.fitErr("suceso " + evTitle + " opcion " + i + " texto", h.y + 74 + l1 + UI.small.wrap("- " + o.con, (int) h.w - 16).size() * 9 + yoff, h.y + h.h - (o.ok ? 4 : 18) + yoff, 0);
-                    PrepScreen.fitErr("suceso " + evTitle + " opcion " + i + " nombre", UI.small.width(o.name), h.w - 8, 0);
+                    PrepScreen.fitErr("suceso " + evTitle + " opcion " + i + " texto", h.y + by0 + 4 + l1 + UI.small.wrap("- " + o.con, (int) h.w - 16).size() * 9 + yoff, h.y + h.h - (o.ok ? 4 : 18) + yoff, 0);
+                    
                 }
                 drawButtons(g);
                 break;
@@ -2166,10 +2244,12 @@ final class RunScreen extends Screen implements Level.Listener {
                     UI.small.center(g, ChestLoot.R_NAME[x.rar].toUpperCase(), cx, y + 9, rc, fadeIn);
                     UI.light(g, cx, y + 38, 22 + x.rar * 5, rc & 0xFFFFFF, (0.18f + 0.07f * x.rar + (sel ? 0.12f : 0f)) * fadeIn);
                     if (!x.icon.isEmpty()) UI.iconC(g, x.icon, cx, y + 38, 2f, fadeIn);
-                    UI.small.center(g, x.name, cx, y + 60, x.col != 0xFFFFFFFF ? x.col : UI.GOLD, fadeIn);
-                    UI.small.center(g, x.amount, cx, y + 73, x.kind == ChestLoot.K_STAT || x.kind == ChestLoot.K_TRADE || x.kind == ChestLoot.K_HEAL ? UI.GREEN : UI.CYAN, fadeIn);
-                    float ty = y + 87;
-                    if (!x.bad.isEmpty()) { UI.small.center(g, x.bad, cx, ty, UI.RED, fadeIn); ty += 12; }
+                    int tw = (int) h.w - 12, st = UI.small.ch + 2;      // todo el texto de la tarjeta se ajusta a su ancho (nada se sale del marco)
+                    float ty = y + 60;
+                    ty += UI.small.drawWrappedCenter(g, x.name, cx, ty, tw, x.col != 0xFFFFFFFF ? x.col : UI.GOLD, fadeIn, st);
+                    ty += UI.small.drawWrappedCenter(g, x.amount, cx, ty, tw, x.kind == ChestLoot.K_STAT || x.kind == ChestLoot.K_TRADE || x.kind == ChestLoot.K_HEAL ? UI.GREEN : UI.CYAN, fadeIn, st);
+                    ty += 2;
+                    if (!x.bad.isEmpty()) ty += UI.small.drawWrappedCenter(g, x.bad, cx, ty, tw, UI.RED, fadeIn, st);
                     int lines = UI.small.drawWrapped(g, x.desc, h.x + 8, ty, (int) h.w - 16, 0xE8E0E0, fadeIn);
                     if (!x.replaces.isEmpty()) UI.small.drawWrapped(g, x.replaces, h.x + 8, y + h.h - 26, (int) h.w - 16, 0xFFFF9A6A, fadeIn);
                 }
@@ -2186,19 +2266,21 @@ final class RunScreen extends Screen implements Level.Listener {
                 UI.big.center(g, "MERCADER", w / 2f, 16, UI.GOLD, 1f);
                 UI.icon(g, "coin", w / 2f - 24, 34, 1f);
                 UI.small.draw(g, String.valueOf(rs.gold), w / 2f - 6, 38, UI.GOLD, 1f);
-                float cw = Math.min(190, (w - 40) / 2f), ch = 54, x0 = w / 2f - cw - 3;
+                float[][] r = shopRects(w);
+                int lh = UI.small.ch + 2, tw = (int) r[0][2] - SHOP_NAME_X - 8;
                 for (int i = 0; i < shop.size(); i++) {
                     ShopItem it = shop.get(i);
-                    float x = x0 + (i % 2) * (cw + 6), y = 52 + (i / 2) * (ch + 6);
+                    float x = r[i][0], y = r[i][1], cw = r[i][2], ch = r[i][3];
                     boolean afford = rs.gold >= it.cost;
                     UI.panel(g, it.sold ? 2 : 0, x, y, cw, ch, it.sold ? 0.5f : 1f);
-                    UI.iconC(g, it.icon, x + 22, y + 22, 2f, it.sold ? 0.4f : 1f);
-                    UI.small.draw(g, it.name, x + 44, y + 5, it.sold ? UI.GREY : UI.WHITE, 1f);
-                    UI.small.drawWrapped(g, it.desc, x + 44, y + 18, (int) cw - 50, UI.GREY, 1f);
-                    if (it.sold) UI.small.right(g, "VENDIDO", x + cw - 6, y + ch - 12, UI.GREY, 1f);
+                    UI.iconC(g, it.icon, x + 22, y + Math.min(22, ch / 2f), 2f, it.sold ? 0.4f : 1f);
+                    int nh = UI.small.drawWrappedMax(g, it.name, x + SHOP_NAME_X, y + 5, tw - shopPriceW(it), it.sold ? UI.GREY : UI.WHITE, 1f, lh, 2);
+                    UI.small.drawWrappedMax(g, it.desc, x + SHOP_NAME_X, y + 5 + nh + 2, tw, UI.GREY, 1f, lh, (int) r[i][5]);
+                    float py = y + 5;      // precio en la fila del nombre (columna propia): nunca pisa la descripcion
+                    if (it.sold) UI.small.right(g, "VENDIDO", x + cw - 6, py, UI.GREY, 1f);
                     else {
-                        UI.icon(g, "coin", x + cw - 14 - UI.small.width(String.valueOf(it.cost)) - 6, y + ch - 14, 1f);
-                        UI.small.right(g, String.valueOf(it.cost), x + cw - 6, y + ch - 12, afford ? UI.GOLD : UI.RED, 1f);
+                        UI.icon(g, "coin", x + cw - 14 - UI.small.width(String.valueOf(it.cost)) - 6, py - 2, 1f);
+                        UI.small.right(g, String.valueOf(it.cost), x + cw - 6, py, afford ? UI.GOLD : UI.RED, 1f);
                     }
                 }
                 drawButtons(g);
@@ -2323,9 +2405,9 @@ final class RunScreen extends Screen implements Level.Listener {
                 UI.panel(g, wcmpSel == 1 ? 1 : 0, x1, 40, pw, ph, fadeIn);
                 UI.small.center(g, "TU ARMA SEC. · " + rs.secAmmo + " usos", x0 + pw / 2f, 45, 0xFFB8B0B8, fadeIn);
                 UI.small.center(g, "NUEVA · " + Items.SEC_AMMO[wcmp.id] + " usos", x1 + pw / 2f, 45, UI.GOLD, fadeIn);
-                ArsenalUI.sheet(g, x0 + 8, 58, pw - 16, rs.sec, 0, rs.secAmmo);
-                ArsenalUI.sheet(g, x1 + 8, 58, pw - 16, wcmp.id, rs.sec, 0);
-                UI.small.center(g, "+ mejor · - peor · = igual que tu arma actual", w / 2f, 211, 0xFF9890A0, fadeIn);
+                ArsenalUI.sheet(g, x0 + 8, 58, pw - 16, rs.sec, 0, rs.secAmmo, 40 + ph - 6);
+                ArsenalUI.sheet(g, x1 + 8, 58, pw - 16, wcmp.id, rs.sec, 0, 40 + ph - 6);
+                UI.small.drawWrappedCenter(g, "+ mejor · - peor · = igual que tu arma actual", w / 2f, 214, (int) (w - 20), 0xFF9890A0, fadeIn, UI.small.ch + 1);
                 for (Hit h : hits) { h.plain = false; drawButton(g, h); }
                 break;
             }

@@ -121,6 +121,7 @@ public final class UI {
 
     /** kind: 0 normal, 1 clara (seleccionada), 2 roja. */
     public static void panel(Platform.Gfx g, int kind, float x, float y, float w, float h, float alpha) {
+        TextAudit.panel(x, y, w, h, false);
         Platform.Img im = kind == 1 ? panelLight : (kind == 2 ? panelRed : panel);
         if (im == null) { g.rect(x, y, w, h, 0xCC101018, false); return; }
         slice(g, im, 0, 32, 32, 8, x, y, w, h, alpha);
@@ -130,6 +131,7 @@ public final class UI {
 
     /** state 0 normal, 1 resaltado, 2 pulsado. */
     public static void button(Platform.Gfx g, String label, float x, float y, float w, float h, int state, boolean disabled) {
+        TextAudit.panel(x, y, w, h, true);
         float a = disabled ? 0.5f : 1f;
         if (btn != null) slice(g, btn, Math.min(2, state) * 48, 48, 20, 6, x, y, w, h, a);
         else g.rect(x, y, w, h, state == 2 ? 0xFF444455 : 0xFF2A2A38, false);

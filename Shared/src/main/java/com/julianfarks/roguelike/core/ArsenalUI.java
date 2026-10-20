@@ -21,7 +21,10 @@ final class ArsenalUI {
     }
 
     /** Una ficha de arma dentro de (x,y,w): cabecera con icono/nombre/rareza, estadisticas (comparadas con `vs` si > 0), efecto y estilo. Devuelve la y final. */
-    static float sheet(Platform.Gfx g, float x, float y, float w, int id, int vs, int ammo) {
+    static float sheet(Platform.Gfx g, float x, float y, float w, int id, int vs, int ammo) { return sheet(g, x, y, w, id, vs, ammo, Float.MAX_VALUE); }
+
+    /** Igual, pero el efecto y el estilo se limitan (con "...") para no pasar de maxY: nada se sale de su panel. */
+    static float sheet(Platform.Gfx g, float x, float y, float w, int id, int vs, int ammo, float maxY) {
         int rar = Items.SEC_RAR[id];
         int rc = rarCol(rar);
         UI.iconC(g, Items.SEC_ICON[id], x + 9, y + 9, 1f, 1f);
@@ -38,8 +41,12 @@ final class ArsenalUI {
             yy += lh() + 1;
         }
         yy += 2;
-        yy += UI.small.drawWrapped(g, "Efecto: " + Items.SEC_FX[id], x + 2, yy, (int) w - 4, 0xFFFFD25A, 1f, lh()) + 2;
-        yy += UI.small.drawWrapped(g, Items.SEC_STYLE[id], x + 2, yy, (int) w - 4, 0xFFC8C0C8, 1f, lh() + 1);
+        int room = maxY == Float.MAX_VALUE ? 99 : Math.max(2, (int) ((maxY - yy) / (lh() + 1)));
+        int fxN = UI.small.wrapLines("Efecto: " + Items.SEC_FX[id], (int) w - 4), stN = UI.small.wrapLines(Items.SEC_STYLE[id], (int) w - 4);
+        int fxMax = fxN, stMax = stN;
+        if (fxN + stN > room) { stMax = Math.max(1, Math.min(stN, room - Math.min(fxN, room - 1))); fxMax = Math.max(1, room - stMax); }
+        yy += UI.small.drawWrappedMax(g, "Efecto: " + Items.SEC_FX[id], x + 2, yy, (int) w - 4, 0xFFFFD25A, 1f, lh(), fxMax) + 2;
+        yy += UI.small.drawWrappedMax(g, Items.SEC_STYLE[id], x + 2, yy, (int) w - 4, 0xFFC8C0C8, 1f, lh() + 1, stMax);
         return yy;
     }
 

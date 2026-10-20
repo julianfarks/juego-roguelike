@@ -372,7 +372,7 @@ final class Inventory {
             UI.small.draw(g, a, h.x + h.w - aw - 2, h.y + 4, 0xFFFFD25A, 1f);
         }
         if (it == null) {
-            UI.small.draw(g, "Vacía · recoge un arma del suelo o de un cofre", h.x + 8, h.y + 20, 0xFF7A7A88, 1f);
+            UI.small.drawWrappedMax(g, "Vacía · recoge un arma del suelo o de un cofre", h.x + 8, h.y + 18, (int) h.w - 16, 0xFF7A7A88, 1f, UI.small.ch + 2, 2);
             return;
         }
         int rc = RAR_RGB[it.rar];
@@ -445,10 +445,11 @@ final class Inventory {
         int rc = RAR_RGB[it.rar];
         RunState rs = rs();
         if (it.cat == C_WEAPONS && it.wid > 0) {
-            float yy = ArsenalUI.sheet(g, x, y, w, it.wid, rs.sec != it.wid ? rs.sec : 0, 0);
+            float yy = ArsenalUI.sheet(g, x, y, w, it.wid, rs.sec != it.wid ? rs.sec : 0, 0, bottom - 2 * (ArsenalUI.lh() + 1) - 4);
             yy += 3;
-            UI.small.draw(g, ST_NAME[it.state], x + 2, yy, it.state == ST_EQUIPPED ? 0xFFFFD25A : 0xFF7AC8F0, 1f); yy += ArsenalUI.lh() + 1;
-            if (it.state == ST_EQUIPPED) { UI.small.draw(g, UI.fitLabel(UI.small, (Items.infinite(it.wid) ? "Sin munición (ilimitada)" : (Arsenal.hasMag(it.wid) ? "Munición " + Arsenal.ammoLabel(rs) + " (cargador/reserva)" : "Munición " + rs.secAmmo + "/" + Items.SEC_AMMO[it.wid])) + (rs.secLvl > 0 ? " · Nv +" + rs.secLvl + "/3" : ""), w - 4), x + 2, yy, 0xFFB8B0B8, 1f); yy += ArsenalUI.lh() + 1; }
+            if (it.state == ST_EQUIPPED) { UI.small.draw(g, ST_NAME[it.state], x + 2, yy, 0xFFFFD25A, 1f); yy += ArsenalUI.lh() + 1; }
+            else { UI.small.draw(g, ST_NAME[it.state], x + 2, yy, 0xFF7AC8F0, 1f); yy += ArsenalUI.lh() + 1; }
+            if (it.state == ST_EQUIPPED && yy + ArsenalUI.lh() <= bottom) { UI.small.draw(g, UI.fitLabel(UI.small, (Items.infinite(it.wid) ? "Sin munición (ilimitada)" : (Arsenal.hasMag(it.wid) ? "Munición " + Arsenal.ammoLabel(rs) + " (cargador/reserva)" : "Munición " + rs.secAmmo + "/" + Items.SEC_AMMO[it.wid])) + (rs.secLvl > 0 ? " · Nv +" + rs.secLvl + "/3" : ""), w - 4), x + 2, yy, 0xFFB8B0B8, 1f); yy += ArsenalUI.lh() + 1; }
             else if (it.state == ST_FLOOR) { UI.small.draw(g, UI.fitLabel(UI.small, "Recógela con [Interactuar]", w - 4), x + 2, yy, 0xFFB8B0B8, 1f); yy += ArsenalUI.lh() + 1; }
             else UI.small.drawWrappedMax(g, "Quedó en otra sala (no se puede recoger)", x + 2, yy, (int) w - 4, 0xFFB8B0B8, 1f, ArsenalUI.lh(), 2);
             return;

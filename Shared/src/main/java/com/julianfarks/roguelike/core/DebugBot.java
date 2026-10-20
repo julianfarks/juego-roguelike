@@ -668,6 +668,37 @@ public final class DebugBot {
             chargeProbe(g, rs, lv, p, frame);
             if (frame >= 690 && chStep < 99) return;
         }
+        if (System.getenv("BOT_TXTSCREENS") != null && !rs.sandbox && frame >= 700) {
+            // recorre las pantallas con datos reales; TextAudit avisa de textos que sobresalen o se pisan (BOT_TEXTAUDIT=1)
+            if (frame == 700) for (int c : new int[]{'A', 'D', 'S', 'W', 'J', 'K'}) hold(g, c, false);
+            lv.enemies.clear(); lv.toKill = 0; lv.pl.invuln = 999; rs.bannerT = 0;
+            String show = System.getenv("BOT_TXTSHOW");
+            if (show != null) {      // mantiene una sola pantalla abierta (para capturas)
+                if (frame == 705) { rs.closeOv(); switch (show) { case "shop": rs.debugTxtShop(Integer.parseInt(System.getenv().getOrDefault("BOT_TXTFROM", "0"))); break; case "chest0": rs.debugTxtChestOv(0); break; case "chest1": rs.debugTxtChestOv(1); break; case "chest2": rs.debugTxtChestOv(2); break; case "inv": rs.debugTxtOpenInv(); break; case "pause": rs.debugOpenPause(); break; case "forge": rs.debugOpenForge(); break; case "ev0": rs.debugTxtEvent(0); break; case "ev1": rs.debugTxtEvent(1); break; case "ev2": rs.debugTxtEvent(2); break; case "ev3": rs.debugTxtEvent(3); break; case "wcmp": rs.debugTxtWcmp(Integer.parseInt(System.getenv().getOrDefault("BOT_TXTFROM", "1")), 3); break; case "invw": rs.debugTxtInvWeapon(Integer.parseInt(System.getenv().getOrDefault("BOT_TXTFROM", "1"))); break; default: rs.dbgShowBless(new int[]{0, 1, 2}); } }
+                rs.debugTxtKeep(); return;
+            }
+            int n = rs.debugTxtBlessCount(), ts = (frame - 700) / 3, sub = (frame - 700) % 3;
+            int shopSteps = (n + 3) / 4, offSteps = (n + 2) / 3;
+            if (ts < shopSteps) { if (sub == 0) rs.debugTxtShop(ts * 4); else rs.debugTxtKeep(); }
+            else if (ts < shopSteps + offSteps) { int i = (ts - shopSteps) * 3; if (sub == 0) { rs.closeOv(); rs.dbgShowBless(new int[]{i % n, (i + 1) % n, (i + 2) % n}); } rs.debugTxtKeep(); }
+            else if (ts < shopSteps + offSteps + 60) {
+                int k = ts - shopSteps - offSteps; int mode = k % 3;
+                if (sub == 0) { rs.closeOv(); rs.debugTxtChestOv(mode); } rs.debugTxtKeep();
+            }
+            else if (ts == shopSteps + offSteps + 60) { if (sub == 0) { rs.closeOv(); rs.debugTxtOpenInv(); } rs.debugTxtKeep(); }
+            else if (ts == shopSteps + offSteps + 61) { if (sub == 0) { rs.closeOv(); rs.debugOpenPause(); } rs.debugTxtKeep(); }
+            else if (ts == shopSteps + offSteps + 62) { if (sub == 0) { rs.closeOv(); rs.debugOpenForge(); } rs.debugTxtKeep(); }
+            else if (ts <= shopSteps + offSteps + 67) { int ek = ts - (shopSteps + offSteps + 63); if (sub == 0) { rs.closeOv(); rs.debugTxtEvent(ek); } rs.debugTxtKeep(); }
+            else if (ts <= shopSteps + offSteps + 70) { int lk = ts - (shopSteps + offSteps + 68); if (sub == 0) { rs.closeOv(); rs.debugTxtList(lk % 2, lk / 2); } rs.debugTxtKeep(); }
+            else if (ts <= shopSteps + offSteps + 70 + 2 * rs.debugTxtWeaponCount()) {
+                int wk = ts - (shopSteps + offSteps + 71), wn = rs.debugTxtWeaponCount();
+                int a = 1 + wk / 2 % Math.max(1, wn - 1);
+                if (sub == 0) { rs.closeOv(); if (wk % 2 == 0) rs.debugTxtInvWeapon(a); else rs.debugTxtWcmp(a, 1 + (a % Math.max(1, wn - 1))); }
+                rs.debugTxtKeep();
+            }
+            else { rs.closeOv(); System.out.println("TXTSCREENS fin"); }
+            return;
+        }
         if (System.getenv("BOT_CHESTSKIP") != null && !rs.sandbox && frame == 700) {
             RunState r = rs.rs;
             String before0 = chestSnap(r);

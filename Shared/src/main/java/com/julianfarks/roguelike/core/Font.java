@@ -75,6 +75,7 @@ public final class Font {
     public void draw(Platform.Gfx g, String s, float x, float y, int color, float alpha) { rawDraw(g, I18n.tr(s), x, y, color, alpha); }
 
     private void rawDraw(Platform.Gfx g, String s, float x, float y, int color, float alpha) {
+        if (TextAudit.ON) { int lines = 1; for (int q = 0; q < s.length(); q++) if (s.charAt(q) == '\n') lines++; TextAudit.text(s, Math.round(x), Math.round(y), rawWidth(s), lines * (ch + 1) - 1, alpha); }
         float cx = Math.round(x), cy = Math.round(y);
         float px = cx;
         for (int k = 0; k < s.length(); k++) {
@@ -163,6 +164,13 @@ public final class Font {
     public int drawWrapped(Platform.Gfx g, String s, float x, float y, int maxW, int color, float alpha, int step) {
         List<String> ls = rawWrap(I18n.tr(s), maxW);
         for (int i = 0; i < ls.size(); i++) rawDraw(g, ls.get(i), x, y + i * step, color, alpha);
+        return ls.size() * step;
+    }
+
+    /** Igual que drawWrapped pero cada linea centrada en cx (para nombres y cifras que no deben salirse de su tarjeta). Devuelve el alto usado. */
+    public int drawWrappedCenter(Platform.Gfx g, String s, float cx, float y, int maxW, int color, float alpha, int step) {
+        List<String> ls = rawWrap(I18n.tr(s), maxW);
+        for (int i = 0; i < ls.size(); i++) rawDraw(g, ls.get(i), cx - rawWidth(ls.get(i)) / 2f, y + i * step, color, alpha);
         return ls.size() * step;
     }
 

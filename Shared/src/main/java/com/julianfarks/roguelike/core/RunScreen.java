@@ -370,7 +370,7 @@ final class RunScreen extends Screen implements Level.Listener {
         boolean perfect = l.roomHits == 0;
         int n = perfect ? 2 : 1;
         for (int i = 0; i < n; i++) {
-            Prop c = l.addProp(new Room.PropSpec("chest", l.room.exitX - 70 - i * 38, l.room.exitY, 2));
+            Prop c = placeChest(l, l.room.exitX - 70 - i * 38, l.room.exitY);
             c.label = perfect ? "Cofre perfecto" : "Recompensa";
             c.roundChest = true;
             l.ps.burst(l.rng, c.x, c.y - 12, perfect ? 0xFFE9A0 : 0xFFD25A, 20, 100, 0.6f, 2, 0, true);
@@ -380,7 +380,8 @@ final class RunScreen extends Screen implements Level.Listener {
         // hallazgo extra: a veces queda un arma secundaria en el suelo junto a los cofres (no sustituye ninguna recompensa)
         if (!sandbox && l.rng.chance(l.room.type == Room.ELITE ? 0.5f : 0.2f)) {
             int wid = Arsenal.rollWeapon(rs, l.rng, rs.sec);
-            Arsenal.dropWeapon(l, wid, 0, l.room.exitX - 70 - n * 38 - 36, l.room.exitY, false, false);
+            float[] ws = ChestSpot.find(l, l.room.exitX - 70 - n * 38 - 36, l.room.exitY);
+            Arsenal.dropWeapon(l, wid, 0, ws[0], ws[1], false, true);
             l.text(l.pl.x, l.pl.y - 82, "Hay un arma en el suelo", Items.SEC_COL[wid], false);
         }
         Save s = Save.S;
@@ -396,9 +397,19 @@ final class RunScreen extends Screen implements Level.Listener {
         }
     }
 
+    /** Cofre de recompensa en un punto validado (ver ChestSpot): nunca enterrado, incrustado ni solapado; si lo pedido no vale se busca otro. */
+    Prop placeChest(Level l, float px, float py) {
+        float[] s = ChestSpot.find(l, px, py);
+        ChestSpot.dbgPlaced++;
+        if (Math.abs(s[0] - px) > 1 || Math.abs(s[1] - py) > 1) ChestSpot.dbgMoved++;
+        if (s[2] >= 2) ChestSpot.dbgFallback++;
+        if (s[2] >= 3) ChestSpot.dbgForced++;
+        return l.addProp(new Room.PropSpec("chest", s[0], s[1], 2));
+    }
+
     /** Premio superior de la prueba de combate: un cofre extra de alta calidad y almas. */
     private void trialReward(Level l) {
-        Prop c = l.addProp(new Room.PropSpec("chest", l.room.exitX - 70 - lastRoundChests * 38, l.room.exitY, 2));
+        Prop c = placeChest(l, l.room.exitX - 70 - lastRoundChests * 38, l.room.exitY);
         c.label = "Premio de la prueba"; c.roundChest = true;
         l.ps.burst(l.rng, c.x, c.y - 12, 0xFF8A50, 26, 120, 0.7f, 2, 0, true);
         l.dropSouls(l.pl.x, l.pl.y - 20, 20 + 6 * rs.stage);
@@ -449,7 +460,8 @@ final class RunScreen extends Screen implements Level.Listener {
         // jefe normal: a veces suelta un arma secundaria (al menos poco comun)
         if (l.rng.chance(0.5f)) {
             int wid = Arsenal.rollWeapon(rs, l.rng, rs.sec);
-            Arsenal.dropWeapon(l, wid, 0, l.room.exitX - 56, l.room.exitY, false, false);
+            float[] ws = ChestSpot.find(l, l.room.exitX - 56, l.room.exitY);
+            Arsenal.dropWeapon(l, wid, 0, ws[0], ws[1], false, true);
             l.text(l.pl.x, l.pl.y - 82, "El jefe dejó un arma", Items.SEC_COL[wid], false);
         }
         // jefe normal: pantalla de recompensas (una sola vez por jefe y partida) y, al elegir, cofre de botin y puerta de salida.
@@ -478,7 +490,7 @@ final class RunScreen extends Screen implements Level.Listener {
     private void addBossExit(Level l, boolean withLoot) {
         Room rm = l.room;
         if (withLoot) {
-            Prop loot = l.addProp(new Room.PropSpec("chest", rm.exitX - 96, rm.exitY, 2));
+            Prop loot = placeChest(l, rm.exitX - 96, rm.exitY);
             loot.label = "Botín del jefe";
             l.ps.burst(l.rng, loot.x, loot.y - 12, 0xFFD25A, 22, 110, 0.7f, 2, 0, true);
         }
@@ -1064,7 +1076,7 @@ final class RunScreen extends Screen implements Level.Listener {
 
     private void cursedReward(Level l) {
         for (int i = 0; i < 2; i++) {
-            Prop c = l.addProp(new Room.PropSpec("chest", l.room.exitX - 70 - i * 38, l.room.exitY, 2));
+            Prop c = placeChest(l, l.room.exitX - 70 - i * 38, l.room.exitY);
             c.label = "Botín maldito"; c.roundChest = true;
             l.ps.burst(l.rng, c.x, c.y - 12, 0xC070F0, 22, 110, 0.7f, 2, 0, true);
         }
@@ -1117,7 +1129,7 @@ final class RunScreen extends Screen implements Level.Listener {
         chalState = ok ? 1 : 2;
         if (!ok) { l.text(l.pl.x, l.pl.y - 82, "Sin premio esta vez", 0xB8A0D0, true); return; }
         for (int i = 0; i < 2; i++) {
-            Prop c = l.addProp(new Room.PropSpec("chest", l.room.exitX - 70 - i * 38, l.room.exitY, 2));
+            Prop c = placeChest(l, l.room.exitX - 70 - i * 38, l.room.exitY);
             c.label = "Premio del desafío"; c.roundChest = true;
             l.ps.burst(l.rng, c.x, c.y - 12, 0xFFA030, 22, 110, 0.7f, 2, 0, true);
         }

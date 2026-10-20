@@ -4,7 +4,7 @@ package com.julianfarks.roguelike.core;
 public final class DebugBot {
     static String chestSnap(RunState r) { return r.sec + "/" + r.secAmmo + "/" + r.shield + "/" + r.weaponLvl + "/" + r.special + "/" + java.util.Arrays.toString(r.bless) + "/" + r.gold + "/" + r.souls; }
     private int spPhase, spBx, spGy, spT; private final StringBuilder spRes = new StringBuilder();
-    private int brStep, brT; private String brSnap = "";
+    private boolean chestPosDone; private int brStep, brT; private String brSnap = "";
     private int skStep, skT0, skProj0; private float skHp0;
     private int escStep, escT;
     private int roomModStep, roomModT, hurt0; private float hp0;
@@ -715,6 +715,7 @@ public final class DebugBot {
             rs.cMode = ChestLoot.MODE_WEAPONS; rs.cOffer = ChestLoot.roll(r, ChestLoot.MODE_WEAPONS, 3); rs.dbgChest(1); rs.dbgConfirm();
             System.out.println("CHESTSKIP elegir opcion 2 sigue aplicando: ov=" + rs.debugOv() + " equipo cambio=" + !before0.equals(chestSnap(r)) + " (puede ser false si abrio comparacion)");
         }
+        if (System.getenv("BOT_CHESTPOS") != null && !chestPosDone) { chestPosDone = true; ChestSpot.probe(); }
         if (System.getenv("BOT_BOSSREW") != null && !rs.sandbox) {
             RunState r = rs.rs;
             if (brStep == 0 && frame > 600 && lv.boss != null && lv.boss.alive) { brStep = 1; brT = frame; r.weaponLvl = 3; r.recalc(); brSnap = chestSnap(r) + "/" + r.cb[ChestLoot.DEF] + "/" + r.cb[ChestLoot.HP] + "/" + r.cb[ChestLoot.BURN] + "/" + r.cb[ChestLoot.SHOCK]; rs.debugKillAll(); System.out.println("BOSSREW jefe muerto (flujo real onBossDead)"); }

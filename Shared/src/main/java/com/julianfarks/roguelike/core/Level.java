@@ -116,6 +116,16 @@ public final class Level {
         for (Enemy e : enemies) if (!e.optional) toKill++;
         roomEnemies = toKill; roomHits = 0; rewarded = false;
         for (Room.PropSpec ps : room.props) addProp(ps);
+        // cofres ya colocados por la generacion: si el suelo no es firme o hay pared/pinchos, se reubican (nunca se eliminan)
+        for (int i = 0; i < props.size(); i++) {
+            Prop p = props.get(i);
+            if (!p.kind.equals("chest") || ChestSpot.validGeometry(room, p.x, p.y)) continue;
+            props.remove(i);
+            float[] sp = ChestSpot.find(this, p.x, p.y);
+            p.x = sp[0]; p.y = sp[1];
+            props.add(i, p);
+            ChestSpot.dbgMoved++;
+        }
         secrets.init();
         // salidas
         cleared = toKill == 0 && room.type != Room.BOSS;

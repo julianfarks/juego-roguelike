@@ -152,5 +152,17 @@ public final class RunState {
         }
     }
 
-    public int forgeCost() { return 60 + 45 * weaponLvl; }
+    // ---- Arma principal: configuracion unica del tope y de la curva (nada mas en el codigo fija un nivel maximo)
+    public static final int WEAPON_MAX = 20;
+    public static final int WEAPON_FAST_LVLS = 5;          // hasta aqui la curva original (+10% de dano, coste +45 por nivel)
+    public static final float WEAPON_DMG_FAST = 0.10f, WEAPON_DMG_SLOW = 0.05f;
+    public boolean weaponMaxed() { return weaponLvl >= WEAPON_MAX; }
+    public static float weaponDmgBonus(int lvl) {
+        int fast = Math.min(lvl, WEAPON_FAST_LVLS), slow = Math.max(0, lvl - WEAPON_FAST_LVLS);
+        return fast * WEAPON_DMG_FAST + slow * WEAPON_DMG_SLOW;
+    }
+    public int forgeCost() {
+        int fast = Math.min(weaponLvl, WEAPON_FAST_LVLS), slow = Math.max(0, weaponLvl - WEAPON_FAST_LVLS);
+        return 60 + 45 * fast + 55 * slow;
+    }
 }

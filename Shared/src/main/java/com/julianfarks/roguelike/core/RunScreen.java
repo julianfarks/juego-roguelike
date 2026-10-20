@@ -827,7 +827,7 @@ final class RunScreen extends Screen implements Level.Listener {
             rs.hp = Math.max(1, rs.hp - hpCost);
             if (giveRandomBlessing()) finishEvent(p, "El espíritu acepta tu sangre", 0x7AC8F0);
         }));
-        evOpts.add(new EvOpt("forge", "Oro por temple", "+1 nivel de arma", "Pagas " + gold + " de oro", rs.weaponLvl < 5 && rs.gold >= gold, () -> {
+        evOpts.add(new EvOpt("forge", "Oro por temple", "+1 nivel de arma", "Pagas " + gold + " de oro", !rs.weaponMaxed() && rs.gold >= gold, () -> {
             rs.gold -= gold; rs.weaponLvl++; rs.stats.recalc(rs);
             finishEvent(p, "Tu arma vibra con nueva fuerza", 0xFFB040);
         }));
@@ -1073,7 +1073,7 @@ final class RunScreen extends Screen implements Level.Listener {
         String msg;
         switch (p.arg) {
             case 0:
-                if (rs.weaponLvl < 5) { rs.weaponLvl++; rs.stats.recalc(rs); msg = "¡Libre! Afila tu arma: +1 nivel"; }
+                if (!rs.weaponMaxed()) { rs.weaponLvl++; rs.stats.recalc(rs); msg = "¡Libre! Afila tu arma: +1 nivel"; }
                 else { lv.dropGold(p.x, p.y - 20, 80); msg = "¡Libre! Te da 80 de oro"; }
                 break;
             case 1:
@@ -1104,7 +1104,7 @@ final class RunScreen extends Screen implements Level.Listener {
             l.add(new ShopItem(b.name, b.desc, b.icon, Math.round((95 + 25 * st) * (1f + 0.25f * b.rar)), 2, bid));
         }
         if (rs.rng.chance(0.5f)) l.add(new ShopItem("Cristal de poder", "Carga tu definitiva al máximo.", "star", 60 + 10 * st, 3, 0));
-        else if (rs.weaponLvl < 5) l.add(new ShopItem("Piedra de afilar", "Mejora tu arma un nivel.", "forge", Math.round(rs.forgeCost() * 1.15f), 4, 0));
+        else if (!rs.weaponMaxed()) l.add(new ShopItem("Piedra de afilar", "Mejora tu arma un nivel.", "forge", Math.round(rs.forgeCost() * 1.15f), 4, 0));
         else l.add(new ShopItem("Reserva de almas", "Obtienes 15 almas.", "soul", 50, 5, 0));
         float disc = BlessFx.shopDisc(rs);
         if (disc > 0f) for (ShopItem it : l) it.cost = Math.max(5, Math.round(it.cost * (1f - disc)));
@@ -1208,7 +1208,7 @@ final class RunScreen extends Screen implements Level.Listener {
             case OV_FORGE: {
                 Hit up = add(w / 2f - 112, 176, 108, 24, "Mejorar", () -> {
                     int cost = rs.forgeCost();
-                    if (rs.weaponLvl >= 5 || rs.gold < cost) { Snd.sfx("ui_error", 0.8f); return; }
+                    if (rs.weaponMaxed() || rs.gold < cost) { Snd.sfx("ui_error", 0.8f); return; }
                     rs.gold -= cost; rs.weaponLvl++; rs.stats.recalc(rs);
                     Snd.sfx("forge_anvil", 1f);
                     lv.shake(2f, 0.15f);
@@ -1216,7 +1216,7 @@ final class RunScreen extends Screen implements Level.Listener {
                     lv.fxAdd("fx_ring", "pulse", lv.pl.x, lv.pl.y - 18, 1f, 0xFFB040);
                     layoutOverlay();
                 });
-                up.disabled = rs.weaponLvl >= 5 || rs.gold < rs.forgeCost();
+                up.disabled = rs.weaponMaxed() || rs.gold < rs.forgeCost();
                 add(w / 2f + 4, 176, 108, 24, "Cerrar", this::closeOv);
                 break;
             }
@@ -1369,6 +1369,7 @@ final class RunScreen extends Screen implements Level.Listener {
     // ---- ganchos de prueba (solo los usa DebugBot)
     void debugNextFloor() { afterBoss(); }
     void debugOpenPause() { openOv(OV_PAUSE); }
+    void debugOpenForge() { ovProp = lv.addProp(new Room.PropSpec("forge", lv.pl.x, lv.pl.y, 0)); openOv(OV_FORGE); }
     void debugForceSaveMenu() { saveMenu = true; layoutOverlay(); }
     java.util.List<String> debugLabels() { java.util.List<String> l = new ArrayList<>(); for (Hit h : hits) if (h.label != null) l.add(h.label); return l; }
     boolean debugTap(String label) { for (Hit h : new ArrayList<>(hits)) if (label.equals(h.label) && !h.disabled && h.act != null) { h.act.run(); return true; } return false; }
@@ -2130,11 +2131,12 @@ final class RunScreen extends Screen implements Level.Listener {
                 UI.big.center(g, "FORJA", w / 2f, 48, UI.ORANGE, 1f);
                 UI.small.center(g, cls.weapon, w / 2f, 70, UI.WHITE, 1f);
                 int lvl = rs.weaponLvl;
-                for (int i = 0; i < 5; i++) UI.icon(g, "star", w / 2f - 45 + i * 18, 86, 1f, i < lvl ? 0 : Platform.TINT, i < lvl ? 0 : 0x303038, 1f);
-                if (lvl >= 5) UI.small.center(g, "¡Arma al nivel máximo!", w / 2f, 112, UI.GOLD, 1f);
+                for (int i = 0; i < RunState.WEAPON_MAX; i++) g.rect(px + 20 + i * 11, 88, 9, 8, i < lvl ? 0xFFFFC040 : 0xFF303038, false);
+                UI.small.center(g, "Nivel " + lvl + "/" + RunState.WEAPON_MAX, w / 2f, 98, UI.GREY, 1f);
+                if (rs.weaponMaxed()) UI.small.center(g, "¡Arma al nivel máximo!", w / 2f, 112, UI.GOLD, 1f);
                 else {
                     UI.small.center(g, "Nivel " + lvl + " > " + (lvl + 1), w / 2f, 110, UI.CYAN, 1f);
-                    UI.small.center(g, "+10% de daño de arma y habilidades", w / 2f, 124, UI.GREEN, 1f);
+                    UI.small.center(g, "+" + Math.round((RunState.weaponDmgBonus(lvl + 1) - RunState.weaponDmgBonus(lvl)) * 100) + "% de daño de arma y habilidades", w / 2f, 124, UI.GREEN, 1f);
                     int cost = rs.forgeCost();
                     UI.icon(g, "coin", w / 2f - 30, 140, 1f);
                     UI.small.draw(g, cost + "", w / 2f - 12, 144, rs.gold >= cost ? UI.GOLD : UI.RED, 1f);

@@ -13,7 +13,7 @@ public final class Stats {
         Save s = Save.S;
         int[] b = rs.bless;
         maxHp = c.hp + 10 * s.meta[0] + 20 * b[Blessing.CORAZON];
-        dmgMul = (1 + 0.04f * s.meta[1]) * (1 + 0.15f * b[Blessing.FILO]) * (1 + 0.10f * rs.weaponLvl);
+        dmgMul = (1 + 0.04f * s.meta[1]) * (1 + 0.15f * b[Blessing.FILO]) * (1 + RunState.weaponDmgBonus(rs.weaponLvl));
         critChance = c.crit + 0.08f * b[Blessing.CRITICO];
         critMul = 1.6f + 0.2f * b[Blessing.CRITICO];
         speedMul = c.speed * (1 + 0.03f * s.meta[5] + 0.08f * b[Blessing.ALAS]);

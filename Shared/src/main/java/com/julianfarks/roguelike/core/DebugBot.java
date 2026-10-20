@@ -539,6 +539,16 @@ public final class DebugBot {
                 }
             }
         }
+        if (System.getenv("BOT_WEAPONTEST") != null && !rs.sandbox && frame == 700) {
+            RunState r = rs.rs; int keep = r.weaponLvl; StringBuilder sb = new StringBuilder();
+            for (int l = 0; l <= RunState.WEAPON_MAX; l += (l < 6 ? 1 : 5)) { r.weaponLvl = l; r.stats.recalc(r); sb.append(" L").append(l).append(":x").append(String.format("%.2f", r.stats.dmgMul)).append("/").append(r.forgeCost()).append("o"); }
+            System.out.println("WEAPON curva (dmgMul/coste):" + sb);
+            r.weaponLvl = RunState.WEAPON_MAX; System.out.println("WEAPON tope: maxed=" + r.weaponMaxed());
+            r.weaponLvl = RunState.WEAPON_MAX - 1; r.gold = 99999; rs.debugOpenForge(); System.out.println("WEAPON forja nv19 botones=" + rs.debugLabels());
+            rs.debugTap("Mejorar"); System.out.println("WEAPON tras mejorar: nivel=" + r.weaponLvl);
+            rs.debugTap("Mejorar"); System.out.println("WEAPON tras mejorar de nuevo (debe seguir en 20): nivel=" + r.weaponLvl);
+            r.weaponLvl = keep; r.stats.recalc(r);
+        }
         if (System.getenv("BOT_WINTEST") != null && !rs.rs.infinite && !rs.sandbox) {
             // Victoria definitiva: el overlay debe quedarse abierto con Endless/Creditos/Salir; Salir guarda y vuelve al menu.
             if (winStep == 0 && frame > 700) {

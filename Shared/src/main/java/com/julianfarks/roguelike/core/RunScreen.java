@@ -716,7 +716,21 @@ final class RunScreen extends Screen implements Level.Listener {
         Snd.sfx("altar_bless", 0.9f);
     }
 
+    static final int SKIP_SEL = 3;   // indice de seleccion de «Omitir / Conservar equipo» en el cofre
+
+    /** Rechaza las tres ofertas: cierra el cofre sin tocar armas, escudos, niveles ni mejoras y sin dar nada a cambio. */
+    private void skipChest() {
+        if (ov != OV_CHEST || ovT < 0.3f || cOffer == null) return;
+        cOffer = null; wcmp = null; offerSel = -1;
+        closeOv();
+        chestSkips++;
+        lv.text(lv.pl.x, lv.pl.y - 50, "Conservas tu equipo", 0xB8C8E0, false);
+        Snd.sfx("ui_back", 0.8f);
+    }
+    int chestSkips;    // (pruebas) cofres omitidos
+
     private void confirmChest() {
+        if (ov == OV_CHEST && offerSel == SKIP_SEL) { skipChest(); return; }
         if (ov != OV_CHEST || offerSel < 0 || ovT < 0.3f || cOffer == null) return;
         ChestLoot.Reward x = cOffer[offerSel];
         // nunca se sustituye la arma secundaria sin consentimiento: se muestra la comparacion y se pide confirmar
@@ -742,6 +756,7 @@ final class RunScreen extends Screen implements Level.Listener {
 
     // ganchos solo para las pruebas headless (ArsenalProbe)
     void dbgChest(int sel) { if (ov != OV_CHEST) openOv(OV_CHEST); offerSel = sel; ovT = 1f; }
+    void dbgChestOvT() { ovT = 1f; }
     void dbgConfirm() { ovT = 1f; confirmChest(); }
     void dbgWcmp(boolean swap) { ovT = 1f; wcmpConfirm(swap); }
 
@@ -1201,8 +1216,11 @@ final class RunScreen extends Screen implements Level.Listener {
                     });
                     h.plain = true; h.tag = i; h.noSound = true;
                 }
-                Hit ok = add(w / 2f - 60, 216, 120, 24, offerSel < 0 ? "Toca una carta" : "Elegir", this::confirmChest);
+                Hit ok = add(w / 2f - 172, 216, 112, 24, offerSel < 0 ? "Toca una carta" : offerSel == SKIP_SEL ? "Confirmar" : "Elegir", this::confirmChest);
                 ok.disabled = offerSel < 0;
+                // cuarta opcion: rechaza las tres ofertas y conserva todo el equipo (no da recompensa; el cofre ya esta gastado, asi que no se puede repetir)
+                Hit skip = add(w / 2f - 52, 216, 190, 24, "Omitir / Conservar equipo", this::skipChest);   // raton/tactil: un toque directo (teclado/mando: seleccionar con izq/der y confirmar)
+                skip.tag = SKIP_SEL;
                 break;
             }
             case OV_SHOP: {
@@ -1567,8 +1585,8 @@ final class RunScreen extends Screen implements Level.Listener {
                 return;
             }
             if (ov == OV_CHEST && isDown) {
-                if (code == 37 || code == 'A') offerSel = offerSel < 0 ? 0 : (offerSel + 2) % 3;
-                else if (code == 39 || code == 'D') offerSel = offerSel < 0 ? 0 : (offerSel + 1) % 3;
+                if (code == 37 || code == 'A') offerSel = offerSel < 0 ? 0 : (offerSel + 3) % 4;
+                else if (code == 39 || code == 'D') offerSel = offerSel < 0 ? 0 : (offerSel + 1) % 4;
                 else if ((code == 10 || code == 32 || code == 'J') && ovT > 0.3f) { confirmChest(); return; }
                 layoutOverlay();
                 return;
@@ -2122,6 +2140,11 @@ final class RunScreen extends Screen implements Level.Listener {
                     if (!x.bad.isEmpty()) { UI.small.center(g, x.bad, cx, ty, UI.RED, fadeIn); ty += 12; }
                     int lines = UI.small.drawWrapped(g, x.desc, h.x + 8, ty, (int) h.w - 16, 0xE8E0E0, fadeIn);
                     if (!x.replaces.isEmpty()) UI.small.drawWrapped(g, x.replaces, h.x + 8, y + h.h - 26, (int) h.w - 16, 0xFFFF9A6A, fadeIn);
+                }
+                for (Hit h : hits) if (h.tag == SKIP_SEL && "Omitir / Conservar equipo".equals(h.label) && offerSel == SKIP_SEL) {      // marco claro en la opcion de omitir seleccionada
+                    int cc = Mth.withAlpha(0xB8C8E0, (int) (255 * fadeIn));
+                    g.rect(h.x - 2, h.y - 2, h.w + 4, 2, cc, false); g.rect(h.x - 2, h.y + h.h, h.w + 4, 2, cc, false);
+                    g.rect(h.x - 2, h.y - 2, 2, h.h + 4, cc, false); g.rect(h.x + h.w, h.y - 2, 2, h.h + 4, cc, false);
                 }
                 drawButtons(g);
                 break;

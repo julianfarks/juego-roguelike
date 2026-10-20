@@ -2,6 +2,7 @@ package com.julianfarks.roguelike.core;
 
 /** Bot de pruebas para el banco de escritorio (--bot): navega menus y juega sin ayuda. No se usa en Android. */
 public final class DebugBot {
+    static String chestSnap(RunState r) { return r.sec + "/" + r.secAmmo + "/" + r.shield + "/" + r.weaponLvl + "/" + r.special + "/" + java.util.Arrays.toString(r.bless) + "/" + r.gold + "/" + r.souls; }
     private int skStep, skT0, skProj0; private float skHp0;
     private int escStep, escT;
     private int roomModStep, roomModT, hurt0; private float hp0;
@@ -631,6 +632,22 @@ public final class DebugBot {
                 System.out.println("SKILL C1 golpe DESPUES de liberar: proyectiles " + n0 + "->" + n1 + " (iguales) cd " + Math.round(cd0 * 10) / 10f + "->" + Math.round(r.cd[0] * 10) / 10f + " (igual: ni se borra ni se duplica)"); skStep = 7; }
             else if (skStep == 5 && t > 80) { skStep = 7; System.out.println("SKILL B3 FALLA: no se libero"); }
             if (frame >= 690 && skStep < 7) return;     // el bot no interfiere mientras dura la prueba
+        }
+        if (System.getenv("BOT_CHESTSKIP") != null && !rs.sandbox && frame == 700) {
+            RunState r = rs.rs;
+            String before0 = chestSnap(r);
+            rs.cMode = ChestLoot.MODE_WEAPONS; rs.cOffer = ChestLoot.roll(r, ChestLoot.MODE_WEAPONS, 3);
+            rs.dbgChest(3);
+            System.out.println("CHESTSKIP ofertas=" + rs.cOffer.length + " (3 armas conservadas) ov=" + rs.debugOv() + " botones=" + rs.debugLabels());
+            rs.dbgConfirm();
+            System.out.println("CHESTSKIP tras omitir: ov=" + rs.debugOv() + " (0=cerrado) omitidos=" + rs.chestSkips + " equipo igual=" + before0.equals(chestSnap(r)));
+            rs.dbgConfirm();     // repetir: no hace nada
+            System.out.println("CHESTSKIP repetir omitir no hace nada: omitidos=" + rs.chestSkips + " (1) equipo igual=" + before0.equals(chestSnap(r)));
+            rs.cMode = ChestLoot.MODE_WEAPONS; rs.cOffer = ChestLoot.roll(r, ChestLoot.MODE_WEAPONS, 3); rs.dbgChest(0); rs.dbgChestOvT();
+            System.out.println("CHESTSKIP toque directo en el boton: " + rs.debugTap("Omitir / Conservar equipo") + " ov=" + rs.debugOv() + " omitidos=" + rs.chestSkips + " (2) equipo igual=" + before0.equals(chestSnap(r)));
+            // elegir un arma sigue funcionando (las tres opciones originales)
+            rs.cMode = ChestLoot.MODE_WEAPONS; rs.cOffer = ChestLoot.roll(r, ChestLoot.MODE_WEAPONS, 3); rs.dbgChest(1); rs.dbgConfirm();
+            System.out.println("CHESTSKIP elegir opcion 2 sigue aplicando: ov=" + rs.debugOv() + " equipo cambio=" + !before0.equals(chestSnap(r)) + " (puede ser false si abrio comparacion)");
         }
         if (System.getenv("BOT_BALTEST") != null && !rs.sandbox && frame == 700) {
             RunState r = rs.rs; int kd = r.dungeonNo, ks = r.stage, kr = r.roomNo;

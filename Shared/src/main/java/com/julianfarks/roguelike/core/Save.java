@@ -51,6 +51,8 @@ public final class Save {
     public int compMask = 0, compSel = -1;            // companeros desbloqueados / elegido (v3)
     public int[] garden = new int[Garden.PLOTS];     // etapa de cada cristal del jardin (v3)
     public java.util.Set<String> dex = new java.util.LinkedHashSet<>();   // bestiario: e:id, b:idx, v:k (v3)
+    public int[] blessUse = new int[Blessing.ALL.length];   // partidas en las que se uso cada mejora (registro persistente; nunca da poder)
+    public String lastDeath = "";                     // causa probable de la ultima derrota
     public int[] events = new int[Events.COUNT];     // sucesos especiales completados (por tipo)
     public long playMs = 0;                          // tiempo total jugado (ms)
     // ---- moneda premium (independiente de almas/oro) e inventario cosmetico
@@ -132,6 +134,9 @@ public final class Save {
                 s.trophyMask = Json.i(d, "st_trophies", 0); s.playMs = Json.i(d, "st_playS", 0) * 1000L;
                 int[] cru = Json.ints(d, "st_classRuns");
                 if (cru != null) for (int i = 0; i < Math.min(10, cru.length); i++) s.classRuns[i] = cru[i];
+                int[] bu = Json.ints(d, "st_blessUse");
+                if (bu != null) for (int i = 0; i < Math.min(s.blessUse.length, bu.length); i++) s.blessUse[i] = Math.max(0, bu[i]);
+                s.lastDeath = Json.str(d, "st_lastDeath", "");
                 int[] evs = Json.ints(d, "st_events");
                 if (evs != null) for (int i = 0; i < Math.min(Events.COUNT, evs.length); i++) s.events[i] = Math.max(0, evs[i]);
                 s.infMods = Json.i(d, "inf_mods", 0) & Infinite.MOD_ALL;
@@ -202,7 +207,7 @@ public final class Save {
             d.put("dev", devUnlocked); d.put("codes", codesUsed);
             d.put("st_started", started); d.put("st_rounds", rounds); d.put("st_losses", losses); d.put("st_streak", bestStreak); d.put("st_killsRound", maxKillsRound);
             d.put("st_perfect", perfectRounds); d.put("st_perfStreak", bestPerfectStreak); d.put("st_chests", chestsOpened); d.put("st_secret", secretChests);
-            d.put("st_trophies", trophyMask); d.put("st_playS", (int) (playMs / 1000L)); d.put("st_classRuns", classRuns); d.put("st_events", events);
+            d.put("st_trophies", trophyMask); d.put("st_playS", (int) (playMs / 1000L)); d.put("st_classRuns", classRuns); d.put("st_blessUse", blessUse); d.put("st_lastDeath", lastDeath); d.put("st_events", events);
             d.put("lang", I18n.CODES[Math.max(0, Math.min(I18n.CODES.length - 1, lang))]); d.put("inf_mods", infMods); d.put("cmp_mask", compMask); d.put("cmp_sel", compSel); d.put("garden", garden); d.put("dex", new ArrayList<Object>(dex));
             d.put("imode", inputMode); d.put("kb", kb); d.put("pb", pb);
             P.store().put("save", Json.write(d));

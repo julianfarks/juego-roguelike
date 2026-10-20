@@ -111,7 +111,7 @@ final class CodexScreens {
 
     static final class CodexScr extends Screen {
         private final Screens.TitleBg bg = new Screens.TitleBg();
-        private static final String[] TABS = {"Enemigos", "Jefes", "Sucesos", "Reliquias", "Espadachines"};
+        private static final String[] TABS = {"Enemigos", "Jefes", "Sucesos", "Reliquias", "Mejoras", "Espadachines"};
         private static final int PER = 8;
         private int tab, page, selIdx;
         private List<Entry> entries = new ArrayList<>();
@@ -147,6 +147,12 @@ final class CodexScreens {
                 for (int i = 0; i < 8; i++) {
                     Entry e = new Entry(); e.found = s.relics[i]; e.name = RunScreen.RELIC_NAMES[i]; e.sheet = "sprites/ev_relic"; e.color = BossDef.ALL[i].color; e.tint = BossDef.ALL[i].color;
                     e.lines.add("Reliquia de " + BossDef.ALL[i].name); e.lines.add(e.found ? "Conservada en la sala de trofeos" : "Derrota a su jefe para obtenerla");
+                    entries.add(e);
+                }
+            } else if (tab == 4) {
+                for (Blessing b : Blessing.ALL) {
+                    Entry e = new Entry(); e.found = s.blessUse[b.id] > 0; e.name = b.name; e.icon = b.icon; e.color = Blessing.RAR_COLOR[Math.max(0, Math.min(4, b.rar))];
+                    e.lines.add(b.desc); e.lines.add("Usada en " + s.blessUse[b.id] + (s.blessUse[b.id] == 1 ? " partida" : " partidas"));
                     entries.add(e);
                 }
             } else {
@@ -198,7 +204,7 @@ final class CodexScreens {
                 float px = 240, pw = w - 250;
                 UI.panel(g, 0, px, 54, pw, 182, 0.95f);
                 UI.light(g, px + pw / 2, 120, 40, e.color | 0xFF000000, e.found ? 0.25f : 0.06f);
-                if (tab == 4) drawClass(g, selIdx, px + pw / 2, 150, 2f, !e.found);
+                if (tab == 5) drawClass(g, selIdx, px + pw / 2, 150, 2f, !e.found);
                 else drawIllus(g, e, px + pw / 2, 150, 80);
                 UI.small.center(g, e.found ? e.name : "???", px + pw / 2, 160, e.found ? e.color : UI.GREY, 1f);
                 if (e.found) { for (int i = 0; i < e.lines.size(); i++) UI.small.center(g, e.lines.get(i), px + pw / 2, 174 + i * 11, UI.WHITE, 1f); }

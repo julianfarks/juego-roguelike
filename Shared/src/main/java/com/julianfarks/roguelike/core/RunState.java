@@ -67,6 +67,22 @@ public final class RunState {
     /** Tipo de sesion: NORMAL (progreso real) o TEST (arenas y tiendas del Modo Desarrollador: jamas se guarda ni toca el progreso). */
     public enum Session { NORMAL, TEST }
     public Session session = Session.NORMAL;
+    // ---- modificadores de sala (desafios nuevos mas alla de la vida de los enemigos); se eligen al cargar cada sala de combate
+    public static final int RM_NONE = 0, RM_VOLATILE = 1, RM_SWARM = 2;
+    public static final String[] RM_NAME = {"", "Sala volátil", "Sala enjambre"};
+    public static final String[] RM_DESC = {"", "Los enemigos explotan al morir: corre del aro rojo", "Más enemigos, más frágiles"};
+    public int roomMod;
+    public static int forceRoomMod = -1;
+    /** Elige (de forma determinista por semilla/sala) el modificador de la sala de combate actual. */
+    public int rollRoomMod(int roomType, int curEvent) {
+        roomMod = RM_NONE;
+        if (forceRoomMod >= 0) return roomMod = forceRoomMod;     // solo pruebas del banco
+        if (roomType != Room.COMBAT || curEvent != 0 || roomNo == 0 || biome == null || biome.id >= 8) return roomMod;
+        float ch = infinite ? Math.min(0.5f, 0.15f + 0.05f * floor) : dungeonNo < 2 ? 0f : Math.min(0.40f, 0.08f * (dungeonNo - 1));
+        Rng r = new Rng(seed ^ (dungeonNo * 7919L + roomNo * 104729L + floor * 31L + 12345L));
+        if (r.chance(ch)) roomMod = r.chance(0.5f) ? RM_VOLATILE : RM_SWARM;
+        return roomMod;
+    }
     public int mods;            // retos del modo infinito activos (Infinite.M_*)
     public int companion = -1;  // companero activo de esta run (-1 ninguno)
     public boolean sandbox;     // (igual que session==TEST; se mantiene por compatibilidad)
@@ -162,6 +178,10 @@ public final class RunState {
     public static final int WEAPON_MAX = 20;
     public static final int WEAPON_FAST_LVLS = 5;          // hasta aqui la curva original (+10% de dano, coste +45 por nivel)
     public static final float WEAPON_DMG_FAST = 0.10f, WEAPON_DMG_SLOW = 0.05f;
+    public static final int MASTERY_MAX = 10;               // rangos de Maestria tras el nivel maximo (solo Endless)
+    public int mastery;
+    public boolean masteryMaxed() { return mastery >= MASTERY_MAX; }
+    public int masteryCost() { return forgeCost() + 90 * mastery; }
     public boolean weaponMaxed() { return weaponLvl >= WEAPON_MAX; }
     public static float weaponDmgBonus(int lvl) {
         int fast = Math.min(lvl, WEAPON_FAST_LVLS), slow = Math.max(0, lvl - WEAPON_FAST_LVLS);

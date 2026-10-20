@@ -100,6 +100,18 @@ public final class Level {
             else if (rs.campaignSpeedMul() > 1f) e.modSpeed = rs.campaignSpeedMul();
             enemies.add(e);
         }
+        if (rs.roomMod == RunState.RM_SWARM) {          // enjambre: +1 enemigo por cada 2, mas fragiles (no altera jefes ni elites)
+            java.util.List<Enemy> extra = new java.util.ArrayList<>();
+            int k = 0;
+            for (Enemy e : enemies) {
+                if (e.optional || e.elite || (k++ % 2) != 0) continue;
+                Enemy c = new Enemy(e.def, false, hpMul * 0.7f, dmgMul);
+                c.x = e.x + (k % 4 < 2 ? 34 : -34); c.y = e.y; c.home = c.x;
+                if (e.modSpeed > 1f) c.modSpeed = e.modSpeed;
+                extra.add(c);
+            }
+            enemies.addAll(extra);
+        }
         toKill = 0;
         for (Enemy e : enemies) if (!e.optional) toKill++;
         roomEnemies = toKill; roomHits = 0; rewarded = false;
@@ -392,11 +404,24 @@ public final class Level {
         BlessFx.afterDamage(this, e, dmg, crit, src);
         if (e.hp <= 0 && e.alive) {
             e.hp = 0;
-            if (e instanceof Enemy) ((Enemy) e).die(this);
+            if (e instanceof Enemy) { ((Enemy) e).die(this); if (rs.roomMod == RunState.RM_VOLATILE) volatileBlast(e); }
             else if (e instanceof Boss) { ((Boss) e).die(this); BlessFx.onBossDead(this); }
             BlessFx.onKill(this, e, src);
         }
         return dmg;
+    }
+
+    /** Sala volatil: el enemigo caido deja un aro rojo y explota 0,75 s despues (danha al jugador si sigue dentro). */
+    void volatileBlast(Ent e) {
+        final float ex = e.cx(), ey = e.cy(), rad = 46f;
+        final float dmg = Math.max(6f, 8f * rs.enemyDmgMul());
+        fxAdd("fx_ring", "pulse", ex, ey, rad / 28f, 0xFF3030);
+        later(0.75f, () -> {
+            fxAdd("fx_explosion", "a", ex, ey, 0.7f, 0xFF5030);
+            ps.burst(rng, ex, ey, 0xFF6030, 14, 120, 0.4f, 2, 0, true);
+            Snd.sfxv("explosion_small", 0.4f);
+            if (pl != null && pl.alive && Mth.dist(pl.x, pl.cy(), ex, ey) <= rad) hurtPlayer(dmg, ex, -1, 0);
+        });
     }
 
     /** Efectos al golpear con el arma. */
@@ -563,6 +588,19 @@ public final class Level {
         return true;
     }
 
+    /** Causa probable de la derrota (heuristica honesta: lo mas cercano que pudo hacer dano), para ensenar algo de cada derrota. */
+    public String deathCause = "";
+    public String probableCauseForTest() { return probableCause(); }
+    String probableCause() {
+        if (boss != null && boss.alive && Mth.dist(pl.x, pl.cy(), boss.x, boss.cy()) < 260) return "Jefe: " + boss.def.name;
+        Enemy near = null; float bd = 1e9f;
+        for (Enemy e : enemies) if (e.alive) { float d = Mth.dist(pl.x, pl.cy(), e.cx(), e.cy()); if (d < bd) { bd = d; near = e; } }
+        if (near != null && bd < 160) return (near.elite ? "Élite: " : "Enemigo: ") + Codex.pretty(near.def.id);
+        if (room.hazardAt(pl.x, pl.y - 4)) return "Trampa de pinchos";
+        if (rs.roomMod == RunState.RM_VOLATILE) return "Explosión de sala volátil";
+        return "Daño periódico o proyectiles lejanos";
+    }
+
     public void playerDeath() {
         Player p = pl;
         if (rs.stats.revive > 0 && !rs.reviveUsed) {
@@ -578,6 +616,7 @@ public final class Level {
             return;
         }
         rs.hp = 0;
+        deathCause = probableCause();
         p.die();
         Snd.sfx("death", 1f);
         Snd.stopMusic(600);

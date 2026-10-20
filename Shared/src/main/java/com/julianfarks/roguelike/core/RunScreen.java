@@ -195,6 +195,7 @@ final class RunScreen extends Screen implements Level.Listener {
         Biome b = type == Room.HUB || rs.biome == null ? hubBiome() : rs.biome;
         if (type != Room.EVENT && !(type == Room.ELITE && rs.curEvent == Events.TRIAL)) rs.curEvent = 0;
         RoomGen.extraTraps = Infinite.has(rs, Infinite.M_TRAPS) ? 3 : 0;
+        rs.rollRoomMod(sandbox ? Room.HUB : type, rs.curEvent);
         Room rm = RoomGen.generate(type, b, rs.rng, rs.stage, rs.roomNo, type == Room.EVENT ? rs.curEvent : 0);
         RoomGen.extraTraps = 0;
         rm.bake(P);
@@ -232,6 +233,7 @@ final class RunScreen extends Screen implements Level.Listener {
             bannerTitle = rs.biome.name;
             bannerSub = rs.roomNo == 0 ? rs.biome.tagline : (type == Room.REST ? "Tienda · forja · altar · fuente" : RunState.roomName(type));
             if (type == Room.EVENT || (type == Room.ELITE && rs.curEvent == Events.TRIAL)) { bannerTitle = Events.NAME[rs.curEvent]; bannerSub = Events.SUB[rs.curEvent]; }
+            if (rs.roomMod != 0) { bannerTitle = RunState.RM_NAME[rs.roomMod]; bannerSub = RunState.RM_DESC[rs.roomMod]; }
             if (chal >= 0) { bannerTitle = Events.NAME[Events.CHALLENGE] + ": " + Events.CH_NAME[chal]; bannerSub = Events.CH_RULE[chal]; }
         }
         bannerT = type == Room.BOSS ? 0 : 3f;
@@ -396,7 +398,7 @@ final class RunScreen extends Screen implements Level.Listener {
 
     @Override public void onPlayerDead(Level l) {
         if (rs.infinite && !sandbox && reviveWait < 0 && Infinite.hasRevivesLeft(rs) && Infinite.anyAvailable(rs)) { reviveWait = 0; return; }
-        if (deadT < 0) { deadT = 0; endRun(false); }
+        if (deadT < 0) { deadT = 0; if (lv != null && !sandbox) Save.S.lastDeath = lv.deathCause; endRun(false); }
     }
 
     @Override public void onBossDead(Level l) {
@@ -469,6 +471,7 @@ final class RunScreen extends Screen implements Level.Listener {
         s.bestRooms = Math.max(s.bestRooms, rs.roomsDone);
         if (rs.infinite) { infResult = Infinite.resultOf(rs); infRecord = Infinite.record(s, infResult); }
         s.lastClass = cls.id;
+        for (int bi = 0; bi < Blessing.ALL.length && bi < s.blessUse.length; bi++) if (rs.bless[bi] > 0) s.blessUse[bi]++;   // registro persistente de mejoras usadas
         Tutorial.complete(Tutorial.ALL);
         if (win) {
             s.wins++; s.classWins[cls.id]++;
@@ -1207,16 +1210,25 @@ final class RunScreen extends Screen implements Level.Listener {
             }
             case OV_FORGE: {
                 Hit up = add(w / 2f - 112, 176, 108, 24, "Mejorar", () -> {
-                    int cost = rs.forgeCost();
-                    if (rs.weaponMaxed() || rs.gold < cost) { Snd.sfx("ui_error", 0.8f); return; }
-                    rs.gold -= cost; rs.weaponLvl++; rs.stats.recalc(rs);
+                    boolean mast = rs.weaponMaxed() && rs.infinite && !rs.masteryMaxed();
+                    int cost = mast ? rs.masteryCost() : rs.forgeCost();
+                    if ((rs.weaponMaxed() && !mast) || rs.gold < cost) { Snd.sfx("ui_error", 0.8f); return; }
+                    rs.gold -= cost;
+                    if (mast) rs.mastery++; else rs.weaponLvl++;
+                    rs.stats.recalc(rs);
                     Snd.sfx("forge_anvil", 1f);
+                    if (mast || WeaponPerks.milestone(rs.weaponLvl)) {      // hito: aro grande y texto
+                        lv.shake(4f, 0.3f);
+                        lv.fxAdd("fx_ring", "pulse", lv.pl.x, lv.pl.y - 18, 2f, 0xFFE070);
+                        lv.ps.burst(lv.rng, lv.pl.x, lv.pl.y - 24, 0xFFE070, 36, 170, 0.9f, 2, 120, true);
+                        lv.text(lv.pl.x, lv.pl.y - 60, mast ? "¡Maestría " + rs.mastery + "!" : "¡Hito de arma nv " + rs.weaponLvl + "!", 0xFFE070, true);
+                    }
                     lv.shake(2f, 0.15f);
                     lv.ps.burst(lv.rng, ovProp.x, ovProp.y - 20, 0xFFB040, 30, 140, 0.7f, 2, 200, true);
                     lv.fxAdd("fx_ring", "pulse", lv.pl.x, lv.pl.y - 18, 1f, 0xFFB040);
                     layoutOverlay();
                 });
-                up.disabled = rs.weaponMaxed() || rs.gold < rs.forgeCost();
+                up.disabled = (rs.weaponMaxed() ? !(rs.infinite && !rs.masteryMaxed()) || rs.gold < rs.masteryCost() : rs.gold < rs.forgeCost());
                 add(w / 2f + 4, 176, 108, 24, "Cerrar", this::closeOv);
                 break;
             }
@@ -1369,6 +1381,8 @@ final class RunScreen extends Screen implements Level.Listener {
     // ---- ganchos de prueba (solo los usa DebugBot)
     void debugNextFloor() { afterBoss(); }
     void debugOpenPause() { openOv(OV_PAUSE); }
+    void debugLoadCombat() { loadRoom(Room.COMBAT); }
+    void debugEnd2Close() { closeOv(); }
     void debugOpenForge() { ovProp = lv.addProp(new Room.PropSpec("forge", lv.pl.x, lv.pl.y, 0)); openOv(OV_FORGE); }
     void debugForceSaveMenu() { saveMenu = true; layoutOverlay(); }
     java.util.List<String> debugLabels() { java.util.List<String> l = new ArrayList<>(); for (Hit h : hits) if (h.label != null) l.add(h.label); return l; }
@@ -2133,10 +2147,21 @@ final class RunScreen extends Screen implements Level.Listener {
                 int lvl = rs.weaponLvl;
                 for (int i = 0; i < RunState.WEAPON_MAX; i++) g.rect(px + 20 + i * 11, 88, 9, 8, i < lvl ? 0xFFFFC040 : 0xFF303038, false);
                 UI.small.center(g, "Nivel " + lvl + "/" + RunState.WEAPON_MAX, w / 2f, 98, UI.GREY, 1f);
-                if (rs.weaponMaxed()) UI.small.center(g, "¡Arma al nivel máximo!", w / 2f, 112, UI.GOLD, 1f);
+                if (rs.weaponMaxed() && rs.infinite) {
+                    UI.small.center(g, "¡Arma al nivel máximo! · Maestría " + rs.mastery + "/" + RunState.MASTERY_MAX, w / 2f, 110, UI.GOLD, 1f);
+                    if (!rs.masteryMaxed()) {
+                        UI.small.center(g, "+2% de daño y +1,5% de crítico por rango", w / 2f, 124, UI.GREEN, 1f);
+                        int mc = rs.masteryCost();
+                        UI.icon(g, "coin", w / 2f - 30, 140, 1f);
+                        UI.small.draw(g, mc + "", w / 2f - 12, 144, rs.gold >= mc ? UI.GOLD : UI.RED, 1f);
+                        UI.small.draw(g, "(tienes " + rs.gold + ")", w / 2f + 20, 144, UI.GREY, 1f);
+                    } else UI.small.center(g, "Maestría al máximo", w / 2f, 124, UI.GOLD, 1f);
+                }
+                else if (rs.weaponMaxed()) UI.small.center(g, "¡Arma al nivel máximo!", w / 2f, 112, UI.GOLD, 1f);
                 else {
                     UI.small.center(g, "Nivel " + lvl + " > " + (lvl + 1), w / 2f, 110, UI.CYAN, 1f);
-                    UI.small.center(g, "+" + Math.round((RunState.weaponDmgBonus(lvl + 1) - RunState.weaponDmgBonus(lvl)) * 100) + "% de daño de arma y habilidades", w / 2f, 124, UI.GREEN, 1f);
+                    UI.small.center(g, "+" + Math.round((RunState.weaponDmgBonus(lvl + 1) - RunState.weaponDmgBonus(lvl)) * 100) + "% de daño de arma y habilidades", w / 2f, 121, UI.GREEN, 1f);
+                    UI.small.center(g, WeaponPerks.text(lvl + 1), w / 2f, 131, WeaponPerks.milestone(lvl + 1) ? UI.GOLD : UI.CYAN, 1f);
                     int cost = rs.forgeCost();
                     UI.icon(g, "coin", w / 2f - 30, 140, 1f);
                     UI.small.draw(g, cost + "", w / 2f - 12, 144, rs.gold >= cost ? UI.GOLD : UI.RED, 1f);
@@ -2271,6 +2296,7 @@ final class RunScreen extends Screen implements Level.Listener {
                     UI.icon(g, "soul", px + 24, y - 3, 1f);
                     UI.small.draw(g, "Almas conservadas", px + 44, y, UI.SOUL, fadeIn);
                     UI.small.right(g, "+" + sumSouls, px + 276, y, UI.SOUL, fadeIn);
+                    if (lv != null && !lv.deathCause.isEmpty()) UI.small.center(g, "Causa probable: " + lv.deathCause, w / 2f, y + 14, UI.RED, fadeIn);
                     drawButtons(g);
                     break;
                 }
@@ -2291,7 +2317,8 @@ final class RunScreen extends Screen implements Level.Listener {
                 UI.small.draw(g, "Almas conservadas", px + 44, y, UI.SOUL, fadeIn);
                 UI.small.right(g, "+" + sumSouls, px + 276, y, UI.SOUL, fadeIn);
                 if (!sumNote.isEmpty()) UI.small.center(g, sumNote, w / 2f, y + 16, UI.GREEN, fadeIn);
-                if (!win && cls != null) UI.small.center(g, "Gasta tus almas en el Santuario", w / 2f, 192, UI.GREY, fadeIn);
+                if (!win && cls != null) UI.small.center(g, "Gasta tus almas en el Santuario", w / 2f, 194, UI.GREY, fadeIn);
+                if (!win && lv != null && !lv.deathCause.isEmpty()) UI.small.center(g, "Causa probable: " + lv.deathCause, w / 2f, 181, UI.RED, fadeIn);
                 drawButtons(g);
                 break;
             }

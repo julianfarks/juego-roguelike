@@ -37,7 +37,7 @@ final class RunSave {
             int[] vis = new int[rs.visited.size()]; for (int i = 0; i < vis.length; i++) vis[i] = rs.visited.get(i);
             d.put("visited", vis);
             d.put("gold", rs.gold); d.put("souls", rs.souls); d.put("kills", rs.kills); d.put("bossKills", rs.bossKills);
-            d.put("potions", rs.potions); d.put("weaponLvl", rs.weaponLvl);
+            d.put("potions", rs.potions); d.put("weaponLvl", rs.weaponLvl); d.put("mastery", rs.mastery);
             d.put("hp", (int) Math.ceil(rs.hp)); d.put("ult", (int) rs.ult);
             d.put("revive", rs.reviveUsed); d.put("time", (int) rs.time);
             d.put("asc", rs.asc); d.put("diff", rs.diff);
@@ -80,7 +80,7 @@ final class RunSave {
             int[] vis = Json.ints(d, "visited");
             rs.visited.clear(); if (vis != null) for (int v : vis) rs.visited.add(v);
             rs.gold = Json.i(d, "gold", 0); rs.souls = Json.i(d, "souls", 0); rs.kills = Json.i(d, "kills", 0); rs.bossKills = Json.i(d, "bossKills", 0);
-            rs.potions = Json.i(d, "potions", 2); rs.weaponLvl = Json.i(d, "weaponLvl", 0);
+            rs.potions = Json.i(d, "potions", 2); rs.weaponLvl = Json.i(d, "weaponLvl", 0); rs.mastery = Json.i(d, "mastery", 0);
             rs.ult = Json.i(d, "ult", 0);
             rs.reviveUsed = Json.bool(d, "revive", false); rs.time = Json.i(d, "time", 0);
             rs.blessingTaken = Json.bool(d, "blessTaken", false); rs.damageTaken = Json.i(d, "dmgTaken", 0);

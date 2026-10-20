@@ -2,6 +2,7 @@ package com.julianfarks.roguelike.core;
 
 /** Bot de pruebas para el banco de escritorio (--bot): navega menus y juega sin ayuda. No se usa en Android. */
 public final class DebugBot {
+    private int roomModStep, roomModT, hurt0; private float hp0;
     private int endlessT = -1; private boolean endlessTapped;
     private String watchK = "";
     private int winStep, winT0, winW0, winK0;
@@ -563,6 +564,45 @@ public final class DebugBot {
             String k = rs.rs.dungeonNo + "/" + rs.rs.stage + "/" + (rs.rs.biome == null ? -1 : rs.rs.biome.id) + "/" + rs.rs.roomNo + "/" + lv.room.type + "/" + rs.debugOv() + "/" + rs.rs.infinite;
             if (!k.equals(watchK)) { watchK = k; System.out.println("WATCH f" + frame + " dungeonNo/stage/bioma/sala/tipoSala/ov/infinito = " + k + " jefe=" + (lv.boss != null && lv.boss.alive) + " bossKills=" + rs.rs.bossKills); }
         }
+        if (System.getenv("BOT_ROOMMODTEST") != null && !rs.sandbox) {
+            RunState r = rs.rs;
+            if (roomModStep == 0 && frame == 700) {
+                int[] cnt = new int[3]; r.dungeonNo = 6; r.stage = 2;
+                for (int d = 0; d < 400; d++) { r.roomNo = 1 + d % 3; r.seed = 1000L + d; cnt[r.rollRoomMod(Room.COMBAT, 0)]++; }
+                System.out.println("ROOMMOD dist (400 salas, mazmorra 6): ninguno=" + cnt[0] + " volatil=" + cnt[1] + " enjambre=" + cnt[2]);
+                r.dungeonNo = 0; r.roomNo = 2; int z = 0; for (int d = 0; d < 200; d++) { r.seed = d; z += r.rollRoomMod(Room.COMBAT, 0); }
+                System.out.println("ROOMMOD mazmorra 0 (debe ser 0): " + z);
+                RunState.forceRoomMod = RunState.RM_SWARM; r.dungeonNo = 6; r.roomNo = 2; rs.debugLoadCombat();
+                System.out.println("ROOMMOD enjambre: enemigos=" + rs.lv.enemies.size() + " spawns=" + rs.lv.room.spawns.size() + " (mas enemigos que spawns)");
+                RunState.forceRoomMod = RunState.RM_VOLATILE; rs.debugLoadCombat(); roomModStep = 1; roomModT = frame;
+            } else if (roomModStep == 1 && frame > roomModT + 60) {
+                Level l = rs.lv; Enemy e = null; for (Enemy q : l.enemies) if (!q.optional) { e = q; break; }
+                if (e != null) {
+                    l.pl.x = e.x; l.pl.y = e.y; l.pl.invuln = 0; hurt0 = Level.dbgHurt; hp0 = r.hp;
+                    l.dmgSrc = BlessFx.SRC_W; try { l.damageEnemy(e, 1e7f, false, 0, 0); } finally { l.dmgSrc = 0; }
+                    System.out.println("ROOMMOD volatil: enemigo muerto, aro rojo avisando; danho aun no aplicado=" + (Level.dbgHurt == hurt0));
+                }
+                roomModStep = 2; roomModT = frame;
+            } else if (roomModStep == 2 && frame > roomModT + 90) {
+                System.out.println("ROOMMOD volatil: tras 90 frames golpes al jugador +" + (Level.dbgHurt - hurt0) + " (>=1 si seguia dentro) hp " + Math.round(hp0) + "->" + Math.round(r.hp));
+                RunState.forceRoomMod = -1; roomModStep = 3;
+            }
+        }
+        if (System.getenv("BOT_REGTEST") != null && !rs.sandbox && frame == 700) {
+            Save q = Save.S; RunState r = rs.rs;
+            int[] ids = {Blessing.byKey("brasas").id, Blessing.byKey("filo").id};
+            for (int id : ids) r.bless[id] = 1;
+            int u0 = q.blessUse[ids[0]];
+            rs.debugEnd();      // endRun(false)
+            System.out.println("REG uso de mejoras: brasas " + u0 + "->" + q.blessUse[ids[0]] + " (+1) filo +1=" + (q.blessUse[ids[1]] >= 1));
+            rs.debugEnd();
+            System.out.println("REG endRun repetido no duplica: brasas=" + q.blessUse[ids[0]] + " (igual)");
+            rs.lv.pl.x = rs.lv.pl.x; rs.lv.enemies.clear(); Enemy e = new Enemy(EnemyDef.get("esqueleto"), false, 1f, 1f); e.x = rs.lv.pl.x + 30; e.y = rs.lv.pl.y; rs.lv.enemies.add(e);
+            System.out.println("REG causa probable: " + rs.lv.probableCauseForTest());
+            Save.S.write();
+            Save.S = new Save(); Save.S.load(rs.game.P);
+            System.out.println("REG recarga: brasas=" + Save.S.blessUse[ids[0]] + " (" + q.blessUse[ids[0]] + ")");
+        }
         if (System.getenv("BOT_BALTEST") != null && !rs.sandbox && frame == 700) {
             RunState r = rs.rs; int kd = r.dungeonNo, ks = r.stage, kr = r.roomNo;
             System.out.println("BAL mazmorra | tramo | poder(sala0/sala4) | vidaEnem x | danoEnem x | elite | vel | jefeVida x");
@@ -582,6 +622,18 @@ public final class DebugBot {
             r.weaponLvl = RunState.WEAPON_MAX - 1; r.gold = 99999; rs.debugOpenForge(); System.out.println("WEAPON forja nv19 botones=" + rs.debugLabels());
             rs.debugTap("Mejorar"); System.out.println("WEAPON tras mejorar: nivel=" + r.weaponLvl);
             rs.debugTap("Mejorar"); System.out.println("WEAPON tras mejorar de nuevo (debe seguir en 20): nivel=" + r.weaponLvl);
+            // mejoras por nivel: cada nivel cambia una estadistica distinta y los hitos dan efectos
+            r.weaponLvl = 0; r.mastery = 0; r.stats.recalc(r); float a0 = r.stats.atkSpd, c0 = r.stats.critChance; int w0 = r.stats.wave, g0 = r.stats.giant; float e0 = r.stats.exec;
+            r.weaponLvl = 9; r.stats.recalc(r); System.out.println("WEAPON nv9: atkSpd " + a0 + "->" + r.stats.atkSpd + " crit " + c0 + "->" + r.stats.critChance + " onda=" + r.stats.wave + " (0)");
+            r.weaponLvl = 10; r.stats.recalc(r); System.out.println("WEAPON nv10 hito: onda=" + r.stats.wave + " (1) texto=" + WeaponPerks.text(10));
+            r.weaponLvl = 15; r.stats.recalc(r); System.out.println("WEAPON nv15 hito: gigante=" + r.stats.giant + " (1)");
+            r.weaponLvl = 20; r.stats.recalc(r); System.out.println("WEAPON nv20 hito: ejecutor=" + r.stats.exec + " (>=0.3) atkSpd=" + r.stats.atkSpd + " crit=" + r.stats.critChance + " critMul=" + r.stats.critMul + " dmgMul=" + r.stats.dmgMul);
+            // maestria solo en Endless
+            r.gold = 99999; boolean inf0 = r.infinite; r.infinite = false; rs.debugOpenForge(); rs.debugTap("Mejorar"); System.out.println("WEAPON maestria en campana (debe seguir 0): " + r.mastery);
+            rs.debugEnd2Close(); r.infinite = true; rs.debugOpenForge(); float dm0 = r.stats.dmgMul; rs.debugTap("Mejorar"); System.out.println("WEAPON maestria en Endless: rango=" + r.mastery + " (1) dano x" + String.format("%.3f", r.stats.dmgMul / dm0));
+            for (int i = 0; i < 15; i++) { r.gold = 99999; rs.debugTap("Mejorar"); }
+            System.out.println("WEAPON maestria tope: " + r.mastery + " (" + RunState.MASTERY_MAX + ")");
+            r.infinite = inf0; r.mastery = 0;
             r.weaponLvl = keep; r.stats.recalc(r);
         }
         if (System.getenv("BOT_WINTEST") != null && !rs.rs.infinite && !rs.sandbox) {

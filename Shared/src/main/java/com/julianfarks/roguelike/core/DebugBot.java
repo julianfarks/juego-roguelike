@@ -664,6 +664,10 @@ public final class DebugBot {
             else if (skStep == 5 && t > 80) { skStep = 7; System.out.println("SKILL B3 FALLA: no se libero"); }
             if (frame >= 690 && skStep < 7) return;     // el bot no interfiere mientras dura la prueba
         }
+        if (System.getenv("BOT_CHARGETEST") != null && !rs.sandbox) {
+            chargeProbe(g, rs, lv, p, frame);
+            if (frame >= 690 && chStep < 99) return;
+        }
         if (System.getenv("BOT_CHESTSKIP") != null && !rs.sandbox && frame == 700) {
             RunState r = rs.rs;
             String before0 = chestSnap(r);
@@ -1140,5 +1144,121 @@ public final class DebugBot {
         Screen.Hit h = cs.hits.get(cs.hits.size() - 1);
         Save.S.lastClass = classId;
         g.go(new RunScreen(g, ClassDef.ALL[classId], 0));
+    }
+    // ---- prueba del ataque cargado
+    private boolean chArena; private int chStep, chI, chT0, chMode, chHold, chRepeat; private float chHp0, chBase, chRelT, chDmgAcc, chLastHp; private Enemy chDummy; private int chHits0, chCancel0;
+    private static final float[] CH_T = {0.0f, 0.08f, 0.25f, 0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 1.75f, 2.0f, 3.0f};
+    private boolean chIdle(Player pl) { return pl.alive && pl.state <= Player.AIR && pl.hurtT <= 0 && !pl.charging() && pl.onGround; }
+    private Enemy chSpawn(Level lv, Player pl) {
+        lv.enemies.clear(); lv.toKill = 0; lv.projs.clear();
+        Enemy en = new Enemy(EnemyDef.get("zombi"), false, 1f, 1f);
+        en.maxHp = en.hp = 1e7f; en.x = pl.x + 26; en.y = pl.y; en.home = en.x;
+        lv.enemies.add(en); lv.toKill++; return en;
+    }
+    private void chargeProbe(Game g, RunScreen rs, Level lv, Player pl, int frame) {
+        if (frame < 700 || chStep >= 99) return;
+        if (System.getenv("BOT_CHARGESHOT") != null) {      // solo capturas: mantiene el ataque de 710 a 845 y suelta
+            if (frame == 700) { for (int c : new int[]{'A', 'D', 'S', 'W', 'J', 'K'}) hold(g, c, false); pl.right = true; chDummy = chSpawn(lv, pl); }
+            if (chDummy != null && chDummy.alive) { chDummy.st[Ent.STUN] = 1f; chDummy.x = pl.x + 30; chDummy.y = pl.y; }
+            if (frame == 710) g.key('J', true);
+            if (frame == 845) g.key('J', false);
+            return;
+        }
+        if (frame == 700) for (int c : new int[]{'A', 'D', 'S', 'W', 'J', 'K'}) hold(g, c, false);
+        lv.rs.stats.critChance = 0f; lv.rs.hp = lv.rs.stats.maxHp;
+        if (chDummy != null && chDummy.alive && (chStep < 10 || chStep >= 30)) { chDummy.st[Ent.STUN] = 1f; chDummy.vx = 0; }      // maniqui inerte: no golpea (no corta la carga); la interrupcion se prueba aparte
+        switch (chStep) {
+            case 0: {   // curva: una pulsacion por tiempo de carga
+                if (!chIdle(pl)) return;
+                if (!chArena) {      // arena plana sin pinchos ni fosos para que el maniqui no caiga en una trampa
+                    chArena = true; Room rm = lv.room; int gy = (int) (pl.y / Room.TS), bx = (int) (pl.x / Room.TS);
+                    for (int i = -14; i <= 14; i++) { rm.set(bx + i, gy, Room.SOLID); for (int j = 1; j <= 8; j++) rm.set(bx + i, gy - j, Room.AIR); }
+                    return;
+                }
+                if (chI >= CH_T.length) { chStep = 10; chI = 0; return; }
+                pl.right = true; chDummy = chSpawn(lv, pl); chHp0 = chDummy.hp; chHits0 = pl.dbgChargedHits;
+                chHold = Math.round(CH_T[chI] * 60f);
+                if (chHold == 0) { tap(g, 'J'); chStep = 2; chT0 = frame; } else { g.key('J', true); chStep = 1; chT0 = frame; }
+                return;
+            }
+            case 1:
+                if (frame - chT0 >= chHold - 1) { chRelT = pl.chargeT; g.key('J', false); chStep = 2; chT0 = frame; }
+                return;
+            case 2:
+                if (frame - chT0 < 50) return;
+                float d = chHp0 - chDummy.hp;
+                if (chI == 0) chBase = d;
+                float exp = ChargeCfg.mul(chRelT < 0 ? 0 : chRelT);
+                System.out.println(String.format("CHARGE pulsacion %.2fs (carga medida %.3fs): dano=%.1f ratio=%.3f esperado=%.3f mulAplicado=%.3f golpes cargados=%d", CH_T[chI], chRelT, d, chBase > 0 ? d / chBase : 0f, CH_T[chI] == 0f ? 1f : exp, (pl.dbgChargedHits - chHits0) > 0 ? pl.dbgLastMul : 1f, pl.dbgChargedHits - chHits0) + (d <= 0 ? " [DIAG px=" + Math.round(pl.x) + " ex=" + Math.round(chDummy.x) + " ey=" + Math.round(chDummy.y) + " py=" + Math.round(pl.y) + " rel=" + pl.dbgChargeRelease + " st=" + pl.state + " right=" + pl.right + "]" : ""));
+                chI++; chStep = 0; return;
+            case 10: {  // interrupcion al recibir dano mientras carga
+                if (!chIdle(pl)) return;
+                pl.right = true; chDummy = chSpawn(lv, pl); chHp0 = chDummy.hp; chHits0 = pl.dbgChargedHits; chCancel0 = pl.dbgChargeCancel;
+                g.key('J', true); chT0 = frame; chStep = 11; return;
+            }
+            case 11:
+                if (frame - chT0 == 30) {
+                    System.out.println("CHARGE C1 cargando 0.5s: cargando=" + pl.charging() + " carga=" + String.format("%.2f", pl.chargeT));
+                    pl.invuln = 0; lv.hurtPlayer(5f, pl.x + 20, -1, 0);
+                    System.out.println("CHARGE C2 tras recibir dano: cargando=" + pl.charging() + " (false) cortes=" + (pl.dbgChargeCancel - chCancel0) + " (1) estado=" + pl.state + " (HURT=7)");
+                    chStep = 12; chT0 = frame;
+                } return;
+            case 12:
+                if (frame - chT0 == 45) {      // el boton sigue pulsado: no debe atacar ni cargar solo
+                    System.out.println("CHARGE C3 boton aun pulsado tras el dano: estado=" + pl.state + " cargando=" + pl.charging() + " (false) golpes cargados=" + (pl.dbgChargedHits - chHits0) + " (0) dano al enemigo=" + (chHp0 - chDummy.hp) + " (0)");
+                    g.key('J', false); chStep = 13; chT0 = frame;
+                } return;
+            case 13:
+                if (frame - chT0 >= 20 && chIdle(pl)) {
+                    chHp0 = chDummy.hp; chDummy.x = pl.x + 26; chDummy.y = pl.y; tap(g, 'J'); chStep = 14; chT0 = frame;
+                } return;
+            case 14:
+                if (frame - chT0 == 40) {
+                    System.out.println("CHARGE C4 puede volver a atacar de inmediato: dano=" + (chHp0 - chDummy.hp) + " (>0) estado=" + pl.state);
+                    chStep = 20; } return;
+            case 20: {  // rodar cancela la carga sin golpe; el boton soltado despues no ataca
+                if (!chIdle(pl)) return;
+                pl.right = true; chDummy = chSpawn(lv, pl); chHp0 = chDummy.hp; chHits0 = pl.dbgChargedHits; chCancel0 = pl.dbgChargeCancel;
+                g.key('J', true); chT0 = frame; chStep = 21; return;
+            }
+            case 21:
+                if (frame - chT0 == 40) { tap(g, 'K'); chStep = 22; chT0 = frame; } return;
+            case 22:
+                if (frame - chT0 == 4) { System.out.println("CHARGE D1 rodar durante la carga: cargando=" + pl.charging() + " (false) estado=" + pl.state + " (ROLL=3) cortes=" + (pl.dbgChargeCancel - chCancel0) + " (1)"); g.key('J', false); chStep = 23; chT0 = frame; } return;
+            case 23:
+                if (frame - chT0 == 50) { System.out.println("CHARGE D2 al soltar tras rodar: golpes cargados=" + (pl.dbgChargedHits - chHits0) + " (0) dano=" + (chHp0 - chDummy.hp) + " (0) estado=" + pl.state); chStep = 40; } return;
+            case 40: {  // abrir el menu de pausa mientras se carga: se limpia la carga y no ataca al volver
+                if (!chIdle(pl)) return;
+                pl.right = true; chDummy = chSpawn(lv, pl); chHp0 = chDummy.hp; chHits0 = pl.dbgChargedHits; chCancel0 = pl.dbgChargeCancel;
+                g.key('J', true); chT0 = frame; chStep = 41; return;
+            }
+            case 41:
+                if (frame - chT0 == 40) { g.key(27, true); g.key(27, false); chStep = 42; chT0 = frame; } return;
+            case 42:
+                if (frame - chT0 == 10) { System.out.println("CHARGE E1 pausa durante la carga: ov=" + rs.debugOv() + " (pausa) cargando=" + pl.charging() + " (false) cortes=" + (pl.dbgChargeCancel - chCancel0) + " (1)"); g.key('J', false); g.key(27, true); g.key(27, false); chStep = 43; chT0 = frame; } return;
+            case 43:
+                if (frame - chT0 == 60) { System.out.println("CHARGE E2 al volver al juego: ov=" + rs.debugOv() + " (0) estado=" + pl.state + " golpes cargados=" + (pl.dbgChargedHits - chHits0) + " (0) dano=" + (chHp0 - chDummy.hp) + " (0) cargando=" + pl.charging() + " (false)"); chStep = 30; chI = 0; } return;
+            case 30: {  // dano por segundo: golpes rapidos (bot) frente a cargados
+                if (!chIdle(pl)) return;
+                if (chI >= 5) { chStep = 99; System.out.println("CHARGE fin"); return; }
+                pl.right = true; chDummy = chSpawn(lv, pl); chHp0 = chDummy.hp; chT0 = frame; chRepeat = 0; chStep = 31;
+                chHold = new int[]{0, 30, 60, 90, 120}[chI]; return;
+            }
+            case 31: {
+                chDummy.x = pl.x + 26; chDummy.y = pl.y; chDummy.hp = Math.max(chDummy.hp, 1e6f);
+                int t = frame - chT0;
+                if (chHold == 0) { if (t % 8 == 0) tap(g, 'J'); }
+                else {
+                    if (chRepeat == 0 && chIdle(pl) && g != null) { g.key('J', true); chRepeat = 1; chLastHp = frame; }
+                    else if (chRepeat == 1 && frame - chLastHp >= chHold - 1) { g.key('J', false); chRepeat = 0; }
+                }
+                if (t >= 480) {
+                    g.key('J', false);
+                    System.out.println(String.format("CHARGE DPS %s: %.1f dano/s en 8 s (golpes cargados=%d)", chHold == 0 ? "rapido (toques cada 8 fotogramas)" : "cargado " + (chHold / 60f) + "s", (chHp0 - chDummy.hp) / 8f, pl.dbgChargedHits));
+                    chI++; chStep = 30;
+                }
+                return;
+            }
+        }
     }
 }

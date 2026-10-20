@@ -647,7 +647,10 @@ public final class Level {
     }
 
     // ------------------------------------------------------------------ actualizacion
+    /** Segundos reales del fotograma actual (sin escala de tiempo): la carga del ataque se mide con esto, no con fotogramas. */
+    public float rawDt;
     public void update(float rawDt) {
+        this.rawDt = rawDt;
         hsWinT += rawDt; if (hsWinT >= 1f) { hsWinT = 0; hsUsed = 0; }
         if (hitstop > 0) {
             hitstop -= rawDt;

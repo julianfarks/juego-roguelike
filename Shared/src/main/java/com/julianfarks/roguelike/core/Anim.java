@@ -26,6 +26,9 @@ public final class Anim {
         this.name = name; this.row = row; this.n = Math.max(1, n); this.fps = Math.max(0.1f, fps); this.loop = loop;
     }
 
+    /** Instante (s) en que empieza el fotograma f. */
+    public float timeOf(int f) { f = Math.max(0, Math.min(n, f)); return cum != null ? cum[f] : f / fps; }
+
     public float duration() { return cum != null ? cum[n] : n / fps; }
 
     public int frameAt(float t) {

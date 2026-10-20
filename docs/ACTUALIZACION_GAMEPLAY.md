@@ -1,39 +1,30 @@
-# Actualización de gameplay: combate, eventos de riesgo y HUD
+# Actualización de gameplay (6 mejoras)
 
-Todas las pruebas son **automáticas en el banco headless del motor** (Java, render real de `DesktopGfx`). **No se probó en un móvil Android ni en hardware Windows real.**
+Cada mejora tiene su propio commit. El parry (punto 5) **no se tocó** por indicación del usuario.
+Todas las pruebas son del banco *headless* (`run2.sh --headless --bot`), no de un Android/Windows reales.
 
-## Etapa 1 · Sensación de combate
-- `Impact.java` (nuevo): respuesta central por tipo de golpe (ligero / pesado / crítico / especial): pausa de impacto, sacudida, chispas, volumen y tono propios. Los jefes reciben la mitad de pausa.
-- Pausa de impacto (`Level.update`): no congela nunca (presupuesto ≤ 0,30 s por segundo) y **no pierde pulsaciones** (`Input.keep`); el menú de pausa se abre durante una pausa.
-- Enemigos: retroceso y duración de aturdimiento distintos según el golpe; se detienen exactamente al acabar el aturdimiento (sin deslizarse).
-- Parry perfecto (ventana, cámara lenta, destello), bloqueo normal distinto, esquiva perfecta, **ventana de contraataque** (+50 % y desequilibra) y **racha defensiva** (3 acciones precisas → «Ritmo» +12 % de velocidad de ataque 5 s).
-- Números de daño legibles (contorno, se fusionan, desplazados en jefes).
-- Opción **Efectos intensos: REDUCIDOS/NORMALES** (opciones y pausa): reduce sacudida, destellos, pausa de impacto, partículas y cámara lenta.
+| # | Mejora | Commit |
+|---|---|---|
+| 1 | Habilidades sin perder efecto por golpes (Paladín) | 2b5e4bb |
+| 2 | Omitir / Conservar equipo en cofres | bd18168 |
+| 3 | Recompensas especiales tras jefes | 8b385a1 |
+| 4 | Pinchos: aspecto y colisiones | 984439a |
+| 5 | Parry | no se toca |
+| 6 | Ataque cargado | este commit |
 
-## Etapa 2 · Eventos y decisiones (reutilizan `Events`, `OV_EVENT`, bendiciones, cofres y puertas laterales)
-- **Altar de riesgo** (4 decisiones, con ventaja y coste visibles antes de aceptar): sangre por bendición (−25 % vida máx., 1 de 3), dolor por botín (golpe del 18 %, oro y almas), Pacto del Ayuno (+20 % daño, −2 frascos; cuenta como pacto) y almas por elección (1 de 4 bendiciones). No consume la bendición de altar del bioma.
-- **Cofre maldito**: abrirlo provoca una emboscada (3 + piso enemigos, uno de élite) sin salida hasta vencer; premio: 2 cofres de elección + almas. Se puede dejar cerrado.
-- **Sala de desafío** (4 variantes según la partida): sin recibir daño, contrarreloj (40 s), resistencia (30 s con oleadas) y curación reducida (−60 %). Premio: 2 cofres + almas; si se incumple, sin premio pero la salida siempre aparece.
-- Variedad: el peso de cada suceso se reduce a la mitad cada vez que ya salió en la run; máximo 2 de cada nuevo; uno por bioma.
-- Mercader errante (ya existente, inventario aleatorio de 3 objetos): se comprobó que entrar/salir no reinicia el piso.
-- Guardado: `chalK` (variante del desafío) en `RunSave`; arrays de sucesos con lectura tolerante a la longitud (partidas antiguas siguen cargando).
+## 4. Pinchos
+- Arte: rojo de peligro con contorno oscuro y 2 puntas triangulares por baldosa, igual en los 9 biomas (`tools/art_world/tiles_special.py`). Solo cambian los tiles de pincho (fila 3, cols 4-5); el resto de la hoja queda intacto.
+- No existen pinchos con estado activo/inactivo: son siempre activos (no hay nada que diferenciar).
+- Colisión: el jugador ahora pincha también con el pie a ±5 px del centro (antes solo el centro). Un golpe por contacto (i-frames 1,1 s y reaparición en punto seguro); rodando no pincha (comportamiento previo). Enemigos: 30 % de su vida máx. (mín. 20) cada 0,6 s, ya verificado (`BOT_SPIKETEST`: 9/9).
+- Prueba: `BOT_SPIKEPL=1` (encima, borde, lejos, con i-frames).
 
-## Etapa 3 · HUD
-- Habilidades: aro claro cuando están listas, icono atenuado en reutilización, tiempo con un decimal bajo 3 s y fondo de contraste, **señal breve** al quedar lista (una sola vez). Los botones no cambian de sitio.
-- Vida: texto dentro de la barra con fondo (y «!» con vida baja, no solo color); jefe con % numérico.
-- Estados: barrita de duración bajo cada icono; indicadores de Ritmo y de ventana de contraataque; los enemigos muestran como mucho 3 iconos de estado.
-- Sinergias: color según el tipo (fuego, hielo, electricidad, parry, veneno/sangrado, crítico); el nombre sale **una vez** (al activarla y al primer disparo), no en cada proc.
-- Auditoría de textos (`PrepScreen.fitErr`) en 4 idiomas × 480/640 px, sala y jefe.
-
-## Pruebas (`tools/tests/`)
-| Script | Cubre |
-|---|---|
-| `combat_test.sh` | tipos de golpe, entradas durante la pausa, parry/esquiva/racha, jefes |
-| `events_test.sh` | altar, cofre maldito, desafíos, reparto/variedad, ruta, guardado, mercader, textos 4 idiomas |
-| `hud_test.sh` | tiempos de reutilización, señal de lista, sinergias sin repetición, estados, textos |
-| `perf_stress_test.sh`, `ai_hazard_test.sh`, `layout_audit.sh`, `nav_regression.sh`, `bless_test.sh` | regresión previa |
-
-## Limitaciones
-- Sin pruebas en dispositivos reales (Android/Windows); solo banco headless.
-- Las rutas «más peligrosa/más segura» se cubren con las puertas laterales de sucesos; no hay un mapa de rutas nuevo.
-- El audio de los golpes se diferencia por volumen/tono (se reutilizan los mismos sonidos).
+## 6. Ataque cargado
+Configuración única: `ChargeCfg.java` (tiempos, curva, efectos).
+- Pulsación < 0,16 s = ataque normal (x1,00 exacto). Mantener = carga hasta 2 s; curva continua por interpolación lineal: 0,5 s → x1,20; 1 s → x1,50; 1,5 s → x1,85; 2 s → x2,25; sin aumento después.
+- Se mide con `Level.rawDt` (segundos reales), no con fotogramas. Una pulsación = un golpe (el multiplicador se aplica una vez por enemigo y golpe, junto a crítico/estadísticas/elementales/mejoras, que usan el daño ya escalado).
+- Mientras se carga se puede caminar (45 % de velocidad), saltar y rodar. Recibir daño, rodar, habilidad, pausa/menú o perder el control **cortan la carga sin golpe y sin gastar nada**; se puede atacar de inmediato y soltar el botón después no ataca.
+- Efectos: pose de anticipación que avanza con la carga, aura y brillo progresivos, partículas que se concentran, barra sobre la cabeza, destello + sonido + temblor a carga máxima. Al soltar: tajo más grande, golpe pesado, empuje y área mayores (hasta +30 % de alcance, +35 % de alto), aturdimiento 0,25–0,60 s desde media carga (no a jefes).
+- Compatibilidad: arma principal cuerpo a cuerpo de las 10 clases. **Armas secundarias (proyectiles/cuerpo a cuerpo secundarias)**: no usan carga; mantienen "mantener = repetir" porque el botón de ataque ya dispara por munición/cadencia. Queda para una adaptación propia.
+- Balance medido (maniquí, 8 s, sin críticos): golpes rápidos ≈ 45-56 daño/s; cargados ≈ 12-20 daño/s (0,5 s ≈ 16-20; 2 s ≈ 15-19). La carga es un golpe de ráfaga (más daño por golpe, área y aturdimiento), no una opción de daño sostenido; el rápido sigue siendo mejor en DPS puro. Los valores están en `ChargeCfg` para ajustarlos.
+- No se añadieron mejoras de build de carga (solo la base); `ChargeCfg` está preparada para recibir tiempo/daño máximo como escalas.
+- Prueba: `BOT_CHARGETEST=1` (curva 0–3 s, interrupción por daño, rodar, pausa, DPS).

@@ -82,17 +82,83 @@ public final class Player extends Ent {
      *  - habilidad ya liberada: su efecto no se toca (solo se corta la animacion de recuperacion).
      */
     public void onHitDuringCast(Level lv) {
+        if (chargeT >= 0) cancelCharge(true);      // recibir dano corta la carga: sin golpe, sin gasto, y puede atacar de inmediato
         if (state != SKILL || skillFired) return;
         if (Skills.committed(cls.id, skillIdx)) { skillFired = true; castSkills(lv); }
         else { lv.rs.cd[skillIdx] = 0; interruptedSkills++; }
     }
     public int interruptedSkills;
+
+    // ------------------------------------------------------------------ ataque cargado (arma principal)
+    /** Tiempo (s reales) que lleva pulsado el ataque; -1 = no se esta cargando. */
+    public float chargeT = -1f;
+    private boolean chargeFull, swingCharged;
+    private float chgMul = 1f, chgFrac = 0f, chgFx;
+    /** Para pruebas: cargas iniciadas / cortadas / ejecutadas, ultimo multiplicador aplicado, golpes cargados. */
+    public int dbgChargeStart, dbgChargeCancel, dbgChargeRelease, dbgChargedHits;
+    public float dbgLastMul = 1f;
+    public boolean charging() { return chargeT >= 0f; }
+    public float chargeFrac() { return chargeT < 0 ? 0f : ChargeCfg.frac(chargeT); }
+
+    /** Limpia la carga sin golpear (menus, cambio de escena, perdida de foco). */
+    public void abortCharge() { cancelCharge(false); }
+
+    private void cancelCharge(boolean byHit) {
+        if (chargeT < 0f) return;
+        chargeT = -1f; chargeFull = false; chgFx = 0; atkBuf = 0; dbgChargeCancel++;
+        if (state != ATK && state != SKILL && state != ULT && state != ROLL && state != HURT) animT = 0;
+    }
+
+    /** Pose de preparacion: avanza por los fotogramas de anticipacion del golpe pesado segun la carga (se aplica tras elegir la animacion del estado). */
+    private void chargePose() {
+        float fr = ChargeCfg.frac(chargeT);
+        String an = onGround ? "attack3" : "airatk";
+        Anim a = sheet.anim(an);
+        animName = an;
+        float tHit = a.h0 > 0 ? a.timeOf(a.h0) : a.duration() * 0.3f;
+        animT = Math.max(0f, Math.min(tHit - 0.001f, tHit * (0.35f + 0.65f * fr)));
+    }
+
+    private boolean chargeBlocked(Level lv, boolean ctl, boolean frozenNow) {
+        boolean secOn = lv.rs.secActive && lv.rs.sec != 0;
+        return !alive || !ctl || frozenNow || guarding || secOn || lv.cinematic || !(state == IDLE || state == RUN || state == AIR);
+    }
+
+    /** Acumula la carga con tiempo real, dibuja los efectos progresivos y ejecuta el golpe al soltar. */
+    private void updateCharge(Level lv, float dt, boolean ctl, boolean frozenNow) {
+        if (chargeBlocked(lv, ctl, frozenNow)) { cancelCharge(false); return; }
+        chargeT += lv.rawDt;
+        if (!lv.in.held(Input.B_ATTACK)) {      // soltar: ejecuta lo acumulado (una sola vez)
+            float t = chargeT;
+            chargeT = -1f; chargeFull = false; chgFx = 0;
+            dbgChargeRelease++;
+            startAttack(lv, t >= ChargeCfg.TAP ? t : 0f);
+            return;
+        }
+        float fr = ChargeCfg.frac(chargeT);
+        if (chargeT < ChargeCfg.TAP) return;
+        sq = Math.max(sq, 0.05f + 0.10f * fr);
+        // particulas que se concentran en el arma: mas y mas rapidas segun la carga
+        chgFx -= lv.rawDt;
+        if (chgFx <= 0f) {
+            chgFx = (0.11f - 0.07f * fr) * (Save.S.reduceFx ? 2f : 1f);
+            float ang = (float) (Math.random() * Math.PI * 2), rr = 18f + 12f * fr;
+            float wx = x + dir() * 14, wy = y - 20;
+            lv.ps.spawn(wx + (float) Math.cos(ang) * rr, wy + (float) Math.sin(ang) * rr, -(float) Math.cos(ang) * 60f, -(float) Math.sin(ang) * 60f, 0.28f, 2, 0, fr >= 1f ? 0xFFF0A0 : cls.color1, true);
+        }
+        if (!chargeFull && chargeT >= ChargeCfg.MAX) {      // senal clara de carga maxima
+            chargeFull = true;
+            Snd.sfxv("cd_ready", 0.9f);
+            lv.fx("fx_ring", "pulse", x, y - 18, 0.5f, 0xFFE070, Platform.ADD | Platform.TINT);
+            lv.ps.burst(lv.rng, x, y - 18, 0xFFF0A0, Save.S.reduceFx ? 5 : 10, 110, 0.35f, 2, 0, true);
+        }
+    }
     void debugSkill(Level lv, int i) { trySkill(lv, i); }
     boolean debugSkillFired() { return skillFired; }
 
     public void cancelAction() {
         if (!alive) return;
-        dashT = 0; rollBuf = skillBuf = ultBuf = 0;
+        dashT = 0; rollBuf = skillBuf = ultBuf = 0; cancelCharge(false);
         if (state != DEAD) { state = HURT; animName = "hurt"; animT = 0; }
         swingHit.clear();
     }
@@ -219,6 +285,7 @@ public final class Player extends Ent {
             if (parryT > 0) parryT -= dt;
             spd *= 0.5f;
         } else parryT = 0;
+        if (chargeT >= 0f) spd *= ChargeCfg.SLOW_MOVE;      // cargando se puede caminar, pero lento
 
         // ---- entradas
         if (ctl && !frozenNow) {
@@ -262,9 +329,15 @@ public final class Player extends Ent {
                 boolean secOn = lv.rs.secActive && lv.rs.sec != 0;
                 if (secOn) {      // arma secundaria activa: el boton de ataque la dispara (mantener = repetir)
                     if ((atkBuf > 0 || in.held(Input.B_ATTACK)) && !guarding && secCd <= 0 && swapCd <= 0) { atkBuf = 0; Items.useSecondary(lv, this); canAct = false; }
-                } else if (atkBuf > 0 && !guarding) { startAttack(lv); canAct = false; }
+                } else if (atkBuf > 0 && !guarding) {
+                    if (lv.in.held(Input.B_ATTACK) && chargeT < 0f) { chargeT = 0f; chargeFull = false; atkBuf = 0; dbgChargeStart++; }   // sigue pulsado: empieza a cargar (un toque rapido = ataque normal al soltar)
+                    else startAttack(lv, 0f);
+                    canAct = false;
+                }
             }
         }
+
+        if (chargeT >= 0f) updateCharge(lv, dt, ctl, frozenNow);
 
         // ---- movimiento horizontal / vertical
         if (dashT > 0) {
@@ -339,6 +412,8 @@ public final class Player extends Ent {
             case AIR: setAnim(vy < 0 ? "jump" : "fall"); animT += dt; break;
             default: break;
         }
+
+        if (chargeT >= ChargeCfg.TAP && (state == IDLE || state == RUN || state == AIR)) chargePose();
 
         // ---- seguridad: pinchos / foso
         checkHazards(lv, dt);
@@ -497,15 +572,21 @@ public final class Player extends Ent {
     }
 
     // ------------------------------------------------------------------ ataque
-    private void startAttack(Level lv) {
+    private void startAttack(Level lv) { startAttack(lv, 0f); }
+
+    /** held = segundos de carga (0 = ataque normal). */
+    private void startAttack(Level lv, float held) {
         atkBuf = 0;
+        swingCharged = held >= ChargeCfg.TAP;
+        chgMul = swingCharged ? ChargeCfg.mul(held) : 1f;
+        chgFrac = swingCharged ? ChargeCfg.frac(held) : 0f;
         swingHit.clear();
         swingFx = false;
         state = ATK;
         if (!onGround) { animName = "airatk"; combo = 0; }
         else {
-            combo = (comboWin > 0 && combo > 0 && combo < 3) ? combo + 1 : 1;
-            animName = "attack" + combo;
+            combo = (comboWin > 0 && combo > 0 && combo < 3 && !swingCharged) ? combo + 1 : 1;
+            animName = swingCharged ? "attack3" : "attack" + combo;      // el cargado usa la animacion pesada; la logica de combo sigue siendo la del primer golpe
         }
         animT = 0;
         // dirigir hacia el enemigo mas cercano si el toque no indica direccion
@@ -515,8 +596,8 @@ public final class Player extends Ent {
         if (onGround) vx = dir() * lunge;
         else vx = dir() * (lunge * 0.5f);
         String type = cls.weaponType;
-        String sfx = onGround ? "swing_" + type + "_" + combo : "swing_air";
-        Snd.sfxv(sfx, 0.85f);
+        String sfx = onGround ? "swing_" + type + "_" + (swingCharged ? 3 : combo) : "swing_air";
+        Snd.sfxv(sfx, swingCharged ? 0.85f + 0.15f * chgFrac : 0.85f);
     }
 
     /** Contacto real de un golpe de arma secundaria: pose de impacto (solo visual). */
@@ -555,6 +636,7 @@ public final class Player extends Ent {
         else if (t.equals("great") || t.equals("hammer") || t.equals("scythe")) { sheetName = "fx_slash_big"; an = "s" + c; sc = 0.9f; }
         else { sheetName = "fx_slash_sword"; an = "s" + c; }
         if (animName.equals("airatk")) { an = "s1"; if (sheetName.equals("fx_stab")) an = "s1"; }
+        if (swingCharged) { sc *= 1f + 0.7f * chgFrac; if (!sheetName.equals("fx_stab")) sheetName = "fx_slash_big"; if (sheetName.equals("fx_slash_big")) an = "s3"; }
         float fx = x + dir() * (sheetName.equals("fx_stab") ? 34 : 22), fy = y - 20;
         FxObj f = lv.fxAdd(sheetName, an, fx, fy, sc, cls.color1);
         if (f != null) { f.right = right; f.alpha = 0.95f; }
@@ -580,6 +662,11 @@ public final class Player extends Ent {
         RunState rs = lv.rs; Stats s = rs.stats;
         float rch = BlessFx.reach(lv);
         if (rch != 1f) { float cxb = right ? box[0] : box[0] + box[2]; float nw = box[2] * rch; if (right) { box[2] = nw; } else { box[0] = cxb - nw; box[2] = nw; } }
+        if (swingCharged && chgFrac > 0f) {       // golpe cargado: mas ancho y mas alto (el area crece con la carga)
+            float ew = box[2] * ChargeCfg.REACH_BONUS * chgFrac, eh = box[3] * ChargeCfg.HEIGHT_BONUS * chgFrac;
+            if (right) box[2] += ew; else { box[0] -= ew; box[2] += ew; }
+            box[1] -= eh * 0.6f; box[3] += eh;
+        }
         lv.breakRect(box[0], box[1], box[2], box[3], 1);
         List<Ent> list = lv.enemiesInBox(box[0], box[1], box[2], box[3]);
         lv.dmgSrc = BlessFx.SRC_W;
@@ -588,6 +675,7 @@ public final class Player extends Ent {
             swingHit.add(e);
             float mul = animName.equals("airatk") ? 1.0f : (combo == 3 ? 1.5f * BlessFx.finishMul(lv) : (combo == 2 ? 1.1f : 1f));
             if (combo == 3 && s.giant > 0) mul *= 1 + 0.4f * s.giant;
+            if (swingCharged) { mul *= chgMul; dbgLastMul = chgMul; dbgChargedHits++; }      // el multiplicador de carga se aplica una sola vez por golpe (swingHit)
             float dmg = baseDmg(lv) * mul;
             if (cls.id == 1) {   // Acechador: por la espalda
                 boolean away = (e.right == (e.x >= x));
@@ -597,16 +685,21 @@ public final class Player extends Ent {
             boolean crit = lv.rollCrit(e);
             if (crit) dmg *= lv.critMulOf(e);
             int kind = Impact.kindOfWeapon(crit, combo);
+            if (swingCharged && chgFrac >= ChargeCfg.HEAVY_FROM && kind < Impact.HEAVY) kind = Impact.HEAVY;
             boolean counter = lv.counterT > 0;
             if (counter) {      // contraataque tras parry/esquiva perfectos: +50 % de dano y golpe pesado (una sola vez)
                 dmg *= 1.5f; lv.counterT = 0; if (kind < Impact.HEAVY) kind = Impact.HEAVY;
                 lv.text(e.x, e.y - e.bh - 22, "¡Contra!", 0xFFFFFF, true);
                 lv.fx("fx_ring", "pulse", e.cx(), e.cy(), 0.8f, 0xFFFFFF, Platform.ADD | Platform.TINT);
             }
-            float kb = (cls.id == 7 ? 230f : 120f) * (kind == Impact.HEAVY || combo == 3 ? 1.6f : (kind == Impact.CRIT ? 1.2f : 1f));
+            float kb = (cls.id == 7 ? 230f : 120f) * (kind == Impact.HEAVY || combo == 3 ? 1.6f : (kind == Impact.CRIT ? 1.2f : 1f)) * (1f + ChargeCfg.KNOCK_BONUS * chgFrac * (swingCharged ? 1f : 0f));
             lv.hitKind = kind;
             lv.damageEnemy(e, dmg, crit, dir() * kb, combo == 3 ? -140 : -50);
             lv.hitKind = 0;
+            if (swingCharged && chgFrac >= ChargeCfg.STUN_FROM && e.alive && e instanceof Enemy) {      // aturde (no a jefes): el golpe cargado rompe el ritmo del enemigo
+                float k = (chgFrac - ChargeCfg.STUN_FROM) / (1f - ChargeCfg.STUN_FROM);
+                e.applyStatus(Ent.STUN, ChargeCfg.STUN_MIN + (ChargeCfg.STUN_MAX - ChargeCfg.STUN_MIN) * k, 1f);
+            }
             lv.onWeaponHit(e, dmg, crit, combo);
             hitCount++;
             Impact.hit(lv, e, kind, dir(), !e.alive, hitSfxFor(e, crit));
@@ -849,6 +942,7 @@ public final class Player extends Ent {
         float runB = (state == RUN && onGround) ? 0.035f * (float) Math.abs(Math.sin(animT * 13f)) : 0f;
         float ssx = 1f + sq * 0.9f + runB, ssy = 1f - sq * 0.9f - runB;
         float ox = 0f;
+        if (chargeFull && alive && !Save.S.reduceFx) ox = ((int) (lv.time * 36f) & 1) == 0 ? 0.8f : -0.8f;      // temblor de carga maxima
         float ia = lv.time - hitPoseAt;
         if (ia >= 0f && ia < 0.14f && state == ATK) {          // pose de impacto: el cuerpo se estira hacia el golpe y se asienta (el tiempo de juego se detiene en la pausa de impacto)
             float k = 1f - ia / 0.14f, amp = (hitPoseKind >= Impact.HEAVY ? 0.14f : 0.08f) * (Save.S.reduceFx ? 0.5f : 1f);
@@ -875,6 +969,18 @@ public final class Player extends Ent {
             cs.drawSq(g, au, fu, x + ox, y, right, ssx, ssy, flags, tint, alpha);
             WeaponView.drawHeld(g, lv, this, cs, au, fu, x + ox, y, ssx, ssy, flags, tint, alpha);
         } else cs.drawSq(g, a, frame, x + ox, y, right, ssx, ssy, flags, tint, alpha);
+        if (chargeT >= ChargeCfg.TAP && alive) {          // aura progresiva sobre el personaje + barra de carga (pixel art, sin tapar al personaje)
+            float fr = ChargeCfg.frac(chargeT);
+            float pulse = 0.5f + 0.5f * (float) Math.sin(lv.time * (10f + 14f * fr));
+            float aa = (0.08f + 0.20f * fr) * (0.6f + 0.4f * pulse) * (Save.S.reduceFx ? 0.5f : 1f);
+            cs.draw(g, a, frame, x + ox, y, right, 1f, Platform.ADD | Platform.TINT, fr >= 1f ? 0xFFE070 : cls.color1, aa);
+            UI.light(g, x + dir() * 12, y - 20, 7f + 9f * fr, fr >= 1f ? 0xFFE070 : cls.color1, 0.12f + 0.16f * fr);
+            int bw0 = 26, bx0 = Math.round(x - bw0 / 2f), by0 = Math.round(y - bh - 10);
+            g.rect(bx0 - 1, by0 - 1, bw0 + 2, 6, 0xFF101018, false);
+            g.rect(bx0, by0, bw0, 4, 0xFF383848, false);
+            g.rect(bx0, by0, Math.round(bw0 * fr), 4, fr >= 1f ? (pulse > 0.5f ? 0xFFFFF0A0 : 0xFFFFC030) : 0xFFFF9A3A, false);
+            if (fr >= 1f) for (int i = 0; i < 4; i++) g.rect(bx0 + i * 6 + 2, by0 - 3, 2, 2, 0xFFFFF0A0, false);   // destellos de carga maxima
+        }
         if (guarding) {
             int sc = Items.SH_COL[lv.rs.shield];
             float sx0 = x + dir() * 11, ph = parryT > 0 ? 1f : 0f;

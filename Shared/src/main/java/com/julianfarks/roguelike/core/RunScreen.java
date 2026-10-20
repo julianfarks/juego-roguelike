@@ -797,6 +797,7 @@ final class RunScreen extends Screen implements Level.Listener {
     // =============================================================== overlays
     private void openOv(int o) {
         ov = o; ovT = 0; saveMenu = false;
+        if (lv != null && lv.pl != null) lv.pl.abortCharge();      // abrir un menu / perder el foco limpia la carga: no ataca al volver
         in.reset();
         if (o != OV_DEAD && o != OV_WIN) Snd.sfx("ui_open", 0.7f);
         if (o == OV_PAUSE) Snd.sfx("ui_pause", 0.7f);

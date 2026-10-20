@@ -182,41 +182,46 @@ def platform_tiles(P, kind):
     return out
 
 
+DANGER = [(18, 4, 10), (74, 14, 30), (170, 34, 52), (232, 72, 86), (255, 226, 214)]   # rojo peligro, igual en todos los biomas
+IRON = [(12, 4, 8), (38, 30, 46), (92, 84, 108), (150, 142, 166)]
+
+
 def spikes(P, up=True, body=None, tip=None, base_col=None, blood=False):
-    B = body if body is not None else P['spike']
+    """Pinchos de alto contraste: puntas rojas con borde oscuro y punta casi blanca sobre placa de hierro.
+    Misma paleta en todos los biomas (no se confunden con el suelo); caja de colision = la baldosa completa."""
+    D = DANGER
     out = np.zeros((16, 16, 4), np.uint8)
+    pix = {}
 
     def setp(x, y, col):
         if 0 <= x < 16 and 0 <= y < 16:
-            yy = y if up else 15 - y
-            out[yy, x, :3] = np.clip(col, 0, 255)
-            out[yy, x, 3] = 255
-    # placa base (coordenadas "up": y=15 es la base)
-    for x in range(16):
-        setp(x, 15, B[0])
-        setp(x, 14, B[1])
-        setp(x, 13, B[3] if x % 4 else B[2])
-    for k in range(4):
-        cx = 4 * k + 2
-        ytip, ybase = 2, 12
+            pix[(x, y)] = col
+    for x in range(16):                       # placa base (y=15 es la base)
+        setp(x, 15, IRON[0]); setp(x, 14, IRON[1])
+        setp(x, 13, IRON[3] if x % 4 == 2 else IRON[2])
+        if x % 4 == 0: setp(x, 14, D[3])      # remache rojo
+    body_px = set()
+    for cx in (4, 12):                        # 2 puntas triangulares por baldosa: silueta clara de lejos
+        ytip, ybase = 1, 12
         for y in range(ytip, ybase + 1):
             t = (y - ytip) / (ybase - ytip)
-            hw = 0.5 + 1.5 * t
-            xl = int(round(cx - hw))
-            xr = int(round(cx + hw))
+            hw = 0.5 + 2.9 * t
+            xl = int(round(cx - hw)); xr = int(round(cx + hw))
             for x in range(xl, xr):
-                if x < cx:
-                    col = B[3] if x > xl or xr - xl <= 2 else B[2]
-                    if x == cx - 1 and t > .3:
-                        col = B[4] if (y % 3) else B[3]
-                else:
-                    col = B[1] if x < xr - 1 else B[0]
-                setp(x, y, col)
-        setp(cx - 1, ytip, tip if tip is not None else B[4])
-        if blood:
-            for y, kk in ((ytip + 1, 2), (ytip + 2, 2), (ytip + 3, 1)):
-                setp(cx - 1, y, P['liquid'][kk])
-                setp(cx, y, P['liquid'][kk - 1])
+                if x < cx - 1: col = D[2]
+                elif x < cx: col = D[3]
+                elif x == cx: col = D[2]
+                else: col = D[1]
+                if y <= ytip + 2: col = D[4] if x < cx else D[3]
+                setp(x, y, col); body_px.add((x, y))
+    for (x, y) in list(body_px):              # contorno oscuro para la silueta
+        for dx, dy in ((-1, 0), (1, 0), (0, -1)):
+            q = (x + dx, y + dy)
+            if q not in pix and 0 <= q[0] < 16 and 0 <= q[1] < 16:
+                pix[q] = D[0]
+    for (x, y), col in pix.items():
+        yy = y if up else 15 - y
+        out[yy, x, :3] = np.clip(col, 0, 255); out[yy, x, 3] = 255
     return out
 
 

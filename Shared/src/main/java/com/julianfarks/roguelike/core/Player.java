@@ -770,6 +770,7 @@ public final class Player extends Ent {
         return true;
     }
 
+    public void debugHazard(Level lv, float dt) { checkHazards(lv, dt); }
     private void checkHazards(Level lv, float dt) {
         Room rm = lv.room;
         if (onGround && y < rm.pixH - 2) {
@@ -779,7 +780,7 @@ public final class Player extends Ent {
                 if (isSafeSpot(rm, x, y)) { safeX = x; safeY = y; }
             }
         }
-        boolean hazard = rm.hazardAt(x, y - 4) || rm.hazardAt(x, y - bh + 3) || y >= rm.pixH - 1;
+        boolean hazard = rm.hazardAt(x, y - 4) || rm.hazardAt(x - 5, y - 4) || rm.hazardAt(x + 5, y - 4) || rm.hazardAt(x, y - bh + 3) || y >= rm.pixH - 1;   // pies a +-5 px: el borde del pincho tambien pincha
         if (!hazard) hazardN = 0;
         if (hazard && state != ROLL || hazard && y >= rm.pixH - 1) {
             float dmg = 8 + lv.rs.stats.maxHp * 0.08f;

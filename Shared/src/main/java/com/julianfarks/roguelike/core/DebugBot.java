@@ -3,6 +3,7 @@ package com.julianfarks.roguelike.core;
 /** Bot de pruebas para el banco de escritorio (--bot): navega menus y juega sin ayuda. No se usa en Android. */
 public final class DebugBot {
     static String chestSnap(RunState r) { return r.sec + "/" + r.secAmmo + "/" + r.shield + "/" + r.weaponLvl + "/" + r.special + "/" + java.util.Arrays.toString(r.bless) + "/" + r.gold + "/" + r.souls; }
+    private int spPhase, spBx, spGy, spT; private final StringBuilder spRes = new StringBuilder();
     private int brStep, brT; private String brSnap = "";
     private int skStep, skT0, skProj0; private float skHp0;
     private int escStep, escT;
@@ -465,6 +466,35 @@ public final class DebugBot {
             int ok = 0;
             for (Enemy en : spikeEn) { if (en.hp < en.maxHp || !en.alive) ok++; else System.out.println("  sin dano: " + en.def.id + " y=" + Math.round(en.y)); }
             System.out.println("SPIKETEST frame " + frame + ": danados/muertos " + ok + "/" + spikeEn.size());
+        }
+        if (System.getenv("BOT_SPIKEPL") != null && !rs.sandbox && frame > 300 && spPhase >= 0) {
+            Room rm = lv.room; int gy = (int) (p.y / Room.TS);
+            if (frame >= 300 && frame < 310) { p.vx = 0; return; }
+            if (spPhase == 0) {
+                int bx = (int) (p.x / Room.TS) + 8;
+                for (int i = 0; i < 30; i++) for (int j = 1; j <= 12; j++) rm.set(bx + i, gy - j, Room.AIR);
+                for (int i = 0; i < 30; i++) rm.set(bx + i, gy, Room.SOLID);
+                spBx = bx; spGy = gy; spPhase = 1; spT = frame; spRes.setLength(0);
+                lv.enemies.clear(); lv.toKill = 0; lv.rs.hp = lv.rs.stats.maxHp;
+                return;
+            }
+            if (frame < 690) return;
+            if (spPhase >= 1 && spPhase <= 4 && frame > spT + 6) {
+                // casos: 1 = encima de un pincho; 2 = borde (a 6 px de la baldosa: dentro del margen de 5 px+pie); 3 = lejos; 4 = rodando encima
+                int tx = spBx + 4 * spPhase;
+                for (int i = 0; i < 4; i++) { rm.set(tx + i, spGy - 1, Room.AIR); }
+                rm.set(tx + 1, spGy - 1, Room.SPIKE);
+                p.invuln = spPhase == 4 ? 1f : 0; p.hurtT = 0; lv.rs.hp = lv.rs.stats.maxHp; p.vx = 0; p.vy = 0;
+                float cxp = (tx + 1) * Room.TS;
+                p.x = spPhase == 1 ? cxp + 8 : spPhase == 2 ? cxp - 3 : spPhase == 3 ? cxp - 40 : cxp + 8; p.y = spGy * Room.TS - 1;
+                int h0 = Level.dbgHurt; float hp0 = lv.rs.hp;
+                for (int k = 0; k < 4; k++) p.debugHazard(lv, 1 / 60f);
+                int n = Level.dbgHurt - h0;
+                String name = new String[]{"", "encima", "borde (x-5 toca)", "lejos", "invulnerable"}[spPhase];
+                System.out.println("SPIKEPL " + name + ": golpes=" + n + " dano=" + Math.round(hp0 - lv.rs.hp) + " reaparece en x=" + Math.round(p.x) + " (esperado " + (spPhase == 3 ? "0 golpes" : spPhase == 4 ? "0 golpes (i-frames, solo reaparece)" : "1 golpe, 1 sola vez en 4 pasos") + ")");
+                spPhase++; spT = frame; return;
+            }
+            if (spPhase == 5) { System.out.println("SPIKEPL fin"); spPhase = -1; }
         }
         if (System.getenv("BOT_SBTEST") != null) {
             if (!rs.sandbox && sbStep == 0 && frame > 700) {

@@ -1294,6 +1294,11 @@ public final class Level {
         if (p.hidden) return;
         if (p.kind.equals("weapon")) { Arsenal.drawGround(g, this, p); return; }
         if (p.kind.equals("chest") && p.roundChest && !p.used) { UI.light(g, p.x, p.y - 10, 26 + 3 * (float) Math.sin(time * 5), 0xFFD25A, 0.35f); if (rng.chance(0.05f)) ps.spawn(p.x + rng.f(-8, 8), p.y - 4, rng.f(-6, 6), -rng.f(15, 35), 0.8f, 2, 0, 0xFFE9A0, true); }
+        if (p.kind.equals("chest") && p.roundChest && !p.used) {   // flecha dorada sobre el cofre de la ronda: se ve desde lejos y no tapa nada
+            int ax = Math.round(p.x), ay = Math.round(p.y - 34 + 2 * (float) Math.sin(time * 5));
+            g.rect(ax - 3, ay, 7, 1, 0xFFFFD25A, false); g.rect(ax - 2, ay + 1, 5, 1, 0xFFFFD25A, false);
+            g.rect(ax - 1, ay + 2, 3, 1, 0xFFFFD25A, false); g.rect(ax, ay + 3, 1, 1, 0xFFFFD25A, false);
+        }
         if (p.kind.equals("chest") && p.arg >= 3 && !p.used) { UI.light(g, p.x, p.y - 8, 30 + 4 * (float) Math.sin(time * 4), 0xB070FF, 0.40f); if (rng.chance(0.06f)) ps.spawn(p.x + rng.f(-8, 8), p.y - 4, rng.f(-6, 6), -rng.f(15, 35), 0.8f, 2, 0, 0xD8B0FF, true); }
         if (p.sheet == null) return;
         Anim a = p.sheet.anim(p.anim);

@@ -1294,12 +1294,15 @@ final class RunScreen extends Screen implements Level.Listener {
             case OV_WIN: {
                 final boolean fin = rs.finalRun;
                 if (fin && Save.S.finalBeaten) {
-                    add(w / 2f - 130, 206, 124, 24, "Modo infinito", this::continueInfinite);
-                    add(w / 2f + 6, 206, 124, 24, "Ver créditos", () -> {
+                    add(w / 2f - 146, 206, 92, 24, "Endless", this::continueInfinite);
+                    add(w / 2f - 46, 206, 92, 24, "Créditos", () -> {
+                        RunSave.clearRun(game.P, this);
                         if (Story.tryUnlockFinal() && Story.cine("final") != null)
                             game.go(new Cinematic(game, Story.FINAL, () -> game.go(new Screens.Credits(game, true))));
                         else game.go(new Screens.Credits(game, true));
                     });
+                    // Salir: recompensas y estadisticas ya guardadas en endRun; cierra la partida y vuelve al menu principal
+                    add(w / 2f + 54, 206, 92, 24, "Salir", () -> { RunSave.clearRun(game.P, this); game.go(new Ops(game)); });
                     break;
                 }
                 add(w / 2f - 62, 206, 124, 24, fin ? "Ver créditos" : "Continuar", () -> {

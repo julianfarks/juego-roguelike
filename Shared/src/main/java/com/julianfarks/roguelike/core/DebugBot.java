@@ -2,6 +2,7 @@ package com.julianfarks.roguelike.core;
 
 /** Bot de pruebas para el banco de escritorio (--bot): navega menus y juega sin ayuda. No se usa en Android. */
 public final class DebugBot {
+    private int winStep, winT0, winW0, winK0;
     private int progT0 = -1, progT, progStep; private final java.util.Set<Integer> progSeen = new java.util.HashSet<>();
     private final boolean[] held = new boolean[256];
     private int lastClassFrame = -999, lastAct;
@@ -536,6 +537,21 @@ public final class DebugBot {
                     System.out.println("INFT f" + frame + " FIN: infResult=" + (rs.infResult == null ? "null" : "pisos=" + rs.infResult.floors + " alcanzado=" + rs.infResult.reached + " puntaje=" + rs.infResult.score + " revividas=" + rs.infResult.revives) + " bestFloor=" + Save.S.infBestFloor + " infRuns=" + Save.S.infRuns + " runs=" + Save.S.runs + " losses=" + Save.S.losses);
                     infStep = 99;
                 }
+            }
+        }
+        if (System.getenv("BOT_WINTEST") != null && !rs.rs.infinite && !rs.sandbox) {
+            // Victoria definitiva: el overlay debe quedarse abierto con Endless/Creditos/Salir; Salir guarda y vuelve al menu.
+            if (winStep == 0 && frame > 700) {
+                winStep = 1; winT0 = frame;
+                RunSave.write(rs.game.P, rs, RunSave.AUTO);
+                Save q = Save.S; winW0 = q.wins; winK0 = q.kills; rs.rs.kills = 40;
+                rs.debugWinCampaign();
+                System.out.println("WIN abierto: ov=" + rs.debugOv() + " botones=" + rs.debugLabels() + " guardado_antes=" + (RunSave.read(rs.game.P, RunSave.AUTO) != null));
+            } else if (winStep == 1 && frame > winT0 + 600) {
+                winStep = 2;
+                System.out.println("WIN tras 600 frames: sigue en RunScreen=" + (rs.game.cur == rs && rs.game.next == null) + " ov=" + rs.debugOv() + " (6 = victoria) wins +" + (Save.S.wins - winW0) + " kills +" + (Save.S.kills - winK0));
+                System.out.println("WIN tocar Salir=" + rs.debugTap("Salir"));
+                System.out.println("WIN tras Salir: guardado=" + (RunSave.read(rs.game.P, RunSave.AUTO) != null ? "SI(mal)" : "borrado") + " destino=" + (rs.game.next == null ? "null" : rs.game.next.getClass().getSimpleName()));
             }
         }
         if (System.getenv("BOT_CONTTEST") != null && !rs.rs.infinite && rs.sandbox == false && frame > 700 && contStep == 0) {

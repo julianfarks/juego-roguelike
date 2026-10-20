@@ -156,7 +156,7 @@ final class Story {
     static void mark(int idx) { if (Save.S.story[idx] == 0) { Save.S.story[idx] = 1; Save.S.write(); } }
 
     /** El final secreto solo existe si se derroto a TODOS los jefes requeridos: 8 reliquias (Sello forjado) y el Cazador. */
-    static boolean allBossesDefeated() { return Save.S.sealForged() && Save.S.finalBeaten; }
+    static boolean allBossesDefeated() { return Save.S.finalBeaten; }   // ya no depende de las reliquias: la campana exige las 8 mazmorras y sus jefes
 
     /** Llamar al derrotar al jefe final: comprueba el progreso real y persiste el desbloqueo. */
     static boolean tryUnlockFinal() {

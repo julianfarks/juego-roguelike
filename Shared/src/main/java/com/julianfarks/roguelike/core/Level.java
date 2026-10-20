@@ -184,6 +184,15 @@ public final class Level {
         return room.pixH;
     }
 
+    /** true si una caja de la altura h con los pies en (x, y) no toca ningun bloque solido. */
+    public boolean boxFree(Ent e, float x, float y, float h) {
+        float hw = e.bw / 2f;
+        int tx0 = (int) Math.floor((x - hw + 1) / Room.TS), tx1 = (int) Math.floor((x + hw - 1) / Room.TS);
+        int ty0 = (int) Math.floor((y - h + 1) / Room.TS), ty1 = (int) Math.floor((y - 1) / Room.TS);
+        for (int ty = ty0; ty <= ty1; ty++) for (int tx = tx0; tx <= tx1; tx++) if (Room.isSolid(room.tile(tx, ty))) return false;
+        return true;
+    }
+
     /** Mueve con colisiones. Devuelve true si toco el suelo este paso. */
     public void move(Ent e, float dt) {
         e.hitWall = false;
@@ -191,7 +200,7 @@ public final class Level {
         // eje X
         float nx = e.x + e.vx * dt;
         if (e.vx != 0) {
-            float top = e.y - e.bh + 1, bot = e.y - 1;
+            float top = e.y - e.colH() + 1, bot = e.y - 1;
             int ty0 = (int) Math.floor(top / Room.TS), ty1 = (int) Math.floor(bot / Room.TS);
             float edge = e.vx > 0 ? nx + hw : nx - hw;
             int tx = (int) Math.floor(edge / Room.TS);
@@ -226,11 +235,11 @@ public final class Level {
                 ny = landY; e.vy = 0;
             }
         } else {
-            float topY = ny - e.bh;
+            float topY = ny - e.colH();
             int ty = (int) Math.floor(topY / Room.TS);
             int tx0 = (int) Math.floor((e.x - hw + 1) / Room.TS), tx1 = (int) Math.floor((e.x + hw - 1) / Room.TS);
             for (int tx = tx0; tx <= tx1; tx++) {
-                if (Room.isSolid(room.tile(tx, ty))) { ny = (ty + 1) * Room.TS + e.bh + 0.01f; e.vy = 0; break; }
+                if (Room.isSolid(room.tile(tx, ty))) { ny = (ty + 1) * Room.TS + e.colH() + 0.01f; e.vy = 0; break; }
             }
         }
         e.y = ny;
@@ -377,10 +386,10 @@ public final class Level {
         for (float yy = y0; yy <= y1 + 0.01f && !hit; yy += 4f) {
             for (int k = -1; k <= 1 && !hit; k++) {
                 float xx = e.x + k * hw;
-                if (room.hazardAt(xx, yy - 4) || room.hazardAt(xx, yy - e.bh * 0.5f)) hit = true;
+                if (room.hazardAt(xx, yy - 4) || room.hazardAt(xx, yy - e.colH() * 0.5f)) hit = true;
             }
         }
-        if (!hit && (room.hazardAt(e.x, y1 - 4) || room.hazardAt(e.x, y1 - e.bh + 3))) hit = true;
+        if (!hit && (room.hazardAt(e.x, y1 - 4) || room.hazardAt(e.x, y1 - e.colH() + 3))) hit = true;
         if (!hit) return;
         e.trapCd = SPIKE_CD;
         dbgTrapHits++;
@@ -1326,7 +1335,7 @@ public final class Level {
         if (f == null) return;
         float a = Mth.clamp(d.life / 0.25f, 0, 1);
         float w = f.width(d.text);
-        int x = Math.round(d.x - w / 2f), y = Math.round(d.y);
+        int x = Math.round(Mth.clamp(d.x - w / 2f, camX + 3, Math.max(camX + 3, camX + viewW - 3 - w))), y = Math.round(d.y);   // los avisos largos nunca se cortan en el borde de la pantalla
         // contorno oscuro (legibilidad sobre cualquier fondo) y, en criticos, doble trazo dorado: no depende solo del color
         int ol = 0x180818;
         f.draw(g, d.text, x - 1, y, ol, a * 0.85f); f.draw(g, d.text, x + 1, y, ol, a * 0.85f);

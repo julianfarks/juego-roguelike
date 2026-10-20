@@ -4,7 +4,7 @@ package com.julianfarks.roguelike.core;
 public final class DebugBot {
     static String chestSnap(RunState r) { return r.sec + "/" + r.secAmmo + "/" + r.shield + "/" + r.weaponLvl + "/" + r.special + "/" + java.util.Arrays.toString(r.bless) + "/" + r.gold + "/" + r.souls; }
     private int spPhase, spBx, spGy, spT; private final StringBuilder spRes = new StringBuilder();
-    private boolean chestPosDone; private int brStep, brT; private String brSnap = "";
+    private boolean chestPosDone; private int rlStep, rlT, rlBad, rlFails, rlGx, rlGy, rlBx, rlBy; private float rlX0, rlHp0; private boolean rlWasLow, rlWalk; private float rlRe; private int brStep, brT; private String brSnap = "";
     private int skStep, skT0, skProj0; private float skHp0;
     private int escStep, escT;
     private int roomModStep, roomModT, hurt0; private float hp0;
@@ -664,6 +664,10 @@ public final class DebugBot {
             else if (skStep == 5 && t > 80) { skStep = 7; System.out.println("SKILL B3 FALLA: no se libero"); }
             if (frame >= 690 && skStep < 7) return;     // el bot no interfiere mientras dura la prueba
         }
+        if (System.getenv("BOT_ROLLGAP") != null && !rs.sandbox) {
+            rollProbe(g, lv, p, frame);
+            if (frame >= 690 && rlStep < 99) return;
+        }
         if (System.getenv("BOT_CHARGETEST") != null && !rs.sandbox) {
             chargeProbe(g, rs, lv, p, frame);
             if (frame >= 690 && chStep < 99) return;
@@ -1187,6 +1191,76 @@ public final class DebugBot {
         en.maxHp = en.hp = 1e7f; en.x = pl.x + 26; en.y = pl.y; en.home = en.x;
         lv.enemies.add(en); lv.toKill++; return en;
     }
+    private static final String[] RL_NAME = {"espacio abierto (rodar)", "hueco de 1 baldosa, 3 de largo (rodar)", "hueco de 1 baldosa, 14 de largo (rodar, termina bajo techo)",
+        "pared completa sin hueco (rodar)", "hueco de 2 baldosas (andar, sin rodar)", "hueco de 1 baldosa SIN rodar (andar)", "hueco de 1 baldosa con borde y foso (rodar)", "hueco de 1 baldosa con pinchos en el suelo (rodar)"};
+    private void rlOk(boolean c, String msg) { System.out.println("ROLLGAP " + (c ? "OK    " : "FALLA ") + msg); if (!c) rlFails++; }
+    private void rollProbe(Game g, Level lv, Player pl, int frame) {
+        if (frame < 700 || rlStep >= 99) return;
+        Room rm = lv.room;
+        if (frame == 700) for (int c : new int[]{'A', 'D', 'S', 'W', 'J', 'K'}) hold(g, c, false);
+        lv.enemies.clear(); lv.toKill = 0; lv.projs.clear(); lv.rs.hp = lv.rs.stats.maxHp; pl.invuln = Math.max(pl.invuln, 0f);
+        if (rlStep > 0 && !lv.boxFree(pl, pl.x, pl.y, pl.colH())) rlBad++;       // invariante: nunca dentro de un bloque
+        int kind = (rlStep - 1) / 3;
+        int phase = (rlStep - 1) % 3;      // 0 preparar, 1 accionar, 2 medir
+        if (rlStep == 0) { rlStep = 1; rlT = frame; return; }
+        if (kind >= RL_NAME.length) {
+            System.out.println("ROLLGAP resumen: escenarios=" + RL_NAME.length + " fallos=" + rlFails + " frames dentro de un bloque=" + rlBad + " (0)");
+            hold(g, 'D', false); rlStep = 99; return;
+        }
+        if (phase == 0) {
+            hold(g, 'D', false);
+            if (kind == 0) { rlBx = (int) (pl.x / Room.TS); rlBy = (int) (pl.y / Room.TS); }
+            int gx = rlBx, gy = rlBy; rlGx = gx; rlGy = gy;
+            for (int i = -8; i <= 44; i++) for (int j = -12; j <= 6; j++) rm.set(gx + i, gy + j, j >= 0 ? Room.SOLID : Room.AIR);
+            for (int j = -12; j <= 6; j++) { rm.set(gx - 9, gy + j, Room.SOLID); rm.set(gx + 45, gy + j, Room.SOLID); }
+            for (int i = -9; i <= 45; i++) { rm.set(gx + i, gy - 13, Room.SOLID); rm.set(gx + i, gy + 7, Room.SOLID); }
+            int len = kind == 2 ? 14 : 3, c0 = gx + 3;
+            int top = kind == 4 ? 3 : 2;                         // fila (sobre el suelo) donde empieza el techo
+            if (kind == 1 || kind == 2 || kind == 4 || kind == 5 || kind == 6 || kind == 7) for (int i = 0; i < len; i++) for (int j = 12; j >= top; j--) rm.set(c0 + i, gy - j, Room.SOLID);
+            if (kind == 3) for (int i = 0; i < len; i++) for (int j = 12; j >= 1; j--) rm.set(c0 + i, gy - j, Room.SOLID);
+            if (kind == 6) for (int i = 0; i < 4; i++) for (int j = 0; j <= 5; j++) rm.set(c0 + 1 + i + 2, gy + j, Room.AIR);   // foso tras entrar al hueco
+            if (kind == 7) for (int i = 0; i < len; i++) rm.set(c0 + i, gy - 1, Room.SPIKE);
+            pl.x = gx * Room.TS + 8; pl.y = gy * Room.TS; pl.vx = 0; pl.vy = 0; pl.state = Player.IDLE; pl.crouched = false; pl.hurtT = 0; pl.invuln = 0.5f;
+            rlX0 = pl.x; rlHp0 = lv.rs.hp; rlStep++; rlT = frame; return;
+        }
+        if (phase == 1) {
+            if (frame - rlT < 25) return;
+            hold(g, 'D', true);
+            if (kind == 0 || kind == 1 || kind == 2 || kind == 3 || kind == 6 || kind == 7) tap(g, 'K');
+            rlWasLow = false; rlRe = -1;
+            rlStep++; rlT = frame; return;
+        }
+        // medir
+        if (rlWasLow && rlRe < 0 && pl.state != Player.ROLL) { rlRe = pl.x - rlX0; if (kind == 0) System.out.println("ROLLGAP distancia de la rodada en espacio abierto: " + Math.round(rlRe) + "px (valor previo del juego: no cambia, solo cambia la caja contra el escenario)"); }
+        if (pl.state == Player.ROLL && pl.crouched) { rlWasLow = true; if (frame - rlT == 10) System.out.println("ROLLGAP caja: bh=" + pl.bh + " colH(escenario)=" + pl.colH() + " top(golpes)=" + (pl.y - pl.top()) + " (el dano sigue usando bh: no esquiva nada nuevo)"); }
+        if (rlWalk) {
+            if (frame - rlT < 120) return;
+            rlWalk = false; hold(g, 'D', false);
+            rlOk(!pl.crouched && pl.x > (rlGx + 3 + 14) * Room.TS && lv.boxFree(pl, pl.x, pl.y, pl.bh), RL_NAME[2] + ": caminando sale del hueco y recupera la altura normal (x=" + Math.round(pl.x - rlX0) + "px crouched=" + pl.crouched + ")");
+            rlStep = (kind + 1) * 3 + 1; return;
+        }
+        int dur = kind == 2 ? 70 : 110;
+        if (frame - rlT < dur) return;
+        hold(g, 'D', false);
+        float dx = pl.x - rlX0; boolean inGap = pl.x > (rlGx + 3) * Room.TS && pl.x < (rlGx + 3 + (kind == 2 ? 14 : 3)) * Room.TS;
+        boolean past = pl.x > (rlGx + 6) * Room.TS + 4;
+        String st = "x=" + Math.round(dx) + "px y=" + Math.round(pl.y - rlGy * Room.TS) + " crouched=" + pl.crouched + " state=" + pl.state + " hp=" + Math.round(lv.rs.hp - rlHp0);
+        String nm = RL_NAME[kind];
+        switch (kind) {
+            case 0: rlOk(dx > 40 && !pl.crouched && Math.abs(pl.y - rlGy * Room.TS) < 0.5f && rlWasLow, nm + ": avanza " + Math.round(dx) + "px, se levanta, mismo suelo (" + st + ")"); break;
+            case 1: rlOk(past && !pl.crouched && Math.abs(pl.y - rlGy * Room.TS) < 0.5f, nm + ": atraviesa el hueco y recupera la altura (" + st + ")"); break;
+            case 2: rlOk(inGap && pl.crouched && Math.abs(pl.y - rlGy * Room.TS) < 0.5f && lv.boxFree(pl, pl.x, pl.y, pl.colH()), nm + ": se queda agachado bajo el techo sin incrustarse (" + st + ")");
+                rlWalk = true; rlT = frame; hold(g, 'D', true); return;
+            case 3: rlOk(pl.x < (rlGx + 3) * Room.TS && !pl.crouched, nm + ": no atraviesa la pared (" + st + ")"); break;
+            case 4: rlOk(past && !pl.crouched, nm + ": pasa andando, nunca se agacha (" + st + ")"); break;
+            case 5: rlOk(pl.x < (rlGx + 3) * Room.TS && !pl.crouched, nm + ": sin rodar NO pasa (no hay agacharse) (" + st + ")"); break;
+            case 6: rlOk(lv.boxFree(pl, pl.x, pl.y, pl.colH()) && pl.alive, nm + ": termina en posicion valida (" + st + ")"); break;
+            case 7: rlOk(lv.boxFree(pl, pl.x, pl.y, pl.colH()) && pl.alive, nm + ": termina en posicion valida, " + st + " (la rodada ya ignoraba pinchos; comportamiento previo)"); break;
+        }
+        rlStep++;
+        if (phase == 2) rlStep = (kind + 1) * 3 + 1;
+    }
+
     private void chargeProbe(Game g, RunScreen rs, Level lv, Player pl, int frame) {
         if (frame < 700 || chStep >= 99) return;
         if (System.getenv("BOT_CHARGESHOT") != null) {      // solo capturas: mantiene el ataque de 710 a 845 y suelta

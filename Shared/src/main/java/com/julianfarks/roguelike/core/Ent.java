@@ -26,6 +26,8 @@ public abstract class Ent {
 
     public float left() { return x - bw / 2f; }
     public float top() { return y - bh; }
+    /** Altura de colision con el ESCENARIO (suelo, techo, pinchos). El dano y los golpes siguen usando bh. */
+    public float colH() { return bh; }
     public float cx() { return x; }
     public float cy() { return y - bh / 2f; }
 

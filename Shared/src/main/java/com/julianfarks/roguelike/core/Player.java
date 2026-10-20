@@ -55,6 +55,11 @@ public final class Player extends Ent {
         hp = maxHp = 1;
     }
 
+    /** Rodada por huecos estrechos: durante la rodada (y mientras no quepa de pie) la caja contra el escenario baja a ROLL_H. Solo afecta a suelo/techo/pinchos; el dano usa bh. */
+    public static final float ROLL_H = 14f;
+    public boolean crouched;
+    @Override public float colH() { return crouched ? Math.min(bh, ROLL_H) : bh; }
+
     public boolean rolling() {
         if (state != ROLL) return false;
         return animT < 0.30f + (statsFantasma > 0 ? 0.08f * statsFantasma : 0f);
@@ -339,6 +344,10 @@ public final class Player extends Ent {
 
         if (chargeT >= 0f) updateCharge(lv, dt, ctl, frozenNow);
 
+        // ---- caja baja de la rodada: se mantiene mientras ruede o no haya espacio para ponerse de pie (nunca se fuerza dentro de un bloque)
+        if (crouched && state != ROLL && lv.boxFree(this, x, y, bh)) crouched = false;
+        if (!alive) crouched = false;
+
         // ---- movimiento horizontal / vertical
         if (dashT > 0) {
             dashT -= dt;
@@ -413,6 +422,7 @@ public final class Player extends Ent {
             default: break;
         }
 
+        if (crouched && (state == IDLE || state == RUN)) { animName = "roll"; animT = sheet.anim("roll").duration() * 0.5f; }   // bajo un techo bajo: pose encogida mientras no quepa de pie
         if (chargeT >= ChargeCfg.TAP && (state == IDLE || state == RUN || state == AIR)) chargePose();
 
         // ---- seguridad: pinchos / foso
@@ -515,7 +525,7 @@ public final class Player extends Ent {
         if (state == ROLL || state == ULT || frozen()) return false;
         if (rollCd > 0 || state == SKILL || state == HURT) return false;
         if (mx != 0) right = mx > 0;
-        state = ROLL; animName = "roll"; animT = 0;
+        state = ROLL; animName = "roll"; animT = 0; crouched = true;
         vx = dir() * 215f * Math.max(0.9f, lv.rs.stats.speedMul);
         swingHit.clear();
         rollCd = 0.12f;
@@ -873,7 +883,7 @@ public final class Player extends Ent {
                 if (isSafeSpot(rm, x, y)) { safeX = x; safeY = y; }
             }
         }
-        boolean hazard = rm.hazardAt(x, y - 4) || rm.hazardAt(x - 5, y - 4) || rm.hazardAt(x + 5, y - 4) || rm.hazardAt(x, y - bh + 3) || y >= rm.pixH - 1;   // pies a +-5 px: el borde del pincho tambien pincha
+        boolean hazard = rm.hazardAt(x, y - 4) || rm.hazardAt(x - 5, y - 4) || rm.hazardAt(x + 5, y - 4) || rm.hazardAt(x, y - colH() + 3) || y >= rm.pixH - 1;   // pies a +-5 px: el borde del pincho tambien pincha
         if (!hazard) hazardN = 0;
         if (hazard && state != ROLL || hazard && y >= rm.pixH - 1) {
             float dmg = 8 + lv.rs.stats.maxHp * 0.08f;

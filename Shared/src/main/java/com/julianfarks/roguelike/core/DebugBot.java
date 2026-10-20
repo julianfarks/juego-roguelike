@@ -2,6 +2,8 @@ package com.julianfarks.roguelike.core;
 
 /** Bot de pruebas para el banco de escritorio (--bot): navega menus y juega sin ayuda. No se usa en Android. */
 public final class DebugBot {
+    private int endlessT = -1; private boolean endlessTapped;
+    private String watchK = "";
     private int winStep, winT0, winW0, winK0;
     private int progT0 = -1, progT, progStep; private final java.util.Set<Integer> progSeen = new java.util.HashSet<>();
     private final boolean[] held = new boolean[256];
@@ -538,6 +540,28 @@ public final class DebugBot {
                     infStep = 99;
                 }
             }
+        }
+        if (System.getenv("BOT_SAVETEST") != null && !rs.sandbox && frame == 700) {
+            RunState r = rs.rs; r.dungeonNo = 5; r.stage = RunState.tierOf(5); r.weaponLvl = 12; r.roomNo = 2;
+            RunSave.write(rs.game.P, rs, RunSave.AUTO);
+            RunScreen back = RunSave.load(rs.game, RunSave.AUTO);
+            RunState q = back == null ? null : back.rs;
+            System.out.println("SAVE campana a mitad: dungeonNo=" + (q == null ? -1 : q.dungeonNo) + " (5) stage=" + (q == null ? -1 : q.stage) + " (2) weaponLvl=" + (q == null ? -1 : q.weaponLvl) + " (12) roomNo=" + (q == null ? -1 : q.roomNo) + " (2) power=" + (q == null ? -1 : q.power()) + " (" + r.power() + ")");
+            // partida antigua sin dungeonNo
+            java.util.Map<String, Object> d = RunSave.read(rs.game.P, RunSave.AUTO); d.remove("dungeonNo"); d.put("stage", 1);
+            rs.game.P.store().put(RunSave.key(RunSave.AUTO), Json.write(d));
+            RunScreen old = RunSave.load(rs.game, RunSave.AUTO);
+            System.out.println("SAVE partida antigua (stage 1, sin dungeonNo): dungeonNo=" + (old == null ? -1 : old.rs.dungeonNo) + " (3)");
+            RunSave.clearRun(rs.game.P, rs);
+        }
+        if (System.getenv("BOT_KILLBOSS") != null && !rs.sandbox && frame > 600 && frame % 240 == 0 && lv.boss != null && lv.boss.alive) { if (rs.rs.biome.id == 8) rs.rs.finalRun = true;   /* el warp del banco se salta autoBiome, que es quien lo marca */ System.out.println("KILL f" + frame + " matando jefe (real: onBossDead -> puerta -> siguiente)"); rs.debugKillAll(); }
+        if (System.getenv("BOT_KILLBOSS") != null && System.getenv("BOT_ENDLESS") != null && rs.debugOv() == 6) {
+            if (endlessT < 0) endlessT = frame;
+            if (frame > endlessT + 300 && !endlessTapped) { endlessTapped = true; System.out.println("KILL victoria real abierta 300 frames; pulso Endless=" + rs.debugTap("Endless")); }
+        }
+        if (System.getenv("BOT_WATCH") != null && !rs.sandbox) {
+            String k = rs.rs.dungeonNo + "/" + rs.rs.stage + "/" + (rs.rs.biome == null ? -1 : rs.rs.biome.id) + "/" + rs.rs.roomNo + "/" + lv.room.type + "/" + rs.debugOv() + "/" + rs.rs.infinite;
+            if (!k.equals(watchK)) { watchK = k; System.out.println("WATCH f" + frame + " dungeonNo/stage/bioma/sala/tipoSala/ov/infinito = " + k + " jefe=" + (lv.boss != null && lv.boss.alive) + " bossKills=" + rs.rs.bossKills); }
         }
         if (System.getenv("BOT_BALTEST") != null && !rs.sandbox && frame == 700) {
             RunState r = rs.rs; int kd = r.dungeonNo, ks = r.stage, kr = r.roomNo;

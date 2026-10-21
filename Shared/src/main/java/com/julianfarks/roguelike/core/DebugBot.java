@@ -415,6 +415,7 @@ public final class DebugBot {
         if (System.getenv("BOT_TUTSCENE") != null && warped && frame > warpFrame + 30) { TutorialProbe.scene(g, rs, lv, p, frame, System.getenv("BOT_TUTSCENE")); return; }
         if (System.getenv("BOT_ARSENALSCENE") != null && warped && frame > warpFrame + 30) { ArsenalProbe.scene(g, rs, lv, p, frame, System.getenv("BOT_ARSENALSCENE")); return; }
         if (System.getenv("BOT_ARSENAL") != null && warped && frame > warpFrame + 30) { if (ArsenalProbe.step(g, rs, lv, p, frame)) System.exit(ArsenalProbe.fails == 0 ? 0 : 1); return; }
+        if (System.getenv("BOT_ESCAL") != null && warped && frame > warpFrame + 30) { if (EscalationProbe.step(g, rs, lv, p, frame)) System.exit(EscalationProbe.fails == 0 ? 0 : 1); return; }
         if (System.getenv("BOT_UPGRADES") != null && warped && frame > warpFrame + 30) { if (UpgradeProbe.step(g, rs, lv, p, frame)) System.exit(UpgradeProbe.fails == 0 ? 0 : 1); return; }
         if (System.getenv("BOT_ANIMTEST") != null && warped && frame > warpFrame + 30) { if (AnimProbe.step(g, rs, lv, p, frame)) System.exit(AnimProbe.fails == 0 ? 0 : 1); return; }
         if (System.getenv("BOT_BOSSGROUND") != null && warped && frame > warpFrame + 30) { if (BossGroundProbe.step(g, rs, lv, p, frame)) System.exit(BossGroundProbe.fails == 0 ? 0 : 1); return; }

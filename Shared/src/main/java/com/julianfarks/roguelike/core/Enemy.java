@@ -18,6 +18,9 @@ public final class Enemy extends Ent {
     private float tx, ty;           // objetivo de embestida / picada
     private final float cooldown;
     float modSpeed = 1f;            // reto 'enemigos veloces'
+    float detectMul = 1f;           // Escalation: rango de deteccion (crece con los jefes derrotados)
+    boolean hunter;                 // Escalation: refuerzo que va a por el jugador desde que aparece (no pierde el rastro)
+    boolean miniBoss;               // Escalation: mini-jefe ocasional (elite reforzado)
     float buffT;                    // aura de furia (cultista): +35% daño, +20% velocidad
     private Enemy healTgt;
     private boolean suicide, blocked;
@@ -192,8 +195,9 @@ public final class Enemy extends Ent {
         boolean paused = frozen() || p == null || !p.alive;
         float dx = p.x - x, dy = p.cy() - cy();
         float dist = (float) Math.sqrt(dx * dx + dy * dy);
-        if (!aggro && dist < def.detect && Math.abs(dy) < 110 && !paused) { aggro = true; Snd.sfxAt("en_alert", x, lv.camX + lv.viewW / 2, 0.35f); if (state == PATROL) state = CHASE; }
-        if (aggro && dist > def.detect * 2.2f) { aggro = false; state = PATROL; }
+        if (hunter && !aggro && !paused) { aggro = true; if (state == PATROL) state = CHASE; }             // refuerzo: persigue al jugador
+        if (!aggro && dist < def.detect * detectMul && Math.abs(dy) < 110 * detectMul && !paused) { aggro = true; Snd.sfxAt("en_alert", x, lv.camX + lv.viewW / 2, 0.35f); if (state == PATROL) state = CHASE; }
+        if (aggro && !hunter && dist > def.detect * 2.2f * detectMul) { aggro = false; state = PATROL; }
 
         if (paused || state == DEAD) {
             if (!flying) vy = Math.min(Level.FALL_MAX, vy + Level.GRAV * dt);

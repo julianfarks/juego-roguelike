@@ -1669,6 +1669,7 @@ final class RunScreen extends Screen implements Level.Listener {
     java.util.List<String> debugLabels() { java.util.List<String> l = new ArrayList<>(); for (Hit h : hits) if (h.label != null) l.add(h.label); return l; }
     boolean debugTap(String label) { for (Hit h : new ArrayList<>(hits)) if (label.equals(h.label) && !h.disabled && h.act != null) { h.act.run(); return true; } return false; }
     void debugKillAll() {
+        lv.toKill -= lv.reserve.size(); lv.reserve.clear();          // los refuerzos en espera tambien cuentan como abatidos
         for (Enemy e : new ArrayList<>(lv.enemies)) if (e.alive) { e.hp = 0; e.die(lv); }
         if (lv.boss != null) { lv.boss.die(lv); onBossDead(lv); }
     }

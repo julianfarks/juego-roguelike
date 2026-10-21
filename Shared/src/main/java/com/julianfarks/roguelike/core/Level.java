@@ -58,6 +58,8 @@ public final class Level {
     public int toKill;
     /** Rondas: golpes reales recibidos en esta sala, enemigos que habia y si ya se entrego la recompensa de ronda. */
     public int roomHits, roomEnemies;
+    /** Escalation: refuerzos que esperan a que haya hueco (tope de enemigos vivos a la vez) y respiro entre ellos. Es de la sala: no pasa a otra. */
+    final List<Enemy> reserve = new ArrayList<>(); float reserveT; int escExtra, escSpawned;
     public boolean rewarded;
     public Biome biome;
     public Secrets secrets;
@@ -112,8 +114,10 @@ public final class Level {
             }
             enemies.addAll(extra);
         }
+        Escalation.populate(this, hpMul, dmgMul);       // mas enemigos tras cada jefe (configuracion central), con tope de vivos a la vez
         toKill = 0;
         for (Enemy e : enemies) if (!e.optional) toKill++;
+        toKill += reserve.size();
         roomEnemies = toKill; roomHits = 0; rewarded = false;
         for (Room.PropSpec ps : room.props) addProp(ps);
         // cofres ya colocados por la generacion: si el suelo no es firme o hay pared/pinchos, se reubican (nunca se eliminan)
@@ -742,6 +746,7 @@ public final class Level {
         BlessFx.dbgNsUpdate += System.nanoTime() - bt0;
         if (freezeEnemies <= 0) {
             float edt = BlessFx.enemyDt(this, dt);
+            Escalation.update(this, edt);
             for (Enemy e : enemies) e.update(this, edt);
             for (Enemy e : enemies) trapDamage(e, edt);
             if (boss != null) boss.update(this, edt);
@@ -815,7 +820,7 @@ public final class Level {
         e.x = nx;
     }
 
-    private boolean pendingSpawns() { return !delayed.isEmpty() && false; }
+    private boolean pendingSpawns() { return !reserve.isEmpty(); }
 
     void updateFx(float dt) {
         for (FxObj f : fxs) {

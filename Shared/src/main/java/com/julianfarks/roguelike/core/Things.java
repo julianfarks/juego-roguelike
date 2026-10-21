@@ -85,7 +85,7 @@ final class Prop {
     String label;
     float hp = 1;       // vasijas
     float shakeT;
-    int wAmmo, wRar, wMag = -1;      // arma secundaria en el suelo (kind "weapon"): municion que conserva y rareza (arg = id de arma)
+    int wAmmo, wRar, wMag = -1, wLvl;      // arma secundaria en el suelo (kind "weapon"): municion, rareza, cargador y nivel que conserva (arg = id de arma)
     float pickLock;       // segundos hasta poder volver a interactuar (evita intercambios dobles por una misma pulsacion)
     boolean dropped;      // la solto el jugador (no es un hallazgo)
     // cofre abierto cuya eleccion se omitio: guarda SUS ofertas (no se vuelven a sortear) hasta que se elija una; used solo al elegir

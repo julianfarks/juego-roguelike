@@ -17,7 +17,7 @@ final class Inventory {
     static final int[] RAR_RGB = {0xC8CCD8, 0x6AE08A, 0x6AA8FF, 0xC070FF, 0xFFB030};
     static final String[] RELIC_ICON = {"r_rey_exanime", "r_coloso_magma", "r_reina_escarcha", "r_devorador_vacio", "r_ent_ancestral", "r_titan_tormenta", "r_matriarca_sangre", "r_guardian_eclipse"};
     static final int ST_OWNED = 0, ST_EQUIPPED = 1, ST_FLOOR = 2, ST_LEFT = 3;
-    static final String[] ST_NAME = {"En tu poder", "Equipada", "En el suelo de esta sala", "Dejada atrás en otra sala"};
+    static final String[] ST_NAME = {"Guardada", "Equipada", "En el suelo de esta sala", "Dejada atrás en otra sala"};   // el inventario solo lista lo poseido (0 y 1); 2 y 3 quedan para compatibilidad
 
     static final class Item {
         int cat, rar, state, lvl, maxLvl, wid = -1, bid = -1, kind;       // kind: 0 normal, 1 arma principal, 2 escudo, 3 granada, 4 especial, 5 pocion, 6 pacto, 7 reliquia, 8 compañero, 9 bendicion inicial
@@ -61,13 +61,15 @@ final class Inventory {
         main.kind = 1; main.active = !rs.secActive; main.lvl = rs.weaponLvl; main.sub = "Arma principal";
         all.add(main); equip[0] = main;
         equip[1] = null;
-        for (int id = 1; id < Items.SEC_COUNT; id++) {
-            if (rs.wState[id] == 0 && rs.sec != id) continue;
-            int st = rs.sec == id ? ST_EQUIPPED : rs.wState[id] == 2 ? ST_FLOOR : ST_LEFT;
+        // SOLO las armas que posees en esta partida (bolsa): nada de armas vistas, del suelo o dejadas atras
+        rs.syncBag();
+        for (int id : rs.bag) {
+            int st = rs.sec == id ? ST_EQUIPPED : ST_OWNED;
             Item it = mk(C_WEAPONS, "w:" + id, Items.SEC_NAME[id], Items.SEC_ICON[id], Items.SEC_RAR[id], st);
             it.wid = id; it.active = rs.sec == id && rs.secActive;
-            if (st == ST_EQUIPPED) { it.lvl = rs.secLvl; it.maxLvl = 3; equip[1] = it; }
-            it.sub = "Arma secundaria";
+            it.lvl = rs.lvlOf(id); it.maxLvl = 3;
+            if (st == ST_EQUIPPED) equip[1] = it;
+            it.sub = st == ST_EQUIPPED ? "Arma secundaria" : "Arma guardada";
             all.add(it);
         }
         // ---- bendiciones
@@ -170,7 +172,8 @@ final class Inventory {
     /** Marca como vistos los objetos que ya estaban al empezar (arma de clase, bendicion inicial...). */
     static void seeAll(RunState rs) {
         rs.seen.add("m:" + rs.cls.key);
-        for (int id = 1; id < Items.SEC_COUNT; id++) if (rs.wState[id] != 0 || rs.sec == id) rs.seen.add("w:" + id);
+        rs.syncBag();
+        for (int id : rs.bag) rs.seen.add("w:" + id);
         for (Blessing b : Blessing.ALL) if (rs.bless[b.id] > 0) rs.seen.add("b:" + b.id);
         for (int i = 0; i < 8; i++) if (rs.relicsThisRun[i]) rs.seen.add("r:" + i);
         for (int i = 0; i < Events.PACTS.length; i++) if (rs.pacts[i] > 0) rs.seen.add("p:" + i);
@@ -258,8 +261,15 @@ final class Inventory {
         }
         // accion del detalle
         Item it = cur();
-        if (it != null && canActivate(it)) {
+        boolean ca = it != null && canActivate(it), cd = it != null && canDrop(it);
+        if (ca && cd) {
+            float bw2 = (dw - 16 - 4) * 0.62f;
+            Screen.Hit ha = sc.add(dx + 8, dy + dh - 24, bw2, 18, UI.fitLabel(UI.small, activateLabel(it), bw2 - 8), this::activate); ha.tag = 220;
+            Screen.Hit hd = sc.add(dx + 8 + bw2 + 4, dy + dh - 24, dw - 16 - bw2 - 4, 18, "Soltar", this::dropSel); hd.tag = 221;
+        } else if (ca) {
             Screen.Hit ha = sc.add(dx + 8, dy + dh - 24, dw - 16, 18, activateLabel(it), this::activate); ha.tag = 220;
+        } else if (cd) {
+            Screen.Hit hd = sc.add(dx + 8, dy + dh - 24, dw - 16, 18, "Soltar al suelo", this::dropSel); hd.tag = 221;
         }
     }
 
@@ -287,15 +297,41 @@ final class Inventory {
     boolean canActivate(Item it) {
         if (sc.lv == null || !sc.lv.pl.alive || it.cat != C_WEAPONS) return false;
         if (it.kind == 1) return rs().secActive && rs().sec != 0;
-        return it.wid >= 0 && rs().sec == it.wid && !rs().secActive;
+        if (it.wid <= 0) return false;
+        if (rs().sec == it.wid) return !rs().secActive;
+        return rs().owns(it.wid);                      // guardada: se puede equipar en cualquier momento
     }
 
-    String activateLabel(Item it) { return it.kind == 1 ? "Usar arma principal" : "Usar esta arma"; }
+    String activateLabel(Item it) { return it.kind == 1 ? "Usar arma principal" : rs().sec == it.wid ? "Usar esta arma" : "Equipar"; }
+
+    /** Soltar al suelo un arma poseida (deja hueco en la bolsa; se puede volver a recoger en esta sala). */
+    boolean canDrop(Item it) {
+        return sc.lv != null && sc.lv.pl.alive && it.cat == C_WEAPONS && it.kind != 1 && it.wid > 0 && rs().owns(it.wid);
+    }
+
+    private void reselect(String key) {
+        rebuild();
+        for (Item x : items) if (x.key.equals(key)) { sel = x.idx; focus = 0; }
+        clampScroll();
+    }
 
     void activate() {
         Item it = cur();
         if (it == null || !canActivate(it)) { Snd.sfx("ui_error", 0.6f); return; }
-        if (Arsenal.swap(sc.lv, sc.lv.pl)) { Snd.sfx("ui_confirm", 0.8f); }
+        String key = it.key;
+        if (it.kind == 1 || rs().sec == it.wid) { if (Arsenal.swap(sc.lv, sc.lv.pl)) Snd.sfx("ui_confirm", 0.8f); }
+        else if (Arsenal.switchTo(rs(), it.wid)) {            // la que llevabas queda guardada con su municion y nivel
+            sc.lv.pl.swapIcon = Items.SEC_ICON[it.wid]; sc.lv.pl.swapAnimT = 0.32f;
+            Snd.sfx("ui_confirm", 0.8f);
+        }
+        reselect(key); relayout();
+    }
+
+    void dropSel() {
+        Item it = cur();
+        if (it == null || !canDrop(it)) { Snd.sfx("ui_error", 0.6f); return; }
+        Prop p = Arsenal.dropOwned(sc.lv, it.wid);
+        if (p != null) { p.pickLock = 0.7f; Snd.sfx("ui_back", 0.7f); }
         rebuild(); relayout();
     }
 
@@ -310,6 +346,7 @@ final class Inventory {
         if (code == 'O') { cycleSort(); return; }
         if (code == 27 || code == 9) { sc.invClose(); return; }
         if (code == 10 || code == 32 || code == 'J') { Item it = cur(); if (it != null && it.isNew) markSeen(it); if (it != null && canActivate(it)) activate(); return; }
+        if (code == 'X' || code == 127) { Item it = cur(); if (it != null && canDrop(it)) dropSel(); return; }
         boolean l = code == 37 || code == 'A', r = code == 39 || code == 'D', u = code == 38 || code == 'W', d = code == 40 || code == 'S';
         if (!(l || r || u || d)) return;
         Snd.sfx("ui_hover", 0.5f);
@@ -368,14 +405,14 @@ final class Inventory {
         boolean sel = focus == 1 && slot == k;
         boolean active = k == 0 ? !rs().secActive : rs().secActive;
         UI.panel(g, sel ? 1 : 0, h.x, h.y, h.w, h.h, 0.95f);
-        String head = k == 0 ? "ARMA PRINCIPAL" : "ARMA SECUNDARIA";
+        String head = k == 0 ? "ARMA PRINCIPAL" : "ARMA SECUNDARIA · " + rs().bag.size() + "/" + RunState.WEAPON_BAG;
         UI.small.draw(g, head, h.x + 6, h.y + 4, 0xFF9AA0B0, 1f);
         if (active && (k == 0 || it != null)) {
             float aw = UI.tag(g, "EN USO", 0, 0, 0xFFD25A, true, false);
             UI.tag(g, "EN USO", h.x + h.w - aw - 5, h.y + 3, 0xFFD25A, true, true);
         }
         if (it == null) {
-            UI.small.drawWrappedMax(g, "Vacía · recoge un arma del suelo o de un cofre", h.x + 8, h.y + 16, (int) h.w - 16, 0xFF7A7A88, 1f, ArsenalUI.lh(), 2);
+            UI.small.drawWrappedMax(g, rs().bag.isEmpty() ? "Vacía · recoge un arma del suelo o de un cofre" : "Ninguna equipada · elige una de tus armas", h.x + 8, h.y + 16, (int) h.w - 16, 0xFF7A7A88, 1f, ArsenalUI.lh(), 2);
             return;
         }
         int rc = RAR_RGB[it.rar];
@@ -433,17 +470,16 @@ final class Inventory {
             g.rect(bx2, tp, 4, th, 0xFFB8A050, false);
             for (Screen.Hit hb : sc.hits) if (hb.tag == 210 || hb.tag == 211) UI.small.center(g, hb.tag == 210 ? "^" : "v", hb.x + hb.w / 2f, hb.y + 3, hb.disabled ? 0xFF555560 : 0xFFFFD25A, 1f);
         }
-        UI.small.right(g, items.size() + " obj.", gx + gw - 16, gy + gh - 13, 0xFF7A7A88, 1f);
+        UI.small.right(g, cat == C_WEAPONS ? rs().bag.size() + "/" + RunState.WEAPON_BAG : items.size() + " obj.", gx + gw - 16, gy + gh - 13, 0xFF7A7A88, 1f);
         // detalle
         UI.panel(g, 0, dx, dy, dw, dh, 0.95f);
         renderDetail(g);
         // pie
         for (Screen.Hit hb : sc.hits) if (hb.tag >= 200 && hb.tag < 203) sc.drawButton(g, hb);
-        String[] legs = {"E equipada · S en el suelo · D dejada · ! nueva · +n mejora", "E equip. · S suelo · D dejada · ! nueva", "E equip. · S suelo · ! nueva", "! nueva"};
+        String[] legs = {"E equipada · ! nueva · +n nivel · X soltar", "E equipada · ! nueva · +n nivel", "E equip. · ! nueva", "! nueva"};
         float legMax = gw - 74;
         for (String lg : legs) if (UI.small.width(lg) <= legMax) { UI.small.draw(g, lg, gx + 8, gy + gh - 13, 0xFF8A8A98, 1f); break; }
-        Screen.Hit ha = null; for (Screen.Hit hb : sc.hits) if (hb.tag == 220) ha = hb;
-        if (ha != null) sc.drawButton(g, ha);
+        for (Screen.Hit hb : sc.hits) if (hb.tag == 220 || hb.tag == 221) sc.drawButton(g, hb);
     }
 
     int clipN;     // pruebas: cuantas veces el detalle tuvo que recortar una descripcion (debe ser 0)
@@ -478,6 +514,7 @@ final class Inventory {
         tg[1] = catTag(it); tc[1] = 0x9AA0B0;
         if (it.kind == 1) { tg[2] = rs.secActive ? "EN ESPERA" : "EN USO"; tc[2] = rs.secActive ? 0x9AA0B0 : 0xFFD25A; tf[2] = !rs.secActive; }
         else if (it.state == ST_EQUIPPED) { tg[2] = it.active ? "EN USO" : "EQUIPADA"; tc[2] = 0xFFD25A; tf[2] = it.active; }
+        else if (it.cat == C_WEAPONS && it.state == ST_OWNED) { tg[2] = "GUARDADA"; tc[2] = 0x9AC8E8; }
         else if (it.state == ST_FLOOR) { tg[2] = "EN EL SUELO"; tc[2] = 0x7AC8F0; }
         else if (it.state == ST_LEFT) { tg[2] = "DEJADA"; tc[2] = 0x9AA0B0; }
         for (int k = 0; k < 3; k++) {
@@ -506,7 +543,7 @@ final class Inventory {
         String key = it.key + "/" + (rs().secActive ? 1 : 0) + "/" + it.state;
         if (!key.equals(dKey)) { dKey = key; dScroll = 0; }
         dScroll = Math.max(0, Math.min(dMax, dScroll));
-        boolean actBtn = false; for (Screen.Hit hb : sc.hits) if (hb.tag == 220) actBtn = true;       // el boton realmente colocado (no el estado actual)
+        boolean actBtn = false; for (Screen.Hit hb : sc.hits) if (hb.tag == 220 || hb.tag == 221) actBtn = true;       // el boton realmente colocado (no el estado actual)
         float top = dy + 6, viewBottom = dy + dh - (actBtn ? 28 : 5);
         g.clipBegin(dx + 2, dy + 3, dw - 4, viewBottom - (dy + 3));
         TextAudit.clip(dx + 2, dy + 3, dw - 4, viewBottom - (dy + 3));
@@ -534,6 +571,12 @@ final class Inventory {
             if (it.state == ST_EQUIPPED) { String am = (Items.infinite(it.wid) ? "Sin munición (ilimitada)" : (Arsenal.hasMag(it.wid) ? "Munición " + Arsenal.ammoLabel(rs) + " (cargador/reserva)" : "Munición " + rs.secAmmo + "/" + Items.SEC_AMMO[it.wid])) + (rs.secLvl > 0 ? " · Nv +" + rs.secLvl + "/3" : "");
                 if (UI.small.width(am) > w - 4) am = (Items.infinite(it.wid) ? "Ilimitada" : "Munición " + (Arsenal.hasMag(it.wid) ? Arsenal.ammoLabel(rs) : rs.secAmmo + "/" + Items.SEC_AMMO[it.wid])) + (rs.secLvl > 0 ? " · Nv +" + rs.secLvl : "");
                 yy += UI.small.drawWrapped(g, am, x + 2, yy, (int) w - 4, 0xFFB8B0B8, 1f, lh) + 1; }
+            else if (it.state == ST_OWNED) {
+                int a = rs.bAmmo[it.wid], lv2 = rs.bLvl[it.wid];
+                String am = (Items.infinite(it.wid) ? "Sin munición (ilimitada)" : "Munición " + a + "/" + Items.SEC_AMMO[it.wid]) + (lv2 > 0 ? " · Nv +" + lv2 + "/3" : "");
+                yy += UI.small.drawWrapped(g, am, x + 2, yy, (int) w - 4, 0xFFB8B0B8, 1f, lh) + 1;
+                yy += UI.small.drawWrappedMax(g, "Guardada en tu inventario: equípala cuando quieras; conserva su munición y su nivel.", x + 2, yy, (int) w - 4, 0xFF9AC8E8, 1f, lh, 4) + 1;
+            }
             else if (it.state == ST_FLOOR) { UI.small.draw(g, UI.fitLabel(UI.small, "Recógela con [Interactuar]", w - 4), x + 2, yy, 0xFFB8B0B8, 1f); yy += lh + 1; }
             else if (it.state == ST_LEFT) yy += UI.small.drawWrappedMax(g, "Quedó en otra sala", x + 2, yy, (int) w - 4, 0xFFB8B0B8, 1f, lh, 2);
             return yy;

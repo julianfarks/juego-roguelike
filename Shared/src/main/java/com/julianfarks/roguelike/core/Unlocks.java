@@ -60,7 +60,7 @@ final class Unlocks {
             Snd.sfx("ui_unlock", 1f);
             // entregar de inmediato lo que da un objeto
             RunState rs = lv.rs;
-            if ((i == 0 || i == 3 || i == 7) && (rs.sec == 0 || rs.sec < (i == 0 ? 1 : i == 3 ? 2 : 4))) { rs.sec = i == 0 ? Items.SEC_KNIFE : i == 3 ? Items.SEC_BOLT : Items.SEC_ORB; rs.secAmmo = Items.SEC_AMMO[rs.sec]; }
+            if (i == 0 || i == 3 || i == 7) { int wid = i == 0 ? Items.SEC_KNIFE : i == 3 ? Items.SEC_BOLT : Items.SEC_ORB; if (!rs.owns(wid)) Arsenal.grant(rs, wid, 0, -1, 0); }   // a la bolsa: no sustituye a la equipada
             if (i == 1 || i == 4 || i == 8) { rs.gren = i == 1 ? Items.GR_FIRE : i == 4 ? Items.GR_ICE : Items.GR_STORM; rs.grenCount = Math.max(rs.grenCount, 3); }
             rs.recalc();
         }

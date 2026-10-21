@@ -1285,7 +1285,7 @@ public final class DebugBot {
             for (int i = 0; i < 8; i++) r.relicsThisRun[i] = true;
             for (int i = 0; i < Events.PACTS.length; i++) r.pacts[i] = 1;
             r.companion = 0; r.sec = 1; r.secActive = false; r.secAmmo = 5;
-            for (int id = 1; id < Items.SEC_COUNT; id++) if (r.wState[id] == 0) r.wState[id] = 1;
+            for (int id = 1; id < Items.SEC_COUNT && !r.bagFull(); id++) if (!r.owns(id)) Arsenal.grant(r, id, 0, -1, 0);   // bolsa llena (tope de armas)
             r.gren = 1; r.grenCount = 3; r.special = 1;
             rs.debugTxtOpenInv(); ivCat = 0; ivSel = 0; ivClip = ArsenalUI.clipN; ivStep = 1; ivItems = 0;
             return;
@@ -1352,7 +1352,7 @@ public final class DebugBot {
             inv.cat = Inventory.C_BLESS; inv.rebuild(); ivOk(inv.items.size() == nb, "bendiciones en pestana=" + inv.items.size() + " reales=" + nb);
             int nr = 0; for (boolean b : r.relicsThisRun) if (b) nr++;
             inv.cat = Inventory.C_RELICS; inv.rebuild(); int rel = 0; for (Inventory.Item it : inv.items) if (it.kind == 7) rel++; ivOk(rel == nr, "reliquias en pestana=" + rel + " reales=" + nr);
-            inv.cat = Inventory.C_WEAPONS; inv.rebuild(); int nw = 1; for (int id = 1; id < Items.SEC_COUNT; id++) if (r.wState[id] != 0 || r.sec == id) nw++;
+            inv.cat = Inventory.C_WEAPONS; inv.rebuild(); r.syncBag(); int nw = 1 + r.bag.size();
             ivOk(inv.items.size() == nw, "armas en pestana=" + inv.items.size() + " reales=" + nw);
             // cambiar el arma activa desde el inventario
             boolean before = r.secActive;

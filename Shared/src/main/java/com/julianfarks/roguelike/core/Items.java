@@ -178,8 +178,9 @@ final class Items {
         } else if (roll < 42) {
             int t = 1 + r.i(SEC_COUNT - 1);
             lv.text(x, y - 56, SEC_DESC[t], 0xE8E0E0, false);
-            if (rs.sec == t) rs.secAmmo = Math.min(SEC_AMMO[t] * 2, rs.secAmmo + SEC_AMMO[t]);
-            else { rs.sec = t; rs.secAmmo = SEC_AMMO[t]; }
+            // a la bolsa (nunca sustituye a la equipada); repetida sube de nivel; con la bolsa llena queda en el suelo, junto al cofre
+            int res = Arsenal.grant(rs, t, 0, -1, 0);
+            if (res == Arsenal.ADD_FULL) { Arsenal.dropWeapon(lv, t, 0, x, y, false, false); lv.text(x, y - 70, "Inventario lleno: quedó en el suelo", 0xB8C8E0, false); }
             msg = "¡" + SEC_NAME[t] + "!"; col = SEC_COL[t];
         } else if (roll < 66) {
             int t = 1 + r.i(GR_COUNT - 1);

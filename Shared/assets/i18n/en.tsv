@@ -2063,6 +2063,39 @@ RARA	RARE
 cristal	crystal
 ¡Guardia rota!	Guard broken!
 bloqueado	blocked
+INVENTARIO DE ARMAS LLENO	WEAPON INVENTORY FULL
+{}/{} · elige cuál soltar al suelo o cancela	{}/{} · choose one to drop or cancel
++ mejor · - peor · = igual que el arma marcada	+ better · - worse · = same as the marked weapon
+Soltar {}	Drop {}
+Soltar al suelo	Drop to the floor
+SOLTAR	DROP
+SOLTAR (EQUIPADA)	DROP (EQUIPPED)
+SOLTAR · EQUIP.	DROP · EQUIP.
+Nv +{}	Lv +{}
+{} usos	{} uses
+GUARDADA	STORED
+Guardada	Stored
+Arma guardada	Stored weapon
+Guardada en tu inventario: equípala cuando quieras; conserva su munición y su nivel.	Stored in your inventory: equip it whenever you want; it keeps its ammo and level.
+Ninguna equipada · elige una de tus armas	None equipped · pick one of your weapons
+ARMA SECUNDARIA · {}/{}	SECONDARY WEAPON · {}/{}
+E equipada · ! nueva · +n nivel · X soltar	E equipped · ! new · +n level · X drop
+E equipada · ! nueva · +n nivel	E equipped · ! new · +n level
+E equip. · ! nueva	E equip. · ! new
+¡{} equipada!	{} equipped!
+{} guardada ({}/{}) · equípala en el inventario	{} stored ({}/{}) · equip it from the inventory
+{} guardada	{} stored
+¡{} mejorada! Nivel {}	{} upgraded! Level {}
+Munición de {}	{} ammo
+Inventario de armas lleno ({})	Weapon inventory full ({})
+Inventario lleno: quedó en el suelo	Inventory full: it stayed on the floor
+El arma sigue en el suelo	The weapon is still on the floor
+Ya la tienes: sube de nivel	You already have it: it levels up
+Inventario lleno ({}): elegirás cuál soltar	Inventory full ({}): you'll choose one to drop
+Se guarda en tu inventario ({}/{})	Goes to your inventory ({}/{})
+Inventario lleno	Inventory full
+Soltar	Drop
+Guardar arma	Store weapon
 VÍDEO Y GRÁFICOS	VIDEO & GRAPHICS
 Vídeo y gráficos	Video & graphics
 Pantalla	Display

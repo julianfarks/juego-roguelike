@@ -53,7 +53,9 @@ final class RunSave {
             d.put("infRooms", rs.infRooms); d.put("infBK", rs.infBaseKills); d.put("infBB", rs.infBaseBoss); d.put("infT0", (int) rs.infT0);
             d.put("credK", rs.credKills); d.put("credB", rs.credBoss); d.put("seed", (double) rs.seed); d.put("chalK", rs.chalKind); d.put("streak", rs.streak); d.put("pstreak", rs.perfectStreak);
             d.put("cb", rs.cb); d.put("grenLvl", rs.grenLvl); d.put("secLvl", rs.secLvl);
-            d.put("ver", 2); d.put("secAct", rs.secActive); d.put("wst", rs.wState);       // v2: arsenal (arma activa) e inventario (objetos nuevos / vistos). Solo claves nuevas.
+            d.put("ver", 2); d.put("secAct", rs.secActive); d.put("wst", rs.wState);
+            rs.syncBag(); { int[] bg = new int[rs.bag.size()]; for (int i = 0; i < bg.length; i++) bg[i] = rs.bag.get(i); d.put("bag", bg); }   // bolsa de armas y estado propio de cada una
+            d.put("bAmmo", rs.bAmmo); d.put("bMag", rs.bMag); d.put("bLvl", rs.bLvl);       // v2: arsenal (arma activa) e inventario (objetos nuevos / vistos). Solo claves nuevas.
             d.put("unseen", new ArrayList<Object>(rs.unseen)); d.put("seen", new ArrayList<Object>(rs.seen));
             d.put("ts", (double) System.currentTimeMillis());
             p.store().put(key(slot), Json.write(d));
@@ -107,6 +109,15 @@ final class RunSave {
             rs.secActive = rs.sec != 0 && Json.bool(d, "secAct", false);
             int[] ws = Json.ints(d, "wst"); if (ws != null) for (int i = 0; i < Math.min(ws.length, rs.wState.length); i++) rs.wState[i] = Math.max(0, Math.min(3, ws[i]));
             if (rs.sec != 0) rs.wState[rs.sec] = 1;      // partidas antiguas: la secundaria equipada cuenta como obtenida
+            rs.bag.clear();
+            int[] bg = Json.ints(d, "bag"); if (bg != null) for (int id : bg) if (id > 0 && id < Items.SEC_COUNT && !rs.bag.contains(id)) rs.bag.add(id);
+            int[] ba = Json.ints(d, "bAmmo"), bm = Json.ints(d, "bMag"), bv = Json.ints(d, "bLvl");
+            for (int i = 1; i < Items.SEC_COUNT; i++) {
+                if (ba != null && i < ba.length) rs.bAmmo[i] = Math.max(0, ba[i]);
+                if (bm != null && i < bm.length) rs.bMag[i] = Math.max(-1, bm[i]);
+                if (bv != null && i < bv.length) rs.bLvl[i] = Math.max(0, Math.min(3, bv[i]));
+            }
+            rs.syncBag();                                  // partidas antiguas (sin "bag"): solo la equipada es tuya
             for (Object o : Save.arrOf(d, "unseen")) if (o instanceof String) rs.unseen.add((String) o);
             for (Object o : Save.arrOf(d, "seen")) if (o instanceof String) rs.seen.add((String) o);
             rs.devAssisted = Json.bool(d, "devAsst", false); rs.infinite = Json.bool(d, "inf", false); rs.infFromCampaign = Json.bool(d, "infCamp", false);

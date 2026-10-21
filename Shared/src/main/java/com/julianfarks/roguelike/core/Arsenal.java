@@ -541,46 +541,129 @@ final class Arsenal {
         if (near < 60 && UI.small != null) UI.small.center(g, Items.SEC_NAME[id] + (p.dropped ? " (soltada)" : ""), p.x, p.y - 34, rc, 1f);
     }
 
-    /** Equipa un arma como secundaria (sin comprobaciones). Conserva su municion. */
-    static void equip(RunState rs, int id, int ammo) { equip(rs, id, ammo, -1); }
-
-    /** `mag` = cargador que tenia el arma al soltarla (-1 = nueva: viene cargada). Cambiar de arma no regala municion ni acorta la recarga. */
-    static void equip(RunState rs, int id, int ammo, int mag) {
-        if (rs.sec != 0 && rs.sec != id && rs.wState[rs.sec] == 1) rs.wState[rs.sec] = 3;   // la anterior deja de estar equipada (quien la suelta la marca en el suelo)
-        rs.wState[id] = 1;
-        rs.sec = id;
-        rs.secAmmo = ammo > 0 ? ammo : Items.SEC_AMMO[id];
-        rs.secMagId = id; rs.secMag = mag; rs.secReload = 0;
+    // ================================================================ bolsa de armas (RunState.bag)
+    /** Guarda el estado vivo del arma equipada (municion, cargador, nivel) en su ficha de la bolsa. */
+    static void stash(RunState rs) {
+        int id = rs.sec;
+        if (id <= 0 || id >= Items.SEC_COUNT) return;
         normMag(rs);
+        rs.bAmmo[id] = rs.secAmmo; rs.bMag[id] = hasMag(id) ? rs.secMag : -1; rs.bLvl[id] = rs.secLvl;
+    }
+
+    /** Carga como equipada un arma de la bolsa con su propio estado. */
+    private static void load(RunState rs, int id) {
+        rs.sec = id;
+        rs.secAmmo = rs.bAmmo[id];
+        rs.secLvl = rs.bLvl[id];
+        rs.secMagId = id; rs.secMag = rs.bMag[id]; rs.secReload = 0;
+        rs.wState[id] = 1;
+        normMag(rs);
+    }
+
+    /** Equipa un arma que YA posees (desde el inventario). La anterior queda guardada con su municion, cargador y nivel. false si no la tienes o ya esta equipada. */
+    static boolean switchTo(RunState rs, int id) {
+        rs.syncBag();
+        if (id <= 0 || id >= Items.SEC_COUNT || !rs.bag.contains(id) || rs.sec == id) return false;
+        stash(rs);
+        load(rs, id);
+        return true;
+    }
+
+    /** Mete en la bolsa un arma nueva con su estado (sin equiparla). Ignora el tope: quien llama lo comprueba. */
+    private static void store(RunState rs, int id, int ammo, int mag, int lvl) {
+        if (!rs.bag.contains(id)) rs.bag.add(id);
+        rs.bAmmo[id] = ammo > 0 ? ammo : Items.SEC_AMMO[id];
+        rs.bMag[id] = mag; rs.bLvl[id] = Math.max(0, Math.min(3, lvl));
+        rs.wState[id] = 1;
         rs.markNew("w:" + id);
     }
 
+    /** Equipa un arma como secundaria (sin comprobaciones). Conserva su municion. */
+    static void equip(RunState rs, int id, int ammo) { equip(rs, id, ammo, -1); }
+
     /**
-     * El jugador pulsa INTERACTUAR sobre un arma del suelo. Atomico: la nueva se equipa y la anterior queda en el suelo en un punto seguro.
-     * Mismo arma que la equipada: mejora de nivel (o municion si ya esta al maximo). Devuelve el texto de resultado.
+     * Equipa `id`: si ya la posees, simplemente la cambias (conserva su estado); si es nueva entra en la bolsa y se equipa.
+     * La que estaba equipada NUNCA se destruye: queda guardada en la bolsa. `mag` = cargador que tenia el arma al soltarla (-1 = nueva: viene cargada).
+     */
+    static void equip(RunState rs, int id, int ammo, int mag) { equip(rs, id, ammo, mag, 0); }
+
+    static void equip(RunState rs, int id, int ammo, int mag, int lvl) {
+        rs.syncBag();
+        if (rs.bag.contains(id)) { if (rs.sec != id) switchTo(rs, id); rs.markNew("w:" + id); return; }
+        store(rs, id, ammo, mag, lvl);
+        if (rs.sec != id) { stash(rs); load(rs, id); }
+    }
+
+    static final int ADD_EQUIPPED = 0, ADD_STORED = 1, ADD_LEVEL = 2, ADD_AMMO = 3, ADD_FULL = -1;
+
+    /**
+     * Da al jugador el arma `id` (suelo, cofre, desbloqueo). Nunca sustituye a la equipada ni destruye nada:
+     * sin secundaria se equipa; nueva con hueco se guarda; repetida sube de nivel (o da municion al maximo); bolsa llena devuelve ADD_FULL sin tocar nada.
+     */
+    static int grant(RunState rs, int id, int ammo, int mag, int lvl) {
+        rs.syncBag();
+        if (id <= 0 || id >= Items.SEC_COUNT) return ADD_FULL;
+        if (rs.bag.contains(id)) {
+            boolean eq = rs.sec == id;
+            int cur = rs.lvlOf(id);
+            int add = Math.max(1, lvl + 1);
+            if (cur < 3) { int nl = Math.min(3, cur + add); if (eq) rs.secLvl = nl; else rs.bLvl[id] = nl; return ADD_LEVEL; }
+            int cap = Items.SEC_AMMO[id] * 2, extra = Math.max(2, ammo > 0 ? ammo : Items.SEC_AMMO[id] / 2);
+            if (eq) rs.secAmmo = Math.min(cap, rs.secAmmo + extra); else rs.bAmmo[id] = Math.min(cap, rs.bAmmo[id] + extra);
+            return ADD_AMMO;
+        }
+        if (rs.bag.size() >= RunState.WEAPON_BAG) return ADD_FULL;
+        if (rs.sec == Items.SEC_NONE) { equip(rs, id, ammo, mag, lvl); return ADD_EQUIPPED; }
+        store(rs, id, ammo, mag, lvl);
+        return ADD_STORED;
+    }
+
+    /** Texto para el jugador del resultado de grant(). */
+    static String grantMsg(RunState rs, int id, int res) {
+        String n = Items.SEC_NAME[id];
+        switch (res) {
+            case ADD_EQUIPPED: return "¡" + n + " equipada!";
+            case ADD_STORED: return n + " guardada (" + rs.bag.size() + "/" + RunState.WEAPON_BAG + ") · equípala en el inventario";
+            case ADD_LEVEL: return "¡" + n + " mejorada! Nivel " + rs.lvlOf(id);
+            case ADD_AMMO: return "Munición de " + n;
+            default: return "Inventario de armas lleno (" + RunState.WEAPON_BAG + ")";
+        }
+    }
+
+    /** Saca de la bolsa un arma poseida y la deja en el suelo (con su municion, cargador y nivel). Si era la equipada, se equipa la siguiente que tengas. */
+    static Prop dropOwned(Level lv, int id) {
+        RunState rs = lv.rs;
+        rs.syncBag();
+        if (!rs.bag.contains(id)) return null;
+        int ammo, mag, lvl;
+        if (rs.sec == id) { normMag(rs); ammo = rs.secAmmo; mag = hasMag(id) ? rs.secMag : -1; lvl = rs.secLvl; }
+        else { ammo = rs.bAmmo[id]; mag = rs.bMag[id]; lvl = rs.bLvl[id]; }
+        rs.bag.remove((Integer) id);
+        if (rs.sec == id) {
+            rs.sec = Items.SEC_NONE; rs.secAmmo = 0; rs.secLvl = 0; rs.secMag = -1; rs.secMagId = 0; rs.secReload = 0;
+            if (!rs.bag.isEmpty()) load(rs, rs.bag.get(0)); else rs.secActive = false;
+        }
+        Prop p = dropWeapon(lv, id, ammo, mag, lv.pl.x, lv.pl.y, true, false);
+        p.wLvl = lvl;
+        return p;
+    }
+
+    /**
+     * El jugador pulsa INTERACTUAR sobre un arma del suelo. Nunca sustituye ni destruye la equipada:
+     * sin secundaria se equipa; nueva se guarda en la bolsa; repetida mejora de nivel (o municion al maximo).
+     * Con la bolsa llena NO se recoge (devuelve null; RunScreen ofrece elegir cual soltar). Devuelve el texto de resultado.
      */
     static String takeGround(Level lv, Prop w) {
         RunState rs = lv.rs;
         Player pl = lv.pl;
         if (w == null || w.used || w.dead || w.pickLock > 0) return null;
         int id = w.arg;
+        int res = grant(rs, id, w.wAmmo, w.wMag, w.wLvl);
+        if (res == ADD_FULL) return null;
         w.used = true; w.dead = true;
-        String msg;
+        String msg = grantMsg(rs, id, res);
         int col = Items.SEC_COL[id];
-        if (rs.sec == Items.SEC_NONE) {
-            equip(rs, id, w.wAmmo, w.wMag);
-            msg = "¡" + Items.SEC_NAME[id] + " equipada!";
-        } else if (rs.sec == id) {
-            if (rs.secLvl < 3) { rs.secLvl++; msg = "¡" + Items.SEC_NAME[id] + " mejorada! Nivel " + rs.secLvl; }
-            else { rs.secAmmo = Math.min(Items.SEC_AMMO[id] * 2, rs.secAmmo + Math.max(2, w.wAmmo)); msg = "Munición de " + Items.SEC_NAME[id]; }
-        } else {
-            int old = rs.sec, oldAmmo = rs.secAmmo; normMag(rs); int oldMag = rs.secMag;
-            dropWeapon(lv, old, oldAmmo, oldMag, pl.x, pl.y, true, false);
-            equip(rs, id, w.wAmmo, w.wMag);
-            msg = "Intercambio: " + Items.SEC_NAME[id];
-            lv.text(pl.x, pl.y - pl.bh - 26, "soltaste " + Items.SEC_NAME[old], 0xB8B8C0, false);
-        }
-        lv.text(pl.x, pl.y - pl.bh - 12, msg, col, true);
+        lv.text(pl.x, pl.y - pl.bh - 12, res == ADD_STORED ? Items.SEC_NAME[id] + " guardada" : msg, col, true);
         lv.ps.burst(lv.rng, pl.x, pl.y - 16, col, 18, 100, 0.6f, 3, 40, true);
         lv.fx("fx_star", "burst", pl.x, pl.y - 18, 0.9f, col, Platform.ADD | Platform.TINT);
         Snd.sfx("secret", 0.8f);

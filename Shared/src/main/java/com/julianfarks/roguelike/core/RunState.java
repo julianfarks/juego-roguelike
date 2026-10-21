@@ -38,6 +38,24 @@ public final class RunState {
     public void markSeen(String key) { if (unseen.remove(key) || true) seen.add(key); }
     /** Estado de cada arma secundaria en esta partida: 0 nunca la tuviste, 1 equipada, 2 en el suelo de esta sala, 3 dejada atras (sala abandonada). */
     public final int[] wState = new int[Items.SEC_COUNT];
+    // ---- Bolsa de armas de ESTA partida (lo que el jugador posee de verdad). Conceptos separados:
+    //      descubierta permanente (Save/Codex), poseida en la run (bag), equipada (sec) y mejoras acumuladas (cb/spLvl/bLvl).
+    /** Capacidad de armas secundarias que se pueden llevar a la vez (la equipada incluida). Unico punto de configuracion. */
+    public static final int WEAPON_BAG = 10;
+    /** Armas secundarias poseidas en esta run, en orden de obtencion (incluye la equipada). Nunca contiene armas solo vistas o del suelo. */
+    public final List<Integer> bag = new ArrayList<>();
+    /** Estado propio de cada arma guardada (no equipada): municion, cargador (-1 = lleno) y nivel. La equipada vive en sec/secAmmo/secMag/secLvl. */
+    public final int[] bAmmo = new int[Items.SEC_COUNT], bMag = new int[Items.SEC_COUNT], bLvl = new int[Items.SEC_COUNT];
+    public boolean owns(int id) { syncBag(); return id > 0 && bag.contains(id); }
+    /** La equipada siempre cuenta como poseida (partidas antiguas, pruebas que la fijan a mano). */
+    public void syncBag() {
+        if (sec > 0 && sec < Items.SEC_COUNT && !bag.contains(sec)) bag.add(sec);
+        bag.removeIf(i -> i == null || i <= 0 || i >= Items.SEC_COUNT);
+    }
+    public boolean bagFull() { syncBag(); return bag.size() >= WEAPON_BAG; }
+    /** Nivel de un arma poseida (la equipada usa secLvl). */
+    public int lvlOf(int id) { return id == sec ? secLvl : (id > 0 && id < Items.SEC_COUNT ? bLvl[id] : 0); }
+    public int ammoOf(int id) { return id == sec ? secAmmo : (id > 0 && id < Items.SEC_COUNT ? bAmmo[id] : 0); }
     public int secretsFound;
     public final int[] cb = new int[ChestLoot.N];     // mejoras de cofres (ver ChestLoot)
     public int grenLvl, secLvl;                      // niveles de mejora de granada y arma secundaria
@@ -102,7 +120,7 @@ public final class RunState {
         this.companion = Companions.active(Save.S);
         stats.recalc(this);
         Unlocks.applyStart(this);
-        if (sec != 0) { wState[sec] = 1; seen.add("w:" + sec); }     // arma de partida: ya la conoces
+        if (sec != 0) { wState[sec] = 1; seen.add("w:" + sec); syncBag(); }     // arma de partida: ya la conoces y es tuya
         stats.recalc(this);
         hp = stats.maxHp;
         potions = stats.potionsMax;

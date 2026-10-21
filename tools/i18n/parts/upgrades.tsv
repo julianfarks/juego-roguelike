@@ -1,0 +1,37 @@
+# Bolsa de armas, mejoras acumulables, sinergias y escalado tras jefes
+INVENTARIO DE ARMAS LLENO	WEAPON INVENTORY FULL	INVENTAIRE D'ARMES PLEIN	武器背包已满
+{}/{} · elige cuál soltar al suelo o cancela	{}/{} · choose one to drop or cancel	{}/{} · choisissez laquelle lâcher ou annulez	{}/{} · 选择要丢下的武器或取消
++ mejor · - peor · = igual que el arma marcada	+ better · - worse · = same as the marked weapon	+ mieux · - moins bien · = identique à l'arme marquée	+ 更好 · - 更差 · = 与标记的武器相同
+Soltar {}	Drop {}	Lâcher {}	丢下{}
+Soltar al suelo	Drop to the floor	Lâcher au sol	丢到地上
+SOLTAR	DROP	LÂCHER	丢下
+SOLTAR (EQUIPADA)	DROP (EQUIPPED)	LÂCHER (ÉQUIPÉE)	丢下（已装备）
+SOLTAR · EQUIP.	DROP · EQUIP.	LÂCHER · ÉQUIP.	丢下 · 已装备
+NUEVA	NEW	NOUVELLE	新
+Nv +{}	Lv +{}	Nv +{}	等级 +{}
+{} usos	{} uses	{} utilisations	{}次
+GUARDADA	STORED	RANGÉE	已收纳
+Guardada	Stored	Rangée	已收纳
+Arma guardada	Stored weapon	Arme rangée	收纳的武器
+Guardada en tu inventario: equípala cuando quieras; conserva su munición y su nivel.	Stored in your inventory: equip it whenever you want; it keeps its ammo and level.	Rangée dans votre inventaire : équipez-la quand vous voulez ; elle garde ses munitions et son niveau.	已收入背包：随时可以装备，弹药和等级都会保留。
+Ninguna equipada · elige una de tus armas	None equipped · pick one of your weapons	Aucune équipée · choisissez l'une de vos armes	未装备 · 从你的武器中选择一把
+ARMA SECUNDARIA · {}/{}	SECONDARY WEAPON · {}/{}	ARME SECONDAIRE · {}/{}	副武器 · {}/{}
+E equipada · ! nueva · +n nivel · X soltar	E equipped · ! new · +n level · X drop	E équipée · ! nouveau · +n niveau · X lâcher	E 已装备 · ! 新 · +n 等级 · X 丢下
+E equipada · ! nueva · +n nivel	E equipped · ! new · +n level	E équipée · ! nouveau · +n niveau	E 已装备 · ! 新 · +n 等级
+E equip. · ! nueva	E equip. · ! new	E équip. · ! nouveau	E 已装备 · ! 新
+Munición {}/{}	Ammo {}/{}	Munitions {}/{}	弹药 {}/{}
+¡{} equipada!	{} equipped!	{} équipée !	已装备{}！
+{} guardada ({}/{}) · equípala en el inventario	{} stored ({}/{}) · equip it from the inventory	{} rangée ({}/{}) · équipez-la depuis l'inventaire	{}已收纳（{}/{}）· 可在背包中装备
+{} guardada	{} stored	{} rangée	{}已收纳
+¡{} mejorada! Nivel {}	{} upgraded! Level {}	{} améliorée ! Niveau {}	{}已强化！等级{}
+Munición de {}	{} ammo	Munitions : {}	{}弹药
+Inventario de armas lleno ({})	Weapon inventory full ({})	Inventaire d'armes plein ({})	武器背包已满（{}）
+Inventario lleno: quedó en el suelo	Inventory full: it stayed on the floor	Inventaire plein : elle est restée au sol	背包已满：武器留在地上
+El arma sigue en el suelo	The weapon is still on the floor	L'arme est toujours au sol	武器还在地上
+Ya la tienes: sube de nivel	You already have it: it levels up	Vous l'avez déjà : elle monte de niveau	你已拥有：将会升级
+Inventario lleno ({}): elegirás cuál soltar	Inventory full ({}): you'll choose one to drop	Inventaire plein ({}) : vous choisirez laquelle lâcher	背包已满（{}）：你将选择丢下一把
+Se guarda en tu inventario ({}/{})	Goes to your inventory ({}/{})	Rangée dans votre inventaire ({}/{})	放入背包（{}/{}）
+Inventario lleno	Inventory full	Inventaire plein	背包已满
+Soltar	Drop	Lâcher	丢下
+Guardar arma	Store weapon	Ranger l'arme	收纳武器
+Munición	Ammo	Munitions	弹药

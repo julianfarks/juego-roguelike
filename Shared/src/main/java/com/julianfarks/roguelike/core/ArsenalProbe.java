@@ -38,6 +38,7 @@ final class ArsenalProbe {
         lv.props.removeIf(q -> q.dead);
         p.invuln = 99f; p.secCd = 0; p.swapCd = 0; rs.hp = rs.stats.maxHp; p.alive = true;
         rs.sec = 0; rs.secAmmo = 0; rs.secLvl = 0; rs.secActive = false; rs.secMag = -1; rs.secMagId = 0; rs.secReload = 0; p.wfx.reset(); p.wfx.precN = 0; p.wfx.precTgt = null; p.wfx.rhythmN = 0; p.wfx.rhythmBoost = 0; p.wfx.lifeCd = 0; p.wfx.recoverCd = 0; p.wfx.c3N = 0; java.util.Arrays.fill(rs.wState, 0); rs.unseen.clear();
+        rs.bag.clear(); java.util.Arrays.fill(rs.bAmmo, 0); java.util.Arrays.fill(rs.bMag, 0); java.util.Arrays.fill(rs.bLvl, 0);
         place(100);
     }
 
@@ -110,7 +111,7 @@ final class ArsenalProbe {
         scr.interact();
         ck("primera secundaria: se equipa directamente (con su municion completa)", rs.sec == Items.SEC_BOW && rs.secAmmo == Items.SEC_AMMO[Items.SEC_BOW] && weaponProps() == 0);
         ck("primera secundaria: la principal sigue activa hasta cambiar", !rs.secActive);
-        ck("primera secundaria: queda registrada como obtenida y nueva en el inventario", rs.wState[Items.SEC_BOW] == 1 && rs.unseen.contains("w:" + Items.SEC_BOW));
+        ck("primera secundaria: queda registrada como obtenida y nueva en el inventario", rs.wState[Items.SEC_BOW] == 1 && rs.owns(Items.SEC_BOW) && rs.unseen.contains("w:" + Items.SEC_BOW));
 
         // ---------------------------------------------------------------- 3. cambio de arma en combate
         float hp0 = rs.hp; int n0 = lv.projs.size(); int ammo0 = rs.secAmmo;
@@ -142,31 +143,48 @@ final class ArsenalProbe {
         in.key('T', true); in.key('J', true); fr(2); in.key('T', false); in.key('J', false); fr(1);
         ck("cambiar y atacar en el mismo fotograma: como mucho un disparo (" + (14 - rs.secAmmo) + ")", 14 - rs.secAmmo <= 1);
 
-        // ---------------------------------------------------------------- 5. intercambio con el suelo
+        // ---------------------------------------------------------------- 5. bolsa de armas: recoger guarda (nunca sustituye), equipar desde la bolsa conserva el estado
         reset(); dummy(300);
-        rs.sec = Items.SEC_BOW; rs.secAmmo = 11; rs.wState[Items.SEC_BOW] = 1;
-        float px0 = p.x;
-        Prop w2 = Arsenal.dropWeapon(lv, Items.SEC_CHAKRAM, 0, p.x + 4, p.y, false, true);
+        rs.sec = Items.SEC_BOW; rs.secAmmo = 11; rs.wState[Items.SEC_BOW] = 1; rs.syncBag();
+        Arsenal.dropWeapon(lv, Items.SEC_CHAKRAM, 0, p.x + 4, p.y, false, true);
         fr(70);
         scr.interact();
-        Prop old = firstWeapon();
-        ck("intercambio: la nueva queda equipada", rs.sec == Items.SEC_CHAKRAM && rs.secAmmo == Items.SEC_AMMO[Items.SEC_CHAKRAM]);
-        ck("intercambio: la anterior queda en el suelo (nunca se destruye) con su municion", old != null && old.arg == Items.SEC_BOW && old.wAmmo == 11 && weaponProps() == 1);
-        ck("intercambio: la anterior esta en un sitio seguro (suelo firme, sin pinchos ni pared, dentro del escenario)", old != null && Arsenal.spotOk(lv, old));
-        ck("intercambio: inventario refleja equipada / en el suelo", rs.wState[Items.SEC_CHAKRAM] == 1 && rs.wState[Items.SEC_BOW] == 2);
-        fr(10);
-        scr.interact();
-        ck("intercambio: una pulsacion seguida no devuelve el arma de golpe (bloqueo 0,7 s)", rs.sec == Items.SEC_CHAKRAM && weaponProps() == 1);
-        fr(60);
-        ck("estar encima del arma soltada no la recoge sola", rs.sec == Items.SEC_CHAKRAM);
-        scr.interact();
-        ck("recuperar el arma que se acaba de soltar", rs.sec == Items.SEC_BOW && rs.secAmmo == 11 && weaponProps() == 1 && firstWeapon().arg == Items.SEC_CHAKRAM);
-        // 30 intercambios seguidos: siempre 1 en la mano + 1 en el suelo
-        boolean inv = true; int cnt = 0;
-        for (int i = 0; i < 30; i++) { fr(46); Prop q = firstWeapon(); scr.interact(); if (weaponProps() != 1 || rs.sec == 0) inv = false; cnt++; }
-        ck("30 intercambios seguidos: siempre exactamente 1 arma en la mano y 1 en el suelo (sin duplicar ni perder)", inv && cnt == 30);
-        int a = rs.sec; int b = firstWeapon().arg;
-        ck("30 intercambios seguidos: son las mismas dos armas", (a == Items.SEC_BOW && b == Items.SEC_CHAKRAM) || (a == Items.SEC_CHAKRAM && b == Items.SEC_BOW));
+        ck("recoger otra arma con una equipada: se GUARDA en la bolsa y la equipada no cambia", rs.sec == Items.SEC_BOW && rs.secAmmo == 11 && rs.owns(Items.SEC_CHAKRAM) && weaponProps() == 0);
+        ck("la guardada conserva su municion completa", rs.bAmmo[Items.SEC_CHAKRAM] == Items.SEC_AMMO[Items.SEC_CHAKRAM]);
+        rs.secLvl = 2; rs.secAmmo = 7;
+        ck("equipar la guardada desde la bolsa", Arsenal.switchTo(rs, Items.SEC_CHAKRAM) && rs.sec == Items.SEC_CHAKRAM && rs.secAmmo == Items.SEC_AMMO[Items.SEC_CHAKRAM] && rs.secLvl == 0);
+        ck("la anterior queda guardada con su municion (7) y su nivel (2)", rs.owns(Items.SEC_BOW) && rs.bAmmo[Items.SEC_BOW] == 7 && rs.bLvl[Items.SEC_BOW] == 2);
+        Arsenal.switchTo(rs, Items.SEC_BOW);
+        ck("volver a la anterior: recupera su municion y nivel", rs.sec == Items.SEC_BOW && rs.secAmmo == 7 && rs.secLvl == 2);
+        boolean inv = true;
+        for (int i = 0; i < 30; i++) { Arsenal.switchTo(rs, rs.sec == Items.SEC_BOW ? Items.SEC_CHAKRAM : Items.SEC_BOW); if (rs.bag.size() != 2 || weaponProps() != 0 || rs.sec == 0) inv = false; }
+        ck("30 cambios seguidos desde la bolsa: siempre las mismas 2 armas (sin duplicar ni perder)", inv && rs.owns(Items.SEC_BOW) && rs.owns(Items.SEC_CHAKRAM));
+        ck("30 cambios: municion y nivel de cada arma intactos", rs.ammoOf(Items.SEC_BOW) == 7 && rs.lvlOf(Items.SEC_BOW) == 2 && rs.ammoOf(Items.SEC_CHAKRAM) == Items.SEC_AMMO[Items.SEC_CHAKRAM]);
+        Prop dropped = Arsenal.dropOwned(lv, Items.SEC_CHAKRAM);
+        ck("soltar un arma: sale de la bolsa al suelo, en sitio seguro (no se destruye)", dropped != null && !rs.owns(Items.SEC_CHAKRAM) && weaponProps() == 1 && Arsenal.spotOk(lv, dropped));
+        fr(60); p.x = dropped.x; fr(3); scr.interact();
+        ck("recogerla de nuevo: vuelve a la bolsa", rs.owns(Items.SEC_CHAKRAM) && weaponProps() == 0 && rs.sec == Items.SEC_BOW);
+        // ---- bolsa llena: 10 armas distintas; la 11ª pide elegir (soltar una concreta o cancelar)
+        reset(); dummy(300);
+        for (int id = 1; id <= 12; id++) Arsenal.grant(rs, id, 0, -1, 0);
+        ck("la bolsa guarda " + RunState.WEAPON_BAG + " armas distintas (y no mas)", rs.bag.size() == RunState.WEAPON_BAG && RunState.WEAPON_BAG >= 10 && rs.sec == 1 && !rs.owns(11));
+        Prop wf = Arsenal.dropWeapon(lv, Items.SEC_WHIP, 0, p.x + 4, p.y, false, true);
+        fr(70); scr.interact();
+        ck("bolsa llena: recoger abre la eleccion y no cambia nada aun", scr.ov == RunScreen.OV_WCMP && rs.bag.size() == RunState.WEAPON_BAG && !wf.dead && rs.sec == 1);
+        scr.dbgWcmp(false);
+        ck("cancelar: el arma sigue en el suelo y la bolsa intacta", scr.ov == RunScreen.OV_NONE && !wf.dead && !rs.owns(Items.SEC_WHIP) && rs.bag.size() == RunState.WEAPON_BAG);
+        fr(60); scr.interact();
+        scr.dbgWcmpPick(rs.bag.indexOf(3)); scr.dbgWcmp(true);
+        boolean axeFloor = false; for (Prop q : lv.props) if (q.kind.equals("weapon") && !q.dead && q.arg == 3) axeFloor = true;
+        ck("soltar una concreta: esa queda en el suelo y la nueva entra en su hueco", rs.owns(Items.SEC_WHIP) && !rs.owns(3) && axeFloor && rs.bag.size() == RunState.WEAPON_BAG && wf.dead);
+        ck("soltar otra que no era la equipada: la equipada no cambia", rs.sec == 1);
+        for (Prop q : lv.props) if (q.kind.equals("weapon")) q.dead = true;
+        lv.props.removeIf(q -> q.dead);
+        Arsenal.dropWeapon(lv, Items.SEC_CHAIN, 0, p.x + 4, p.y, false, true);
+        fr(70); scr.interact(); scr.dbgWcmpPick(rs.bag.indexOf(rs.sec)); scr.dbgWcmp(true);
+        ck("sustituir la equipada: la nueva queda equipada en su lugar y la anterior en el suelo", rs.sec == Items.SEC_CHAIN && !rs.owns(1) && weaponProps() == 1 && firstWeapon().arg == 1);
+        rs.syncBag(); java.util.Set<Integer> uniqB = new java.util.HashSet<>(rs.bag);
+        ck("la bolsa nunca tiene duplicados", uniqB.size() == rs.bag.size());
 
         // arma repetida: mejora en vez de duplicar
         reset(); dummy(200); rs.sec = Items.SEC_SPEAR; rs.secAmmo = 3; rs.wState[Items.SEC_SPEAR] = 1;   // con un enemigo vivo la sala no se da por completada (si no, reparte cofres y a veces un arma)
@@ -175,7 +193,11 @@ final class ArsenalProbe {
         if (!(rs.secLvl == 1 && weaponProps() == 0 && rs.sec == Items.SEC_SPEAR)) System.out.println("AT DIAG arma repetida: secLvl=" + rs.secLvl + " armasSuelo=" + weaponProps() + " sec=" + rs.sec + " jugador=(" + p.x + "," + p.y + ") estado=" + p.state + " hp=" + rs.hp + " enemigos=" + lv.enemies.size() + " props=" + lv.props.size() + " interactuableCercano=" + (lv.nearestInteractable() == null ? "null" : lv.nearestInteractable().kind));
         { StringBuilder kb = new StringBuilder("AT DIAG   props:"); for (Prop q : lv.props) kb.append(" ").append(q.kind).append(q.label != null ? "(" + q.label + ")" : "").append("@").append((int) q.x); kb.append(" | exitX=" + lv.room.exitX); System.out.println(kb); }
         for (Prop q : lv.props) if (q.kind.equals("weapon") && !q.dead) System.out.println("AT DIAG   arma en suelo: id=" + q.arg + " x=" + q.x + " y=" + q.y + " dropped=" + q.dropped + " used=" + q.used + " pickLock=" + q.pickLock);
-        ck("arma repetida del suelo: mejora de nivel (sin segundo ejemplar)", rs.secLvl == 1 && weaponProps() == 0 && rs.sec == Items.SEC_SPEAR);
+        ck("arma repetida del suelo: mejora de nivel (sin segundo ejemplar)", rs.secLvl == 1 && weaponProps() == 0 && rs.sec == Items.SEC_SPEAR && rs.bag.size() == 1);
+        // repetida pero guardada (no equipada): sube el nivel de ESA arma
+        Arsenal.grant(rs, Items.SEC_AXE, 0, -1, 0);
+        Arsenal.dropWeapon(lv, Items.SEC_AXE, 0, p.x + 2, p.y, false, true); fr(5); scr.interact();
+        ck("arma repetida que tienes guardada: sube su nivel, no la duplica", rs.bLvl[Items.SEC_AXE] == 1 && rs.bag.size() == 2 && rs.sec == Items.SEC_SPEAR && weaponProps() == 0);
 
         // ---------------------------------------------------------------- 6. colocacion segura al soltar
         reset();
@@ -326,19 +348,27 @@ final class ArsenalProbe {
     }
 
     static void chestTests() {
-        // con secundaria equipada: pide confirmacion y permite rechazar sin perder opciones
+        // con secundaria equipada: la nueva va a la bolsa (no sustituye), sin pantalla extra
         reset(); dummy(300);
-        rs.sec = Items.SEC_KNIFE; rs.secAmmo = 7; rs.wState[1] = 1;
+        rs.sec = Items.SEC_KNIFE; rs.secAmmo = 7; rs.wState[1] = 1; rs.syncBag();
         ChestLoot.Reward[] offer = {ChestLoot.secNew(rs, Items.SEC_BOW, rs.rng), ChestLoot.secNew(rs, Items.SEC_SPEAR, rs.rng), ChestLoot.secNew(rs, Items.SEC_WAND, rs.rng)};
+        boolean noRepl = true; for (ChestLoot.Reward x : offer) if (!x.replaces.isEmpty() || x.note.isEmpty()) noRepl = false;
+        ck("cartas de arma con hueco en la bolsa: sin «Sustituye a», con aviso de que se guarda", noRepl);
         scr.cOffer = offer; scr.cMode = ChestLoot.MODE_WEAPONS;
         scr.dbgChest(1); scr.dbgConfirm();
-        ck("cofre de armas con secundaria equipada: NO la reemplaza sin consentimiento (abre la comparacion)", scr.ov == RunScreen.OV_WCMP && rs.sec == Items.SEC_KNIFE);
+        ck("cofre de armas con secundaria equipada: la nueva se guarda y la equipada sigue igual", scr.ov == RunScreen.OV_NONE && rs.sec == Items.SEC_KNIFE && rs.secAmmo == 7 && rs.owns(Items.SEC_SPEAR) && weaponProps() == 0);
+        // bolsa llena desde un cofre: elegir cual soltar o volver a las ofertas
+        reset(); dummy(300);
+        for (int id = 1; id <= 10; id++) Arsenal.grant(rs, id, 0, -1, 0);
+        offer = new ChestLoot.Reward[]{ChestLoot.secNew(rs, Items.SEC_WHIP, rs.rng), ChestLoot.secNew(rs, Items.SEC_CHAIN, rs.rng), ChestLoot.secNew(rs, Items.SEC_LANCE, rs.rng)};
+        ck("carta de arma con la bolsa llena: avisa de que habra que soltar una", offer[0].replaces.contains("lleno"));
+        scr.cOffer = offer; scr.cMode = ChestLoot.MODE_WEAPONS; scr.dbgChest(0); scr.dbgConfirm();
+        ck("cofre con la bolsa llena: pide elegir cual soltar", scr.ov == RunScreen.OV_WCMP && rs.bag.size() == 10);
         scr.dbgWcmp(false);
-        ck("rechazar el intercambio: vuelve a las 3 opciones y conserva la arma actual", scr.ov == RunScreen.OV_CHEST && scr.cOffer != null && scr.cOffer.length == 3 && rs.sec == Items.SEC_KNIFE && weaponProps() == 0);
-        scr.dbgChest(1); scr.dbgConfirm(); scr.dbgWcmp(true);
-        ck("aceptar el intercambio: equipa la elegida", rs.sec == Items.SEC_SPEAR && scr.ov == RunScreen.OV_NONE);
+        ck("cancelar: vuelve a las 3 ofertas, bolsa intacta", scr.ov == RunScreen.OV_CHEST && scr.cOffer != null && scr.cOffer.length == 3 && rs.bag.size() == 10 && !rs.owns(Items.SEC_WHIP));
+        scr.dbgChest(0); scr.dbgConfirm(); scr.dbgWcmpPick(rs.bag.indexOf(4)); scr.dbgWcmp(true);
         Prop dr = firstWeapon();
-        ck("aceptar el intercambio: la anterior (Cuchillos, 7 usos) queda en el suelo, no se pierde", dr != null && dr.arg == Items.SEC_KNIFE && dr.wAmmo == 7 && Arsenal.spotOk(lv, dr));
+        ck("soltar el Orbe y tomar la del cofre: el Orbe queda en el suelo (no se pierde)", rs.owns(Items.SEC_WHIP) && !rs.owns(4) && dr != null && dr.arg == 4 && Arsenal.spotOk(lv, dr) && rs.bag.size() == 10 && scr.ov == RunScreen.OV_NONE);
         // sin secundaria: se equipa directamente
         reset(); dummy(300);
         offer = new ChestLoot.Reward[]{ChestLoot.secNew(rs, Items.SEC_ORB, rs.rng), ChestLoot.secNew(rs, Items.SEC_AXE, rs.rng), ChestLoot.secNew(rs, Items.SEC_BOW, rs.rng)};
@@ -349,6 +379,10 @@ final class ArsenalProbe {
         boolean dupOffered = false; int ups = 0;
         for (int i = 0; i < 400; i++) for (ChestLoot.Reward x : ChestLoot.roll(rs, ChestLoot.MODE_WEAPONS, 3)) { if (x.kind == ChestLoot.K_SEC_NEW && x.id == rs.sec) dupOffered = true; if (x.kind == ChestLoot.K_SEC_UP) ups++; }
         ck("cofres: nunca ofrecen la misma arma como nueva; el duplicado se compensa con mejora (" + ups + " mejoras en 400 cofres)", !dupOffered && ups > 0);
+        Arsenal.grant(rs, Items.SEC_AXE, 0, -1, 0); Arsenal.grant(rs, Items.SEC_SPEAR, 0, -1, 0);
+        boolean ownOffered = false;
+        for (int i = 0; i < 400; i++) for (ChestLoot.Reward x : ChestLoot.roll(rs, ChestLoot.MODE_WEAPONS, 3)) if (x.kind == ChestLoot.K_SEC_NEW && rs.owns(x.id)) ownOffered = true;
+        ck("cofres: nunca ofrecen como nueva un arma que ya tienes guardada", !ownOffered);
     }
 
     // ================================================================ armas secundarias nuevas (visual, recarga, pasivas, limites)
@@ -439,6 +473,15 @@ final class ArsenalProbe {
             ck("guardado v2: conserva arma 2ª, municion, nivel, arma activa y estados de armas", b.sec == Items.SEC_CHAKRAM && b.secAmmo == 9 && b.secLvl == 2 && b.secActive && b.wState[Items.SEC_BOW] == 3 && b.wState[Items.SEC_CHAKRAM] == 1);
             ck("guardado v2: conserva objetos nuevos/vistos del inventario", b.unseen.contains("w:6") && b.seen.contains("w:5"));
         }
+        // bolsa de armas: orden, municion, cargador y nivel de cada guardada
+        reset(); rs.sec = Items.SEC_CHAKRAM; rs.secAmmo = 9; rs.secLvl = 2; rs.syncBag();
+        Arsenal.grant(rs, Items.SEC_BOW, 4, -1, 1); Arsenal.grant(rs, Items.SEC_BOLT, 3, 2, 0); Arsenal.grant(rs, Items.SEC_SPEAR, 0, -1, 0);
+        boolean wb = RunSave.write(game.P, scr, 1); RunScreen backB = RunSave.load(game, 1);
+        if (backB != null) {
+            RunState b = backB.rs;
+            ck("guardado: la bolsa conserva sus armas en orden (" + b.bag + ")", wb && b.bag.equals(rs.bag) && b.sec == Items.SEC_CHAKRAM);
+            ck("guardado: cada arma guardada conserva municion, cargador y nivel", b.bAmmo[Items.SEC_BOW] == 4 && b.bLvl[Items.SEC_BOW] == 1 && b.bAmmo[Items.SEC_BOLT] == 3 && b.bMag[Items.SEC_BOLT] == 2 && b.bLvl[Items.SEC_SPEAR] == 0);
+        } else ck("guardado: la bolsa se carga", false);
         // ---- 12. guardado conserva el cargador
         reset(); rs.sec = Items.SEC_BOLT; rs.secAmmo = 6; rs.secActive = true; rs.wState[Items.SEC_BOLT] = 1; rs.secMag = 2; rs.secMagId = rs.sec;
         boolean w2 = RunSave.write(game.P, scr, 1); RunScreen back2 = RunSave.load(game, 1);
@@ -446,13 +489,13 @@ final class ArsenalProbe {
         // partida antigua (v1): sin las claves nuevas
         String raw = game.P.store().get(RunSave.key(1), "");
         Map<String, Object> d = Json.parseObj(raw);
-        d.remove("ver"); d.remove("secAct"); d.remove("wst"); d.remove("unseen"); d.remove("seen");
+        d.remove("ver"); d.remove("secAct"); d.remove("wst"); d.remove("unseen"); d.remove("seen"); d.remove("bag"); d.remove("bAmmo"); d.remove("bMag"); d.remove("bLvl");
         d.put("sec", 3.0); d.put("secAmmo", 5.0);
         String old = Json.write(d);
         game.P.store().put(RunSave.key(2), old);
         game.P.store().put(RunSave.key(2) + "_bak", "");
         RunScreen ol = RunSave.load(game, 2);
-        ck("partida antigua (sin claves nuevas): carga sin error y conserva lo suyo", ol != null && ol.rs.sec == Items.SEC_AXE && ol.rs.secAmmo == 5 && !ol.rs.secActive && ol.rs.wState[Items.SEC_AXE] == 1);
+        ck("partida antigua (sin claves nuevas): carga sin error y conserva lo suyo", ol != null && ol.rs.sec == Items.SEC_AXE && ol.rs.secAmmo == 5 && !ol.rs.secActive && ol.rs.wState[Items.SEC_AXE] == 1 && ol.rs.bag.size() == 1 && ol.rs.owns(Items.SEC_AXE));
         if (ol != null) { ol.inv.open(false); int nn = 0; for (int c = 0; c < Inventory.C_COUNT; c++) nn += ol.inv.catNew[c]; ck("partida antigua: nada de lo que ya llevabas aparece como nuevo en el inventario (" + nn + ")", nn == 0); }
         ck("partida antigua: se crea una copia de seguridad intacta antes de modificarla", old.equals(game.P.store().get(RunSave.key(2) + "_bak", "")));
         // id de arma fuera de rango (partida de otra version) no rompe
@@ -472,6 +515,8 @@ final class ArsenalProbe {
             rs.sec = Items.SEC_CHAKRAM; rs.secAmmo = 7; rs.secLvl = 1; rs.secActive = name.equals("inv") || name.equals("slots");
             java.util.Arrays.fill(rs.wState, 0);
             rs.wState[Items.SEC_CHAKRAM] = 1; rs.wState[Items.SEC_BOW] = 3; rs.wState[Items.SEC_SPEAR] = 2; rs.wState[Items.SEC_EMBER] = 3; rs.wState[Items.SEC_WAND] = 3;
+            rs.bag.clear(); rs.syncBag(); for (int wid : new int[]{Items.SEC_BOW, Items.SEC_WAND, Items.SEC_EMBER}) Arsenal.grant(rs, wid, 0, -1, wid == Items.SEC_WAND ? 1 : 0);
+            if (name.equals("wcmp")) for (int wid = 1; wid < Items.SEC_COUNT && !rs.bagFull(); wid++) if (wid != Items.SEC_SPEAR && wid != Items.SEC_SUMMON && !rs.owns(wid)) Arsenal.grant(rs, wid, 0, -1, 0);
             rs.seen.clear(); rs.unseen.clear();
             int n = 0; for (Blessing b : Blessing.ALL) { if (n >= 46) break; if (b.id % 3 == 0) { rs.bless[b.id] = 1 + (b.id % Math.max(1, b.max)); n++; } }
             rs.relicsThisRun[0] = rs.relicsThisRun[3] = rs.relicsThisRun[5] = true; rs.pacts[1] = 1; rs.gren = 2; rs.grenCount = 3; rs.special = 3; rs.shield = 2;
@@ -518,13 +563,15 @@ final class ArsenalProbe {
         reset();
         int dex0 = Save.S.dex.hashCode(); boolean[] rel0 = Save.S.relics.clone();
         // estado variado de la run
-        rs.sec = Items.SEC_CHAKRAM; rs.secAmmo = 8; rs.secLvl = 1; rs.wState[Items.SEC_CHAKRAM] = 1; rs.wState[Items.SEC_BOW] = 3; rs.wState[Items.SEC_SPEAR] = 2;
+        rs.sec = Items.SEC_CHAKRAM; rs.secAmmo = 8; rs.secLvl = 1; rs.wState[Items.SEC_CHAKRAM] = 1; rs.wState[Items.SEC_BOW] = 3; rs.wState[Items.SEC_SPEAR] = 2; rs.syncBag();
+        Arsenal.grant(rs, Items.SEC_WAND, 0, -1, 0); Arsenal.grant(rs, Items.SEC_AXE, 0, -1, 2);       // 2 guardadas; Arco (dejado) y Lanza (en el suelo) NO son tuyas
         java.util.Arrays.fill(rs.bless, 0); int nb = 0;
         for (Blessing b : Blessing.ALL) if (b.id % 2 == 0 && nb < 120) { rs.bless[b.id] = 1; nb++; }
         rs.relicsThisRun[1] = rs.relicsThisRun[4] = true; rs.pacts[0] = 1; rs.gren = 3; rs.grenCount = 2; rs.special = 2; rs.shield = 1;
         rs.bx = new BlessRt(); BlessFx.sync(rs); rs.recalc();
         Inventory.seeAll(rs);
         ck("inventario: una run recien armada no marca nada como nuevo", rs.unseen.isEmpty());
+        { RunState fresh = new RunState(rs.cls, 4242L, 0); ck("nueva partida: la bolsa empieza solo con el arma inicial (nada de la run anterior)", fresh.bag.size() == (fresh.sec != 0 ? 1 : 0) && (fresh.sec == 0 || fresh.bag.get(0) == fresh.sec)); }
         float time0 = lv.time;
         // abrir con la tecla (Tab)
         in.key(9, true); sf(2); in.key(9, false); sf(1);
@@ -540,9 +587,24 @@ final class ArsenalProbe {
         // listas = estado real
         iv.setCat(Inventory.C_WEAPONS);
         int expectW = 1 + 3;
-        ck("armas: principal + las 3 secundarias vistas (equipada, suelo, dejada) = " + iv.items.size(), iv.items.size() == expectW && iv.items.get(0).kind == 1 && iv.items.get(1).state == Inventory.ST_EQUIPPED);
-        boolean sts = true; for (Inventory.Item it : iv.items) if (it.wid == Items.SEC_BOW && it.state != Inventory.ST_LEFT || it.wid == Items.SEC_SPEAR && it.state != Inventory.ST_FLOOR) sts = false;
-        ck("armas: estados reales (equipada / en el suelo / dejada atras)", sts);
+        ck("armas: principal + SOLO las 3 secundarias poseidas (equipada + 2 guardadas) = " + iv.items.size(), iv.items.size() == expectW && iv.items.get(0).kind == 1 && iv.items.get(1).state == Inventory.ST_EQUIPPED);
+        boolean sts = true; for (Inventory.Item it : iv.items) { if (it.wid == Items.SEC_BOW || it.wid == Items.SEC_SPEAR) sts = false; if ((it.wid == Items.SEC_WAND || it.wid == Items.SEC_AXE) && it.state != Inventory.ST_OWNED) sts = false; }
+        ck("armas: no aparecen armas vistas, del suelo ni dejadas atras; las guardadas salen como guardadas", sts);
+        int axeL = -1; for (Inventory.Item it : iv.items) if (it.wid == Items.SEC_AXE) axeL = it.lvl;
+        ck("armas: la guardada muestra su propio nivel (+2)", axeL == 2);
+        // equipar una guardada desde el inventario (boton Equipar) y soltar otra
+        iv.focus = 0; for (int i = 0; i < iv.items.size(); i++) if (iv.items.get(i).wid == Items.SEC_WAND) iv.sel = i;
+        scr.layoutOverlay();
+        boolean hasEq = scr.debugLabels().contains("Equipar"), hasDrop = scr.debugLabels().contains("Soltar");
+        iv.activate();
+        ck("inventario: «Equipar» una guardada la equipa y la anterior queda guardada (botones Equipar/Soltar: " + hasEq + "/" + hasDrop + ")", hasEq && hasDrop && rs.sec == Items.SEC_WAND && rs.owns(Items.SEC_CHAKRAM) && rs.bAmmo[Items.SEC_CHAKRAM] == 8 && rs.bLvl[Items.SEC_CHAKRAM] == 1);
+        ck("inventario: tras equipar sigue seleccionada el arma elegida", iv.cur() != null && iv.cur().wid == Items.SEC_WAND);
+        Arsenal.switchTo(rs, Items.SEC_CHAKRAM); iv.rebuild();
+        for (int i = 0; i < iv.items.size(); i++) if (iv.items.get(i).wid == Items.SEC_AXE) iv.sel = i;
+        scr.layoutOverlay(); int wp0 = weaponProps();
+        iv.dropSel();
+        ck("inventario: «Soltar» deja el arma en el suelo y la quita de la lista", !rs.owns(Items.SEC_AXE) && weaponProps() == wp0 + 1 && iv.items.size() == expectW - 1);
+        Arsenal.grant(rs, Items.SEC_AXE, 0, -1, 2); for (Prop q : lv.props) if (q.kind.equals("weapon") && q.arg == Items.SEC_AXE) q.dead = true; iv.rebuild();
         iv.setCat(Inventory.C_BLESS);
         int bl = 0; for (int v : rs.bless) if (v > 0) bl++;
         ck("bendiciones: la lista coincide con las que tiene la run (" + bl + ")", iv.items.size() == bl);
@@ -595,13 +657,13 @@ final class ArsenalProbe {
         // nuevas
         iv.setCat(Inventory.C_WEAPONS);
         rs.wState[Items.SEC_BOW] = 0; rs.sec = Items.SEC_CHAKRAM;
-        Arsenal.equip(rs, Items.SEC_WAND, 0);
+        Arsenal.equip(rs, Items.SEC_EMBER, 0);
         iv.rebuild();
-        boolean newFlag = false; for (Inventory.Item it : iv.items) if (it.wid == Items.SEC_WAND && it.isNew) newFlag = true;
+        boolean newFlag = false; for (Inventory.Item it : iv.items) if (it.wid == Items.SEC_EMBER && it.isNew) newFlag = true;
         ck("arma recien obtenida: aparece marcada como nueva", newFlag && iv.catNew[Inventory.C_WEAPONS] >= 1);
-        iv.focus = 0; for (int i = 0; i < iv.items.size(); i++) if (iv.items.get(i).wid == Items.SEC_WAND) iv.sel = i;
+        iv.focus = 0; for (int i = 0; i < iv.items.size(); i++) if (iv.items.get(i).wid == Items.SEC_EMBER) iv.sel = i;
         scr.layoutOverlay(); sf(60);
-        ck("tras inspeccionarla un momento deja de ser nueva", rs.seen.contains("w:" + Items.SEC_WAND) && iv.catNew[Inventory.C_WEAPONS] == 0);
+        ck("tras inspeccionarla un momento deja de ser nueva", rs.seen.contains("w:" + Items.SEC_EMBER) && iv.catNew[Inventory.C_WEAPONS] == 0);
         // activar el arma desde el inventario
         iv.rebuild(); iv.focus = 1; iv.slot = 1; p.swapCd = 0; rs.secActive = false; scr.layoutOverlay();
         scr.key(10, true);
@@ -623,8 +685,8 @@ final class ArsenalProbe {
         Arsenal.dropWeapon(lv, Items.SEC_AXE, 0, p.x + 3, p.y, false, true); sf(2);
         scr.interact();
         iv.open(false); iv.rebuild();
-        int fl2 = 0, eq = 0; for (Inventory.Item it : iv.items) { if (it.state == Inventory.ST_FLOOR) fl2++; if (it.state == Inventory.ST_EQUIPPED && it.kind != 1) eq++; }
-        ck("tras intercambiar con el suelo, el inventario muestra 1 equipada y 1 en el suelo", eq == 1 && fl2 == 1);
+        int fl2 = 0, eq = 0, own = 0; for (Inventory.Item it : iv.items) { if (it.state == Inventory.ST_FLOOR || it.state == Inventory.ST_LEFT) fl2++; if (it.state == Inventory.ST_EQUIPPED && it.kind != 1) eq++; if (it.state == Inventory.ST_OWNED && it.cat == Inventory.C_WEAPONS) own++; }
+        ck("tras recoger del suelo, el inventario muestra 1 equipada y 1 guardada (nada del suelo)", eq == 1 && own == 1 && fl2 == 0);
         // en el inventario no puede haber dos secundarias equipadas
         int sec = 0; for (Inventory.Item it : iv.items) if (it.state == Inventory.ST_EQUIPPED && it.kind != 1) sec++;
         ck("nunca aparecen dos secundarias equipadas", sec == 1);

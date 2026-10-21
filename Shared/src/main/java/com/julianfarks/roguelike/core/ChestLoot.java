@@ -52,7 +52,7 @@ final class ChestLoot {
 
     static final class Reward {
         int kind, id, rar, val;
-        String name, amount = "", desc = "", bad = "", replaces = "", icon = "";
+        String name, amount = "", desc = "", bad = "", replaces = "", icon = "", note = "";   // replaces: aviso (naranja); note: dato neutro (p. ej. «se guarda en tu inventario»)
         int col = 0xFFFFFFFF;
         String key() { return kind + ":" + id; }
     }
@@ -207,7 +207,7 @@ final class ChestLoot {
         int rar = rollRarity(r, luck, 0);
         List<Integer> c = new ArrayList<>();
         if (cat == 0) { for (int i = 1; i < Items.SP_COUNT; i++) if (i != rs.special) c.add(i); }
-        else if (cat == 1) { for (int i = 1; i < Items.SEC_COUNT; i++) if (i != rs.sec) c.add(i); }
+        else if (cat == 1) { for (int i = 1; i < Items.SEC_COUNT; i++) if (!rs.owns(i)) c.add(i); }      // solo armas que NO tienes (las tuyas suben de nivel aparte)
         else { for (int i = 0; i < Items.SH_COUNT; i++) if (i != rs.shield) c.add(i); }
         if (cat == 1 && rs.sec != 0 && rs.secLvl < 3 && r.chance(0.18f)) return secUp(rs);   // arma repetida: en vez de un duplicado, mejora de nivel
         if (c.isEmpty()) return null;
@@ -235,7 +235,10 @@ final class ChestLoot {
         Reward x = new Reward();
         x.kind = K_SEC_NEW; x.id = id; x.rar = SEC_RAR[id]; x.name = Items.SEC_NAME[id]; x.icon = Items.SEC_ICON[id]; x.col = Items.SEC_COL[id] | 0xFF000000;
         x.amount = "Arma secundaria · " + Items.SEC_AMMO[id] + " usos"; x.desc = Items.SEC_DESC[id];
-        if (rs.sec != 0) x.replaces = "Sustituye a " + Items.SEC_NAME[rs.sec];
+        // la bolsa guarda varias armas: nunca sustituye a la equipada
+        if (rs.owns(id)) x.note = "Ya la tienes: sube de nivel";
+        else if (rs.bagFull()) x.replaces = "Inventario lleno (" + RunState.WEAPON_BAG + "): elegirás cuál soltar";
+        else if (rs.sec != 0) x.note = "Se guarda en tu inventario (" + (rs.bag.size() + 1) + "/" + RunState.WEAPON_BAG + ")";
         return x;
     }
 
@@ -341,7 +344,7 @@ final class ChestLoot {
             case K_GREN_NEW: rs.gren = x.id; rs.grenCount = x.val; break;
             case K_GREN_MORE: rs.grenCount = Math.min(12, rs.grenCount + x.val); break;
             case K_GREN_UP: rs.grenLvl = Math.min(3, rs.grenLvl + 1); break;
-            case K_SEC_NEW: Arsenal.equip(rs, x.id, 0); break;
+            case K_SEC_NEW: Arsenal.grant(rs, x.id, 0, -1, 0); break;      // a la bolsa (RunScreen ya libero hueco si estaba llena)
             case K_SEC_AMMO: rs.secAmmo = Math.min(Items.SEC_AMMO[rs.sec] * 2, rs.secAmmo + x.val); break;
             case K_SEC_UP: rs.secLvl = Math.min(3, rs.secLvl + 1); break;
             case K_SPECIAL: rs.special = x.id; rs.markNew("o:sp" + x.id); rs.recalc(); break;

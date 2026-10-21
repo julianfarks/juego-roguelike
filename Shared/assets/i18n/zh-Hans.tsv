@@ -2063,6 +2063,39 @@ RARA	稀有
 cristal	水晶
 ¡Guardia rota!	破防！
 bloqueado	已格挡
+INVENTARIO DE ARMAS LLENO	武器背包已满
+{}/{} · elige cuál soltar al suelo o cancela	{}/{} · 选择要丢下的武器或取消
++ mejor · - peor · = igual que el arma marcada	+ 更好 · - 更差 · = 与标记的武器相同
+Soltar {}	丢下{}
+Soltar al suelo	丢到地上
+SOLTAR	丢下
+SOLTAR (EQUIPADA)	丢下（已装备）
+SOLTAR · EQUIP.	丢下 · 已装备
+Nv +{}	等级 +{}
+{} usos	{}次
+GUARDADA	已收纳
+Guardada	已收纳
+Arma guardada	收纳的武器
+Guardada en tu inventario: equípala cuando quieras; conserva su munición y su nivel.	已收入背包：随时可以装备，弹药和等级都会保留。
+Ninguna equipada · elige una de tus armas	未装备 · 从你的武器中选择一把
+ARMA SECUNDARIA · {}/{}	副武器 · {}/{}
+E equipada · ! nueva · +n nivel · X soltar	E 已装备 · ! 新 · +n 等级 · X 丢下
+E equipada · ! nueva · +n nivel	E 已装备 · ! 新 · +n 等级
+E equip. · ! nueva	E 已装备 · ! 新
+¡{} equipada!	已装备{}！
+{} guardada ({}/{}) · equípala en el inventario	{}已收纳（{}/{}）· 可在背包中装备
+{} guardada	{}已收纳
+¡{} mejorada! Nivel {}	{}已强化！等级{}
+Munición de {}	{}弹药
+Inventario de armas lleno ({})	武器背包已满（{}）
+Inventario lleno: quedó en el suelo	背包已满：武器留在地上
+El arma sigue en el suelo	武器还在地上
+Ya la tienes: sube de nivel	你已拥有：将会升级
+Inventario lleno ({}): elegirás cuál soltar	背包已满（{}）：你将选择丢下一把
+Se guarda en tu inventario ({}/{})	放入背包（{}/{}）
+Inventario lleno	背包已满
+Soltar	丢下
+Guardar arma	收纳武器
 VÍDEO Y GRÁFICOS	视频与图形
 Vídeo y gráficos	视频与图形
 Pantalla	显示

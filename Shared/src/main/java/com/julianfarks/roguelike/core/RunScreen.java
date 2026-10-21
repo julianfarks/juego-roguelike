@@ -43,8 +43,11 @@ final class RunScreen extends Screen implements Level.Listener {
     private int blTab, blPage;         // lista de bendiciones activas: pestana (0 bendiciones, 1 sinergias) y pagina
     private int[] blRows = new int[0];
     ChestLoot.Reward[] cOffer;      // las 3 opciones del cofre abierto
-    private ChestLoot.Reward wcmp;  // arma de cofre pendiente de confirmar el intercambio (OV_WCMP)
-    private int wcmpSel;            // 0 = Conservar la actual (por defecto), 1 = Intercambiar
+    // OV_WCMP: bolsa de armas llena. Se ofrece elegir que arma soltar (queda en el suelo, nunca se destruye) o cancelar.
+    private ChestLoot.Reward wcmp;  // arma de cofre pendiente (o null si viene del suelo)
+    private Prop wcmpProp;          // arma del suelo pendiente (o null si viene de un cofre)
+    private int wcmpSel;            // 0 = Cancelar (por defecto), 1 = Soltar la marcada y guardar la nueva
+    private int wcmpPick;           // indice en rs.bag del arma marcada para soltar
     int cMode;
     Prop ovProp;
     // ---- laboratorio (Modo Desarrollador)
@@ -649,7 +652,9 @@ final class RunScreen extends Screen implements Level.Listener {
             case "cursed": openCursed(p); break;
             case "cage": rescue(p); break;
             case "relic": openChest(p); break;
-            case "weapon": { String m = Arsenal.takeGround(lv, p); if (m != null) { toast = m; toastT = 2.2f; } break; }
+            case "weapon": {
+                if (!p.used && !p.dead && p.pickLock <= 0 && !rs.owns(p.arg) && rs.bagFull()) { openBagFull(null, p); break; }   // llena: elegir cual soltar o cancelar
+                String m = Arsenal.takeGround(lv, p); if (m != null) { toast = m; toastT = 2.2f; } break; }
             case "merchant":
                 ovProp = p;
                 if (shop == null) shop = p.arg == 1 ? genWanderShop() : genShop();
@@ -785,15 +790,15 @@ final class RunScreen extends Screen implements Level.Listener {
         if (ov == OV_CHEST && offerSel == SKIP_SEL) { skipChest(); return; }
         if (ov != OV_CHEST || offerSel < 0 || ovT < 0.3f || cOffer == null) return;
         ChestLoot.Reward x = cOffer[offerSel];
-        // nunca se sustituye la arma secundaria sin consentimiento: se muestra la comparacion y se pide confirmar
-        if (x.kind == ChestLoot.K_SEC_NEW && rs.sec != 0 && rs.sec != x.id) { wcmp = x; wcmpSel = 0; openOv(OV_WCMP); sel = 0; return; }
+        // la nueva arma se guarda en la bolsa; si esta llena, el jugador elige cual soltar (o vuelve a las ofertas): nada se destruye en silencio
+        if (x.kind == ChestLoot.K_SEC_NEW && !rs.owns(x.id) && rs.bagFull()) { openBagFull(x, null); return; }
         finishChest(x);
     }
 
-    /** Aplica la recompensa elegida. Si sustituye a una arma 2ª equipada, esa queda en el suelo (en un punto seguro): jamas se destruye en silencio. */
+    /** Aplica la recompensa elegida. Las armas nuevas van a la bolsa (no sustituyen a la equipada). */
     private void finishChest(ChestLoot.Reward x) {
-        if (x.kind == ChestLoot.K_SEC_NEW && rs.sec != 0 && rs.sec != x.id) Arsenal.dropWeapon(lv, rs.sec, rs.secAmmo, lv.pl.x, lv.pl.y, true, false);
         ChestLoot.apply(rs, x);
+        if (x.kind == ChestLoot.K_SEC_NEW) { int res = rs.sec == x.id ? Arsenal.ADD_EQUIPPED : Arsenal.ADD_STORED; toast = Arsenal.grantMsg(rs, x.id, res); toastT = 2.4f; }
         if (x.kind == ChestLoot.K_BLESS) { boolean taken = rs.blessingTaken; applyBless(x.id); rs.blessingTaken = taken; }   // la recompensa de jefe no gasta el altar de la mazmorra
         if (x.kind == ChestLoot.K_BARRIER) lv.pl.shield = Math.min(70, lv.pl.shield + x.val);
         boolean bossRew = cMode == ChestLoot.MODE_BOSS && rewardBoss != null;
@@ -815,11 +820,35 @@ final class RunScreen extends Screen implements Level.Listener {
     void dbgChestOvT() { ovT = 1f; }
     void dbgConfirm() { ovT = 1f; confirmChest(); }
     void dbgWcmp(boolean swap) { ovT = 1f; wcmpConfirm(swap); }
+    void dbgWcmpPick(int idx) { wcmpPick = idx; }
+    int dbgWcmpPick() { return wcmpPick; }
+
+    /** Bolsa de armas llena: abre la eleccion (soltar una concreta o cancelar). Marca por defecto el arma equipada. */
+    private void openBagFull(ChestLoot.Reward x, Prop p) {
+        rs.syncBag();
+        wcmp = x; wcmpProp = p; wcmpSel = 0;
+        wcmpPick = Math.max(0, rs.bag.indexOf(rs.sec));
+        if (x == null) openOv(OV_WCMP); else { ov = OV_WCMP; ovT = 0; layoutOverlay(); Snd.sfx("ui_open", 0.7f); }
+        sel = 0;
+    }
+
+    int wcmpNewId() { return wcmp != null ? wcmp.id : wcmpProp != null ? wcmpProp.arg : 0; }
 
     private void wcmpConfirm(boolean swap) {
-        if (ov != OV_WCMP || wcmp == null || ovT < 0.25f) return;
-        if (swap) { ChestLoot.Reward x = wcmp; ov = OV_CHEST; finishChest(x); }
-        else { ov = OV_CHEST; ovT = 0.3f; wcmp = null; layoutOverlay(); Snd.sfx("ui_back", 0.7f); }     // rechazar: vuelve a las 3 opciones, sin perder ninguna
+        if (ov != OV_WCMP || (wcmp == null && wcmpProp == null) || ovT < 0.25f) return;
+        rs.syncBag();
+        if (swap && !rs.bag.isEmpty()) {
+            int drop = rs.bag.get(Math.max(0, Math.min(rs.bag.size() - 1, wcmpPick)));
+            boolean wasEq = drop == rs.sec;
+            boolean act = rs.secActive;
+            Arsenal.dropOwned(lv, drop);                                    // al suelo, con su municion y nivel: se puede recuperar
+            lv.text(lv.pl.x, lv.pl.y - lv.pl.bh - 26, "soltaste " + Items.SEC_NAME[drop], 0xB8B8C0, false);
+            int nid = wcmpNewId();
+            if (wcmp != null) { ChestLoot.Reward x = wcmp; ov = OV_CHEST; finishChest(x); }
+            else { Prop wp = wcmpProp; wcmpProp = null; wcmp = null; closeOv(); wp.pickLock = 0; String m = Arsenal.takeGround(lv, wp); if (m != null) { toast = m; toastT = 2.2f; } }
+            if (wasEq && rs.owns(nid)) { Arsenal.switchTo(rs, nid); rs.secActive = act; }     // sustituiste la que llevabas: la nueva ocupa su lugar
+        } else if (wcmp != null) { ov = OV_CHEST; ovT = 0.3f; wcmp = null; layoutOverlay(); Snd.sfx("ui_back", 0.7f); }     // cancelar: vuelve a las 3 opciones, sin perder ninguna
+        else { if (wcmpProp != null) wcmpProp.pickLock = 0.5f; wcmpProp = null; closeOv(); lv.text(lv.pl.x, lv.pl.y - 50, "El arma sigue en el suelo", 0xB8C8E0, false); }
     }
 
     // =============================================================== overlays
@@ -1283,6 +1312,7 @@ final class RunScreen extends Screen implements Level.Listener {
             if (!x.bad.isEmpty()) n += UI.small.wrapLines(x.bad, tw) * st;
             n += UI.small.wrapLines(x.desc, (int) cw - 16) * st;
             if (!x.replaces.isEmpty()) n += 3 + UI.small.wrapLines(x.replaces, (int) cw - 16) * st;
+            else if (!x.note.isEmpty()) n += 3 + UI.small.wrapLines(x.note, (int) cw - 16) * st;
             need = Math.max(need, n + 8);
         }
         return Math.min(need, ViewSize.h - 44 - 34);
@@ -1477,9 +1507,14 @@ final class RunScreen extends Screen implements Level.Listener {
                 break;
             }
             case OV_WCMP: {
+                rs.syncBag();
                 float bw = 150;
-                Hit keep = add(w / 2f - bw - 6, 222, bw, 24, "Conservar la actual", () -> wcmpConfirm(false)); keep.tag = 0;
-                Hit swp = add(w / 2f + 6, 222, bw, 24, "Intercambiar", () -> wcmpConfirm(true)); swp.tag = 1;
+                int n = rs.bag.size();
+                float ts = 19, tg = 3, tx0 = w / 2f - (n * ts + (n - 1) * tg) / 2f;
+                for (int i = 0; i < n; i++) { final int ii = i; Hit ht = add(tx0 + i * (ts + tg), 38, ts, ts, null, () -> { wcmpPick = ii; wcmpSel = 1; Snd.sfx("ui_hover", 0.5f); layoutOverlay(); }); ht.tag = 20 + i; ht.plain = true; }
+                Hit keep = add(w / 2f - bw - 6, 222, bw, 24, "Cancelar", () -> wcmpConfirm(false)); keep.tag = 0;
+                int pid = n > 0 ? rs.bag.get(Math.max(0, Math.min(n - 1, wcmpPick))) : 0;
+                Hit swp = add(w / 2f + 6, 222, bw, 24, UI.fitLabel(UI.small, "Soltar " + (pid > 0 ? Items.SEC_NAME[pid] : ""), bw - 12), () -> wcmpConfirm(true)); swp.tag = 1;
                 break;
             }
             case OV_REVIVE: {
@@ -1604,11 +1639,15 @@ final class RunScreen extends Screen implements Level.Listener {
     /** Comparacion de armas (OV_WCMP): equipa 'cur' y ofrece 'neu' desde un cofre. */
     void debugTxtWcmp(int cur, int neu) {
         rs.sec = cur; rs.wState[cur] = 1; rs.secActive = false;
-        wcmp = ChestLoot.secNew(rs, neu, rs.rng); wcmpSel = 0; openOv(OV_WCMP); ovT = 1f;
+        rs.syncBag();
+        for (int id = 1; id < Items.SEC_COUNT && !rs.bagFull(); id++) if (id != neu && !rs.owns(id)) Arsenal.grant(rs, id, 0, -1, 0);   // bolsa llena para ver la eleccion
+        openBagFull(ChestLoot.secNew(rs, neu, rs.rng), null); ovT = 1f;
     }
     /** Inventario con una arma secundaria concreta equipada y seleccionada (hoja de arma de ArsenalUI). */
     void debugTxtInvWeapon(int wid) {
-        rs.sec = wid; rs.wState[wid] = 1; rs.secActive = true;
+        if (!rs.owns(wid) && rs.bagFull()) for (int i = rs.bag.size() - 1; i >= 0; i--) if (rs.bag.get(i) != rs.sec) { rs.bag.remove(i); break; }   // (solo capturas) hueco para el arma pedida
+        Arsenal.equip(rs, wid, 0);
+        rs.wState[wid] = 1; rs.secActive = true;
         openInventory(true); inv.cat = Inventory.C_WEAPONS; inv.rebuild();
         for (int i = 0; i < inv.items.size(); i++) if (inv.items.get(i).wid == wid) inv.sel = i;
         ovT = 1f;
@@ -1778,7 +1817,10 @@ final class RunScreen extends Screen implements Level.Listener {
                 if (code == 27) { back(); return; }
             }
             if (ov == OV_WCMP && isDown) {
-                if (code == 37 || code == 'A' || code == 39 || code == 'D') { wcmpSel = 1 - wcmpSel; sel = wcmpSel; Snd.sfx("ui_hover", 0.5f); }
+                int bn = Math.max(1, rs.bag.size());
+                if (code == 37 || code == 'A') { wcmpPick = (wcmpPick + bn - 1) % bn; wcmpSel = 1; layoutOverlay(); Snd.sfx("ui_hover", 0.5f); }          // elegir cual soltar
+                else if (code == 39 || code == 'D') { wcmpPick = (wcmpPick + 1) % bn; wcmpSel = 1; layoutOverlay(); Snd.sfx("ui_hover", 0.5f); }
+                else if (code == 38 || code == 'W' || code == 40 || code == 'S' || code == 9) { wcmpSel = 1 - wcmpSel; sel = wcmpSel; Snd.sfx("ui_hover", 0.5f); }   // Cancelar <-> Soltar
                 else if ((code == 10 || code == 32 || code == 'J') && ovT > 0.25f) wcmpConfirm(wcmpSel == 1);
                 else if (code == 27) wcmpConfirm(false);
                 return;
@@ -1933,7 +1975,7 @@ final class RunScreen extends Screen implements Level.Listener {
             case "relic": return "Tomar";
             case "fountain": return "Beber";
             case "npc": return "Hablar";
-            case "weapon": return rs.sec == 0 ? "Recoger" : rs.sec == p.arg ? "Mejorar" : "Intercambiar";
+            case "weapon": return rs.owns(p.arg) ? (rs.lvlOf(p.arg) < 3 ? "Mejorar" : "Munición") : rs.sec == 0 ? "Recoger" : rs.bagFull() ? "Inventario lleno" : "Guardar arma";
             case "chest": return p.pending != null ? "Elegir" : p.arg == 4 ? "¡Cofre superior!" : p.arg == 3 ? "¡Cofre secreto!" : "Abrir";
             default: return "Usar";
         }
@@ -2343,7 +2385,8 @@ final class RunScreen extends Screen implements Level.Listener {
                     ty += 2;
                     if (!x.bad.isEmpty()) ty += UI.small.drawWrappedCenter(g, x.bad, cx, ty, tw, UI.RED, fadeIn, st);
                     int lines = UI.small.drawWrapped(g, x.desc, h.x + 8, ty, (int) h.w - 16, 0xE8E0E0, fadeIn);
-                    if (!x.replaces.isEmpty()) UI.small.drawWrapped(g, x.replaces, h.x + 8, Math.max(ty + lines + 3, y + h.h - 6 - UI.small.wrapLines(x.replaces, (int) h.w - 16) * (UI.small.ch + 2)), (int) h.w - 16, 0xFFFF9A6A, fadeIn);
+                    String foot = !x.replaces.isEmpty() ? x.replaces : x.note;       // aviso (naranja) o dato neutro (azul)
+                    if (!foot.isEmpty()) UI.small.drawWrapped(g, foot, h.x + 8, Math.max(ty + lines + 3, y + h.h - 6 - UI.small.wrapLines(foot, (int) h.w - 16) * (UI.small.ch + 2)), (int) h.w - 16, !x.replaces.isEmpty() ? 0xFFFF9A6A : 0xFF9AC8E8, fadeIn);
                 }
                 for (Hit h : hits) if (h.tag == SKIP_SEL && "Omitir".equals(h.label) && offerSel == SKIP_SEL) {      // marco claro en la opcion de omitir seleccionada
                     int cc = Mth.withAlpha(0xB8C8E0, (int) (255 * fadeIn));
@@ -2509,19 +2552,38 @@ final class RunScreen extends Screen implements Level.Listener {
                 break;
             }
             case OV_WCMP: {
-                if (wcmp == null) break;
+                int nid = wcmpNewId();
+                if (nid <= 0) break;
+                rs.syncBag();
+                int n = rs.bag.size();
+                int pid = n > 0 ? rs.bag.get(Math.max(0, Math.min(n - 1, wcmpPick))) : 0;
                 dim(g, w, 0.74f * fadeIn);
-                UI.title(g, "¿INTERCAMBIAR ARMA?", w / 2f, 8, UI.GOLD, fadeIn);
-                UI.small.center(g, "Tu arma actual quedará en el suelo y podrás recogerla de nuevo", w / 2f, 27, UI.GREY, fadeIn);
-                float pw = Math.min(210, (w - 30) / 2f), ph = 172, x0 = w / 2f - pw - 5, x1 = w / 2f + 5;
-                UI.panel(g, wcmpSel == 0 ? 1 : 0, x0, 40, pw, ph, fadeIn);
-                UI.panel(g, wcmpSel == 1 ? 1 : 0, x1, 40, pw, ph, fadeIn);
-                UI.small.center(g, "TU ARMA SEC. · " + rs.secAmmo + " usos", x0 + pw / 2f, 45, 0xFFB8B0B8, fadeIn);
-                UI.small.center(g, "NUEVA · " + Items.SEC_AMMO[wcmp.id] + " usos", x1 + pw / 2f, 45, UI.GOLD, fadeIn);
-                ArsenalUI.sheet(g, x0 + 8, 58, pw - 16, rs.sec, 0, rs.secAmmo, 40 + ph - 6);
-                ArsenalUI.sheet(g, x1 + 8, 58, pw - 16, wcmp.id, rs.sec, 0, 40 + ph - 6);
-                UI.small.drawWrappedCenter(g, "+ mejor · - peor · = igual que tu arma actual", w / 2f, 214, (int) (w - 20), 0xFF9890A0, fadeIn, UI.small.ch + 1);
-                for (Hit h : hits) { h.plain = false; drawButton(g, h); }
+                UI.title(g, "INVENTARIO DE ARMAS LLENO", w / 2f, 6, UI.GOLD, fadeIn);
+                UI.small.center(g, UI.fitLabel(UI.small, n + "/" + RunState.WEAPON_BAG + " · elige cuál soltar al suelo o cancela", w - 20), w / 2f, 25, UI.GREY, fadeIn);
+                for (Hit h : hits) if (h.tag >= 20 && h.tag < 20 + n) {                 // tus armas: la marcada para soltar con marco dorado
+                    int i = h.tag - 20, id = rs.bag.get(i);
+                    boolean mk = i == wcmpPick;
+                    g.rect(h.x, h.y, h.w, h.h, mk ? 0xFF2A2030 : 0xFF14141E, false);
+                    g.rect(h.x, h.y, h.w, 1, 0xFF000000 | (Inventory.RAR_RGB[Math.min(4, Items.SEC_RAR[id])]), false);
+                    UI.iconC(g, Items.SEC_ICON[id], h.x + h.w / 2f, h.y + h.h / 2f, 1f, fadeIn * (mk ? 1f : 0.75f));
+                    if (id == rs.sec) { g.rect(h.x + h.w - 5, h.y + 2, 3, 3, 0xFFFFD25A, false); }      // la equipada
+                    if (mk) { int c = 0xFFFFE070; g.rect(h.x - 2, h.y - 2, h.w + 4, 1, c, false); g.rect(h.x - 2, h.y + h.h + 1, h.w + 4, 1, c, false); g.rect(h.x - 2, h.y - 2, 1, h.h + 4, c, false); g.rect(h.x + h.w + 1, h.y - 2, 1, h.h + 4, c, false); }
+                }
+                float pw = Math.min(210, (w - 30) / 2f), py = 62, ph = 150, x0 = w / 2f - pw - 5, x1 = w / 2f + 5;
+                UI.panel(g, wcmpSel == 1 ? 1 : 0, x0, py, pw, ph, fadeIn);
+                UI.panel(g, 0, x1, py, pw, ph, fadeIn);
+                int pa = rs.ammoOf(pid), pl2 = rs.lvlOf(pid);
+                {   // de la cabecera mas completa a la mas corta: la primera que cabe entera
+                    String eqs = pid == rs.sec ? " (EQUIPADA)" : "", lvs = pl2 > 0 ? " · Nv +" + pl2 : "", ams = Items.infinite(pid) ? "" : " · " + pa + " usos";
+                    String[] cand = {"SOLTAR" + eqs + lvs + ams, "SOLTAR" + eqs + lvs, "SOLTAR" + (pid == rs.sec ? " · EQUIP." : "") + lvs, "SOLTAR"};
+                    String hd = cand[cand.length - 1]; for (String c : cand) if (UI.small.width(c) <= pw - 10) { hd = c; break; }
+                    UI.small.center(g, hd, x0 + pw / 2f, py + 5, 0xFFFF9A6A, fadeIn);
+                }
+                UI.small.center(g, UI.fitLabel(UI.small, "NUEVA" + (Items.infinite(nid) ? "" : " · " + Items.SEC_AMMO[nid] + " usos"), pw - 10), x1 + pw / 2f, py + 5, UI.GOLD, fadeIn);
+                if (pid > 0) ArsenalUI.sheet(g, x0 + 8, py + 18, pw - 16, pid, 0, pa, py + ph - 6);
+                ArsenalUI.sheet(g, x1 + 8, py + 18, pw - 16, nid, pid, 0, py + ph - 6);
+                UI.small.drawWrappedCenter(g, "+ mejor · - peor · = igual que el arma marcada", w / 2f, 213, (int) (w - 20), 0xFF9890A0, fadeIn, UI.small.ch + 1);
+                for (Hit h : hits) if (h.tag == 0 || h.tag == 1) { h.plain = false; drawButton(g, h); }
                 break;
             }
             case OV_REVIVE: {

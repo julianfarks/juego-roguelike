@@ -2063,6 +2063,39 @@ RARA	RARE
 cristal	cristal
 ¡Guardia rota!	Garde brisée !
 bloqueado	bloqué
+INVENTARIO DE ARMAS LLENO	INVENTAIRE D'ARMES PLEIN
+{}/{} · elige cuál soltar al suelo o cancela	{}/{} · choisissez laquelle lâcher ou annulez
++ mejor · - peor · = igual que el arma marcada	+ mieux · - moins bien · = identique à l'arme marquée
+Soltar {}	Lâcher {}
+Soltar al suelo	Lâcher au sol
+SOLTAR	LÂCHER
+SOLTAR (EQUIPADA)	LÂCHER (ÉQUIPÉE)
+SOLTAR · EQUIP.	LÂCHER · ÉQUIP.
+Nv +{}	Nv +{}
+{} usos	{} utilisations
+GUARDADA	RANGÉE
+Guardada	Rangée
+Arma guardada	Arme rangée
+Guardada en tu inventario: equípala cuando quieras; conserva su munición y su nivel.	Rangée dans votre inventaire : équipez-la quand vous voulez ; elle garde ses munitions et son niveau.
+Ninguna equipada · elige una de tus armas	Aucune équipée · choisissez l'une de vos armes
+ARMA SECUNDARIA · {}/{}	ARME SECONDAIRE · {}/{}
+E equipada · ! nueva · +n nivel · X soltar	E équipée · ! nouveau · +n niveau · X lâcher
+E equipada · ! nueva · +n nivel	E équipée · ! nouveau · +n niveau
+E equip. · ! nueva	E équip. · ! nouveau
+¡{} equipada!	{} équipée !
+{} guardada ({}/{}) · equípala en el inventario	{} rangée ({}/{}) · équipez-la depuis l'inventaire
+{} guardada	{} rangée
+¡{} mejorada! Nivel {}	{} améliorée ! Niveau {}
+Munición de {}	Munitions : {}
+Inventario de armas lleno ({})	Inventaire d'armes plein ({})
+Inventario lleno: quedó en el suelo	Inventaire plein : elle est restée au sol
+El arma sigue en el suelo	L'arme est toujours au sol
+Ya la tienes: sube de nivel	Vous l'avez déjà : elle monte de niveau
+Inventario lleno ({}): elegirás cuál soltar	Inventaire plein ({}) : vous choisirez laquelle lâcher
+Se guarda en tu inventario ({}/{})	Rangée dans votre inventaire ({}/{})
+Inventario lleno	Inventaire plein
+Soltar	Lâcher
+Guardar arma	Ranger l'arme
 VÍDEO Y GRÁFICOS	VIDÉO ET GRAPHISMES
 Vídeo y gráficos	Vidéo et graphismes
 Pantalla	Affichage

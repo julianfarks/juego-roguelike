@@ -520,6 +520,7 @@ final class ArsenalProbe {
             rs.seen.clear(); rs.unseen.clear();
             int n = 0; for (Blessing b : Blessing.ALL) { if (n >= 46) break; if (b.id % 3 == 0) { rs.bless[b.id] = 1 + (b.id % Math.max(1, b.max)); n++; } }
             rs.relicsThisRun[0] = rs.relicsThisRun[3] = rs.relicsThisRun[5] = true; rs.pacts[1] = 1; rs.gren = 2; rs.grenCount = 3; rs.special = 3; rs.shield = 2;
+            rs.cb[ChestLoot.DMG] = 22; rs.cbLvl[ChestLoot.DMG] = 3; rs.cb[ChestLoot.BURN] = 14; rs.cbLvl[ChestLoot.BURN] = 1; rs.cb[ChestLoot.CRIT] = 7; rs.cbLvl[ChestLoot.CRIT] = 1; rs.spLvl[3] = 2;   // mejoras acumuladas
             rs.bx = new BlessRt(); BlessFx.sync(rs); rs.recalc();
             Inventory.seeAll(rs); rs.seen.remove("w:" + Items.SEC_CHAKRAM); rs.seen.remove("b:3"); rs.seen.remove("r:3");
             lv.enemies.clear(); p.invuln = 99f; p.shield = 0;
@@ -537,6 +538,8 @@ final class ArsenalProbe {
             if (t == 260) scr.inv.setCat(3);
             if (t == 340) { scr.inv.setCat(1); scr.inv.filter = 3; scr.inv.rebuild(); scr.layoutOverlay(); }
             if (t == 420) { scr.inv.setCat(0); scr.inv.filter = 0; scr.inv.rebuild(); scr.inv.focus = 1; scr.inv.slot = 1; scr.layoutOverlay(); }
+            if (t == 500) { scr.inv.setCat(Inventory.C_UPGR); scr.inv.focus = 0; scr.inv.sel = 0; scr.layoutOverlay(); }
+            if (t == 560) { scr.inv.sel = 1; scr.layoutOverlay(); }
         }
         if (name.equals("wcmp") && t == 3) {
             scr.cOffer = new ChestLoot.Reward[]{ChestLoot.secNew(rs, Items.SEC_SPEAR, rs.rng), ChestLoot.secNew(rs, Items.SEC_EMBER, rs.rng), ChestLoot.secNew(rs, Items.SEC_SUMMON, rs.rng)};
@@ -611,7 +614,10 @@ final class ArsenalProbe {
         iv.setCat(Inventory.C_RELICS);
         ck("reliquias y especiales: 2 reliquias + 1 pacto + bendicion inicial / companero si hay (" + iv.items.size() + ")", iv.items.size() == 3 + (rs.startBless >= 0 ? 1 : 0) + (rs.companion >= 0 ? 1 : 0));
         iv.setCat(Inventory.C_OBJECTS);
-        ck("objetos: escudo, granada, mejora especial y frascos", iv.items.size() == 4);
+        ck("objetos: escudo, granada y frascos (las mejoras tienen su propia pestaña)", iv.items.size() == 3);
+        iv.setCat(Inventory.C_UPGR);
+        boolean spIn = false; for (Inventory.Item it : iv.items) if (it.kind == 4 && it.wid == 2 && it.lvl == 1) spIn = true;
+        ck("mejoras: la mejora del arma principal aparece con su nivel", spIn);
         // orden
         iv.setCat(Inventory.C_BLESS); iv.sort = 0; iv.rebuild();
         boolean ord = true; for (int i = 1; i < iv.items.size(); i++) if (iv.items.get(i - 1).rar < iv.items.get(i).rar) ord = false;

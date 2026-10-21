@@ -2096,6 +2096,56 @@ Se guarda en tu inventario ({}/{})	Rangée dans votre inventaire ({}/{})
 Inventario lleno	Inventaire plein
 Soltar	Lâcher
 Guardar arma	Ranger l'arme
+Mejora de estadística	Amélioration de stat
+Nivel {}/{} (máximo)	Niveau {}/{} (max)
+Efecto acumulado: {}	Effet cumulé : {}
+Se suma a tus otras mejoras: nunca sustituye al arma ni a otra mejora.	S'ajoute à vos autres améliorations : ne remplace jamais l'arme ni une autre amélioration.
+Mejora	Amélioration
+Sinergia	Synergie
+Sinergia · {}	Synergie · {}
+Requiere: {}	Requiert : {}
+Activa: tienes las dos mejoras.	Active : vous avez les deux améliorations.
+Mejora activa: {} Nv {}	Amélioration active : {} Niv {}
+{} mejoras	{} améliorations
+MAX	MAX
+Nv{}	Nv{}
+Mejora nueva · Nivel 1	Nouvelle amélioration · Niveau 1
+Mejora nueva	Nouvelle amélioration
+Nivel 1	Niveau 1
+total {}	total {}
+Mejora acumulable · Nivel 1	Amélioration cumulable · Niveau 1
+Mejora acumulable	Amélioration cumulable
+Total: {}	Total : {}
+Se suma a tus otras mejoras	S'ajoute à vos autres améliorations
+{} +	{} +
+Esta arma hace +25% de daño y se dispara más rápido.	Cette arme inflige +25 % de dégâts et tire plus vite.
+Guardada en tu inventario	Rangée dans votre inventaire
+{}% prob. quemar	{} % de chance de brûler
+{}% prob. congelar	{} % de chance de geler
+{}% prob. envenenar	{} % de chance d'empoisonner
+{}% robo de vida	{} % de vol de vie
++{}% crítico	+{} % de critique
+{}% prob. descarga	{} % de chance d'électrocuter
+ataques 18% más lentos	attaques 18 % plus lentes
+¡{}! Nivel {}	{} ! Niveau {}
+Combustión tóxica	Combustion toxique
+Escarcha afilada	Givre tranchant
+Frenesí sanguinario	Frénésie sanguinaire
+Tormenta de acero	Tempête d'acier
+Fuego + Veneno	Feu + Poison
+Hielo + Críticos	Glace + Critiques
+Robo de vida + Vel. de ataque	Vol de vie + Vitesse d'attaque
+Descarga + Daño	Électrocution + Dégâts
+Los enemigos que mueren quemados o envenenados estallan en una nube tóxica que daña y envenena a los que estén cerca.	Les ennemis qui meurent brûlés ou empoisonnés explosent en un nuage toxique qui blesse et empoisonne ceux qui sont proches.
+Tus golpes críticos hacen +50% de daño a los enemigos congelados o ralentizados.	Vos coups critiques infligent +50 % de dégâts aux ennemis gelés ou ralentis.
++4% de robo de vida y +8% de velocidad de ataque.	+4 % de vol de vie et +8 % de vitesse d'attaque.
++10% de daño y +10% de probabilidad de descarga.	+10 % de dégâts et +10 % de chance d'électrocuter.
+¡Sinergia: {}!	Synergie : {} !
+Mejoras: {}	Améliorations : {}
+{} Nv {}	{} Niv {}
+Sec: {} x{} ({}/{})	Sec : {} x{} ({}/{})
+Sec: - ({}/{})	Sec : - ({}/{})
+Gran: x{}	Gren : x{}
 VÍDEO Y GRÁFICOS	VIDÉO ET GRAPHISMES
 Vídeo y gráficos	Vidéo et graphismes
 Pantalla	Affichage

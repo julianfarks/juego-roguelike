@@ -56,19 +56,59 @@ final class Items {
     static final String[] SP_DESC = {"", "+10% daño · quema al golpear", "Congela y ralentiza al golpear", "Envenena al golpear", "+15% daño · roba vida", "+8% crítico · descargas", "+25% daño · críticos más fuertes", "+38% daño · ataques 18% más lentos", "+30% velocidad de ataque · -8% daño"};
     static final int[] SP_COL = {0xFFFFFF, 0xFF7A3A, 0x7AF0FF, 0x7AE04A, 0xFF4060, 0xFFE860, 0xC8A0FF, 0xE0A060, 0x80E0C0};
 
-    static void applySpecial(RunState rs, Stats s) {
-        switch (rs.special) {
-            case 1: s.dmgMul *= 1.10f; s.burn += 0.35f; break;
-            case 2: s.freeze += 0.30f; break;
-            case 3: s.poison += 0.35f; break;
-            case 4: s.dmgMul *= 1.15f; s.lifesteal += 0.05f; break;
-            case 5: s.critChance += 0.08f; s.shock += 0.30f; break;
-            case 6: s.dmgMul *= 1.25f; s.critMul += 0.3f; break;
-            case 7: s.dmgMul *= 1.38f; s.atkSpd *= 0.82f; break;
-            case 8: s.atkSpd *= 1.30f; s.dmgMul *= 0.92f; break;
-            default: break;
+    /** Mejoras del arma principal: ya NO se sustituyen entre si. Cada una es acumulable por niveles (1..SP_MAXLVL) y todas a la vez. */
+    static final int SP_MAXLVL = 3;
+    /** Escala del efecto por nivel: 1 -> x1, 2 -> x1,5, 3 -> x2 (las penalizaciones de Mandoble Pesado / Hoja Veloz se aplican una sola vez). */
+    static float spScale(int l) { return l <= 0 ? 0f : 1f + 0.5f * (l - 1); }
+
+    private static int pc(float v) { return Math.round(v * 100f); }
+
+    /** Efecto total de la mejora `sp` en el nivel `l` (texto para cartas e inventario). */
+    static String spEffect(int sp, int l) {
+        float k = spScale(l);
+        switch (sp) {
+            case 1: return "+" + pc(0.10f * k) + "% daño · " + pc(0.35f * k) + "% prob. quemar";
+            case 2: return pc(0.30f * k) + "% prob. congelar";
+            case 3: return pc(0.35f * k) + "% prob. envenenar";
+            case 4: return "+" + pc(0.15f * k) + "% daño · " + pc(0.05f * k) + "% robo de vida";
+            case 5: return "+" + pc(0.08f * k) + "% crítico · " + pc(0.30f * k) + "% prob. descarga";
+            case 6: return "+" + pc(0.25f * k) + "% daño · +" + pc(0.3f * k) + "% daño crítico";
+            case 7: return "+" + pc(0.38f * k) + "% daño · ataques 18% más lentos";
+            case 8: return "+" + pc(0.30f * k) + "% vel. de ataque · -8% daño";
+            default: return "";
         }
     }
+
+    static void applySpecial(RunState rs, Stats s) {
+        if (rs.special > 0 && rs.special < SP_COUNT && rs.spLvl[rs.special] == 0) rs.spLvl[rs.special] = 1;    // partidas antiguas / pruebas: la especial suelta cuenta como nivel 1
+        for (int sp = 1; sp < SP_COUNT; sp++) {
+            int l = Math.min(SP_MAXLVL, rs.spLvl[sp]);
+            if (l <= 0) continue;
+            float k = spScale(l);
+            switch (sp) {
+                case 1: s.dmgMul *= 1f + 0.10f * k; s.burn += 0.35f * k; break;
+                case 2: s.freeze += 0.30f * k; break;
+                case 3: s.poison += 0.35f * k; break;
+                case 4: s.dmgMul *= 1f + 0.15f * k; s.lifesteal += 0.05f * k; break;
+                case 5: s.critChance += 0.08f * k; s.shock += 0.30f * k; break;
+                case 6: s.dmgMul *= 1f + 0.25f * k; s.critMul += 0.3f * k; break;
+                case 7: s.dmgMul *= 1f + 0.38f * k; s.atkSpd *= 0.82f; break;
+                case 8: s.atkSpd *= 1f + 0.30f * k; s.dmgMul *= 0.92f; break;
+                default: break;
+            }
+        }
+    }
+
+    /** Sube un nivel la mejora `sp` (nunca sustituye a las demas). false si ya esta al maximo. */
+    static boolean addSpecial(RunState rs, int sp) {
+        if (sp <= 0 || sp >= SP_COUNT || rs.spLvl[sp] >= SP_MAXLVL) return false;
+        rs.spLvl[sp]++; rs.special = sp;
+        rs.markNew("u:sp" + sp);
+        rs.recalc();
+        return true;
+    }
+
+    static int specialsOwned(RunState rs) { int n = 0; for (int i = 1; i < SP_COUNT; i++) if (rs.spLvl[i] > 0) n++; return n; }
 
     // ---------------------------------------------------------------- uso
     static void useSecondary(Level lv, Player p) {
@@ -167,14 +207,14 @@ final class Items {
             rs.shield = t;
             msg = "¡" + SH_NAME[t] + "!"; col = SH_COL[t] == 0 ? 0xFFFFFF : SH_COL[t] | 0x303030;
             lv.text(x, y - 56, SH_DESC[t], 0xE8E0E0, false);
-        } else if (roll < 22 && rs.special == 0 || (roll < 14 && rs.special != 0)) {
+        } else if (roll < (specialsOwned(rs) == 0 ? 22 : 14)) {
             int sp;
             int tries = 0;
-            do { sp = 1 + r.i(SP_COUNT - 1); tries++; } while (sp == rs.special && tries < 8);
-            rs.special = sp;
-            rs.recalc();
-            msg = "¡" + SP_NAME[sp] + "!"; col = SP_COL[sp];
-            lv.text(x, y - 56, SP_DESC[sp], 0xE8E0E0, false);
+            do { sp = 1 + r.i(SP_COUNT - 1); tries++; } while (rs.spLvl[sp] >= SP_MAXLVL && tries < 24);
+            if (addSpecial(rs, sp)) {           // se acumula con las que ya tienes (sube de nivel si se repite)
+                msg = "¡" + SP_NAME[sp] + "! Nivel " + rs.spLvl[sp]; col = SP_COL[sp];
+                lv.text(x, y - 56, spEffect(sp, rs.spLvl[sp]), 0xE8E0E0, false);
+            } else { rs.gold += 60; msg = "+60 oro"; col = 0xFFD25A; }
         } else if (roll < 42) {
             int t = 1 + r.i(SEC_COUNT - 1);
             lv.text(x, y - 56, SEC_DESC[t], 0xE8E0E0, false);

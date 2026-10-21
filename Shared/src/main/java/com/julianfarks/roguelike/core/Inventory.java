@@ -9,8 +9,8 @@ import java.util.List;
  * Se maneja con teclado, mando, raton y tactil; no toca el combate (el juego esta en pausa mientras esta abierto).
  */
 final class Inventory {
-    static final int C_WEAPONS = 0, C_BLESS = 1, C_RELICS = 2, C_OBJECTS = 3, C_COUNT = 4;
-    static final String[] CAT_NAME = {"Armas", "Bendiciones", "Reliquias", "Objetos"};
+    static final int C_WEAPONS = 0, C_BLESS = 1, C_RELICS = 2, C_OBJECTS = 3, C_UPGR = 4, C_COUNT = 5;
+    static final String[] CAT_NAME = {"Armas", "Bendiciones", "Reliquias", "Objetos", "Mejoras"};
     static final String[] RAR_ES = {"Común", "Poco común", "Rara", "Épica", "Legendaria"};
     static final String[] SORT_NAME = {"Rareza", "Nombre"};
     static final String[] FILTER_NAME = {"Todas", "Nuevas", "Común", "Poco común", "Rara", "Épica", "Legendaria"};
@@ -20,7 +20,7 @@ final class Inventory {
     static final String[] ST_NAME = {"Guardada", "Equipada", "En el suelo de esta sala", "Dejada atrás en otra sala"};   // el inventario solo lista lo poseido (0 y 1); 2 y 3 quedan para compatibilidad
 
     static final class Item {
-        int cat, rar, state, lvl, maxLvl, wid = -1, bid = -1, kind;       // kind: 0 normal, 1 arma principal, 2 escudo, 3 granada, 4 especial, 5 pocion, 6 pacto, 7 reliquia, 8 compañero, 9 bendicion inicial
+        int cat, rar, state, lvl, maxLvl, wid = -1, bid = -1, kind;       // kind: 0 normal, 1 arma principal, 2 escudo, 3 granada, 4 especial, 5 pocion, 6 pacto, 7 reliquia, 8 compañero, 9 bendicion inicial, 10 mejora de estadistica, 11 sinergia
         String key, name, icon, sub = "";
         boolean isNew, active;
         int idx;
@@ -38,6 +38,21 @@ final class Inventory {
     boolean fromPause;
 
     Inventory(RunScreen sc) { this.sc = sc; }
+
+    /** Cuantas mejoras distintas lleva la run (estadisticas + mejoras del arma principal). */
+    static int upgradeCount(RunState rs) {
+        int n = 0;
+        for (int i = 1; i < Items.SP_COUNT; i++) if (rs.spLvl[i] > 0) n++;
+        for (int i = 0; i < ChestLoot.N; i++) if (rs.cbLvl[i] > 0 || rs.cb[i] != 0) n++;
+        return n;
+    }
+
+    /** Resumen de las mejoras del arma principal: "Filo Ígneo Nv 2 · Daga Venenosa" (o null si no hay). */
+    static String specialsLine(RunState rs) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i < Items.SP_COUNT; i++) if (rs.spLvl[i] > 0) { if (sb.length() > 0) sb.append(" · "); sb.append(Items.SP_NAME[i]); if (rs.spLvl[i] > 1) sb.append(" Nv ").append(rs.spLvl[i]); }
+        return sb.length() == 0 ? null : sb.toString();
+    }
 
     RunState rs() { return sc.rs; }
 
@@ -113,9 +128,17 @@ final class Inventory {
             it.kind = 3; it.wid = rs.gren; it.lvl = rs.grenLvl; it.maxLvl = 3; it.sub = "Granada · " + rs.grenCount + " uds."; it.active = true;
             all.add(it);
         }
-        if (rs.special != 0) {
-            Item it = mk(C_OBJECTS, "o:sp" + rs.special, Items.SP_NAME[rs.special], ChestLoot.SP_ICON[rs.special], ChestLoot.SP_RAR[rs.special], ST_EQUIPPED);
-            it.kind = 4; it.wid = rs.special; it.sub = "Mejora del arma principal"; it.active = true;
+        // ---- mejoras acumulables: todas a la vez, cada una con su nivel (nunca se sustituyen entre si)
+        if (rs.special > 0 && rs.special < Items.SP_COUNT && rs.spLvl[rs.special] == 0) rs.spLvl[rs.special] = 1;    // especial fijada a mano (partidas antiguas): nivel 1
+        for (int sp = 1; sp < Items.SP_COUNT; sp++) if (rs.spLvl[sp] > 0) {
+            Item it = mk(C_UPGR, "u:sp" + sp, Items.SP_NAME[sp], ChestLoot.SP_ICON[sp], ChestLoot.SP_RAR[sp], ST_OWNED);
+            it.kind = 4; it.wid = sp; it.lvl = rs.spLvl[sp]; it.maxLvl = Items.SP_MAXLVL; it.sub = "Mejora del arma principal"; it.active = true;
+            all.add(it);
+        }
+        for (int i = 0; i < ChestLoot.N; i++) if (rs.cbLvl[i] > 0 || rs.cb[i] != 0) {
+            int lvv = Math.max(rs.cbLvl[i], rs.cb[i] != 0 ? 1 : 0);
+            Item it = mk(C_UPGR, "u:st" + i, ChestLoot.S_NAME[i], ChestLoot.S_ICON[i], Math.min(4, Math.max(0, lvv - 1)), ST_OWNED);
+            it.kind = 10; it.wid = i; it.lvl = lvv; it.maxLvl = ChestLoot.maxLvl(i); it.sub = "Mejora de estadística";
             all.add(it);
         }
         {
@@ -182,6 +205,8 @@ final class Inventory {
         rs.seen.add("o:sh" + rs.shield);
         if (rs.gren != 0) rs.seen.add("o:gr" + rs.gren);
         if (rs.special != 0) rs.seen.add("o:sp" + rs.special);
+        for (int sp = 1; sp < Items.SP_COUNT; sp++) if (rs.spLvl[sp] > 0) rs.seen.add("u:sp" + sp);
+        for (int i = 0; i < ChestLoot.N; i++) if (rs.cbLvl[i] > 0 || rs.cb[i] != 0) rs.seen.add("u:st" + i);
         rs.seen.add("o:pot");
         rs.unseen.clear();
     }
@@ -222,7 +247,7 @@ final class Inventory {
         }
         // pie: orden, filtro, volver
         float fy = h - 25, fh = 20;
-        float bw = Math.min(112, (w - pad * 2 - 12) / 3f);
+        float bw = Math.min(126, (w - pad * 2 - 12) / 3f);
         sc.add(pad, fy, bw, fh, "Orden: " + SORT_NAME[sort], this::cycleSort).tag = 200;
         sc.add(pad + bw + 6, fy, bw, fh, "Filtro: " + FILTER_NAME[filter], this::cycleFilter).tag = 201;
         sc.add(w - pad - bw, fy, bw, fh, "Volver al juego", sc::invClose).tag = 202;
@@ -388,7 +413,7 @@ final class Inventory {
         if (it.rar == 4) g.rect(x + 2, y + s - 2, 7, 1, 0xFF000000 | rc, false);
         stateBadge(g, it, x + s - 10, y + 3);
         if (it.maxLvl > 0 && it.lvl > 0 && (it.cat == C_BLESS ? it.lvl > 1 : it.lvl > 0)) {
-            String lv = (it.cat == C_BLESS ? "" : "+") + it.lvl;
+            String lv = it.cat == C_BLESS ? "" + it.lvl : it.cat == C_UPGR ? (it.lvl >= it.maxLvl ? "MAX" : "Nv" + it.lvl) : "+" + it.lvl;
             g.rect(x + s - UI.small.width(lv) - 3, y + s - 10, UI.small.width(lv) + 2, 9, 0xCC000010, false);
             UI.small.draw(g, lv, x + s - UI.small.width(lv) - 2, y + s - 9, 0xFFFFE070, 1f);
         }
@@ -422,11 +447,11 @@ final class Inventory {
         UI.small.draw(g, UI.fitLabel(UI.small, it.name, h.w - 46), tx, h.y + 16, 0xFFF0E8E0, 1f);
         String line;
         if (k == 1) line = Items.infinite(rs().sec) ? "Sin munición (ilimitada)" : "Munición " + (Arsenal.hasMag(rs().sec) ? Arsenal.ammoLabel(rs()) + " (cargador/reserva)" : rs().secAmmo + "/" + Items.SEC_AMMO[rs().sec]) + (rs().secLvl > 0 ? " · Nv +" + rs().secLvl : "");
-        else line = rs().special != 0 ? Items.SP_NAME[rs().special] : "Sin mejora elemental";
+        else { String sl = specialsLine(rs()); line = sl != null ? sl : "Sin mejora elemental"; }
         Arsenal.rarityMark(g, tx + 3, h.y + 31, Math.min(3, it.rar), rc);
         String full = (k == 1 ? RAR_ES[it.rar] + " · " : "") + line;
         String shortL = k == 1 ? (Items.infinite(rs().sec) ? "Ilimitada" : "Munición " + (Arsenal.hasMag(rs().sec) ? Arsenal.ammoLabel(rs()) : rs().secAmmo + "/" + Items.SEC_AMMO[rs().sec]))
-                : (rs().special != 0 ? Items.SP_NAME[rs().special] : "Sin mejora");
+                : (Items.specialsOwned(rs()) > 1 ? Items.specialsOwned(rs()) + " mejoras" : rs().special != 0 ? Items.SP_NAME[rs().special] : "Sin mejora");
         // de la version mas completa a la mas corta: se usa la primera que cabe entera (nada se recorta)
         String show = UI.small.width(full) <= h.w - 56 ? full : UI.small.width(line) <= h.w - 56 ? line : shortL;
         UI.small.draw(g, UI.fitLabel(UI.small, show, h.w - 56), tx + 9, h.y + 28, k == 1 && show == full ? rc : 0xFFB8B0B8, 1f);
@@ -438,7 +463,7 @@ final class Inventory {
         sc.dim(g, w, 0.9f);
         UI.panel(g, 0, 4, 3, w - 8, h - 6, 0.97f);
         for (Screen.Hit hb : sc.hits) {
-            if (hb.tag >= 100 && hb.tag < 104) {
+            if (hb.tag >= 100 && hb.tag < 100 + C_COUNT) {
                 int c = hb.tag - 100;
                 boolean on = c == cat;
                 UI.panel(g, on ? 1 : 0, hb.x, hb.y, hb.w, hb.h, on ? 1f : 0.7f);
@@ -494,6 +519,8 @@ final class Inventory {
             case 6: return "Pacto";
             case 7: return "Reliquia";
             case 9: return "Bendición inicial";
+            case 10: return "Mejora";
+            case 11: return "Sinergia";
             default: return it.cat == C_WEAPONS ? "Secundaria" : it.sub;
         }
     }
@@ -584,10 +611,11 @@ final class Inventory {
         String body = "";
         List<String> extra = new ArrayList<>();
         switch (it.kind) {
-            case 1: body = rs.cls.desc; if (rs.weaponLvl > 0) extra.add("Mejora de la forja: Nv " + rs.weaponLvl); if (rs.special != 0) extra.add("Mejora activa: " + Items.SP_NAME[rs.special]); break;
+            case 1: body = rs.cls.desc; if (rs.weaponLvl > 0) extra.add("Mejora de la forja: Nv " + rs.weaponLvl); for (int sp = 1; sp < Items.SP_COUNT; sp++) if (rs.spLvl[sp] > 0) extra.add("Mejora activa: " + Items.SP_NAME[sp] + " Nv " + rs.spLvl[sp]); break;
             case 2: body = Items.SH_DESC[it.wid]; break;
             case 3: body = Items.GR_DESC[it.wid]; extra.add("Te quedan " + rs.grenCount); if (rs.grenLvl > 0) extra.add("Mejora: Nv +" + rs.grenLvl + "/3"); break;
-            case 4: body = Items.SP_DESC[it.wid]; break;
+            case 4: body = Items.SP_DESC[it.wid]; extra.add("Nivel " + it.lvl + "/" + it.maxLvl + (it.lvl >= it.maxLvl ? " (máximo)" : "")); extra.add("Efecto acumulado: " + Items.spEffect(it.wid, it.lvl)); extra.add("Se suma a tus otras mejoras: nunca sustituye al arma ni a otra mejora."); break;
+            case 10: body = ChestLoot.S_DESC[it.wid]; extra.add("Nivel " + it.lvl + "/" + it.maxLvl + (it.lvl >= it.maxLvl ? " (máximo)" : "")); extra.add("Efecto acumulado: " + ChestLoot.total(it.wid, rs.cb[it.wid])); break;
             case 5: body = "Curan vida cuando los usas. Los recargas en tiendas y con algunos objetos."; extra.add("Llevas " + rs.potions + " de " + rs.stats.potionsMax); break;
             case 6: body = Events.PACTS[it.wid].pro; extra.add("Coste: " + Events.PACTS[it.wid].con); break;
             case 7: body = "Reliquia de " + BossDef.ALL[it.wid].name + ". La conservas en la sala de trofeos."; break;

@@ -2096,6 +2096,56 @@ Se guarda en tu inventario ({}/{})	Goes to your inventory ({}/{})
 Inventario lleno	Inventory full
 Soltar	Drop
 Guardar arma	Store weapon
+Mejora de estadística	Stat upgrade
+Nivel {}/{} (máximo)	Level {}/{} (max)
+Efecto acumulado: {}	Total effect: {}
+Se suma a tus otras mejoras: nunca sustituye al arma ni a otra mejora.	Stacks with your other upgrades: it never replaces your weapon or another upgrade.
+Mejora	Upgrade
+Sinergia	Synergy
+Sinergia · {}	Synergy · {}
+Requiere: {}	Requires: {}
+Activa: tienes las dos mejoras.	Active: you have both upgrades.
+Mejora activa: {} Nv {}	Active upgrade: {} Lv {}
+{} mejoras	{} upgrades
+MAX	MAX
+Nv{}	Lv{}
+Mejora nueva · Nivel 1	New upgrade · Level 1
+Mejora nueva	New upgrade
+Nivel 1	Level 1
+total {}	total {}
+Mejora acumulable · Nivel 1	Stackable upgrade · Level 1
+Mejora acumulable	Stackable upgrade
+Total: {}	Total: {}
+Se suma a tus otras mejoras	Stacks with your other upgrades
+{} +	{} +
+Esta arma hace +25% de daño y se dispara más rápido.	This weapon deals +25% damage and fires faster.
+Guardada en tu inventario	Stored in your inventory
+{}% prob. quemar	{}% burn chance
+{}% prob. congelar	{}% freeze chance
+{}% prob. envenenar	{}% poison chance
+{}% robo de vida	{}% lifesteal
++{}% crítico	+{}% crit
+{}% prob. descarga	{}% shock chance
+ataques 18% más lentos	attacks 18% slower
+¡{}! Nivel {}	{}! Level {}
+Combustión tóxica	Toxic Combustion
+Escarcha afilada	Keen Frost
+Frenesí sanguinario	Blood Frenzy
+Tormenta de acero	Steel Storm
+Fuego + Veneno	Fire + Poison
+Hielo + Críticos	Ice + Crits
+Robo de vida + Vel. de ataque	Lifesteal + Attack speed
+Descarga + Daño	Shock + Damage
+Los enemigos que mueren quemados o envenenados estallan en una nube tóxica que daña y envenena a los que estén cerca.	Enemies that die burning or poisoned burst into a toxic cloud that damages and poisons anyone nearby.
+Tus golpes críticos hacen +50% de daño a los enemigos congelados o ralentizados.	Your critical hits deal +50% damage to frozen or slowed enemies.
++4% de robo de vida y +8% de velocidad de ataque.	+4% lifesteal and +8% attack speed.
++10% de daño y +10% de probabilidad de descarga.	+10% damage and +10% shock chance.
+¡Sinergia: {}!	Synergy: {}!
+Mejoras: {}	Upgrades: {}
+{} Nv {}	{} Lv {}
+Sec: {} x{} ({}/{})	Sec: {} x{} ({}/{})
+Sec: - ({}/{})	Sec: - ({}/{})
+Gran: x{}	Gren: x{}
 VÍDEO Y GRÁFICOS	VIDEO & GRAPHICS
 Vídeo y gráficos	Video & graphics
 Pantalla	Display

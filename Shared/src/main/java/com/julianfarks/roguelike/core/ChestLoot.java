@@ -22,13 +22,13 @@ final class ChestLoot {
     // ---- estadisticas permanentes de la run (rs.cb[]); unidad: % salvo indicacion
     static final int DMG = 0, HP = 1, SPD = 2, ASPD = 3, LUCK = 4, DEF = 5, CRIT = 6, CRITD = 7, CD = 8, ULT = 9, LS = 10, GOLD = 11, SOUL = 12,
             MAG = 13, BURN = 14, FREEZE = 15, SHOCK = 16, POISON = 17, SKILL = 18, POT = 19, REV = 20, N = 21;
-    private static final String[] S_NAME = {"Filo afilado", "Corazón vigoroso", "Pies ligeros", "Golpes veloces", "Trébol de suerte", "Piel de hierro", "Ojo certero", "Golpe brutal", "Maestría arcana", "Sed de gloria",
+    static final String[] S_NAME = {"Filo afilado", "Corazón vigoroso", "Pies ligeros", "Golpes veloces", "Trébol de suerte", "Piel de hierro", "Ojo certero", "Golpe brutal", "Maestría arcana", "Sed de gloria",
             "Sed de sangre", "Bolsa de oro", "Cosecha de almas", "Imán de botín", "Brasas vivas", "Escarcha viva", "Chispa viva", "Veneno vivo", "Poder arcano", "Frasco extra", "Segunda oportunidad"};
-    private static final String[] S_ICON = {"b_filo", "b_corazon", "b_alas", "b_furia", "b_fortuna", "b_piedra", "b_critico", "b_ejecutor", "b_enfriamiento", "b_sabio",
+    static final String[] S_ICON = {"b_filo", "b_corazon", "b_alas", "b_furia", "b_fortuna", "b_piedra", "b_critico", "b_ejecutor", "b_enfriamiento", "b_sabio",
             "b_sangre", "b_fortuna", "b_alma", "b_iman", "b_brasas", "b_glacial", "b_chispa", "b_espinas", "b_habilidad", "potion", "b_segunda"};
-    private static final String[] S_UNIT = {"% daño", " vida máx.", "% velocidad", "% vel. de ataque", " suerte", "% menos daño recibido", "% prob. crítico", "% daño crítico", "% menos recarga", "% carga de definitiva",
+    static final String[] S_UNIT = {"% daño", " vida máx.", "% velocidad", "% vel. de ataque", " suerte", "% menos daño recibido", "% prob. crítico", "% daño crítico", "% menos recarga", "% carga de definitiva",
             "% robo de vida", "% oro", "% almas", " alcance del imán", "% prob. quemar", "% prob. congelar", "% prob. de descarga", "% prob. envenenar", "% daño de habilidades", " frasco máx.", "% de vida al revivir"};
-    private static final String[] S_DESC = {"Tus armas y ataques hacen más daño.", "Aumenta tu vida máxima y te cura esa cantidad.", "Te mueves más rápido.", "Atacas más rápido.",
+    static final String[] S_DESC = {"Tus armas y ataques hacen más daño.", "Aumenta tu vida máxima y te cura esa cantidad.", "Te mueves más rápido.", "Atacas más rápido.",
             "Mejora la rareza de las próximas recompensas.", "Recibes menos daño de todo.", "Más probabilidad de golpe crítico.", "Los críticos hacen mucho más daño.", "Tus habilidades se recargan antes.",
             "La definitiva se carga más rápido.", "Recuperas vida al golpear.", "Ganas más oro de todo.", "Ganas más almas de todo.", "Atrae el botín desde más lejos.", "Tus golpes pueden prender fuego.",
             "Tus golpes pueden congelar.", "Tus golpes pueden soltar una descarga.", "Tus golpes pueden envenenar.", "Tus habilidades hacen más daño.", "Llevas un frasco de vida más.",
@@ -36,9 +36,16 @@ final class ChestLoot {
     private static final int[][] S_VAL = {
             {6, 10, 16, 25}, {10, 18, 28, 45}, {4, 7, 10, 15}, {4, 7, 11, 16}, {1, 2, 3, 5}, {3, 5, 8, 12}, {4, 7, 10, 15}, {10, 20, 35, 55}, {4, 7, 11, 16}, {10, 18, 28, 40},
             {1, 2, 3, 5}, {10, 18, 28, 40}, {10, 18, 28, 40}, {20, 35, 55, 80}, {8, 14, 20, 30}, {8, 14, 20, 30}, {8, 14, 20, 30}, {8, 14, 20, 30}, {6, 11, 18, 28}, {0, 0, 1, 2}, {0, 0, 0, 30}};
-    private static final int[] S_CAP = {160, 200, 40, 45, 25, 36, 45, 160, 40, 120, 15, 150, 150, 200, 60, 60, 60, 60, 120, 3, 30};
+    static final int[] S_CAP = {160, 200, 40, 45, 25, 36, 45, 160, 40, 120, 15, 150, 150, 200, 60, 60, 60, 60, 120, 3, 30};
     private static final int[] S_MINRAR = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3};
     private static final int[] S_WEIGHT = {10, 9, 7, 7, 5, 8, 8, 6, 7, 5, 5, 5, 5, 4, 5, 5, 5, 5, 7, 3, 2};
+    /** Nivel maximo de cada mejora de estadistica (veces que se puede elegir). Al llegar al tope deja de ofrecerse y sale otra en su lugar. */
+    static final int[] S_MAXLVL = {6, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5, 2, 1};
+    static int maxLvl(int id) { return S_MAXLVL[id]; }
+    /** Peso extra de las mejoras que ya tienes (la build se refuerza: suben de nivel mas a menudo). */
+    static final float OWNED_BOOST = 1.8f;
+    /** Texto del efecto total de una estadistica (p. ej. "+22% daño"). */
+    static String total(int id, int v) { return (v >= 0 ? "+" : "") + v + S_UNIT[id]; }
 
     // ---- intercambios (mejora grande con un coste): {stat1, v1, stat2, v2}
     private static final String[] T_NAME = {"Pacto de sangre", "Piel de piedra", "Furia temeraria", "Mente fría", "Vidrio mortal"};
@@ -137,10 +144,13 @@ final class ChestLoot {
             int t = r.i(T_NAME.length);
             return trade(rs, t);
         }
-        int tot = 0;
-        for (int i = 0; i < N; i++) tot += S_WEIGHT[i];
-        int p = r.i(tot), id = 0;
-        for (int i = 0; i < N; i++) { p -= S_WEIGHT[i]; if (p < 0) { id = i; break; } }
+        // build: las que ya tienes pesan mas (suben de nivel); las que estan al maximo no salen
+        float tot = 0;
+        float[] wt = new float[N];
+        for (int i = 0; i < N; i++) { wt[i] = rs.cbLvl[i] >= S_MAXLVL[i] ? 0f : S_WEIGHT[i] * (rs.cbLvl[i] > 0 ? OWNED_BOOST : 1f); tot += wt[i]; }
+        if (tot <= 0) return null;
+        float p = r.f() * tot; int id = 0;
+        for (int i = 0; i < N; i++) { if (wt[i] <= 0) continue; id = i; p -= wt[i]; if (p < 0) break; }
         if (id == REV && (rs.stats.revive > 0 || rs.cb[REV] > 0)) return null;
         int rar = rollRarity(r, luck, S_MINRAR[id]);
         int v = S_VAL[id][rar];
@@ -148,14 +158,21 @@ final class ChestLoot {
         // si no cabe entero, recorta; si no cabe nada, no se ofrece
         if (rs.cb[id] + v > S_CAP[id]) v = S_CAP[id] - rs.cb[id];
         if (v <= 0) return null;
-        return stat(id, rar, v);
+        return stat(rs, id, rar, v);
     }
 
-    static Reward stat(int id, int rar, int v) {
+    static Reward stat(int id, int rar, int v) { return stat(null, id, rar, v); }
+
+    /** Carta de mejora de estadistica. Con `rs` indica el nivel (Nivel X > X+1) y el efecto total que tendras. */
+    static Reward stat(RunState rs, int id, int rar, int v) {
         Reward x = new Reward();
         x.kind = K_STAT; x.id = id; x.rar = rar; x.val = v;
         x.name = S_NAME[id]; x.icon = S_ICON[id]; x.desc = S_DESC[id];
         x.amount = "+" + v + S_UNIT[id];
+        if (rs != null) {
+            int cur = rs.cbLvl[id];
+            x.note = cur == 0 ? "Mejora nueva · Nivel 1" : "Nivel " + cur + " > " + (cur + 1) + " · total " + total(id, rs.cb[id] + v);
+        }
         return x;
     }
 
@@ -206,10 +223,14 @@ final class ChestLoot {
         if (r.chance(0.2f)) cat = r.i(3);
         int rar = rollRarity(r, luck, 0);
         List<Integer> c = new ArrayList<>();
-        if (cat == 0) { for (int i = 1; i < Items.SP_COUNT; i++) if (i != rs.special) c.add(i); }
+        if (cat == 0) { for (int i = 1; i < Items.SP_COUNT; i++) if (rs.spLvl[i] < Items.SP_MAXLVL) { c.add(i); if (rs.spLvl[i] > 0 && r.chance(OWNED_BOOST - 1f)) c.add(i); } }   // las tuyas (no al maximo) salen mas: suben de nivel
         else if (cat == 1) { for (int i = 1; i < Items.SEC_COUNT; i++) if (!rs.owns(i)) c.add(i); }      // solo armas que NO tienes (las tuyas suben de nivel aparte)
         else { for (int i = 0; i < Items.SH_COUNT; i++) if (i != rs.shield) c.add(i); }
-        if (cat == 1 && rs.sec != 0 && rs.secLvl < 3 && r.chance(0.18f)) return secUp(rs);   // arma repetida: en vez de un duplicado, mejora de nivel
+        if (cat == 1 && r.chance(0.18f + 0.03f * Math.min(5, rs.bag.size()))) {      // armas que ya tienes: en vez de un duplicado, mejora de nivel (de cualquiera de tu bolsa)
+            List<Integer> up = new ArrayList<>(); rs.syncBag();
+            for (int id : rs.bag) if (rs.lvlOf(id) < 3) up.add(id);
+            if (!up.isEmpty()) return secUp(rs, up.get(r.i(up.size())));
+        }
         if (c.isEmpty()) return null;
         // elige entre los candidatos el de rareza mas cercana a la tirada
         int best = -1, bd = 99;
@@ -223,11 +244,15 @@ final class ChestLoot {
         return cat == 0 ? special(rs, best) : cat == 1 ? secNew(rs, best, r) : shield(rs, best);
     }
 
+    /** Mejora del arma principal: se ACUMULA con las demas (nunca sustituye nada). Repetida sube de nivel. */
     static Reward special(RunState rs, int id) {
         Reward x = new Reward();
-        x.kind = K_SPECIAL; x.id = id; x.rar = SP_RAR[id]; x.name = Items.SP_NAME[id]; x.icon = SP_ICON[id]; x.col = Items.SP_COL[id] | 0xFF000000;
-        x.amount = "Arma principal"; x.desc = Items.SP_DESC[id];
-        if (rs.special != 0) x.replaces = "Sustituye a " + Items.SP_NAME[rs.special];
+        int cur = rs.spLvl[id];
+        x.kind = K_SPECIAL; x.id = id; x.rar = Math.min(3, SP_RAR[id] + (cur > 0 ? 1 : 0)); x.name = Items.SP_NAME[id]; x.icon = SP_ICON[id]; x.col = Items.SP_COL[id] | 0xFF000000;
+        x.val = cur + 1;
+        x.amount = cur == 0 ? "Mejora acumulable · Nivel 1" : "Nivel " + cur + " > " + (cur + 1);
+        x.desc = cur == 0 ? Items.SP_DESC[id] : "Total: " + Items.spEffect(id, cur + 1);
+        x.note = cur == 0 ? "Se suma a tus otras mejoras" : "Ahora: " + Items.spEffect(id, cur);
         return x;
     }
 
@@ -309,11 +334,16 @@ final class ChestLoot {
         return x;
     }
 
-    static Reward secUp(RunState rs) {
+    static Reward secUp(RunState rs) { return secUp(rs, rs.sec); }
+
+    /** Sube de nivel un arma que posees (equipada o guardada). */
+    static Reward secUp(RunState rs, int id) {
+        int cur = rs.lvlOf(id);
         Reward x = new Reward();
-        x.kind = K_SEC_UP; x.id = rs.sec; x.val = rs.secLvl + 1; x.rar = rs.secLvl == 0 ? 1 : (rs.secLvl == 1 ? 2 : 3);
-        x.name = "Arma secundaria mejorada"; x.icon = Items.SEC_ICON[rs.sec]; x.col = Items.SEC_COL[rs.sec] | 0xFF000000;
-        x.amount = "Nivel " + rs.secLvl + " > " + x.val; x.desc = "Tu arma secundaria hace +25% de daño y se dispara más rápido.";
+        x.kind = K_SEC_UP; x.id = id; x.val = cur + 1; x.rar = cur == 0 ? 1 : (cur == 1 ? 2 : 3);
+        x.name = Items.SEC_NAME[id] + " +"; x.icon = Items.SEC_ICON[id]; x.col = Items.SEC_COL[id] | 0xFF000000;
+        x.amount = "Nivel " + cur + " > " + x.val; x.desc = "Esta arma hace +25% de daño y se dispara más rápido.";
+        if (id != rs.sec) x.note = "Guardada en tu inventario";
         return x;
     }
 
@@ -325,6 +355,8 @@ final class ChestLoot {
             case K_BLESS: break;   // lo aplica RunScreen.applyBless (reconstruye reglas y sinergias)
             case K_STAT:
                 rs.cb[x.id] += x.val;
+                rs.cbLvl[x.id] = Math.min(S_MAXLVL[x.id], rs.cbLvl[x.id] + 1);
+                rs.markNew("u:st" + x.id);
                 rs.recalc();
                 if (x.id == HP) rs.hp = Math.min(rs.stats.maxHp, rs.hp + x.val);
                 if (x.id == POT) rs.potions = Math.min(rs.stats.potionsMax, rs.potions + 1);
@@ -346,8 +378,8 @@ final class ChestLoot {
             case K_GREN_UP: rs.grenLvl = Math.min(3, rs.grenLvl + 1); break;
             case K_SEC_NEW: Arsenal.grant(rs, x.id, 0, -1, 0); break;      // a la bolsa (RunScreen ya libero hueco si estaba llena)
             case K_SEC_AMMO: rs.secAmmo = Math.min(Items.SEC_AMMO[rs.sec] * 2, rs.secAmmo + x.val); break;
-            case K_SEC_UP: rs.secLvl = Math.min(3, rs.secLvl + 1); break;
-            case K_SPECIAL: rs.special = x.id; rs.markNew("o:sp" + x.id); rs.recalc(); break;
+            case K_SEC_UP: { int id = x.id > 0 ? x.id : rs.sec; if (id == rs.sec) rs.secLvl = Math.min(3, rs.secLvl + 1); else if (rs.owns(id)) rs.bLvl[id] = Math.min(3, rs.bLvl[id] + 1); break; }
+            case K_SPECIAL: Items.addSpecial(rs, x.id); break;        // se acumula: sube un nivel, no sustituye a ninguna otra
             case K_SHIELD: rs.shield = x.id; rs.markNew("o:sh" + x.id); break;
             default: break;
         }
@@ -393,7 +425,7 @@ final class ChestLoot {
         // defensiva
         int[] defs = {HP, DEF, POT};
         int di = defs[r.i(defs.length)];
-        if (ok(rs, di, S_VAL[di][rar])) { Reward x = stat(di, rar, S_VAL[di][rar]); pool.add(x); wt.add(3); }
+        if (ok(rs, di, S_VAL[di][rar]) && rs.cbLvl[di] < S_MAXLVL[di]) { Reward x = stat(rs, di, rar, S_VAL[di][rar]); pool.add(x); wt.add(3); }
         // reforzar la build / cambiar de estrategia
         int bId = BlessOffer.pickOne(rs, r), alt = -1;
         for (int t = 0; t < 30 && alt < 0; t++) { int c = BlessOffer.pickOne(rs, r); if (c >= 0 && c != bId && BlessOffer.synergyInfo(rs, Blessing.ALL[c]).isEmpty()) alt = c; }
@@ -401,8 +433,8 @@ final class ChestLoot {
         if (alt >= 0) { pool.add(bless(rs, alt, "Nueva estrategia")); wt.add(2); }
         // don exclusivo del jefe
         int gs = giftStat(d.element);
-        if (ok(rs, gs, S_VAL[gs][3])) {
-            Reward x = stat(gs, 3, S_VAL[gs][3]);
+        if (ok(rs, gs, S_VAL[gs][3]) && rs.cbLvl[gs] < S_MAXLVL[gs]) {
+            Reward x = stat(rs, gs, 3, S_VAL[gs][3]);
             x.name = "Don de " + d.name; x.desc = "Reliquia exclusiva de este jefe. " + S_DESC[gs];
             pool.add(x); wt.add(3);
         }

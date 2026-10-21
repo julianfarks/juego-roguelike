@@ -818,6 +818,7 @@ final class RunScreen extends Screen implements Level.Listener {
     // ganchos solo para las pruebas headless (ArsenalProbe)
     void dbgChest(int sel) { if (ov != OV_CHEST) openOv(OV_CHEST); offerSel = sel; ovT = 1f; }
     void dbgChestOvT() { ovT = 1f; }
+    void dbgOpenChest(Prop p) { openChest(p); ovT = 1f; }
     void dbgConfirm() { ovT = 1f; confirmChest(); }
     void dbgWcmp(boolean swap) { ovT = 1f; wcmpConfirm(swap); }
     void dbgWcmpPick(int idx) { wcmpPick = idx; }
@@ -2521,8 +2522,12 @@ final class RunScreen extends Screen implements Level.Listener {
                 yy += 4 * 11 + 3;
                 g.rect(ix, yy, iw, 1, 0x55FFD25A, false);
                 yy += 5;        // -- equipo
-                UI.small.draw(g, UI.fitLabel(UI.small, "Especial: " + (rs.special == 0 ? "-" : Items.SP_NAME[rs.special]), iw), ix, yy, rs.special == 0 ? UI.GREY : Items.SP_COL[rs.special], 1f);
-                UI.small.draw(g, UI.fitLabel(UI.small, "Sec: " + (rs.sec == 0 ? "-" : Items.SEC_NAME[rs.sec] + " x" + rs.secAmmo) + (rs.gren == 0 ? "" : "  Gran: x" + rs.grenCount), iw), ix, yy + 11, UI.WHITE, 1f);
+                {   // mejoras acumuladas (todas a la vez) y la ultima especial obtenida
+                    int nu = Inventory.upgradeCount(rs);
+                    String ul = "Mejoras: " + nu + (rs.special == 0 ? "" : " · " + Items.SP_NAME[rs.special] + " Nv " + rs.spLvl[rs.special]);
+                    UI.small.draw(g, UI.fitLabel(UI.small, ul, iw), ix, yy, nu == 0 ? UI.GREY : rs.special == 0 ? UI.WHITE : Items.SP_COL[rs.special], 1f);
+                }
+                UI.small.draw(g, UI.fitLabel(UI.small, "Sec: " + (rs.sec == 0 ? "-" : Items.SEC_NAME[rs.sec] + " x" + rs.secAmmo) + " (" + rs.bag.size() + "/" + RunState.WEAPON_BAG + ")" + (rs.gren == 0 ? "" : "  Gran: x" + rs.grenCount), iw), ix, yy + 11, UI.WHITE, 1f);
                 UI.small.draw(g, UI.fitLabel(UI.small, Items.SH_NAME[rs.shield] + " (parry " + Math.round(Items.SH_WIN[rs.shield] * 1000) + "ms)", iw), ix, yy + 22, Items.SH_COL[rs.shield] | 0x404040, 1f);
                 yy += 36;
                 g.rect(ix, yy, iw, 1, 0x55FFD25A, false);
@@ -2557,7 +2562,7 @@ final class RunScreen extends Screen implements Level.Listener {
                 rs.syncBag();
                 int n = rs.bag.size();
                 int pid = n > 0 ? rs.bag.get(Math.max(0, Math.min(n - 1, wcmpPick))) : 0;
-                dim(g, w, 0.74f * fadeIn);
+                dim(g, w, 0.74f * fadeIn); TextAudit.cover();        // ventana modal: lo de debajo queda tapado
                 UI.title(g, "INVENTARIO DE ARMAS LLENO", w / 2f, 6, UI.GOLD, fadeIn);
                 UI.small.center(g, UI.fitLabel(UI.small, n + "/" + RunState.WEAPON_BAG + " · elige cuál soltar al suelo o cancela", w - 20), w / 2f, 25, UI.GREY, fadeIn);
                 for (Hit h : hits) if (h.tag >= 20 && h.tag < 20 + n) {                 // tus armas: la marcada para soltar con marco dorado

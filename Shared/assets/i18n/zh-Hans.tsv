@@ -2096,6 +2096,56 @@ Se guarda en tu inventario ({}/{})	放入背包（{}/{}）
 Inventario lleno	背包已满
 Soltar	丢下
 Guardar arma	收纳武器
+Mejora de estadística	属性强化
+Nivel {}/{} (máximo)	等级 {}/{}（已满）
+Efecto acumulado: {}	累计效果：{}
+Se suma a tus otras mejoras: nunca sustituye al arma ni a otra mejora.	与其他强化叠加：不会替换武器或其他强化。
+Mejora	强化
+Sinergia	协同
+Sinergia · {}	协同 · {}
+Requiere: {}	需要：{}
+Activa: tienes las dos mejoras.	已激活：你拥有这两项强化。
+Mejora activa: {} Nv {}	生效强化：{} 等级{}
+{} mejoras	{}项强化
+MAX	满
+Nv{}	级{}
+Mejora nueva · Nivel 1	新强化 · 等级1
+Mejora nueva	新强化
+Nivel 1	等级1
+total {}	总计{}
+Mejora acumulable · Nivel 1	可叠加强化 · 等级1
+Mejora acumulable	可叠加强化
+Total: {}	总计：{}
+Se suma a tus otras mejoras	与其他强化叠加
+{} +	{} +
+Esta arma hace +25% de daño y se dispara más rápido.	该武器伤害+25%，射速更快。
+Guardada en tu inventario	收纳在背包中
+{}% prob. quemar	{}%几率灼烧
+{}% prob. congelar	{}%几率冰冻
+{}% prob. envenenar	{}%几率中毒
+{}% robo de vida	{}%生命偷取
++{}% crítico	暴击+{}%
+{}% prob. descarga	{}%几率电击
+ataques 18% más lentos	攻击慢18%
+¡{}! Nivel {}	{}！等级{}
+Combustión tóxica	毒燃
+Escarcha afilada	锋利霜寒
+Frenesí sanguinario	血之狂乱
+Tormenta de acero	钢铁风暴
+Fuego + Veneno	火焰 + 毒
+Hielo + Críticos	冰霜 + 暴击
+Robo de vida + Vel. de ataque	生命偷取 + 攻速
+Descarga + Daño	电击 + 伤害
+Los enemigos que mueren quemados o envenenados estallan en una nube tóxica que daña y envenena a los que estén cerca.	在灼烧或中毒状态下死亡的敌人会爆成毒云，伤害并毒害附近的敌人。
+Tus golpes críticos hacen +50% de daño a los enemigos congelados o ralentizados.	你的暴击对冰冻或减速的敌人造成+50%伤害。
++4% de robo de vida y +8% de velocidad de ataque.	生命偷取+4%，攻速+8%。
++10% de daño y +10% de probabilidad de descarga.	伤害+10%，电击几率+10%。
+¡Sinergia: {}!	协同：{}！
+Mejoras: {}	强化：{}
+{} Nv {}	{} 等级{}
+Sec: {} x{} ({}/{})	副：{} x{}（{}/{}）
+Sec: - ({}/{})	副：-（{}/{}）
+Gran: x{}	手雷：x{}
 VÍDEO Y GRÁFICOS	视频与图形
 Vídeo y gráficos	视频与图形
 Pantalla	显示

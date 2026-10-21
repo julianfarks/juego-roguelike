@@ -57,7 +57,11 @@ public final class RunState {
     public int lvlOf(int id) { return id == sec ? secLvl : (id > 0 && id < Items.SEC_COUNT ? bLvl[id] : 0); }
     public int ammoOf(int id) { return id == sec ? secAmmo : (id > 0 && id < Items.SEC_COUNT ? bAmmo[id] : 0); }
     public int secretsFound;
-    public final int[] cb = new int[ChestLoot.N];     // mejoras de cofres (ver ChestLoot)
+    public final int[] cb = new int[ChestLoot.N];     // mejoras de cofres (ver ChestLoot): valor acumulado de cada estadistica
+    /** Nivel (veces elegida) de cada mejora de estadistica de cofre; tope en ChestLoot.maxLvl. Se muestra como "Filo afilado Nv 3". */
+    public final int[] cbLvl = new int[ChestLoot.N];
+    /** Nivel de cada mejora del arma principal (Items.SP_*): acumulables entre si, nunca se sustituyen. rs.special = la ultima obtenida. */
+    public final int[] spLvl = new int[Items.SP_COUNT];
     public int grenLvl, secLvl;                      // niveles de mejora de granada y arma secundaria
     public boolean blessingTaken;
     public final int[] pacts = new int[Events.PACTS.length];     // pactos de santuario tomados (0/1)

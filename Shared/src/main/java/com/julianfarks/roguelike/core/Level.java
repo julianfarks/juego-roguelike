@@ -525,7 +525,7 @@ public final class Level {
         return BlessFx.forcedCrit(this, src) || rng.chance(Math.min(0.95f, ch));
     }
 
-    public float critMulOf(Ent e) { return rs.stats.critMul + BlessFx.critMulBonus(this, e, dmgSrc); }
+    public float critMulOf(Ent e) { return rs.stats.critMul + BlessFx.critMulBonus(this, e, dmgSrc) + Synergy.critMulBonus(this, e); }
 
     /** Linea de rayo visual entre dos puntos. */
     public void lightning(float x1, float y1, float x2, float y2) {

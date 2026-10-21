@@ -520,7 +520,7 @@ final class ArsenalProbe {
             rs.seen.clear(); rs.unseen.clear();
             int n = 0; for (Blessing b : Blessing.ALL) { if (n >= 46) break; if (b.id % 3 == 0) { rs.bless[b.id] = 1 + (b.id % Math.max(1, b.max)); n++; } }
             rs.relicsThisRun[0] = rs.relicsThisRun[3] = rs.relicsThisRun[5] = true; rs.pacts[1] = 1; rs.gren = 2; rs.grenCount = 3; rs.special = 3; rs.shield = 2;
-            rs.cb[ChestLoot.DMG] = 22; rs.cbLvl[ChestLoot.DMG] = 3; rs.cb[ChestLoot.BURN] = 14; rs.cbLvl[ChestLoot.BURN] = 1; rs.cb[ChestLoot.CRIT] = 7; rs.cbLvl[ChestLoot.CRIT] = 1; rs.spLvl[3] = 2;   // mejoras acumuladas
+            rs.cb[ChestLoot.DMG] = 22; rs.cbLvl[ChestLoot.DMG] = 3; rs.cb[ChestLoot.BURN] = 14; rs.cbLvl[ChestLoot.BURN] = 1; rs.cb[ChestLoot.CRIT] = 7; rs.cbLvl[ChestLoot.CRIT] = 1; rs.spLvl[3] = 2;   // mejoras acumuladas + sinergia
             rs.bx = new BlessRt(); BlessFx.sync(rs); rs.recalc();
             Inventory.seeAll(rs); rs.seen.remove("w:" + Items.SEC_CHAKRAM); rs.seen.remove("b:3"); rs.seen.remove("r:3");
             lv.enemies.clear(); p.invuln = 99f; p.shield = 0;

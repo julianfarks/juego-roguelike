@@ -159,6 +159,7 @@ public final class Enemy extends Ent {
             lv.fxAdd("fx_explosion", "a", x, y - bh / 2, 0.55f, 0xFFB060);
             Snd.sfxv("explosion_small", 0.6f);
         }
+        Synergy.onEnemyDeath(lv, this, suicide);          // Combustion toxica (Fuego + Veneno)
         lv.hitstop(elite ? 0.1f : 0.04f);
         if (elite) lv.shake(3f, 0.25f);
     }

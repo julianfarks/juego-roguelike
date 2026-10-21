@@ -135,6 +135,11 @@ final class Inventory {
             it.kind = 4; it.wid = sp; it.lvl = rs.spLvl[sp]; it.maxLvl = Items.SP_MAXLVL; it.sub = "Mejora del arma principal"; it.active = true;
             all.add(it);
         }
+        for (int i = 0; i < Synergy.COUNT; i++) if (Synergy.active(rs, i)) {           // sinergias activas entre mejoras
+            Item it = mk(C_UPGR, "y:" + i, Synergy.NAME[i], Synergy.ICON[i], 3, ST_OWNED);
+            it.kind = 11; it.wid = i; it.sub = "Sinergia · " + Synergy.REQ[i]; it.active = true;
+            all.add(it);
+        }
         for (int i = 0; i < ChestLoot.N; i++) if (rs.cbLvl[i] > 0 || rs.cb[i] != 0) {
             int lvv = Math.max(rs.cbLvl[i], rs.cb[i] != 0 ? 1 : 0);
             Item it = mk(C_UPGR, "u:st" + i, ChestLoot.S_NAME[i], ChestLoot.S_ICON[i], Math.min(4, Math.max(0, lvv - 1)), ST_OWNED);
@@ -207,6 +212,7 @@ final class Inventory {
         if (rs.special != 0) rs.seen.add("o:sp" + rs.special);
         for (int sp = 1; sp < Items.SP_COUNT; sp++) if (rs.spLvl[sp] > 0) rs.seen.add("u:sp" + sp);
         for (int i = 0; i < ChestLoot.N; i++) if (rs.cbLvl[i] > 0 || rs.cb[i] != 0) rs.seen.add("u:st" + i);
+        for (int i = 0; i < Synergy.COUNT; i++) if (Synergy.active(rs, i)) rs.seen.add("y:" + i);
         rs.seen.add("o:pot");
         rs.unseen.clear();
     }
@@ -615,6 +621,7 @@ final class Inventory {
             case 2: body = Items.SH_DESC[it.wid]; break;
             case 3: body = Items.GR_DESC[it.wid]; extra.add("Te quedan " + rs.grenCount); if (rs.grenLvl > 0) extra.add("Mejora: Nv +" + rs.grenLvl + "/3"); break;
             case 4: body = Items.SP_DESC[it.wid]; extra.add("Nivel " + it.lvl + "/" + it.maxLvl + (it.lvl >= it.maxLvl ? " (máximo)" : "")); extra.add("Efecto acumulado: " + Items.spEffect(it.wid, it.lvl)); extra.add("Se suma a tus otras mejoras: nunca sustituye al arma ni a otra mejora."); break;
+            case 11: body = Synergy.DESC[it.wid]; extra.add("Requiere: " + Synergy.REQ[it.wid]); extra.add("Activa: tienes las dos mejoras."); break;
             case 10: body = ChestLoot.S_DESC[it.wid]; extra.add("Nivel " + it.lvl + "/" + it.maxLvl + (it.lvl >= it.maxLvl ? " (máximo)" : "")); extra.add("Efecto acumulado: " + ChestLoot.total(it.wid, rs.cb[it.wid])); break;
             case 5: body = "Curan vida cuando los usas. Los recargas en tiendas y con algunos objetos."; extra.add("Llevas " + rs.potions + " de " + rs.stats.potionsMax); break;
             case 6: body = Events.PACTS[it.wid].pro; extra.add("Coste: " + Events.PACTS[it.wid].con); break;

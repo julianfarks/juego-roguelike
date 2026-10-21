@@ -48,6 +48,7 @@ public final class Stats {
         Items.applySpecial(rs, this);
         Unlocks.applyStats(rs, this);
         ChestLoot.applyStats(rs, this);
+        Synergy.applyStats(rs, this);
         StartBlessing.applyStats(rs, this);
         Events.applyStats(rs, this);
         Garden.applyStats(this, s);

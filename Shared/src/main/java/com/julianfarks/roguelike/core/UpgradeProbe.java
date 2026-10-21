@@ -42,6 +42,7 @@ final class UpgradeProbe {
         generation();
         chestNoDup();
         inventoryUi();
+        synergies();
     }
 
     static Enemy dummy(float dx) {
@@ -51,6 +52,62 @@ final class UpgradeProbe {
         return e;
     }
 
+    // ---------------------------------------------------------------- etapa 6: sinergias entre mejoras (efectos reales)
+    static void synergies() {
+        clean();
+        ChestLoot.apply(rs, ChestLoot.stat(rs, ChestLoot.BURN, 0, 8));
+        ck("solo Fuego: Combustión tóxica inactiva", !Synergy.active(rs, Synergy.TOXIC));
+        // sin sinergia: un enemigo quemado muere sin estallar
+        Enemy a0 = dummy(200), b0 = dummy(212);
+        a0.applyStatus(Ent.BURN, 3f, 4f);
+        int t0 = Synergy.toxicN; float hb0 = b0.hp;
+        a0.hp = 0; a0.die(lv);
+        ck("sin la sinergia, morir quemado no provoca explosión", Synergy.toxicN == t0 && b0.hp == hb0);
+        lv.enemies.clear();
+        ChestLoot.apply(rs, ChestLoot.stat(rs, ChestLoot.POISON, 0, 8));
+        ck("Fuego + Veneno: Combustión tóxica activa", Synergy.active(rs, Synergy.TOXIC));
+        Enemy a = dummy(200), b = dummy(214), far = dummy(400);
+        a.applyStatus(Ent.BURN, 3f, 4f);
+        float hb = b.hp, hf = far.hp;
+        a.hp = 0; a.die(lv);
+        ck("Combustión tóxica: el enemigo quemado estalla, daña y envenena al de al lado (" + Math.round(hb - b.hp) + " de daño)", Synergy.toxicN == t0 + 1 && b.hp < hb && b.hasStatus(Ent.POISON));
+        ck("la explosión no alcanza a los enemigos lejanos", far.hp == hf);
+        Enemy c = dummy(240);
+        int t1 = Synergy.toxicN; c.hp = 0; c.die(lv);
+        ck("un enemigo sin quemar ni envenenar no estalla", Synergy.toxicN == t1);
+        lv.enemies.clear();
+        // Escarcha afilada: +50% de multiplicador critico contra congelados/ralentizados
+        Enemy fz = dummy(200), nm = dummy(260);
+        fz.applyStatus(Ent.SLOW, 3f, 0f);
+        float off = lv.critMulOf(fz) - lv.critMulOf(nm);
+        ChestLoot.apply(rs, ChestLoot.stat(rs, ChestLoot.FREEZE, 0, 8)); ChestLoot.apply(rs, ChestLoot.stat(rs, ChestLoot.CRIT, 0, 4));
+        float on = lv.critMulOf(fz) - lv.critMulOf(nm);
+        ck("Hielo + Críticos: los críticos contra ralentizados hacen +50% (" + off + " -> " + on + ")", Synergy.active(rs, Synergy.FROSTCRIT) && Math.abs(off) < 0.001f && Math.abs(on - Synergy.FROST_CRIT_BONUS) < 0.001f);
+        lv.enemies.clear();
+        // estadisticas
+        float ls0 = rs.stats.lifesteal, as0 = rs.stats.atkSpd;
+        ChestLoot.apply(rs, ChestLoot.stat(rs, ChestLoot.LS, 0, 1));
+        float ls1 = rs.stats.lifesteal, as1 = rs.stats.atkSpd;
+        ChestLoot.apply(rs, ChestLoot.stat(rs, ChestLoot.ASPD, 0, 4));
+        ck("Robo de vida + Vel. de ataque: +4% de robo de vida extra (" + ls1 + " -> " + rs.stats.lifesteal + ")", Synergy.active(rs, Synergy.BLOODRUSH) && Math.abs(rs.stats.lifesteal - ls1 - 0.04f) < 0.001f && rs.stats.atkSpd > as1 * 1.04f * 1.07f);
+        float d0 = rs.stats.dmgMul;
+        ChestLoot.apply(rs, ChestLoot.stat(rs, ChestLoot.SHOCK, 0, 8));
+        float d1 = rs.stats.dmgMul;
+        ChestLoot.apply(rs, ChestLoot.stat(rs, ChestLoot.DMG, 0, 6));
+        ck("Descarga + Daño: +10% de daño extra (x" + d1 + " -> x" + rs.stats.dmgMul + ")", Synergy.active(rs, Synergy.STORM) && Math.abs(rs.stats.dmgMul - d1 * 1.06f * 1.10f) < 0.01f);
+        // inventario y aviso
+        scr.openInventory(false); scr.inv.setCat(Inventory.C_UPGR);
+        int ns = 0; for (Inventory.Item it : scr.inv.items) if (it.kind == 11) ns++;
+        ck("pestaña Mejoras: muestra las 4 sinergias activas (" + ns + ")", ns == 4);
+        scr.invClose();
+        clean();
+        int m0 = Synergy.mask(rs);
+        Items.addSpecial(rs, 1); Items.addSpecial(rs, 3);
+        String nm2 = Synergy.announce(lv, m0);
+        ck("al activarse una sinergia se avisa (" + nm2 + ")", "Combustión tóxica".equals(nm2));
+        ck("las mejoras del arma principal también cuentan para las sinergias", Synergy.active(rs, Synergy.TOXIC));
+        clean();
+    }
 
     // ---------------------------------------------------------------- etapa 3/4: las mejoras se acumulan y nunca sustituyen al arma
     static void upgradesStack() {

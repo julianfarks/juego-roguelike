@@ -211,7 +211,9 @@ final class Items {
             int sp;
             int tries = 0;
             do { sp = 1 + r.i(SP_COUNT - 1); tries++; } while (rs.spLvl[sp] >= SP_MAXLVL && tries < 24);
+            int syn0 = Synergy.mask(rs);
             if (addSpecial(rs, sp)) {           // se acumula con las que ya tienes (sube de nivel si se repite)
+                Synergy.announce(lv, syn0);
                 msg = "¡" + SP_NAME[sp] + "! Nivel " + rs.spLvl[sp]; col = SP_COL[sp];
                 lv.text(x, y - 56, spEffect(sp, rs.spLvl[sp]), 0xE8E0E0, false);
             } else { rs.gold += 60; msg = "+60 oro"; col = 0xFFD25A; }

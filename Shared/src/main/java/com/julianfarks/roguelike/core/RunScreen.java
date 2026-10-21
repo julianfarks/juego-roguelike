@@ -797,8 +797,11 @@ final class RunScreen extends Screen implements Level.Listener {
 
     /** Aplica la recompensa elegida. Las armas nuevas van a la bolsa (no sustituyen a la equipada). */
     private void finishChest(ChestLoot.Reward x) {
+        int syn0 = Synergy.mask(rs);
         ChestLoot.apply(rs, x);
+        String syn = Synergy.announce(lv, syn0);           // aviso si esta mejora activa una sinergia nueva
         if (x.kind == ChestLoot.K_SEC_NEW) { int res = rs.sec == x.id ? Arsenal.ADD_EQUIPPED : Arsenal.ADD_STORED; toast = Arsenal.grantMsg(rs, x.id, res); toastT = 2.4f; }
+        if (syn != null) { toast = "¡Sinergia: " + syn + "!"; toastT = 2.6f; }
         if (x.kind == ChestLoot.K_BLESS) { boolean taken = rs.blessingTaken; applyBless(x.id); rs.blessingTaken = taken; }   // la recompensa de jefe no gasta el altar de la mazmorra
         if (x.kind == ChestLoot.K_BARRIER) lv.pl.shield = Math.min(70, lv.pl.shield + x.val);
         boolean bossRew = cMode == ChestLoot.MODE_BOSS && rewardBoss != null;
